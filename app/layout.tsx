@@ -1,6 +1,8 @@
 import type { Metadata, Viewport } from "next";
 import type { ReactNode } from "react";
 
+import { Analytics } from "@vercel/analytics/next";
+
 import { Providers } from "@/components/layout/providers";
 import { inter, spaceGrotesk } from "@/lib/fonts";
 import { siteConfig } from "@/lib/site";
@@ -56,6 +58,7 @@ export default function RootLayout({ children }: { children: ReactNode }) {
     <html lang="en" suppressHydrationWarning className={cn(inter.variable, spaceGrotesk.variable)}>
       <body className="min-h-dvh antialiased">
         <Providers>{children}</Providers>
+        <Analytics />
       </body>
     </html>
   );
