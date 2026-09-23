@@ -1,4 +1,4 @@
-import { formatColor, toHex } from "@/lib/color/color";
+import { formatColor, toHex, toRgb } from "@/lib/color/color";
 import { colorTokens } from "@/lib/color/export";
 import { gradientCss, gradientCssFallback } from "@/lib/color/gradient";
 import { fontStack } from "@/lib/typography/css";
@@ -110,6 +110,42 @@ export function toLess(tokens: DesignTokens): string {
     .map((token) => `${name(token.name)}: ${value(token.value)};`)
     .join("\n");
   return `${header(tokens, (text) => `// ${text}`)}\n${vars}\n`;
+}
+
+/** Android `res/values/colors.xml`: palette, shades and semantic roles as #AARRGGBB resources. */
+export function toAndroidColors(tokens: DesignTokens): string {
+  const prefix = tokens.meta.prefix ? `${tokens.meta.prefix}_` : "";
+  // Resource names allow only lowercase letters, digits and underscores, and can't start with a digit.
+  const resource = (name: string) => {
+    const clean = `${prefix}${name}`
+      .toLowerCase()
+      .replace(/[^a-z0-9]+/g, "_")
+      .replace(/^_+|_+$/g, "");
+    return /^[0-9]/.test(clean) ? `c_${clean}` : clean;
+  };
+  const argb = (value: Oklch) => {
+    const { r, g, b, alpha } = toRgb(value);
+    return `#${[Math.round(alpha * 255), r, g, b]
+      .map((channel) => channel.toString(16).padStart(2, "0"))
+      .join("")
+      .toUpperCase()}`;
+  };
+  const seen = new Set<string>();
+  const lines: string[] = [];
+  const add = (name: string, value: Oklch) => {
+    const id = resource(name);
+    if (!id || seen.has(id)) return;
+    seen.add(id);
+    lines.push(`    <color name="${id}">${argb(value)}</color>`);
+  };
+  tokens.colors.forEach((token) => {
+    add(token.name, token.value);
+    token.shades.forEach((shade) => add(`${token.name}_${shade.step}`, shade.value));
+  });
+  tokens.semantic.forEach((role) => add(role.name, role.value));
+  // "--" is not allowed inside XML comments.
+  const comment = header(tokens, (text) => `<!-- ${text.replace(/-{2,}/g, "-")} -->`);
+  return `<?xml version="1.0" encoding="utf-8"?>\n${comment}\n<resources>\n${lines.join("\n")}\n</resources>\n`;
 }
 
 /** Tailwind v4 reads design tokens from CSS `@theme` variables. */
@@ -318,6 +354,7 @@ export function tokenFormats(tokens: DesignTokens): ExportFormat[] {
     { id: "css", label: "CSS variables", filename: "tokens.css", language: "css", code: toCss(tokens) },
     { id: "scss", label: "SCSS", filename: "_tokens.scss", language: "scss", code: toScss(tokens) },
     { id: "less", label: "Less", filename: "tokens.less", language: "css", code: toLess(tokens) },
+    { id: "android", label: "Android XML", filename: "colors.xml", language: "xml", code: toAndroidColors(tokens) },
     { id: "tailwind-v4", label: "Tailwind v4", filename: "theme.css", language: "css", code: toTailwindV4(tokens) },
     {
       id: "tailwind-config",

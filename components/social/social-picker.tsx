@@ -1,5 +1,6 @@
 "use client";
 
+import { useHotkey } from "@/hooks/use-hotkeys";
 import { socialPlatforms, socialTemplates } from "@/lib/social/registry";
 import { cn } from "@/lib/utils";
 import { useSocialStore } from "@/store/social-store";
@@ -8,6 +9,16 @@ export function SocialPicker() {
   const template = useSocialStore((state) => state.template);
   const setTemplate = useSocialStore((state) => state.setTemplate);
   const platforms = socialPlatforms.filter((platform) => socialTemplates.some((item) => item.platform === platform));
+  // Cycle in the order the picker shows them (grouped by platform), wrapping at both ends.
+  const ordered = platforms.flatMap((platform) => socialTemplates.filter((item) => item.platform === platform));
+  const cycle = (step: number) => {
+    if (ordered.length === 0) return;
+    const index = ordered.findIndex((item) => item.id === template);
+    const next = ordered[(Math.max(index, 0) + step + ordered.length) % ordered.length];
+    if (next) setTemplate(next.id);
+  };
+  useHotkey("]", () => cycle(1));
+  useHotkey("[", () => cycle(-1));
 
   if (platforms.length === 0) {
     return <p className="rounded-lg border border-dashed p-4 text-sm text-muted-foreground">No templates yet.</p>;

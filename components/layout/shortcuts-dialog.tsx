@@ -6,7 +6,15 @@ import { useHotkey } from "@/hooks/use-hotkeys";
 import { shortcuts, type ShortcutDefinition } from "@/lib/shortcuts";
 import { useUiStore } from "@/store/ui-store";
 
-const scopes: ShortcutDefinition["scope"][] = ["Global", "Typography", "Colors", "Icons", "Backgrounds"];
+const scopes: ShortcutDefinition["scope"][] = [
+  "Global",
+  "Typography",
+  "Colors",
+  "Icons",
+  "Backgrounds",
+  "Mockups",
+  "Social",
+];
 
 export function ShortcutsDialog() {
   const open = useUiStore((state) => state.shortcutsOpen);

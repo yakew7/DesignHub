@@ -1,4 +1,4 @@
-export type ExportLanguage = "css" | "scss" | "json" | "ts" | "tsx" | "js" | "html" | "svg";
+export type ExportLanguage = "css" | "scss" | "json" | "ts" | "tsx" | "js" | "html" | "svg" | "xml";
 
 export type ExportFormat = {
   id: string;

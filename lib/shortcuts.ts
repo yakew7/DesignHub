@@ -1,7 +1,7 @@
 export type ShortcutDefinition = {
   keys: string[];
   description: string;
-  scope: "Global" | "Colors" | "Typography" | "Icons" | "Backgrounds";
+  scope: "Global" | "Colors" | "Typography" | "Icons" | "Backgrounds" | "Mockups" | "Social";
 };
 
 export const shortcuts: ShortcutDefinition[] = [
@@ -30,4 +30,8 @@ export const shortcuts: ShortcutDefinition[] = [
   { keys: ["⇧", "R"], description: "Rotate icon 90° counter-clockwise", scope: "Icons" },
   { keys: ["Space"], description: "Random font pair (Pairing tab)", scope: "Typography" },
   { keys: ["Space"], description: "New random seed", scope: "Backgrounds" },
+  { keys: ["]"], description: "Next template", scope: "Mockups" },
+  { keys: ["["], description: "Previous template", scope: "Mockups" },
+  { keys: ["]"], description: "Next template", scope: "Social" },
+  { keys: ["["], description: "Previous template", scope: "Social" },
 ];
