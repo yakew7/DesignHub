@@ -83,10 +83,11 @@ A typical design session bounces between a font site, a palette generator, a con
 
 ### Social Media Studio
 
-- **GitHub** repository banner, **LinkedIn** cover, **X** header, **Instagram** square post and story, **Open Graph** (article, product, minimal), **Product Hunt** gallery and **YouTube** thumbnail
+- **GitHub repository banner in 10 styles**: Minimal, Editorial, Aurora, Grid, Terminal, Glass, Gradient, Split, Bento and Spotlight
+- **LinkedIn** cover, **X** header, **Instagram** square post and story, **Open Graph** (article, product, minimal), **Product Hunt** gallery and **YouTube** thumbnail
 - Exact platform sizes, a safe-area overlay and the zones covered by avatars and timestamps
-- Logo, typography and colors come from the brand; headline, subtitle, handle and call to action are editable
-- PNG at 1× or 2×, Open Graph meta tags to paste, and **all assets as a ZIP**
+- One content panel drives every template: project name, description, website, GitHub username, logo, primary and secondary colors, background style, border radius and padding (empty fields follow the brand)
+- Export PNG, @1x or @2x, SVG, copy the image to the clipboard, Open Graph meta tags, and **all assets as a ZIP**
 
 ### Brand Guidelines
 

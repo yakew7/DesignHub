@@ -1,4 +1,4 @@
-import { githubBanner } from "@/lib/social/templates/github-banner";
+import { githubBannerStyles } from "@/lib/social/templates/github";
 import { instagramSquare, instagramStory } from "@/lib/social/templates/instagram";
 import { linkedinCover } from "@/lib/social/templates/linkedin-cover";
 import { ogTemplates } from "@/lib/social/templates/open-graph";
@@ -8,7 +8,7 @@ import type { SocialPlatform, SocialTemplate } from "@/lib/social/types";
 
 /** Templates register here as they are implemented. */
 export const socialTemplates: SocialTemplate[] = [
-  githubBanner,
+  ...githubBannerStyles,
   linkedinCover,
   xBanner,
   instagramSquare,
@@ -28,6 +28,10 @@ export const socialPlatforms: SocialPlatform[] = [
   "YouTube",
 ];
 
+/** Ids from earlier versions, so saved selections keep working. */
+const aliases: Record<string, string> = { "github-banner": "github-aurora" };
+
 export function getSocialTemplate(id: string): SocialTemplate | undefined {
-  return socialTemplates.find((template) => template.id === id);
+  const target = aliases[id] ?? id;
+  return socialTemplates.find((template) => template.id === target);
 }

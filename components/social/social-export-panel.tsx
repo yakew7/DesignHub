@@ -1,39 +1,69 @@
 "use client";
 
-import { FileArchive, ImageDown, Loader2 } from "lucide-react";
-import { useState } from "react";
+import { ClipboardCopy, FileArchive, FileCode, ImageDown, Loader2 } from "lucide-react";
+import { useState, type ReactNode } from "react";
 import { toast } from "sonner";
 
 import { Button } from "@/components/ui/button";
 import { CopyButton } from "@/components/ui/copy-button";
 import { Label } from "@/components/ui/label";
-import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
-import { downloadBlob } from "@/lib/download";
+import { Panel } from "@/components/ui/panel";
+import { downloadBlob, downloadText } from "@/lib/download";
 import { rasterize } from "@/lib/export/raster";
 import { slugify } from "@/lib/logo/pack";
 import { buildSocialPack } from "@/lib/social/pack";
 import { socialTemplates } from "@/lib/social/registry";
 import { ogMetaTags } from "@/lib/social/templates/open-graph";
 import type { SocialContext, SocialTemplate } from "@/lib/social/types";
-import { useSocialStore } from "@/store/social-store";
 
 type Props = { svg: string; ctx: SocialContext; template: SocialTemplate | undefined };
 
-export function SocialExportPanel({ svg, ctx, template }: Props) {
-  const name = ctx.brand.name;
-  const scale = useSocialStore((state) => state.scale);
-  const setScale = useSocialStore((state) => state.setScale);
-  const [busy, setBusy] = useState(false);
-  const [packProgress, setPackProgress] = useState<number | null>(null);
+type Job = "png" | "png1" | "png2" | "copy" | "zip";
 
-  const file = template ? `${slugify(name)}-${template.id}${scale > 1 ? `@${scale}x` : ""}.png` : "";
+const pngBlob = (bytes: Uint8Array) => new Blob([bytes.slice().buffer], { type: "image/png" });
+
+export function SocialExportPanel({ svg, ctx, template }: Props) {
+  const [busy, setBusy] = useState<Job | null>(null);
+  const [packProgress, setPackProgress] = useState<number | null>(null);
+  const base = template ? `${slugify(ctx.brand.name)}-${template.id}` : "";
   const meta = template?.platform === "Open Graph" ? ogMetaTags(ctx, "og.png") : null;
+
+  async function run(job: Job, action: () => Promise<void>) {
+    setBusy(job);
+    try {
+      await action();
+    } catch (error) {
+      toast.error(error instanceof Error && error.message ? error.message : "Export failed in this browser.");
+    } finally {
+      setBusy(null);
+    }
+  }
+
+  const png = (scale: number, job: Job) =>
+    run(job, async () => {
+      const image = await rasterize(svg, scale);
+      downloadBlob(pngBlob(image.bytes), `${base}${scale > 1 ? `@${scale}x` : ""}.png`);
+      toast.success("Download ready");
+    });
+
+  const copyImage = () =>
+    run("copy", async () => {
+      if (typeof ClipboardItem === "undefined" || !navigator.clipboard?.write) {
+        throw new Error("This browser can't copy images. Download the PNG instead.");
+      }
+      const image = await rasterize(svg, 1);
+      await navigator.clipboard.write([new ClipboardItem({ "image/png": pngBlob(image.bytes) })]);
+      toast.success("Image copied to the clipboard");
+    });
 
   async function downloadAll() {
     setPackProgress(0);
     try {
       const zip = await buildSocialPack(ctx, (done, total) => setPackProgress(Math.round((done / total) * 100)));
-      downloadBlob(new Blob([zip.slice().buffer], { type: "application/zip" }), `${slugify(name)}-social.zip`);
+      downloadBlob(
+        new Blob([zip.slice().buffer], { type: "application/zip" }),
+        `${slugify(ctx.brand.name)}-social.zip`,
+      );
       toast.success("Social pack ready");
     } catch {
       toast.error("Export failed in this browser.");
@@ -42,58 +72,32 @@ export function SocialExportPanel({ svg, ctx, template }: Props) {
     }
   }
 
-  async function download() {
-    if (!template) return;
-    setBusy(true);
-    try {
-      const image = await rasterize(svg, scale);
-      downloadBlob(new Blob([image.bytes.slice().buffer], { type: "image/png" }), file);
-      toast.success("Download ready");
-    } catch {
-      toast.error("Export failed in this browser.");
-    } finally {
-      setBusy(false);
-    }
-  }
+  const spin = (job: Job, icon: ReactNode) => (busy === job ? <Loader2 className="animate-spin" /> : icon);
+  const disabled = !svg || busy !== null;
 
   return (
-    <>
-      <h2 className="text-sm font-medium">Export</h2>
-      {template ? (
-        <dl className="grid grid-cols-[auto_1fr] gap-x-3 gap-y-1 text-xs">
-          <dt className="text-muted-foreground">Platform</dt>
-          <dd>{template.platform}</dd>
-          <dt className="text-muted-foreground">Size</dt>
-          <dd className="font-mono">
-            {template.width} × {template.height}
-          </dd>
-        </dl>
-      ) : null}
-      <div className="flex flex-col gap-2">
-        <Label>Resolution</Label>
-        <ToggleGroup
-          type="single"
-          value={String(scale)}
-          onValueChange={(value) => value && setScale(Number(value))}
-          aria-label="Export resolution"
-          className="w-full"
-        >
-          {[1, 2].map((value) => (
-            <ToggleGroupItem key={value} value={String(value)} className="flex-1 font-mono">
-              {value}×
-            </ToggleGroupItem>
-          ))}
-        </ToggleGroup>
-        {template ? (
-          <p className="font-mono text-[11px] text-subtle-foreground">
-            {template.width * scale} × {template.height * scale} px
-          </p>
-        ) : null}
-      </div>
-      <Button onClick={download} disabled={!svg || busy}>
-        {busy ? <Loader2 className="animate-spin" /> : <ImageDown />} Download PNG
+    <Panel
+      title="Export"
+      description={template ? `${template.platform} · ${template.width} × ${template.height} px` : undefined}
+    >
+      <Button size="lg" className="w-full" onClick={() => png(1, "png")} disabled={disabled}>
+        {spin("png", <ImageDown />)} Export PNG
       </Button>
-      <Button variant="outline" onClick={downloadAll} disabled={packProgress !== null}>
+      <div className="grid grid-cols-2 gap-2 sm:grid-cols-4">
+        <Button variant="outline" onClick={() => png(1, "png1")} disabled={disabled}>
+          {spin("png1", <ImageDown />)} @1x
+        </Button>
+        <Button variant="outline" onClick={() => png(2, "png2")} disabled={disabled}>
+          {spin("png2", <ImageDown />)} @2x
+        </Button>
+        <Button variant="outline" onClick={() => downloadText(svg, `${base}.svg`)} disabled={disabled}>
+          <FileCode /> SVG
+        </Button>
+        <Button variant="outline" onClick={copyImage} disabled={disabled}>
+          {spin("copy", <ClipboardCopy />)} Copy image
+        </Button>
+      </div>
+      <Button variant="ghost" onClick={downloadAll} disabled={packProgress !== null}>
         {packProgress !== null ? <Loader2 className="animate-spin" /> : <FileArchive />}
         {packProgress !== null ? `Rendering ${packProgress}%` : `All ${socialTemplates.length} assets (ZIP)`}
       </Button>
@@ -109,6 +113,6 @@ export function SocialExportPanel({ svg, ctx, template }: Props) {
           <p className="text-[11px] text-subtle-foreground">Upload the PNG as og.png at your site root.</p>
         </div>
       ) : null}
-    </>
+    </Panel>
   );
 }

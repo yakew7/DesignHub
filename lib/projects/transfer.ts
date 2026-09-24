@@ -64,6 +64,16 @@ function normalizeSnapshot(value: unknown): BrandSnapshot {
     (isObject(value[key]) ? { ...(base[key] as object), ...(value[key] as object) } : base[key]) as BrandSnapshot[K];
 
   const logo = typeof brand.logoSvg === "string" ? sanitizeSvg(brand.logoSvg) : null;
+  // The social studio can hold its own logo too, which is just as untrusted.
+  const socialSlice = (): BrandSnapshot["social"] => {
+    const social = slice("social");
+    const design = { ...base.social.design, ...(isObject(social.design) ? social.design : {}) };
+    return {
+      ...social,
+      content: { ...base.social.content, ...(isObject(social.content) ? social.content : {}) },
+      design: { ...design, logoSvg: typeof design.logoSvg === "string" ? sanitizeSvg(design.logoSvg) : null },
+    };
+  };
   const snapshot: BrandSnapshot = {
     version: 1,
     brand: {
@@ -82,7 +92,7 @@ function normalizeSnapshot(value: unknown): BrandSnapshot {
     effects: slice("effects"),
     logo: slice("logo"),
     mockups: slice("mockups"),
-    social: slice("social"),
+    social: socialSlice(),
   };
   if (typeof snapshot.typography.headingFont !== "string" || typeof snapshot.typography.bodyFont !== "string") {
     throw new Error("The fonts in this file aren't valid.");

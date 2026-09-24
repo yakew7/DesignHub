@@ -22,7 +22,7 @@ export type BrandSnapshot = {
   effects: Pick<State<typeof useEffectsStore>, "settings">;
   logo: Pick<State<typeof useLogoStore>, "clearSpace">;
   mockups: Pick<State<typeof useMockupStore>, "content" | "mode">;
-  social: Pick<State<typeof useSocialStore>, "content" | "mode">;
+  social: Pick<State<typeof useSocialStore>, "content" | "mode" | "design">;
 };
 
 /** The stores a snapshot covers, used to capture, restore and watch for edits. */
@@ -62,7 +62,7 @@ function slices(source: {
     effects: { settings: effects.settings },
     logo: { clearSpace: logo.clearSpace },
     mockups: { content: mockups.content, mode: mockups.mode },
-    social: { content: social.content, mode: social.mode },
+    social: { content: social.content, mode: social.mode, design: social.design },
   });
 }
 
@@ -112,7 +112,11 @@ export function applySnapshot(snapshot: BrandSnapshot): void {
   useEffectsStore.setState({ settings: { ...base.effects.settings, ...data.effects.settings } });
   useLogoStore.setState({ ...base.logo, ...data.logo });
   useMockupStore.setState({ content: { ...base.mockups.content, ...data.mockups.content }, mode: data.mockups.mode });
-  useSocialStore.setState({ content: { ...base.social.content, ...data.social.content }, mode: data.social.mode });
+  useSocialStore.setState({
+    content: { ...base.social.content, ...data.social.content },
+    mode: data.social.mode,
+    design: { ...base.social.design, ...data.social.design },
+  });
 }
 
 /** True once every covered store has loaded its saved state. */

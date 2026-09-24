@@ -171,6 +171,8 @@ Mockups (`lib/mockups/templates/`), social assets (`lib/social/templates/`) and 
 4. Give every copy of the logo in one drawing a unique id prefix, or gradients inside it will collide.
 5. Social templates declare their exact platform size, a `safe` rect and any `covered` zones (avatars, timestamps), and keep text inside the safe rect.
 6. Register the template in its `registry.ts`. It then appears in the picker, the exports and the ZIP packs automatically.
+   - To add a **style** to an existing asset (for example a new GitHub banner look), create a file in `lib/social/templates/github/` with `githubBanner("Name", "description", (ctx) => ({ body, defs }))` and add it to `lib/social/templates/github/index.ts`. Styles share a `group`, so they appear nested under that asset in the picker.
+   - Read copy from `ctx.content` and spacing from `ctx.layout.padding`, and draw the background through `backdrop(ctx, W, H, own)` so the Background style setting works in your template too.
 7. Check the result in light and dark, with a long brand name and headline, and with an uploaded non-square logo.
 
 ## SVG coding guidelines

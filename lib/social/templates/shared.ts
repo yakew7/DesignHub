@@ -71,3 +71,48 @@ export function pill(
     ${text(x + width / 2, y + height / 2 + size * 0.36, label, { size, fill: colors.text, font: "bb", anchor: "middle" })}`;
   return { markup, width };
 }
+
+/** Bold mesh: overlapping blurred blobs of the brand colors on a deep base. */
+export function meshBackdrop(ctx: DrawContext, width: number, height: number, baseColor?: string): string {
+  const { surface } = ctx;
+  const base = baseColor ?? (ctx.mode === "dark" ? "#07070b" : surface.background);
+  const r = Math.max(width, height);
+  const blur = Math.round(Math.min(width, height) * 0.16);
+  const blob = (cx: number, cy: number, radius: number, color: string, opacity: number) =>
+    `<circle cx="${cx}" cy="${cy}" r="${radius}" fill="${color}" fill-opacity="${opacity}" filter="url(#mesh-blur)"/>`;
+  return `<defs><filter id="mesh-blur" x="-50%" y="-50%" width="200%" height="200%"><feGaussianBlur stdDeviation="${blur}"/></filter></defs>
+    <rect width="${width}" height="${height}" fill="${base}"/>
+    ${blob(width * 0.12, height * 0.15, r * 0.34, surface.primary, 0.95)}
+    ${blob(width * 0.85, height * 0.25, r * 0.3, surface.secondary, 0.9)}
+    ${blob(width * 0.6, height * 1.05, r * 0.32, surface.primary, 0.75)}
+    ${blob(width * 0.3, height * 0.95, r * 0.2, surface.secondary, 0.6)}`;
+}
+
+/** A flat brand background. */
+export function solidBackdrop(ctx: DrawContext, width: number, height: number): string {
+  return `<rect width="${width}" height="${height}" fill="${ctx.surface.background}"/>`;
+}
+
+/**
+ * The template's own background, unless the user picked a background style in the
+ * Content panel, in which case every template uses that one.
+ */
+export function backdrop(
+  ctx: DrawContext & { layout?: { background: string } },
+  width: number,
+  height: number,
+  own: () => string,
+): string {
+  switch (ctx.layout?.background) {
+    case "solid":
+      return solidBackdrop(ctx, width, height);
+    case "gradient":
+      return gradientBackdrop(ctx, width, height);
+    case "glow":
+      return glowBackdrop(ctx, width, height);
+    case "mesh":
+      return meshBackdrop(ctx, width, height);
+    default:
+      return own();
+  }
+}

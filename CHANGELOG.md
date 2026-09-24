@@ -54,9 +54,11 @@ Released 2026-09-23. The first public release: a complete, local-first design an
 
 #### Social Media Studio
 
-- GitHub repository banner, LinkedIn cover, X header, Instagram square post and story, three Open Graph layouts, Product Hunt gallery image and YouTube thumbnail.
+- GitHub repository banner gallery with ten styles (Minimal, Editorial, Aurora, Grid, Terminal, Glass, Gradient, Split, Bento, Spotlight), nested under Repository banner in the template list.
+- LinkedIn cover, X header, Instagram square post and story, three Open Graph layouts, Product Hunt gallery image and YouTube thumbnail.
+- A shared content panel under the preview: project name, description, website, GitHub username, logo upload, primary and secondary colors, background style, border radius and padding, applied to every template. Saved with brand projects.
 - Platform presets with exact sizes, a safe area overlay and the zones covered by platform UI.
-- Automatic logo, typography and colors, editable copy, PNG export at 1× and 2×, Open Graph meta tags and a ZIP of every asset.
+- Automatic logo, typography and colors, editable copy, Export PNG (plus @1x and @2x), SVG export, copy image to the clipboard, Open Graph meta tags and a ZIP of every asset.
 
 #### Brand Guidelines
 

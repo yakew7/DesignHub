@@ -10,14 +10,15 @@ type StudioLayoutProps = {
   id: string;
   controls: ReactNode;
   preview: ReactNode;
-  output: ReactNode;
+  /** Omit for a two-pane layout where the preview column holds its own controls. */
+  output?: ReactNode;
   className?: string;
 };
 
 const panelClass = "flex h-full min-h-0 flex-col gap-4 overflow-y-auto scrollbar-thin lg:px-1 lg:pb-1";
 
 /**
- * Three-pane studio layout: controls · live preview · code & exports.
+ * Three-pane studio layout: controls · live preview · code & exports (or two panes without `output`).
  * Resizable (mouse, touch and arrow keys) from `lg` up; stacked on smaller screens.
  * react-resizable-panels sets its sizing inline, so both layouts override it with `!important`.
  */
@@ -39,17 +40,21 @@ export function StudioLayout({ id, controls, preview, output, className }: Studi
         </section>
       </ResizablePanel>
       <ResizableHandle aria-label="Resize controls panel" />
-      <ResizablePanel id={`${id}-preview`} defaultSize="46%" minSize="320px" className={panelClass}>
+      <ResizablePanel id={`${id}-preview`} defaultSize={output ? "46%" : "76%"} minSize="320px" className={panelClass}>
         <section aria-label="Preview" className="flex min-h-0 flex-1 flex-col gap-4">
           {preview}
         </section>
       </ResizablePanel>
-      <ResizableHandle aria-label="Resize code panel" />
-      <ResizablePanel id={`${id}-output`} defaultSize="30%" minSize="260px" className={panelClass}>
-        <section aria-label="Code and exports" className="flex flex-col gap-4">
-          {output}
-        </section>
-      </ResizablePanel>
+      {output ? (
+        <>
+          <ResizableHandle aria-label="Resize code panel" />
+          <ResizablePanel id={`${id}-output`} defaultSize="30%" minSize="260px" className={panelClass}>
+            <section aria-label="Code and exports" className="flex flex-col gap-4">
+              {output}
+            </section>
+          </ResizablePanel>
+        </>
+      ) : null}
     </ResizableGroup>
   );
 }
