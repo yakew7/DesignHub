@@ -49,11 +49,39 @@ export function faviconStyle(style: IconStyle, fallbackColor: string): IconStyle
   return { ...style, color: style.color === "currentColor" ? fallbackColor : style.color };
 }
 
-export async function buildIco(icon: IconData, style: IconStyle): Promise<Uint8Array> {
+/** Draws the source at a pixel size. Icons re-render per size so stroke widths stay crisp; a fixed SVG just scales. */
+export type FaviconSource = (size: number) => string;
+
+async function encodeIcoFrom(render: FaviconSource): Promise<Uint8Array> {
   const images = await Promise.all(
-    ICO_SIZES.map(async (size) => ({ size, png: await svgToPngBytes(buildIconSvg(icon, { ...style, size }), size) })),
+    ICO_SIZES.map(async (size) => ({ size, png: await svgToPngBytes(render(size), size) })),
   );
   return encodeIco(images);
+}
+
+/** Every file of a favicon package for any SVG, so the Logo Studio can reuse the Icon Studio's pipeline. */
+export async function faviconEntries(render: FaviconSource, svg: string, options: FaviconOptions): Promise<ZipEntry[]> {
+  const pngs = await Promise.all(
+    PNG_TARGETS.map(async (target) => ({
+      name: target.name,
+      data: await svgToPngBytes(render(target.size), target.size),
+    })),
+  );
+  return [
+    { name: "favicon.ico", data: await encodeIcoFrom(render) },
+    { name: "icon.svg", data: svg },
+    ...pngs,
+    { name: "site.webmanifest", data: webManifest(options) },
+    {
+      name: "favicon.html",
+      data: `${faviconHtml(options)}
+`,
+    },
+  ];
+}
+
+export async function buildIco(icon: IconData, style: IconStyle): Promise<Uint8Array> {
+  return encodeIcoFrom((size) => buildIconSvg(icon, { ...style, size }));
 }
 
 /** Everything a modern site needs, zipped. */
@@ -63,18 +91,10 @@ export async function buildFaviconPackage(
   options: FaviconOptions,
 ): Promise<Uint8Array> {
   const svg = buildIconSvg(icon, { ...style, size: 512 }, { uniqueIds: true });
-  const pngs = await Promise.all(
-    PNG_TARGETS.map(async (target) => ({
-      name: target.name,
-      data: await svgToPngBytes(buildIconSvg(icon, { ...style, size: target.size }), target.size),
-    })),
-  );
-  const entries: ZipEntry[] = [
-    { name: "favicon.ico", data: await buildIco(icon, style) },
-    { name: "icon.svg", data: svg },
-    ...pngs,
-    { name: "site.webmanifest", data: webManifest(options) },
-    { name: "favicon.html", data: `${faviconHtml(options)}\n` },
-  ];
-  return createZip(entries);
+  return createZip(await faviconEntries((size) => buildIconSvg(icon, { ...style, size }), svg, options));
+}
+
+/** The same package for a ready-made SVG, such as the Logo Studio's app icon. */
+export async function buildFaviconPackageFromSvg(svg: string, options: FaviconOptions): Promise<Uint8Array> {
+  return createZip(await faviconEntries(() => svg, svg, options));
 }
