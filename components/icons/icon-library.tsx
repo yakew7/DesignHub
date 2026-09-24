@@ -61,14 +61,14 @@ export function IconLibrary() {
               </button>
             ))}
           </div>
-          <p className="flex flex-wrap items-center gap-x-2 gap-y-1 text-xs text-subtle-foreground">
+          <p className="flex flex-wrap items-center gap-1 text-xs text-subtle-foreground">
             Try
             {iconSearchSuggestions.map((term) => (
               <button
                 key={term}
                 type="button"
                 onClick={() => setQuery(term)}
-                className="rounded-sm text-muted-foreground underline-offset-4 transition-colors duration-150 hover:text-foreground hover:underline"
+                className="inline-flex h-6 min-w-6 items-center rounded-md px-1.5 text-muted-foreground transition-colors duration-150 hover:bg-surface-raised hover:text-foreground"
               >
                 {term}
               </button>
