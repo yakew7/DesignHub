@@ -43,7 +43,7 @@ Have an idea, or want to help build something here? Open an issue or discussion 
 
 ### Background Studio
 
-- Waves, blobs, mesh gradients, aurora, noise textures, dot, grid and isometric patterns
+- Waves, blobs, mesh gradients, aurora, noise textures, dot, grid and isometric patterns, plus rings, checks, low poly, bokeh, confetti, chevron, hexagons and sunburst
 - Seeds, randomize, color, density, scale and rotation controls
 - SVG, PNG and CSS exports
 

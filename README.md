@@ -49,7 +49,7 @@ A typical design session bounces between a font site, a palette generator, a con
 | **Typography Studio** | Google Fonts, variable axes, pairing, fluid type scale, OpenType   | CSS · Tailwind · SCSS · React · JSON tokens                   |
 | **Color Studio**      | Palettes, harmonies, OKLCH, shades 50–950, gradients, WCAG         | CSS variables · Tailwind · JSON tokens · SVG gradient         |
 | **Icon Studio**       | 200,000+ Iconify icons, restyling, favicons                        | SVG · React · CSS · PNG · ICO · favicon ZIP                   |
-| **Background Studio** | Waves, blobs, mesh, aurora, noise, dots, grid, isometric           | SVG · PNG (1× / 2×) · CSS background                          |
+| **Background Studio** | 16 generators: waves, mesh, aurora, low poly, bokeh, sunburst…     | SVG · PNG (1× / 2×) · CSS background                          |
 | **Effects Lab**       | Glass, neumorphism, layered shadows, glow, gradient borders, grain | CSS · Tailwind classes · Tailwind `@utility` · SCSS · React   |
 | **SVG Playground**    | Inspect, edit, optimize, convert, build sprites                    | Optimized SVG · JSX · React · React Native · sprite           |
 | **Accessibility Lab** | WCAG contrast, color vision, readability, dyslexia, touch targets  | JSON audit report                                             |
@@ -149,7 +149,7 @@ A typical design session bounces between a font site, a palette generator, a con
 
 ### Background Studio
 
-- Eight procedural generators: **waves, blobs, mesh gradients, aurora, noise texture, dot patterns, grid patterns and isometric patterns**
+- Sixteen procedural generators: **waves, blobs, mesh gradients, aurora, noise texture, dots, grid, isometric, rings, checks, low poly, bokeh, confetti, chevron, hexagons and sunburst**
 - Seeded and deterministic - every seed reproduces exactly; **Randomize** (or `Space`) rolls a new one
 - Shared controls for colors (or one click to use your Color Studio palette), density, scale, rotation and canvas size (desktop, Full HD, Open Graph, square, story)
 - Blobs are smoothed with **Paper.js** (loaded on demand); noise uses SVG `feTurbulence`

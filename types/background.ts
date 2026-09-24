@@ -1,4 +1,20 @@
-export type BackgroundKind = "waves" | "blobs" | "mesh" | "aurora" | "noise" | "dots" | "grid" | "isometric";
+export type BackgroundKind =
+  | "waves"
+  | "blobs"
+  | "mesh"
+  | "aurora"
+  | "noise"
+  | "dots"
+  | "grid"
+  | "isometric"
+  | "rings"
+  | "checks"
+  | "low-poly"
+  | "bokeh"
+  | "confetti"
+  | "chevron"
+  | "hexagons"
+  | "sunburst";
 
 export type BackgroundSettings = {
   kind: BackgroundKind;

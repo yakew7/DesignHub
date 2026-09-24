@@ -110,7 +110,7 @@ Released 2026-09-23. The first public release: a complete, local-first design an
 
 #### Background Studio
 
-- Procedural generators for waves, organic blobs (Paper.js smoothing), mesh gradients, aurora, noise textures, dot patterns, grid patterns and isometric patterns.
+- Sixteen procedural generators: waves, organic blobs (Paper.js smoothing), mesh gradients, aurora, noise textures, dot, grid and isometric patterns, concentric rings, checkerboard, low-poly mosaic, bokeh, confetti, chevron, honeycomb hexagons and sunburst.
 - Deterministic seeds with randomize (`Space`), color controls with a "use palette" shortcut, density, scale, rotation and canvas presets.
 - Exports: SVG, PNG (1× and 2×) and CSS backgrounds (native gradients where possible, inline SVG otherwise).
 
