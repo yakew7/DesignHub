@@ -1,4 +1,4 @@
-import { logo, mockupDoc, onPrimaryLarge, text } from "@/lib/mockups/kit";
+import { logo, mockupDoc, onPrimaryLarge, text, wrap } from "@/lib/mockups/kit";
 import {
   BAD,
   card,
@@ -11,28 +11,95 @@ import {
   MARGIN,
   paragraph,
 } from "@/lib/guidelines/kit";
-import { PAGE_HEIGHT, PAGE_WIDTH, type GuidelinePage } from "@/lib/guidelines/types";
+import {
+  PAGE_HEIGHT,
+  PAGE_WIDTH,
+  type CoverStyle,
+  type GuidelineContext,
+  type GuidelinePage,
+} from "@/lib/guidelines/types";
+
+/** Shrinks a heading so a long brand name still fits on one line. */
+function fitSize(ctx: GuidelineContext, value: string, width: number, size: number): number {
+  const { heading, headingWeight } = ctx.brand.typography;
+  const measured = ctx.measure(value, heading, headingWeight, size);
+  return measured > width ? Math.max(40, Math.floor((size * width) / measured)) : size;
+}
+
+const editionLine = (ctx: GuidelineContext) => (ctx.date ? `Version 1.0  ·  ${ctx.date}` : "Version 1.0");
+
+function gradientCover(ctx: GuidelineContext): string {
+  const { surface, brand } = ctx;
+  const on = onPrimaryLarge(ctx);
+  const W = PAGE_WIDTH;
+  const H = PAGE_HEIGHT;
+  const nameSize = fitSize(ctx, brand.name, W - 240, 150);
+  return `<defs><linearGradient id="cover" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="${surface.primary}"/><stop offset="1" stop-color="${surface.secondary}"/></linearGradient></defs>
+      <rect width="${W}" height="${H}" fill="url(#cover)"/>
+      <circle cx="${W}" cy="0" r="620" fill="none" stroke="${on}" stroke-opacity=".12" stroke-width="28"/>
+      <circle cx="${W}" cy="0" r="420" fill="none" stroke="${on}" stroke-opacity=".12" stroke-width="28"/>
+      ${logo(ctx, { x: 120, y: 120, width: 120, height: 120 }, on, "cover")}
+      ${text(120, 640, brand.name, { size: nameSize, fill: on, font: "h" })}
+      ${text(126, 720, "Brand guidelines", { size: 44, fill: on, opacity: 0.9 })}
+      <rect x="120" y="${H - 150}" width="${W - 240}" height="1.5" fill="${on}" fill-opacity=".4"/>
+      ${text(120, H - 100, editionLine(ctx), { size: 20, fill: on, opacity: 0.85 })}
+      ${text(W - 120, H - 100, brand.description, { size: 20, fill: on, anchor: "end", opacity: 0.85 })}`;
+}
+
+function minimalCover(ctx: GuidelineContext): string {
+  const { surface, brand } = ctx;
+  const W = PAGE_WIDTH;
+  const H = PAGE_HEIGHT;
+  const nameSize = fitSize(ctx, brand.name, W - 320, 110);
+  return `<rect width="${W}" height="${H}" fill="${surface.background}"/>
+      ${logo(ctx, { x: W / 2 - 130, y: 190, width: 260, height: 260 }, undefined, "cover")}
+      ${text(W / 2, 600, brand.name, { size: nameSize, fill: surface.text, font: "h", anchor: "middle" })}
+      ${text(W / 2, 668, "Brand guidelines", { size: 32, fill: surface.muted, anchor: "middle" })}
+      ${text(W / 2, 722, editionLine(ctx), { size: 20, fill: surface.muted, anchor: "middle" })}
+      <rect x="${W / 2 - 60}" y="${H - 170}" width="120" height="4" rx="2" fill="${surface.primary}"/>`;
+}
+
+function editorialCover(ctx: GuidelineContext): string {
+  const { surface, brand } = ctx;
+  const on = onPrimaryLarge(ctx);
+  const W = PAGE_WIDTH;
+  const H = PAGE_HEIGHT;
+  const half = W / 2;
+  const x = half + 90;
+  const width = half - 180;
+  const nameSize = fitSize(
+    ctx,
+    brand.name.split(/\s+/).sort((a, b) => b.length - a.length)[0] ?? brand.name,
+    width,
+    104,
+  );
+  const name = wrap(ctx, brand.name, width, nameSize, "h", 3);
+  const nameMarkup = name
+    .map((line, i) => text(x, 380 + i * nameSize * 1.08, line, { size: nameSize, fill: surface.text, font: "h" }))
+    .join("");
+  const below = 380 + (name.length - 1) * nameSize * 1.08;
+  return `<rect width="${W}" height="${H}" fill="${surface.background}"/>
+      <rect width="${half}" height="${H}" fill="${surface.primary}"/>
+      ${logo(ctx, { x: half / 2 - 150, y: H / 2 - 150, width: 300, height: 300 }, on, "cover")}
+      ${text(x, 250, "BRAND GUIDELINES", { size: 18, fill: surface.primaryText, font: "bb", spacing: 4 })}
+      ${nameMarkup}
+      <rect x="${x}" y="${below + 50}" width="90" height="4" rx="2" fill="${surface.primary}"/>
+      ${paragraph(ctx, brand.description, x, below + 116, width, 24, surface.muted, 4)}
+      ${text(x, H - 100, editionLine(ctx), { size: 20, fill: surface.muted })}`;
+}
+
+const coverLayouts: Record<CoverStyle, (ctx: GuidelineContext) => string> = {
+  gradient: gradientCover,
+  minimal: minimalCover,
+  editorial: editorialCover,
+};
 
 export const coverPage: GuidelinePage = {
   id: "cover",
   title: "Cover",
   description: "Logo, name and edition.",
   render(ctx) {
-    const { surface, brand } = ctx;
-    const on = onPrimaryLarge(ctx);
-    const W = PAGE_WIDTH;
-    const H = PAGE_HEIGHT;
-    const body = `<defs><linearGradient id="cover" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="${surface.primary}"/><stop offset="1" stop-color="${surface.secondary}"/></linearGradient></defs>
-      <rect width="${W}" height="${H}" fill="url(#cover)"/>
-      <circle cx="${W}" cy="0" r="620" fill="none" stroke="${on}" stroke-opacity=".12" stroke-width="28"/>
-      <circle cx="${W}" cy="0" r="420" fill="none" stroke="${on}" stroke-opacity=".12" stroke-width="28"/>
-      ${logo(ctx, { x: 120, y: 120, width: 120, height: 120 }, on, "cover")}
-      ${text(120, 640, brand.name, { size: 150, fill: on, font: "h" })}
-      ${text(126, 720, "Brand guidelines", { size: 44, fill: on, opacity: 0.9 })}
-      <rect x="120" y="${H - 150}" width="${W - 240}" height="1.5" fill="${on}" fill-opacity=".4"/>
-      ${text(120, H - 100, ctx.date ? `Version 1.0  ·  ${ctx.date}` : "Version 1.0", { size: 20, fill: on, opacity: 0.85 })}
-      ${text(W - 120, H - 100, brand.description, { size: 20, fill: on, anchor: "end", opacity: 0.85 })}`;
-    return mockupDoc(ctx, W, H, body);
+    return mockupDoc(ctx, PAGE_WIDTH, PAGE_HEIGHT, coverLayouts[ctx.coverStyle]?.(ctx) ?? gradientCover(ctx));
   },
 };
 
