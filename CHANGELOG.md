@@ -91,6 +91,7 @@ Released 2026-09-23. The first public release: a complete, local-first design an
 #### Color Studio
 
 - Palette generator with locks, reorder, add/remove, undo/redo (`Z` / `⇧Z`) and saved palettes.
+- Palette library with 48 curated palettes in 12 moods; loading one can be undone.
 - Harmony modes (analogous, complementary, split-complementary, triadic, tetradic, monochromatic) with a hue wheel.
 - OKLCH editor with gradient channel sliders, HEX/RGB/HSL/OKLCH inputs and sRGB/P3 gamut badges.
 - 50–950 shade generator in OKLCH with anchoring and hue shift, for every palette color.

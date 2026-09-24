@@ -9,6 +9,7 @@ import { OklchEditor } from "@/components/colors/oklch-editor";
 import { FormatSwitcher } from "@/components/colors/format-switcher";
 import { PaletteStrip } from "@/components/colors/palette-strip";
 import { PaletteToolbar } from "@/components/colors/palette-toolbar";
+import { PaletteLibrary } from "@/components/colors/palette-library";
 import { SavedPalettes } from "@/components/colors/saved-palettes";
 import { TabSkeleton } from "@/components/ui/tab-skeleton";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -73,6 +74,7 @@ export function ColorWorkspace() {
           <OklchEditor />
         </div>
         <SavedPalettes />
+        <PaletteLibrary />
       </TabsContent>
       <TabsContent value="shades">
         <ShadesStudio />

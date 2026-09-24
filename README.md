@@ -119,6 +119,7 @@ A typical design session bounces between a font site, a palette generator, a con
 ### Color Studio
 
 - Palette generator with locked colors, undo / redo and saved palettes
+- Palette library: 48 curated palettes filterable by mood (SaaS, corporate, pastel, playful, neon, retro, earthy, forest, ocean, sunset, luxury, monochrome)
 - Harmony modes: analogous, complementary, split-complementary, triadic, tetradic, monochromatic
 - OKLCH editor with live gradient sliders and **HEX / RGB / HSL / OKLCH** inputs (accepts any CSS color)
 - sRGB and Display P3 gamut indicators
