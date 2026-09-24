@@ -104,12 +104,12 @@ A typical design session bounces between a font site, a palette generator, a con
 
 ### Typography Studio
 
-- Google Fonts browser with 500 families, lazy-loaded previews that download only the glyphs they show
+- Google Fonts browser with 1,000 families, lazy-loaded previews that download only the glyphs they show
 - Search, category filters, variable-only filter, sort by popularity / name / weight count
 - Favorites and recent fonts
 - Variable font playground: a slider for every axis (`wght`, `wdth`, `opsz`, `SOFT`, `WONK`, …) plus axis animation
 - Weight and italic controls, letter spacing and line height
-- Font pairing engine: curated pairs, rule-based suggestions, random pairing with locks, saved pairs
+- Font pairing engine: 42 curated pairs, rule-based suggestions, random pairing with locks, saved pairs
 - Fluid type scale generator (separate mobile and desktop ratios) and a standalone `clamp()` generator
 - Responsive preview at any viewport width
 - OpenType controls: ligatures, small caps, lining / oldstyle / tabular figures, fractions, slashed zero, stylistic sets

@@ -8,7 +8,7 @@
 import { writeFile } from "node:fs/promises";
 import { fileURLToPath } from "node:url";
 
-const LIMIT = Number(process.argv[2] ?? 500);
+const LIMIT = Number(process.argv[2] ?? 1000);
 const SOURCE = "https://fonts.google.com/metadata/fonts";
 const OUT = fileURLToPath(new URL("../lib/typography/catalog.json", import.meta.url));
 
