@@ -5,6 +5,18 @@ All notable changes to DesignHub are documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## Unreleased
+
+### Added
+
+- Typography: a Compare toggle that shows the active font next to a pinned second font with the same text and settings, plus Swap and Close compare.
+- Brand Guidelines: three cover layouts (Gradient, Minimal, Editorial) that persist and apply to every PDF export.
+- Logo Studio: a favicon package (.zip) built from the app icon variant, also included in the logo pack as `favicon/`.
+- Backgrounds: a Topographic contour line generator.
+- Mockups: a Merch mockup with a T-shirt and a tote bag.
+- Export: a styled-components / Emotion theme token format.
+- Social: a Pinterest pin template (1000 x 1500).
+
 ## v1.0.0
 
 Released 2026-09-23. The first public release: a complete, local-first design and brand identity toolkit with seventeen studios.
