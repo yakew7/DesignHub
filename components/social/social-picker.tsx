@@ -1,6 +1,7 @@
 "use client";
 
 import { ChevronDown } from "lucide-react";
+import { useState } from "react";
 
 import { useHotkey } from "@/hooks/use-hotkeys";
 import { socialPlatforms, socialTemplates } from "@/lib/social/registry";
@@ -31,6 +32,8 @@ const rowClass =
 export function SocialPicker() {
   const template = useSocialStore((state) => state.template);
   const setTemplate = useSocialStore((state) => state.setTemplate);
+  // Groups the user folded away. A group with the selected style is open unless folded.
+  const [folded, setFolded] = useState<Record<string, boolean>>({});
   const platforms = socialPlatforms.filter((platform) => socialTemplates.some((item) => item.platform === platform));
   // Cycle in the order the picker shows them (grouped by platform), wrapping at both ends.
   const ordered = platforms.flatMap((platform) => socialTemplates.filter((item) => item.platform === platform));
@@ -78,29 +81,39 @@ export function SocialPicker() {
               }
               const first = entry.styles[0];
               const active = entry.styles.some((item) => item.id === template);
+              const open = active && !folded[entry.name];
+              const listId = `styles-${entry.name.toLowerCase().replace(/\s+/g, "-")}`;
               return (
                 <div key={entry.name} className="flex flex-col gap-1">
                   <button
                     type="button"
-                    role="radio"
-                    aria-checked={active}
+                    aria-expanded={open}
+                    aria-controls={listId}
                     title={`${entry.styles.length} styles`}
-                    onClick={() => !active && first && setTemplate(first.id)}
+                    onClick={() => {
+                      if (!active && first) setTemplate(first.id);
+                      setFolded((state) => ({ ...state, [entry.name]: active ? open : false }));
+                    }}
                     className={cn(rowClass, active && "border-brand/60 bg-surface-raised text-foreground")}
                   >
                     <span className="flex min-w-0 items-center gap-1.5">
                       <ChevronDown
-                        className={cn("size-3.5 shrink-0 transition-transform duration-150", !active && "-rotate-90")}
+                        className={cn("size-3.5 shrink-0 transition-transform duration-150", !open && "-rotate-90")}
                         aria-hidden
                       />
                       <span className="truncate">{entry.name}</span>
                     </span>
                     <span className="shrink-0 font-mono text-[11px] text-subtle-foreground">
-                      {active ? entry.styles.length : `${first?.width}×${first?.height}`}
+                      {open
+                        ? entry.styles.length
+                        : active
+                          ? entry.styles.find((item) => item.id === template)?.style
+                          : `${first?.width}×${first?.height}`}
                     </span>
                   </button>
-                  {active ? (
+                  {open ? (
                     <div
+                      id={listId}
                       role="radiogroup"
                       aria-label={`${entry.name} styles`}
                       className="ml-3 flex flex-col gap-0.5 border-l pl-2"

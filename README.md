@@ -83,7 +83,7 @@ A typical design session bounces between a font site, a palette generator, a con
 
 ### Social Media Studio
 
-- **GitHub repository banner in 10 styles**: Minimal, Editorial, Aurora, Grid, Terminal, Glass, Gradient, Split, Bento and Spotlight
+- **GitHub repository banner in 15 styles**: Minimal, Editorial, Aurora, Grid, Terminal, Glass, Gradient, Split, Bento, Spotlight, Classic, Launch, Showcase, Features and Badges
 - **LinkedIn** cover, **X** header, **Instagram** square post and story, **Open Graph** (article, product, minimal), **Product Hunt** gallery and **YouTube** thumbnail
 - Exact platform sizes, a safe-area overlay and the zones covered by avatars and timestamps
 - One content panel drives every template: project name, description, website, GitHub username, logo, primary and secondary colors, background style, border radius and padding (empty fields follow the brand)

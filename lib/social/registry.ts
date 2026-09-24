@@ -29,7 +29,7 @@ export const socialPlatforms: SocialPlatform[] = [
 ];
 
 /** Ids from earlier versions, so saved selections keep working. */
-const aliases: Record<string, string> = { "github-banner": "github-aurora" };
+const aliases: Record<string, string> = { "github-banner": "github-classic" };
 
 export function getSocialTemplate(id: string): SocialTemplate | undefined {
   const target = aliases[id] ?? id;
