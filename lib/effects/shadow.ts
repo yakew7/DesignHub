@@ -54,6 +54,70 @@ export const shadowPresets: { id: string; label: string; layers: () => ShadowLay
   { id: "elevated", label: "Elevated", layers: () => [createLayer({ y: 24, blur: 48, spread: -12, opacity: 0.3 })] },
   { id: "sharp", label: "Sharp", layers: () => [createLayer({ x: 6, y: 6, blur: 0, opacity: 1 })] },
   { id: "inner", label: "Inner", layers: () => [createLayer({ y: 2, blur: 6, opacity: 0.25, inset: true })] },
+  {
+    id: "hairline",
+    label: "Hairline",
+    layers: () => [
+      createLayer({ y: 0, blur: 0, spread: 1, opacity: 0.1 }),
+      createLayer({ y: 1, blur: 2, opacity: 0.06 }),
+    ],
+  },
+  {
+    id: "card",
+    label: "Soft card",
+    layers: () => [
+      createLayer({ y: 1, blur: 2, opacity: 0.06 }),
+      createLayer({ y: 8, blur: 24, spread: -4, opacity: 0.12 }),
+    ],
+  },
+  {
+    id: "material",
+    label: "Material",
+    layers: () => [
+      createLayer({ y: 2, blur: 4, spread: -1, opacity: 0.2 }),
+      createLayer({ y: 4, blur: 5, opacity: 0.14 }),
+      createLayer({ y: 1, blur: 10, opacity: 0.12 }),
+    ],
+  },
+  { id: "floating", label: "Floating", layers: () => smoothShadow(8, 80, 0.3) },
+  {
+    id: "dramatic",
+    label: "Dramatic",
+    layers: () => [
+      createLayer({ y: 40, blur: 80, spread: -20, opacity: 0.55 }),
+      createLayer({ y: 8, blur: 16, opacity: 0.2 }),
+    ],
+  },
+  { id: "brutal", label: "Brutal", layers: () => [createLayer({ x: 8, y: 8, blur: 0, opacity: 1 })] },
+  {
+    id: "long",
+    label: "Long drop",
+    layers: () => [createLayer({ x: 16, y: 24, blur: 32, spread: -8, opacity: 0.35 })],
+  },
+  {
+    id: "glow",
+    label: "Colored glow",
+    layers: () => [
+      createLayer({ y: 0, blur: 24, color: "#6366f1", opacity: 0.45 }),
+      createLayer({ y: 12, blur: 40, spread: -8, color: "#6366f1", opacity: 0.35 }),
+    ],
+  },
+  {
+    id: "pressed",
+    label: "Pressed",
+    layers: () => [
+      createLayer({ y: 2, blur: 4, opacity: 0.25, inset: true }),
+      createLayer({ y: -1, blur: 0, color: "#ffffff", opacity: 0.08, inset: true }),
+    ],
+  },
+  {
+    id: "ring",
+    label: "Focus ring",
+    layers: () => [
+      createLayer({ y: 0, blur: 0, spread: 2, color: "#ffffff", opacity: 1 }),
+      createLayer({ y: 0, blur: 0, spread: 4, color: "#6366f1", opacity: 1 }),
+    ],
+  },
 ];
 
 export const shadow = defineEffect({

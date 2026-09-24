@@ -118,7 +118,7 @@ Released 2026-09-23. The first public release: a complete, local-first design an
 
 #### Effects Lab
 
-- Glassmorphism, neumorphism, layered shadow (with smooth presets), glow, gradient and animated borders, and grain overlay generators.
+- Glassmorphism, neumorphism, layered shadow (15 presets, from hairline and material to brutal and focus ring), glow, gradient and animated borders, and grain overlay generators.
 - Live preview on gradient, photo, light and dark backdrops.
 - Exports: CSS, Tailwind arbitrary-property classes, Tailwind v4 `@utility`, SCSS mixins and React style objects, plus an `effects.css` bundle.
 

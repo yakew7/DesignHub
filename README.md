@@ -162,7 +162,7 @@ A typical design session bounces between a font site, a palette generator, a con
 
 - **Glassmorphism** - blur, saturation, tint, opacity, border and shadow
 - **Neumorphism** - depth, softness, intensity, light direction, radius; flat, concave, convex and pressed shapes
-- **Shadow generator** - unlimited layers (x, y, blur, spread, color, opacity, inset) plus presets, including eased "smooth" shadows
+- **Shadow generator** - unlimited layers (x, y, blur, spread, color, opacity, inset) plus 15 presets: subtle, smooth, elevated, sharp, inner, hairline, soft card, material, floating, dramatic, brutal, long drop, colored glow, pressed and focus ring
 - **Glow generator** - color, radius and intensity with optional text glow
 - **Border generator** - gradient borders with no extra markup, and animated conic borders via `@property` (respects reduced motion)
 - **Grain overlay** - fractal-noise texture with scale, frequency, opacity and blend mode
