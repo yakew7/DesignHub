@@ -103,6 +103,7 @@ Released 2026-09-23. The first public release: a complete, local-first design an
 
 - Iconify search across 200,000+ icons, with collection browsing and license details.
 - Favorites and an IndexedDB cache so icons you have opened keep working offline.
+- Browse by topic: 240 curated icons in 10 themed packs, every id verified against Iconify, and one-click search suggestions.
 - SVG editing: color, stroke width, rounded/sharp corners, rotate (`R`), flip, padding and background shapes.
 - Favicon generator producing `favicon.ico`, `icon.svg`, Apple touch and PWA icons, `site.webmanifest` and HTML, bundled as a ZIP.
 - Exports: SVG, React TSX component, CSS data URI, PNG (16-1024px) and ICO.

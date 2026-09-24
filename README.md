@@ -132,6 +132,7 @@ A typical design session bounces between a font site, a palette generator, a con
 
 - Search 200,000+ open-source icons from 200+ Iconify collections
 - Browse by collection, with license information
+- Browse by topic before you search: 10 curated packs of 24 icons (UI essentials, arrows, brands, developer, design, commerce, communication, media, files, weather), plus one-click search suggestions
 - Restyle: color, stroke width, rounded or sharp corners, rotate, flip, padding and background shapes
 - Exports: **SVG, React (TSX), CSS data URI, PNG (16–1024 px) and ICO**
 - Favicon generator: `favicon.ico`, `icon.svg`, Apple touch icon, PWA icons, `site.webmanifest` and HTML - zipped
