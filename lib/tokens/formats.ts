@@ -227,6 +227,61 @@ export const themeVars = Object.fromEntries(
 `;
 }
 
+const styledGroups: Record<string, string> = {
+  color: "colors",
+  semantic: "colors",
+  gradient: "gradients",
+  font: "fonts",
+  text: "fontSizes",
+  spacing: "space",
+  radius: "radii",
+  effect: "effects",
+};
+
+const camel = (value: string) => value.replace(/-+([a-z0-9])/gi, (_, char: string) => char.toUpperCase());
+const upperFirst = (value: string) => value.charAt(0).toUpperCase() + value.slice(1);
+const objectKey = (value: string) =>
+  /^[A-Za-z_$][\w$]*$/.test(value) || /^(0|[1-9]\d*)$/.test(value) ? value : JSON.stringify(value);
+
+/**
+ * styled-components / Emotion: a typed theme object. Group names follow the styled-system
+ * scales (colors, space, radii, fonts), and the prefix setting is prepended to every key.
+ */
+export function toStyledTheme(tokens: DesignTokens): string {
+  const prefix = tokens.meta.prefix;
+  const groups = new Map<string, Map<string, string>>();
+  flatten(tokens).forEach((token) => {
+    const group = styledGroups[token.group] ?? token.group;
+    const base = camel(token.name.replace(/^(color|gradient|font|text|spacing|radius)-/, ""));
+    const key = prefix ? `${camel(prefix)}${upperFirst(base.replace(/\./g, "_"))}` : base;
+    groups.set(group, (groups.get(group) ?? new Map()).set(key, token.value));
+  });
+  const scales = [...groups]
+    .map(([group, values]) => {
+      const rows = [...values].map(([key, value]) => `    ${objectKey(key)}: ${JSON.stringify(value)},`);
+      return `  ${group}: {\n${rows.join("\n")}\n  },`;
+    })
+    .join("\n");
+  return `${header(tokens, (text) => `// ${text}`)}
+import "styled-components";
+
+export const theme = {
+${scales}
+} as const;
+
+export type AppTheme = typeof theme;
+
+declare module "styled-components" {
+  export interface DefaultTheme extends AppTheme {}
+}
+
+// Emotion: replace the module augmentation above with
+//   import "@emotion/react";
+//   declare module "@emotion/react" { export interface Theme extends AppTheme {} }
+// Then pass the theme to <ThemeProvider theme={theme}> and read props.theme in styled().
+`;
+}
+
 /** Vue 3: the theme object, an injection key and a plugin that exposes it as CSS variables. */
 export function toVueTheme(tokens: DesignTokens): string {
   const groups = new Map<string, Record<string, string>>();
@@ -364,6 +419,13 @@ export function tokenFormats(tokens: DesignTokens): ExportFormat[] {
       code: toTailwindConfig(tokens),
     },
     { id: "react", label: "React theme", filename: "theme.ts", language: "ts", code: toReactTheme(tokens) },
+    {
+      id: "styled",
+      label: "styled-components",
+      filename: "styled-theme.ts",
+      language: "ts",
+      code: toStyledTheme(tokens),
+    },
     { id: "vue", label: "Vue theme", filename: "theme.ts", language: "ts", code: toVueTheme(tokens) },
     { id: "json", label: "JSON tokens", filename: "tokens.json", language: "json", code: toJsonTokens(tokens) },
   ];
