@@ -1,3 +1,4 @@
+import { withPngCredit } from "@/lib/export/credit";
 import { svgToDataUrl } from "@/lib/icons/svg";
 
 function loadImage(src: string): Promise<HTMLImageElement> {
@@ -29,9 +30,13 @@ export async function svgToPngBlob(
     context.fillRect(0, 0, size, height);
   }
   context.drawImage(image, 0, 0, size, height);
-  return new Promise((resolve, reject) =>
-    canvas.toBlob((blob) => (blob ? resolve(blob) : reject(new Error("Image encoding failed"))), type, 0.92),
+  const blob = await new Promise<Blob>((resolve, reject) =>
+    canvas.toBlob((result) => (result ? resolve(result) : reject(new Error("Image encoding failed"))), type, 0.92),
   );
+  if (type !== "image/png") return blob;
+  // Every PNG DesignHub exports carries a "Made with DesignHub" note in its metadata.
+  const credited = withPngCredit(new Uint8Array(await blob.arrayBuffer()));
+  return new Blob([credited.slice().buffer], { type: "image/png" });
 }
 
 export async function svgToPngBytes(svg: string, size: number): Promise<Uint8Array> {

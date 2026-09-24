@@ -31,12 +31,15 @@ type SocialState = {
   content: SocialContent;
   design: SocialDesign;
   safeArea: boolean;
+  /** Add "Banner made with DesignHub" under the README snippet. */
+  credit: boolean;
   setTemplate: (template: string) => void;
   setMode: (mode: BrandMode) => void;
   setContent: (patch: Partial<SocialContent>) => void;
   setDesign: (patch: Partial<SocialDesign>) => void;
   resetDesign: () => void;
   setSafeArea: (safeArea: boolean) => void;
+  setCredit: (credit: boolean) => void;
 };
 
 export const useSocialStore = create<SocialState>()(
@@ -47,18 +50,27 @@ export const useSocialStore = create<SocialState>()(
       content: defaultSocialContent,
       design: defaultSocialDesign,
       safeArea: false,
+      credit: true,
       setTemplate: (template) => set({ template }),
       setMode: (mode) => set({ mode }),
       setContent: (patch) => set((state) => ({ content: { ...state.content, ...patch } })),
       setDesign: (patch) => set((state) => ({ design: { ...state.design, ...patch } })),
       resetDesign: () => set({ design: defaultSocialDesign }),
       setSafeArea: (safeArea) => set({ safeArea }),
+      setCredit: (credit) => set({ credit }),
     }),
     {
       name: "designhub:social",
       version: 2,
       storage: createJSONStorage(() => indexedDbStorage),
-      partialize: ({ template, mode, content, design, safeArea }) => ({ template, mode, content, design, safeArea }),
+      partialize: ({ template, mode, content, design, safeArea, credit }) => ({
+        template,
+        mode,
+        content,
+        design,
+        safeArea,
+        credit,
+      }),
       // v1 had no design settings and fewer content fields; fill them from the defaults.
       migrate: (persisted) => persisted as SocialState,
       merge: (persisted, current) => {

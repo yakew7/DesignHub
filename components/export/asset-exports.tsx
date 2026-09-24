@@ -10,6 +10,7 @@ import { CopyButton } from "@/components/ui/copy-button";
 import { backgroundCss } from "@/lib/background/export";
 import { renderBackgroundSvg } from "@/lib/background/registry";
 import { downloadText } from "@/lib/download";
+import { withSvgCredit } from "@/lib/export/credit";
 import { effectsBundle } from "@/lib/effects/bundle";
 import { svgToDataUrl } from "@/lib/icons/svg";
 import { useBackgroundStore } from "@/store/background-store";
@@ -58,7 +59,7 @@ export function AssetExports() {
               <Button
                 variant="outline"
                 size="sm"
-                onClick={() => downloadText(backgroundSvg, `background-${background.kind}.svg`)}
+                onClick={() => downloadText(withSvgCredit(backgroundSvg), `background-${background.kind}.svg`)}
               >
                 <Download /> SVG
               </Button>

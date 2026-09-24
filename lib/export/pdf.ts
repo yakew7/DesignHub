@@ -1,3 +1,4 @@
+import { CREDIT_TEXT } from "@/lib/export/credit";
 import type { RasterImage } from "@/lib/export/raster";
 
 export type PdfPage = {
@@ -16,7 +17,7 @@ export async function imagesToPdf(pages: PdfPage[], meta: PdfMeta): Promise<Uint
   const { PDFDocument } = await import("pdf-lib");
   const pdf = await PDFDocument.create();
   pdf.setTitle(meta.title);
-  pdf.setCreator("DesignHub");
+  pdf.setCreator(CREDIT_TEXT);
   pdf.setProducer("DesignHub");
   if (meta.author) pdf.setAuthor(meta.author);
   if (meta.subject) pdf.setSubject(meta.subject);

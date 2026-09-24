@@ -88,6 +88,7 @@ A typical design session bounces between a font site, a palette generator, a con
 - Exact platform sizes, a safe-area overlay and the zones covered by avatars and timestamps
 - One content panel drives every template: project name, description, website, GitHub username, logo, primary and secondary colors, background style, border radius and padding (empty fields follow the brand)
 - Export PNG, @1x or @2x, SVG, copy the image to the clipboard, Open Graph meta tags, and **all assets as a ZIP**
+- GitHub banners come with a **README snippet** to paste, with an optional "Banner made with DesignHub" link under the image (never on it)
 
 ### Brand Guidelines
 
@@ -354,6 +355,8 @@ DesignHub has no accounts and no backend. Your work (brands, projects, palettes,
 - [Vercel Web Analytics](https://vercel.com/docs/analytics/privacy-policy) - on the hosted site only, to count page views
 
 Vercel Web Analytics is cookie-free and anonymous. It records which pages are visited, the referrer, and the visitor's country, browser, OS and device type, without identifying individuals or tracking them across sites. It never sees what you create in the app. It only loads in builds deployed on Vercel, so self-hosted copies and local development send nothing. To remove it from your own deployment, delete `<Analytics />` from `app/layout.tsx`.
+
+Exported PNGs, PDFs and generated SVGs carry a small "Made with DesignHub" note in their file metadata (not on the artwork), and the README inside each ZIP credits the project. Your own uploaded logos are never modified.
 
 Uploaded logos and Brand DNA images are processed in the browser and never uploaded. None of these services needs an API key.
 

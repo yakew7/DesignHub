@@ -7,6 +7,7 @@ import { toast } from "sonner";
 import { ExportPanel } from "@/components/export/export-panel";
 import { Button } from "@/components/ui/button";
 import { downloadBlob, downloadText } from "@/lib/download";
+import { withSvgCredit } from "@/lib/export/credit";
 import { backgroundCss } from "@/lib/background/export";
 import { renderBackgroundSvg } from "@/lib/background/registry";
 import { svgToPngBlob } from "@/lib/icons/raster";
@@ -20,7 +21,7 @@ export function BackgroundOutput({ svg }: { svg: string }) {
   const formats = useMemo<ExportFormat[]>(
     () => [
       { id: "css", label: "CSS", filename: `${name}.css`, language: "css", code: backgroundCss(settings) },
-      { id: "svg", label: "SVG", filename: `${name}.svg`, language: "svg", code: `${svg}\n` },
+      { id: "svg", label: "SVG", filename: `${name}.svg`, language: "svg", code: `${withSvgCredit(svg)}\n` },
     ],
     [settings, svg, name],
   );
@@ -38,7 +39,7 @@ export function BackgroundOutput({ svg }: { svg: string }) {
   return (
     <>
       <div className="flex flex-wrap gap-2">
-        <Button onClick={() => downloadText(svg, `${name}.svg`)}>
+        <Button onClick={() => downloadText(withSvgCredit(svg), `${name}.svg`)}>
           <Download /> SVG
         </Button>
         <Button variant="outline" onClick={() => png(1)}>

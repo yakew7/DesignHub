@@ -7,14 +7,18 @@ import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { CopyButton } from "@/components/ui/copy-button";
 import { Label } from "@/components/ui/label";
+import { Switch } from "@/components/ui/switch";
 import { Panel } from "@/components/ui/panel";
 import { downloadBlob, downloadText } from "@/lib/download";
+import { withSvgCredit } from "@/lib/export/credit";
 import { rasterize } from "@/lib/export/raster";
 import { slugify } from "@/lib/logo/pack";
 import { buildSocialPack } from "@/lib/social/pack";
 import { socialTemplates } from "@/lib/social/registry";
+import { readmeSnippet } from "@/lib/social/readme";
 import { ogMetaTags } from "@/lib/social/templates/open-graph";
 import type { SocialContext, SocialTemplate } from "@/lib/social/types";
+import { useSocialStore } from "@/store/social-store";
 
 type Props = { svg: string; ctx: SocialContext; template: SocialTemplate | undefined };
 
@@ -27,6 +31,9 @@ export function SocialExportPanel({ svg, ctx, template }: Props) {
   const [packProgress, setPackProgress] = useState<number | null>(null);
   const base = template ? `${slugify(ctx.brand.name)}-${template.id}` : "";
   const meta = template?.platform === "Open Graph" ? ogMetaTags(ctx, "og.png") : null;
+  const credit = useSocialStore((state) => state.credit);
+  const setCredit = useSocialStore((state) => state.setCredit);
+  const readme = template?.platform === "GitHub" ? readmeSnippet(ctx, { path: ".github/banner.png", credit }) : null;
 
   async function run(job: Job, action: () => Promise<void>) {
     setBusy(job);
@@ -90,7 +97,7 @@ export function SocialExportPanel({ svg, ctx, template }: Props) {
         <Button variant="outline" onClick={() => png(2, "png2")} disabled={disabled}>
           {spin("png2", <ImageDown />)} @2x
         </Button>
-        <Button variant="outline" onClick={() => downloadText(svg, `${base}.svg`)} disabled={disabled}>
+        <Button variant="outline" onClick={() => downloadText(withSvgCredit(svg), `${base}.svg`)} disabled={disabled}>
           <FileCode /> SVG
         </Button>
         <Button variant="outline" onClick={copyImage} disabled={disabled}>
@@ -101,6 +108,27 @@ export function SocialExportPanel({ svg, ctx, template }: Props) {
         {packProgress !== null ? <Loader2 className="animate-spin" /> : <FileArchive />}
         {packProgress !== null ? `Rendering ${packProgress}%` : `All ${socialTemplates.length} assets (ZIP)`}
       </Button>
+      {readme ? (
+        <div className="flex flex-col gap-2">
+          <div className="flex items-center justify-between gap-2">
+            <Label>README snippet</Label>
+            <CopyButton value={readme} label="Copy README snippet" toastMessage="README snippet copied" />
+          </div>
+          <pre className="max-h-56 overflow-auto rounded-md border bg-surface-raised p-2.5 font-mono text-[11px] leading-relaxed whitespace-pre-wrap text-muted-foreground">
+            {readme}
+          </pre>
+          <div className="flex items-center justify-between gap-3">
+            <Label htmlFor="social-credit" className="text-xs font-normal text-muted-foreground">
+              Add a small &quot;Banner made with DesignHub&quot; link under the banner
+            </Label>
+            <Switch id="social-credit" checked={credit} onCheckedChange={setCredit} />
+          </div>
+          <p className="text-[11px] text-subtle-foreground">
+            Save the PNG as <code>.github/banner.png</code> in your repository, then paste this at the top of your
+            README. For the link preview, upload the same PNG under Settings, Social preview.
+          </p>
+        </div>
+      ) : null}
       {meta ? (
         <div className="flex flex-col gap-2">
           <div className="flex items-center justify-between">

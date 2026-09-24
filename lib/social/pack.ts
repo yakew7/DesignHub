@@ -1,3 +1,4 @@
+import { CREDIT_TEXT } from "@/lib/export/credit";
 import { rasterize } from "@/lib/export/raster";
 import { slugify } from "@/lib/logo/pack";
 import { socialTemplates } from "@/lib/social/registry";
@@ -20,6 +21,7 @@ export async function buildSocialPack(
     readme.push(`${name}  ${template.width}x${template.height}  ${template.description}`);
     onProgress?.(++done, socialTemplates.length);
   }
+  readme.push("", CREDIT_TEXT);
   entries.unshift({ name: "README.txt", data: `${readme.join("\n")}\n` });
   return createZip(entries);
 }

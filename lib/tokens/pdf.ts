@@ -1,3 +1,4 @@
+import { CREDIT_TEXT } from "@/lib/export/credit";
 import { toHex, toRgb } from "@/lib/color/color";
 import type { DesignTokens } from "@/types/tokens";
 
@@ -12,7 +13,7 @@ export async function buildStyleGuidePdf(tokens: DesignTokens, snapshot?: Uint8A
   const pdf = await PDFDocument.create();
   pdf.setTitle(`${tokens.meta.name} style guide`);
   pdf.setProducer("DesignHub");
-  pdf.setCreator("DesignHub");
+  pdf.setCreator(CREDIT_TEXT);
 
   const regular = await pdf.embedFont(StandardFonts.Helvetica);
   const bold = await pdf.embedFont(StandardFonts.HelveticaBold);
