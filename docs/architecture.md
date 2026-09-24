@@ -1,6 +1,6 @@
 # Architecture
 
-DesignHub is a static Next.js 15 (App Router) application. There is no server-side state: every page is prerendered, and all work happens in the browser.
+DesignHub is a static Next.js 16 (App Router) application. There is no server-side state: every page is prerendered, and all work happens in the browser.
 
 ## Routes
 

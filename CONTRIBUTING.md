@@ -39,14 +39,15 @@ The app runs at [http://localhost:3000](http://localhost:3000). There is no back
 | `pnpm format`        | Format all files with Prettier                                      |
 | `pnpm format:check`  | Verify formatting without writing                                   |
 | `pnpm fonts:catalog` | Regenerate `lib/typography/catalog.json` from Google Fonts metadata |
+| `pnpm check:dashes`  | Fail if any file contains an em dash (also runs in CI)              |
 
 Before pushing, run the same checks as CI:
 
 ```bash
-pnpm typecheck && pnpm lint && pnpm format:check && pnpm build
+pnpm typecheck && pnpm lint && pnpm format:check && pnpm check:dashes && pnpm build
 ```
 
-CI (`.github/workflows/ci.yml`, `lint.yml`, `typecheck.yml`) runs these on every push and pull request with Node 22.
+CI (`.github/workflows/ci.yml`, `lint.yml`, `typecheck.yml` and `em-dash.yml`) runs these on every push and pull request with Node 22.
 
 ## Branch naming
 
@@ -124,6 +125,12 @@ docs: explain DTCG token output
 - Text must meet WCAG AA contrast (4.5:1, or 3:1 for large text) in both themes.
 - Respect `prefers-reduced-motion`.
 
+### Writing style
+
+- **Never use em dashes**, in code, comments, UI copy, docs or data. Use normal punctuation instead: a comma or parentheses for an aside, a colon before an explanation, a period between two sentences, or a spaced hyphen for a label ("Acme - brand guidelines"). Ranges use a plain hyphen ("150-200ms").
+- `pnpm check:dashes` lists every em dash with its file and line, and the Em dash workflow fails the pull request if one slips in.
+- Keep UI copy short and in sentence case.
+
 ### Comments
 
 Write comments only when they add information the code can't express - the _why_, a non-obvious constraint, or a reference. Don't narrate what the code already says.
@@ -133,6 +140,19 @@ Write comments only when they add information the code can't express - the _why_
 1. Write a pure generator in `lib/tokens/formats.ts` that takes `DesignTokens` and returns a string.
 2. Register it in `tokenFormats()` with an `id`, `label`, `filename` and `language`.
 3. Verify the output is valid by pasting it into a real project.
+
+## Adding data (palettes, icons, fonts, presets)
+
+A lot of DesignHub is curated data, and adding to it is a great first contribution. Keep each entry high quality rather than adding many.
+
+| Data                 | File                           | Notes                                                                                               |
+| -------------------- | ------------------------------ | --------------------------------------------------------------------------------------------------- |
+| Palette presets      | `lib/color/presets.ts`         | Five 6-digit hex colors, a unique name and one or two tags from `paletteTags`.                      |
+| Icon topics          | `lib/icons/topics.ts`          | `prefix:name` ids. Check each one exists: `https://api.iconify.design/<prefix>.json?icons=<names>`. |
+| Font pairings        | `lib/typography/pairing.ts`    | Both families must be in `lib/typography/catalog.json`. Add a short note on the mood.               |
+| Font catalog         | `lib/typography/catalog.json`  | Generated. Run `pnpm fonts:catalog [limit]` (default 1,000) instead of editing it by hand.          |
+| Shadow presets       | `lib/effects/shadow.ts`        | Build layers with `createLayer` or `smoothShadow`. They also appear in Brand Studio.                |
+| Social banner styles | `lib/social/templates/github/` | See "Mockup and social template guidelines" above.                                                  |
 
 ## Adding a background generator
 

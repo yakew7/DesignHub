@@ -13,7 +13,7 @@ Build a brand, then everything it needs: logo variants, mockups, social assets, 
 
 [![CI](https://github.com/yakew7/DesignHub/actions/workflows/ci.yml/badge.svg)](https://github.com/yakew7/DesignHub/actions/workflows/ci.yml)
 ![MIT License](https://img.shields.io/badge/license-MIT-6366f1)
-![Next.js 15](https://img.shields.io/badge/Next.js-15-000000)
+![Next.js 16](https://img.shields.io/badge/Next.js-16-000000)
 ![TypeScript strict](https://img.shields.io/badge/TypeScript-strict-3178c6)
 ![Tailwind CSS v4](https://img.shields.io/badge/Tailwind_CSS-v4-38bdf8)
 ![No login](https://img.shields.io/badge/login-none-34d399)
@@ -37,23 +37,23 @@ A typical design session bounces between a font site, a palette generator, a con
 
 ## Features
 
-| Studio                | What it does                                                       | Exports                                                       |
-| --------------------- | ------------------------------------------------------------------ | ------------------------------------------------------------- |
-| **Brand Studio**      | Name, logo, colors with roles, type, radius, spacing, shadow       | Brand JSON · design tokens                                    |
-| **Brand DNA** (beta)  | Palette, mood, type and personality from any image, on-device      | Applies to the brand                                          |
-| **Logo Studio**       | SVG editor, construction grid, clear space, seven variants         | SVG · PNG · PDF · logo pack ZIP                               |
-| **Mockup Studio**     | Stationery, poster, laptop, desktop and mobile mockups             | PNG (up to 4×) · PDF                                          |
-| **Social Media**      | GitHub, LinkedIn, X, Instagram, OG, Product Hunt, YouTube          | PNG (1× / 2×) · OG meta tags · social ZIP                     |
-| **Brand Guidelines**  | A 14-page brand book generated from the brand                      | PDF · PNG per page                                            |
-| **Brand Projects**    | Several local brands, autosaved, favorites, duplicate              | Project JSON (one or all)                                     |
-| **Typography Studio** | Google Fonts, variable axes, pairing, fluid type scale, OpenType   | CSS · Tailwind · SCSS · React · JSON tokens                   |
-| **Color Studio**      | Palettes, harmonies, OKLCH, shades 50–950, gradients, WCAG         | CSS variables · Tailwind · JSON tokens · SVG gradient         |
-| **Icon Studio**       | 200,000+ Iconify icons, restyling, favicons                        | SVG · React · CSS · PNG · ICO · favicon ZIP                   |
-| **Background Studio** | 16 generators: waves, mesh, aurora, low poly, bokeh, sunburst…     | SVG · PNG (1× / 2×) · CSS background                          |
-| **Effects Lab**       | Glass, neumorphism, layered shadows, glow, gradient borders, grain | CSS · Tailwind classes · Tailwind `@utility` · SCSS · React   |
-| **SVG Playground**    | Inspect, edit, optimize, convert, build sprites                    | Optimized SVG · JSX · React · React Native · sprite           |
-| **Accessibility Lab** | WCAG contrast, color vision, readability, dyslexia, touch targets  | JSON audit report                                             |
-| **Export Engine**     | One token model from every studio, plus brand assets               | CSS · SCSS · Tailwind v4 / v3 · React · Vue · DTCG JSON · PDF |
+| Studio                | What it does                                                       | Exports                                                     |
+| --------------------- | ------------------------------------------------------------------ | ----------------------------------------------------------- |
+| **Brand Studio**      | Name, logo, colors with roles, type, radius, spacing, shadow       | Brand JSON · design tokens                                  |
+| **Brand DNA** (beta)  | Palette, mood, type and personality from any image, on-device      | Applies to the brand                                        |
+| **Logo Studio**       | SVG editor, construction grid, clear space, seven variants         | SVG · PNG · PDF · logo pack ZIP                             |
+| **Mockup Studio**     | Stationery, poster, laptop, desktop and mobile mockups             | PNG (up to 4×) · PDF                                        |
+| **Social Media**      | GitHub, LinkedIn, X, Instagram, OG, Product Hunt, YouTube          | PNG (1× / 2×) · OG meta tags · social ZIP                   |
+| **Brand Guidelines**  | A 14-page brand book generated from the brand                      | PDF · PNG per page                                          |
+| **Brand Projects**    | Several local brands, autosaved, favorites, duplicate              | Project JSON (one or all)                                   |
+| **Typography Studio** | Google Fonts, variable axes, pairing, fluid type scale, OpenType   | CSS · Tailwind · SCSS · React · JSON tokens                 |
+| **Color Studio**      | Palettes, harmonies, OKLCH, shades 50–950, gradients, WCAG         | CSS variables · Tailwind · JSON tokens · SVG gradient       |
+| **Icon Studio**       | 200,000+ Iconify icons, restyling, favicons                        | SVG · React · CSS · PNG · ICO · favicon ZIP                 |
+| **Background Studio** | 16 generators: waves, mesh, aurora, low poly, bokeh, sunburst…     | SVG · PNG (1× / 2×) · CSS background                        |
+| **Effects Lab**       | Glass, neumorphism, layered shadows, glow, gradient borders, grain | CSS · Tailwind classes · Tailwind `@utility` · SCSS · React |
+| **SVG Playground**    | Inspect, edit, optimize, convert, build sprites                    | Optimized SVG · JSX · React · React Native · sprite         |
+| **Accessibility Lab** | WCAG contrast, color vision, readability, dyslexia, touch targets  | JSON audit report                                           |
+| **Export Engine**     | One token model from every studio, plus brand assets               | CSS · SCSS · Less · Tailwind · React · Vue · Android · JSON |
 
 ### Brand Studio
 
@@ -141,7 +141,7 @@ A typical design session bounces between a font site, a palette generator, a con
 ### Export Engine
 
 - One shared design-token model built live from every studio
-- Generates **CSS variables, SCSS, Tailwind v4 `@theme`, Tailwind v3 config, React theme, Vue theme and JSON tokens** (W3C DTCG format)
+- Generates **CSS variables, SCSS, Less, Tailwind v4 `@theme`, Tailwind v3 config, React theme, Vue theme, Android `colors.xml` and JSON tokens** (W3C DTCG format)
 - Semantic roles (primary, accent, foreground, background) inferred from your palette
 - 8px spacing scale and 12px radius scale, both configurable
 - Live preview UI kit, one-click copy, **Download JSON**, all formats as `.zip`, preview PNG and a PDF style guide
@@ -250,12 +250,13 @@ cp .env.example .env.local
 | `pnpm format`        | Format with Prettier                        |
 | `pnpm format:check`  | Check formatting (used in CI)               |
 | `pnpm fonts:catalog` | Regenerate the bundled Google Fonts catalog |
+| `pnpm check:dashes`  | Fail if any file contains an em dash        |
 
 DesignHub builds to fully static pages, so you can deploy it to any static or Node host (Vercel, Netlify, Cloudflare Pages, a VPS).
 
 ### Continuous integration
 
-GitHub Actions run on every push and pull request with Node 22 and pnpm: `ci.yml` (install, typecheck, lint, format check, build), `lint.yml` and `typecheck.yml`. Publishing a GitHub Release runs `release.yml`, which builds the app and attaches the build as an artifact. `welcome.yml` greets first-time contributors on their first issue or pull request.
+GitHub Actions run on every push and pull request with Node 22 and pnpm: `ci.yml` (install, typecheck, lint, format check, build), `lint.yml` and `typecheck.yml`. Publishing a GitHub Release runs `release.yml`, which builds the app and attaches the build as an artifact. `em-dash.yml` fails if an em dash appears anywhere in the repository (the project uses normal hyphens and punctuation). `welcome.yml` greets first-time contributors on their first issue or pull request.
 
 ## Keyboard shortcuts
 
@@ -269,12 +270,13 @@ GitHub Actions run on every push and pull request with Node 22 and pnpm: `ci.yml
 | `Space`                | Generate palette (Colors) · random pair (Typography › Pairing)                                                                                                                                                                   |
 | `Z` / `⇧Z`             | Undo / redo palette changes                                                                                                                                                                                                      |
 | `R` / `⇧R`             | Rotate icon                                                                                                                                                                                                                      |
+| `[` / `]`              | Previous / next template (Mockups, Social)                                                                                                                                                                                       |
 
 ## Tech stack
 
 | Area          | Choice                                                                                                                                           |
 | ------------- | ------------------------------------------------------------------------------------------------------------------------------------------------ |
-| Framework     | [Next.js 15](https://nextjs.org) (App Router, static rendering)                                                                                  |
+| Framework     | [Next.js 16](https://nextjs.org) (App Router, static rendering)                                                                                  |
 | Language      | TypeScript (strict, no `any`)                                                                                                                    |
 | Styling       | [Tailwind CSS v4](https://tailwindcss.com)                                                                                                       |
 | UI primitives | [shadcn/ui](https://ui.shadcn.com) on [Radix](https://www.radix-ui.com), [cmdk](https://cmdk.paco.me), [Sonner](https://sonner.emilkowal.ski)    |

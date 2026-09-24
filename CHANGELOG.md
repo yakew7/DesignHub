@@ -13,12 +13,12 @@ Released 2026-09-23. The first public release: a complete, local-first design an
 
 #### Platform
 
-- Next.js 15 App Router app with strict TypeScript, Tailwind CSS v4 and shadcn/ui primitives.
+- Next.js 16 App Router app with strict TypeScript, Tailwind CSS v4 and shadcn/ui primitives.
 - DesignHub design system: dark-first editorial theme with a light mode, Inter and Space Grotesk, 12px radius, 8px spacing rhythm and 150–200ms motion.
 - Responsive app shell with a studio sidebar grouped into Brand, Design and Tools, a header nav and a mobile navigation sheet.
 - Dark and light themes that follow the system preference, toggled with `⌥T`.
 - Command palette (`⌘K` or `/`) that searches studios, actions, Google Fonts and Iconify.
-- Keyboard navigation (`G` then `H`/`R`/`D`/`L`/`M`/`O`/`U`/`P`/`T`/`C`/`I`/`B`/`F`/`S`/`A`/`E`) and a shortcuts dialog (`?`).
+- Keyboard navigation (`G` then `H`/`R`/`D`/`L`/`M`/`O`/`U`/`P`/`T`/`C`/`I`/`B`/`F`/`S`/`A`/`E`), `[` and `]` to cycle Mockup and Social templates, and a shortcuts dialog (`?`).
 - Toast notifications for copy, save and download actions.
 - Local-first persistence: every studio saves to IndexedDB through a Dexie-backed Zustand storage adapter.
 - Homepage with a hero, search bar, a card for every studio, principles section, GitHub call to action and footer.
@@ -36,7 +36,7 @@ Released 2026-09-23. The first public release: a complete, local-first design an
 
 - Upload a logo, product shot or moodboard and extract a weighted palette, mood, type pairing, radius and personality.
 - Provider architecture: an on-device heuristic provider and a mock AI provider that returns sample data, both behind one interface, ready for a model-backed provider.
-- Staged loading states, editable results and one-click apply to the brand with undo.
+- Staged loading states, editable results with a copy button for each extracted color, and one-click apply to the brand with undo.
 
 #### Logo Studio
 
@@ -143,7 +143,7 @@ Released 2026-09-23. The first public release: a complete, local-first design an
 
 - Shared design-token model assembled live from all studios, with semantic color roles.
 - Configurable name, variable prefix, color notation, spacing base, radius base and included sections.
-- Generators for CSS variables, SCSS, Tailwind v4 `@theme`, Tailwind v3 config, React theme and W3C DTCG JSON.
+- Generators for CSS variables, SCSS, Less, Tailwind v4 `@theme`, Tailwind v3 config, React theme, Vue theme, Android `colors.xml` and W3C DTCG JSON.
 - Live preview UI kit, one-click copy, Download JSON, all formats as a ZIP, preview PNG (html-to-image) and a PDF style guide (pdf-lib).
 - Effect tokens (`--shadow-card`, `--shadow-glow`, `--blur-glass`) in every format.
 - Assets section with background CSS and SVG, the effects bundle, the optimized SVG and the accessibility JSON report.
@@ -176,5 +176,7 @@ Released 2026-09-23. The first public release: a complete, local-first design an
 - Issue forms, a pull request template, CODEOWNERS, Dependabot and funding placeholders.
 - CI, lint, typecheck and release workflows on Node 22 with pnpm; releases attach a build artifact.
 - A welcome workflow that greets first-time contributors, introduces the project and points to good first issues.
+- An em dash check (`pnpm check:dashes` and the Em dash workflow) that fails if an em dash appears in any file.
+- `AGENTS.md` guide for AI coding agents, with Next.js 16 notes and the project rules.
 - `.env.example` documenting the one optional variable and every external service (none need a key).
 - README, ROADMAP and CONTRIBUTING cover every studio, including the brand platform.

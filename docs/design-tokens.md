@@ -24,9 +24,12 @@ Each group can be switched off in the Export Engine settings. You can also set a
 | ------------- | -------------------- | ------------------------------------------------------------------------------------------------------------- |
 | CSS variables | `tokens.css`         | `:root` custom properties. Semantic colors reference palette variables with a fallback value.                 |
 | SCSS          | `_tokens.scss`       | Variables plus `$colors`, `$type-scale`, `$spacing` and `$radii` maps.                                        |
+| Less          | `tokens.less`        | `@` variables. Values with functions are escaped (`~"..."`) so Less passes them through unchanged.            |
 | Tailwind v4   | `theme.css`          | A `@theme` block. Names follow Tailwind's namespaces, so `bg-primary`, `text-2xl` and `rounded-lg` just work. |
 | Tailwind v3   | `tailwind.config.ts` | `theme.extend` with colors (including `DEFAULT` and shades), fonts, sizes, spacing and radii.                 |
 | React theme   | `theme.ts`           | A typed `theme` object, plus `themeVars` to spread as CSS variables.                                          |
+| Vue theme     | `theme.ts`           | The same `theme` object, an injection key, `useTheme()` and a plugin that writes CSS variables.               |
+| Android       | `colors.xml`         | Palette, shades and semantic colors as `#AARRGGBB` resources with Android-safe names.                         |
 | JSON tokens   | `tokens.json`        | [W3C Design Tokens (DTCG)](https://tr.designtokens.org/format/) format.                                       |
 
 ## JSON token details
@@ -39,6 +42,6 @@ Each group can be switched off in the Export Engine settings. You can also set a
 
 ## Other outputs
 
-- **All formats (.zip)** - every file above in one archive.
+- **All formats (.zip)** - every file above in one archive (React and Vue `theme.ts` go in their own folders).
 - **Preview PNG** - a 2× snapshot of the live preview (html-to-image).
 - **Style guide PDF** - a cover page with the preview, then colors, shades, the type scale, spacing and radii (pdf-lib).

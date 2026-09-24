@@ -8,7 +8,7 @@ Before and after for UI changes, in dark and light themes.
 
 ## Checklist
 
-- [ ] `pnpm typecheck`, `pnpm lint` and `pnpm build` pass
+- [ ] `pnpm typecheck`, `pnpm lint`, `pnpm check:dashes` and `pnpm build` pass
 - [ ] Conventional commit messages (`feat:`, `fix:`, `docs:`, `chore:`)
 - [ ] Tested in dark and light themes and at mobile width (375 px)
 - [ ] Works with keyboard only
