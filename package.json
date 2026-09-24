@@ -12,7 +12,8 @@
     "typecheck": "tsc --noEmit",
     "format": "prettier --write .",
     "format:check": "prettier --check .",
-    "fonts:catalog": "node scripts/generate-font-catalog.mjs"
+    "fonts:catalog": "node scripts/generate-font-catalog.mjs",
+    "check:dashes": "node scripts/check-em-dash.mjs"
   },
   "packageManager": "pnpm@11.17.0",
   "engines": {

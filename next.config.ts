@@ -10,6 +10,8 @@ const securityHeaders = [
 const nextConfig: NextConfig = {
   reactStrictMode: true,
   poweredByHeader: false,
+  // AGENTS.md is maintained by hand (see its "Next.js 16" section); don't let `next dev` rewrite it.
+  agentRules: false,
   // Paper.js only runs in the browser; keep its Node-only code paths (jsdom, canvas) out of the server bundle.
   serverExternalPackages: ["paper"],
   experimental: {

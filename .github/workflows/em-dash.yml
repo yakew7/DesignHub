@@ -1,0 +1,26 @@
+name: Em dash check
+
+# The project style uses normal hyphens and punctuation, never em dashes.
+# This fails if one appears anywhere in the repository (code, docs or data).
+on:
+  push:
+  pull_request:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: em-dash-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  check:
+    name: No em dashes
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 22
+      # No install needed: the checker only uses Node and git.
+      - run: node scripts/check-em-dash.mjs

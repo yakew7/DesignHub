@@ -1,9 +1,18 @@
-<!-- BEGIN:nextjs-agent-rules -->
+# Agent guide for DesignHub
 
-# This is NOT the Next.js you know
+Instructions for AI coding agents (and a quick reference for people) working in this repository. Read [CONTRIBUTING.md](CONTRIBUTING.md) for the full guide.
 
-This version has breaking changes — APIs, conventions, and file structure may all differ from your training data. Read the relevant guide in `node_modules/next/dist/docs/` (resolved from this file's directory; in monorepos the `next` package may not be visible from the repo root) before writing any code. Heed deprecation notices.
+## Next.js 16
 
-This block is written and re-added by `next dev` — verify at `node_modules/next/dist/server/lib/generate-agent-files.js`. Removing it from a diff only re-creates the uncommitted change; committing it with your work keeps the tree clean.
+This project uses Next.js 16, which has breaking changes from earlier versions: APIs, conventions and file structure may differ from what you remember. Before writing Next.js code, read the relevant guide in `node_modules/next/dist/docs/` (the docs that match the installed version) and follow any deprecation notices.
 
-<!-- END:nextjs-agent-rules -->
+Next.js can rewrite this file for agents on `next dev`. That is turned off with `agentRules: false` in `next.config.ts`, so this guide stays as written.
+
+## Rules
+
+- Use pnpm. Before finishing, run `pnpm typecheck && pnpm lint && pnpm format:check && pnpm check:dashes && pnpm build`.
+- TypeScript is strict. Never use `any`.
+- Never use em dashes, in code, comments, docs or data. Use normal punctuation (a comma, colon, period or parentheses) or a spaced hyphen. `pnpm check:dashes` and the Em dash CI workflow fail on any em dash.
+- Never duplicate state. Colors live in the color store, fonts in the typography store, radius and spacing in the tokens store, and shadow in the effects store. Brand features read them through `useBrandTokens()`.
+- Render untrusted SVG only through `<img>` data URLs, and sanitize uploaded or imported SVG with `sanitizeSvg`.
+- Commit messages follow Conventional Commits (`feat:`, `fix:`, `docs:`, `chore:`). Don't add Co-Authored-By trailers.
