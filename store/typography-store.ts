@@ -3,6 +3,7 @@ import { createJSONStorage, persist } from "zustand/middleware";
 
 import { indexedDbStorage } from "@/lib/db";
 import { defaultFontFilters, type FontFilters } from "@/lib/typography/filter";
+import { defaultCompareFont } from "@/lib/typography/compare";
 import { toggleFeature as applyFeatureToggle } from "@/lib/typography/opentype-features";
 
 import type { OpenTypeSettings, SpecimenSettings, TextRhythm, TypeScaleSettings } from "@/types/typography";
@@ -62,6 +63,8 @@ type TypographyState = {
   tab: TypographyTab;
   /** Font currently open in the specimen / playground. */
   activeFont: string;
+  /** Second font pinned next to the active one. Null means compare is off. */
+  compareFont: string | null;
   headingFont: string;
   bodyFont: string;
   specimen: SpecimenSettings;
@@ -72,6 +75,9 @@ type TypographyState = {
   updateRhythm: (patch: Partial<TextRhythm>) => void;
   setTab: (tab: TypographyTab) => void;
   setActiveFont: (family: string) => void;
+  setCompareFont: (family: string | null) => void;
+  startCompare: () => void;
+  swapCompare: () => void;
   setPair: (pair: { heading?: string; body?: string }) => void;
   updateSpecimen: (patch: Partial<SpecimenSettings>) => void;
   setAxis: (tag: string, value: number) => void;
@@ -87,6 +93,7 @@ export const useTypographyStore = create<TypographyState>()(
     (set) => ({
       tab: "browse",
       activeFont: "Inter",
+      compareFont: null,
       headingFont: "Space Grotesk",
       bodyFont: "Inter",
       specimen: defaultSpecimen,
@@ -94,6 +101,21 @@ export const useTypographyStore = create<TypographyState>()(
       openType: defaultOpenType,
       setTab: (tab) => set({ tab }),
       setActiveFont: (family) => set((state) => ({ activeFont: family, specimen: { ...state.specimen, axes: {} } })),
+      setCompareFont: (compareFont) => set({ compareFont }),
+      startCompare: () =>
+        set((state) => ({
+          compareFont: state.compareFont ?? defaultCompareFont(state.activeFont, [state.headingFont, state.bodyFont]),
+        })),
+      swapCompare: () =>
+        set((state) =>
+          state.compareFont
+            ? {
+                activeFont: state.compareFont,
+                compareFont: state.activeFont,
+                specimen: { ...state.specimen, axes: {} },
+              }
+            : state,
+        ),
       setPair: ({ heading, body }) =>
         set((state) => ({ headingFont: heading ?? state.headingFont, bodyFont: body ?? state.bodyFont })),
       updateSpecimen: (patch) => set((state) => ({ specimen: { ...state.specimen, ...patch } })),
@@ -113,9 +135,10 @@ export const useTypographyStore = create<TypographyState>()(
       version: 1,
       storage: createJSONStorage(() => indexedDbStorage),
       // UI-only state (tab, search) is not worth restoring.
-      partialize: ({ activeFont, headingFont, bodyFont, specimen, scale, openType, rhythm }) => ({
+      partialize: ({ activeFont, compareFont, headingFont, bodyFont, specimen, scale, openType, rhythm }) => ({
         rhythm,
         activeFont,
+        compareFont,
         headingFont,
         bodyFont,
         specimen,

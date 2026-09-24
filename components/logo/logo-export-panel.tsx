@@ -1,6 +1,6 @@
 "use client";
 
-import { Download, FileArchive, FileText, ImageDown, Loader2 } from "lucide-react";
+import { Download, FileArchive, FileText, Globe, ImageDown, Loader2 } from "lucide-react";
 import { useMemo, useState } from "react";
 import { toast } from "sonner";
 
@@ -8,11 +8,11 @@ import { CodeBlock } from "@/components/export/code-block";
 import { Button } from "@/components/ui/button";
 import { useVariantContext } from "@/hooks/use-variant-context";
 import { downloadBlob, downloadText } from "@/lib/download";
-import { buildLogoPack, slugify, variantPdf, variantPng } from "@/lib/logo/pack";
+import { buildFaviconZip, buildLogoPack, slugify, variantPdf, variantPng } from "@/lib/logo/pack";
 import { logoVariants, renderVariant } from "@/lib/logo/variants";
 import { useLogoStore } from "@/store/logo-store";
 
-type Job = "png" | "pdf" | "zip";
+type Job = "png" | "pdf" | "zip" | "favicon";
 
 export function LogoExportPanel() {
   const ctx = useVariantContext();
@@ -39,6 +39,10 @@ export function LogoExportPanel() {
       if (job === "zip") {
         const zip = await buildLogoPack(ctx, clearSpace);
         downloadBlob(new Blob([zip.slice().buffer], { type: "application/zip" }), `${slugify(ctx.name)}-logo-pack.zip`);
+      }
+      if (job === "favicon") {
+        const zip = await buildFaviconZip(ctx);
+        downloadBlob(new Blob([zip.slice().buffer], { type: "application/zip" }), `${slugify(ctx.name)}-favicon.zip`);
       }
       toast.success("Download ready");
     } catch {
@@ -70,6 +74,9 @@ export function LogoExportPanel() {
       </div>
       <Button onClick={() => run("zip")} disabled={busy !== null}>
         {icon("zip", <FileArchive />)} Logo pack (.zip)
+      </Button>
+      <Button variant="outline" onClick={() => run("favicon")} disabled={busy !== null}>
+        {icon("favicon", <Globe />)} Favicon package (.zip)
       </Button>
       <CodeBlock code={svg} filename={`${file}.svg`} maxHeight="20rem" />
     </>

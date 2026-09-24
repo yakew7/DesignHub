@@ -2,6 +2,7 @@ import { githubBannerStyles } from "@/lib/social/templates/github";
 import { instagramSquare, instagramStory } from "@/lib/social/templates/instagram";
 import { linkedinCover } from "@/lib/social/templates/linkedin-cover";
 import { ogTemplates } from "@/lib/social/templates/open-graph";
+import { pinterestPin } from "@/lib/social/templates/pinterest";
 import { productHuntGallery, youtubeThumbnail } from "@/lib/social/templates/product-hunt";
 import { xBanner } from "@/lib/social/templates/x-banner";
 import type { SocialPlatform, SocialTemplate } from "@/lib/social/types";
@@ -16,6 +17,7 @@ export const socialTemplates: SocialTemplate[] = [
   ...ogTemplates,
   productHuntGallery,
   youtubeThumbnail,
+  pinterestPin,
 ];
 
 export const socialPlatforms: SocialPlatform[] = [
@@ -26,6 +28,7 @@ export const socialPlatforms: SocialPlatform[] = [
   "Open Graph",
   "Product Hunt",
   "YouTube",
+  "Pinterest",
 ];
 
 /** Ids from earlier versions, so saved selections keep working. */

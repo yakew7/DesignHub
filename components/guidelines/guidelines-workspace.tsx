@@ -12,6 +12,7 @@ import { Panel } from "@/components/ui/panel";
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
 import { useGuidelineContext } from "@/hooks/use-guideline-context";
 import { getGuidelinePage, guidelinePages } from "@/lib/guidelines/registry";
+import { coverStyles, type CoverStyle } from "@/lib/guidelines/types";
 import { useGuidelinesStore } from "@/store/guidelines-store";
 import type { BrandMode } from "@/types/brand";
 
@@ -20,6 +21,8 @@ export function GuidelinesWorkspace() {
   const selected = useGuidelinesStore((state) => state.selected);
   const mode = useGuidelinesStore((state) => state.mode);
   const setMode = useGuidelinesStore((state) => state.setMode);
+  const coverStyle = useGuidelinesStore((state) => state.coverStyle);
+  const setCoverStyle = useGuidelinesStore((state) => state.setCoverStyle);
   const page = getGuidelinePage(selected) ?? guidelinePages[0];
   const number = ctx.contents.find((entry) => entry.id === page?.id)?.number ?? 0;
   const svg = useMemo(() => (page ? page.render(ctx, number) : ""), [page, ctx, number]);
@@ -46,6 +49,23 @@ export function GuidelinesWorkspace() {
             </ToggleGroup>
             <GuidelinePageList />
           </Panel>
+          {page?.id === "cover" && (
+            <Panel title="Cover style" description="The layout of the first page of the book.">
+              <ToggleGroup
+                type="single"
+                value={coverStyle}
+                onValueChange={(value) => value && setCoverStyle(value as CoverStyle)}
+                aria-label="Cover style"
+                className="w-full"
+              >
+                {coverStyles.map((item) => (
+                  <ToggleGroupItem key={item.value} value={item.value} className="flex-1">
+                    {item.label}
+                  </ToggleGroupItem>
+                ))}
+              </ToggleGroup>
+            </Panel>
+          )}
           <GuidelineVoicePanel />
         </>
       }

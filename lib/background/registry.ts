@@ -13,6 +13,7 @@ import { grid } from "@/lib/background/generators/grid";
 import { isometric } from "@/lib/background/generators/isometric";
 import { mesh } from "@/lib/background/generators/mesh";
 import { noise } from "@/lib/background/generators/noise";
+import { topographic } from "@/lib/background/generators/topographic";
 import { waves } from "@/lib/background/generators/waves";
 import { wrapSvg } from "@/lib/background/svg";
 import type { BackgroundDefinition, BackgroundKind, BackgroundSettings } from "@/types/background";
@@ -35,6 +36,7 @@ export const backgroundGenerators: BackgroundDefinition[] = [
   chevron,
   hexagons,
   sunburst,
+  topographic,
 ];
 
 export function getGenerator(kind: BackgroundKind): BackgroundDefinition | undefined {

@@ -33,7 +33,8 @@ export type SocialContext = DrawContext & {
   layout: { padding: number; background: SocialBackground };
 };
 
-export type SocialPlatform = "GitHub" | "LinkedIn" | "X" | "Instagram" | "Open Graph" | "Product Hunt" | "YouTube";
+export type SocialPlatform =
+  "GitHub" | "LinkedIn" | "X" | "Instagram" | "Open Graph" | "Product Hunt" | "YouTube" | "Pinterest";
 
 export type SocialTemplate = {
   id: string;

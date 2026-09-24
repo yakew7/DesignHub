@@ -1,7 +1,8 @@
 import { CREDIT_TEXT } from "@/lib/export/credit";
 import { imagesToPdf } from "@/lib/export/pdf";
 import { rasterize } from "@/lib/export/raster";
-import { logoVariants, type LogoVariantId, type VariantContext } from "@/lib/logo/variants";
+import { faviconEntries, type FaviconOptions } from "@/lib/icons/favicon";
+import { logoVariants, renderVariant, type LogoVariantId, type VariantContext } from "@/lib/logo/variants";
 import { createZip, type ZipEntry } from "@/lib/zip";
 
 export function slugify(name: string): string {
@@ -11,6 +12,22 @@ export function slugify(name: string): string {
       .replace(/[^a-z0-9]+/g, "-")
       .replace(/(^-|-$)/g, "") || "brand"
   );
+}
+
+/** Manifest values for a favicon package: the brand name and primary color. */
+export function faviconOptions(ctx: VariantContext): FaviconOptions {
+  return { appName: ctx.name, themeColor: ctx.primary, backgroundColor: ctx.light };
+}
+
+/** Favicon files built from the brand's app icon variant. */
+export async function faviconFiles(ctx: VariantContext, folder = ""): Promise<ZipEntry[]> {
+  const svg = renderVariant("app-icon", ctx);
+  const entries = await faviconEntries(() => svg, svg, faviconOptions(ctx));
+  return entries.map((entry) => ({ ...entry, name: `${folder}${entry.name}` }));
+}
+
+export async function buildFaviconZip(ctx: VariantContext): Promise<Uint8Array> {
+  return createZip(await faviconFiles(ctx));
 }
 
 export async function variantPng(ctx: VariantContext, id: LogoVariantId): Promise<Uint8Array> {
@@ -28,7 +45,7 @@ function usageNotes(ctx: VariantContext, clearSpace: number): string {
   return [
     `${ctx.name} logo pack`,
     "",
-    "Files: every variant as SVG (vector, preferred), PNG (4x) and PDF.",
+    "Files: every variant as SVG (vector, preferred), PNG (4x) and PDF, plus a favicon/ folder built from the app icon.",
     "",
     "Usage",
     `- Clear space: keep at least ${Math.round(clearSpace * 100)}% of the logo height free on every side.`,
@@ -60,5 +77,6 @@ export async function buildLogoPack(ctx: VariantContext, clearSpace: number): Pr
       },
     );
   }
+  entries.push(...(await faviconFiles(ctx, "favicon/")));
   return createZip(entries);
 }
