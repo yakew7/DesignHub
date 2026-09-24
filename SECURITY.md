@@ -1,6 +1,6 @@
 # Security Policy
 
-DesignHub runs entirely in the browser. It has no backend, no accounts and no database of user data. User work is stored locally in the browser's IndexedDB. The app talks only to Google Fonts (`fonts.googleapis.com`, `fonts.gstatic.com`) and the Iconify API (`api.iconify.design`, with `api.simplesvg.com` and `api.unisvg.com` as fallbacks). No API keys or secrets are used.
+DesignHub runs entirely in the browser. It has no backend, no accounts and no database of user data. User work is stored locally in the browser's IndexedDB. The app talks only to Google Fonts (`fonts.googleapis.com`, `fonts.gstatic.com`), the Iconify API (`api.iconify.design`, with `api.simplesvg.com` and `api.unisvg.com` as fallbacks) and, on the Vercel-hosted site only, Vercel Web Analytics (anonymous, cookie-free page-view counts). No API keys or secrets are used.
 
 Even so, we take security seriously. Relevant issues include cross-site scripting through uploaded SVG logos, imported project JSON, fonts, icons or pasted color values; unsafe handling of downloaded files; and supply-chain problems in our dependencies.
 

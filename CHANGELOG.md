@@ -158,6 +158,7 @@ Released 2026-09-23. The first public release: a complete, local-first design an
 - Removed layout shifts in the Icon and Typography studios; the landing page animates with CSS only.
 - Accessible names on every slider thumb and combobox, and token contrast raised to at least 4.5:1.
 - Static metadata routes (sitemap, robots, web manifest) and baseline security headers.
+- Vercel Web Analytics for anonymous, cookie-free page views on the hosted site. It loads only in Vercel builds, so self-hosted copies and local runs make no analytics requests.
 - Every studio is its own route chunk; Paper.js loads only for Paper-based generators and stays out of the server bundle.
 - The four new studios score 97–100 performance and 100 accessibility, best practices and SEO (Lighthouse, DevTools throttling and desktop).
 - The SVG preview canvas waits for layout before painting, removing its layout shift.

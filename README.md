@@ -343,10 +343,13 @@ Read [docs/architecture.md](docs/architecture.md) for how the pieces fit togethe
 
 ## Privacy
 
-DesignHub has no accounts, analytics or backend. Your work is stored in your browser's IndexedDB. The app only makes network requests to:
+DesignHub has no accounts and no backend. Your work (brands, projects, palettes, settings) is stored in your browser's IndexedDB and never leaves your device. The app makes network requests to:
 
 - `fonts.googleapis.com` / `fonts.gstatic.com` - to preview Google Fonts and embed brand fonts in exports
 - `api.iconify.design` (with `api.simplesvg.com` and `api.unisvg.com` as fallbacks) - to search and download icons
+- [Vercel Web Analytics](https://vercel.com/docs/analytics/privacy-policy) - on the hosted site only, to count page views
+
+Vercel Web Analytics is cookie-free and anonymous. It records which pages are visited, the referrer, and the visitor's country, browser, OS and device type, without identifying individuals or tracking them across sites. It never sees what you create in the app. It only loads in builds deployed on Vercel, so self-hosted copies and local development send nothing. To remove it from your own deployment, delete `<Analytics />` from `app/layout.tsx`.
 
 Uploaded logos and Brand DNA images are processed in the browser and never uploaded. None of these services needs an API key.
 

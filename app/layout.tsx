@@ -58,7 +58,8 @@ export default function RootLayout({ children }: { children: ReactNode }) {
     <html lang="en" suppressHydrationWarning className={cn(inter.variable, spaceGrotesk.variable)}>
       <body className="min-h-dvh antialiased">
         <Providers>{children}</Providers>
-        <Analytics />
+        {/* Vercel Web Analytics only exists on Vercel; elsewhere the script would 404. */}
+        {process.env.VERCEL ? <Analytics /> : null}
       </body>
     </html>
   );
