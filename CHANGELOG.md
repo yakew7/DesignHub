@@ -68,7 +68,7 @@ Released 2026-09-23. The first public release: a complete, local-first design an
 
 - GitHub repository banner gallery with fifteen styles (Minimal, Editorial, Aurora, Grid, Terminal, Glass, Gradient, Split, Bento, Spotlight, Classic, Launch, Showcase, Features, Badges), nested under a collapsible Repository banner row in the template list.
 - LinkedIn cover, X header, Instagram square post and story, three Open Graph layouts, Product Hunt gallery image and YouTube thumbnail.
-- A README snippet for GitHub banners, with an optional "Banner made with DesignHub" link under the banner (on by default, never drawn on the image).
+- A README snippet for GitHub banners, with an optional "Banner made with DesignHub" link under the banner (on by default, never drawn on the image), and a one-click copy of the `made-with-designhub` topic for gallery submissions.
 - A shared content panel under the preview: project name, description, website, GitHub username, logo upload, primary and secondary colors, background style, border radius and padding, applied to every template. Saved with brand projects.
 - Platform presets with exact sizes, a safe area overlay and the zones covered by platform UI.
 - Automatic logo, typography and colors, editable copy, Export PNG (plus @1x and @2x), SVG export, copy image to the clipboard, Open Graph meta tags and a ZIP of every asset.

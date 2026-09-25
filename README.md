@@ -88,7 +88,7 @@ A typical design session bounces between a font site, a palette generator, a con
 - Exact platform sizes, a safe-area overlay and the zones covered by avatars and timestamps
 - One content panel drives every template: project name, description, website, GitHub username, logo, primary and secondary colors, background style, border radius and padding (empty fields follow the brand)
 - Export PNG, @1x or @2x, SVG, copy the image to the clipboard, Open Graph meta tags, and **all assets as a ZIP**
-- GitHub banners come with a **README snippet** to paste, with an optional "Banner made with DesignHub" link under the image (never on it)
+- GitHub banners come with a **README snippet** to paste, with an optional "Banner made with DesignHub" link under the image (never on it). Add the [`made-with-designhub`](https://github.com/topics/made-with-designhub) topic to your repo to be considered for the gallery
 
 ### Brand Guidelines
 

@@ -127,6 +127,20 @@ export function SocialExportPanel({ svg, ctx, template }: Props) {
             Save the PNG as <code>.github/banner.png</code> in your repository, then paste this at the top of your
             README. For the link preview, upload the same PNG under Settings, Social preview.
           </p>
+          <p className="flex flex-wrap items-center gap-1.5 text-[11px] text-subtle-foreground">
+            Want it featured in the DesignHub gallery? Add the
+            <CopyButton
+              value="made-with-designhub"
+              label="Copy topic made-with-designhub"
+              toastMessage="Topic copied"
+              variant="outline"
+              size="sm"
+              className="h-6 px-2 font-mono text-[11px]"
+            >
+              made-with-designhub
+            </CopyButton>
+            topic to your repository (the gear next to About).
+          </p>
         </div>
       ) : null}
       {meta ? (
