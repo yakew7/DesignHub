@@ -1,9 +1,9 @@
-import type { BrandTokens, BrandVoice } from "@/types/brand";
+import type { BrandMission, BrandTokens, BrandVoice } from "@/types/brand";
 
 export const BRAND_JSON_VERSION = 1;
 
 /** A portable, human-readable description of the brand. */
-export function brandJson(tokens: BrandTokens, voice: BrandVoice): string {
+export function brandJson(tokens: BrandTokens, voice: BrandVoice, mission: BrandMission): string {
   const document = {
     format: "designhub.brand",
     version: BRAND_JSON_VERSION,
@@ -35,6 +35,7 @@ export function brandJson(tokens: BrandTokens, voice: BrandVoice): string {
     spacing: `${tokens.spacing}px`,
     shadow: tokens.shadow,
     voice,
+    mission,
   };
   return `${JSON.stringify(document, null, 2)}\n`;
 }

@@ -15,12 +15,19 @@ export function BrandTokensPanel() {
   const tokens = useDesignTokens();
   const brand = useBrandTokens();
   const voice = useBrandStore((state) => state.profile.voice);
+  const mission = useBrandStore((state) => state.profile.mission);
   const formats = useMemo<ExportFormat[]>(
     () => [
-      { id: "brand", label: "Brand JSON", filename: "brand.json", language: "json", code: brandJson(brand, voice) },
+      {
+        id: "brand",
+        label: "Brand JSON",
+        filename: "brand.json",
+        language: "json",
+        code: brandJson(brand, voice, mission),
+      },
       ...tokenFormats(tokens),
     ],
-    [tokens, brand, voice],
+    [tokens, brand, voice, mission],
   );
 
   return (

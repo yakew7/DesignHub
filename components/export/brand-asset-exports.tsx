@@ -29,6 +29,7 @@ const pdfBlob = (bytes: Uint8Array, type: string) => new Blob([bytes.slice().buf
 export function BrandAssetExports() {
   const brand = useBrandTokens();
   const voice = useBrandStore((state) => state.profile.voice);
+  const mission = useBrandStore((state) => state.profile.mission);
   const guidelineBase = useGuidelineBase();
   const excluded = useGuidelinesStore((state) => state.excluded);
   const variantCtx = useVariantContext();
@@ -36,7 +37,7 @@ export function BrandAssetExports() {
   const socialCtx = useSocialContext();
   const packSelection = useSocialStore((state) => state.packSelection);
   const [job, setJob] = useState<{ id: Job; progress: number } | null>(null);
-  const json = useMemo(() => brandJson(brand, voice), [brand, voice]);
+  const json = useMemo(() => brandJson(brand, voice, mission), [brand, voice, mission]);
   const base = slugify(brand.name);
 
   // Heavy builders load on demand, so the Export Engine stays fast to open.
@@ -87,7 +88,7 @@ export function BrandAssetExports() {
       <ul className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
         <AssetCard
           title="Brand JSON"
-          description="Name, logo, colors with roles, type, radius, spacing, shadow and voice in one file."
+          description="Name, logo, colors with roles, type, radius, spacing, shadow, voice and mission in one file."
           preview={
             <div className="flex size-full items-center justify-center gap-3 bg-surface-raised">
               {/* eslint-disable-next-line @next/next/no-img-element -- sanitized SVG data URL */}
