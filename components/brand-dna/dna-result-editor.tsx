@@ -1,6 +1,6 @@
 "use client";
 
-import { Plus, X } from "lucide-react";
+import { Check, Plus, X } from "lucide-react";
 
 import { FontPicker } from "@/components/typography/font-picker";
 import { Button } from "@/components/ui/button";
@@ -11,11 +11,48 @@ import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useFontCatalog } from "@/hooks/use-font-catalog";
 import type { BrandDna } from "@/lib/brand-dna/types";
+import { contrastRatio, oklch, parseColor } from "@/lib/color/color";
+import { formatRatio } from "@/lib/color/contrast";
 import type { ColorRole } from "@/types/brand";
 
 type Props = { dna: BrandDna; onChange: (dna: BrandDna) => void };
 
 const roles: ColorRole[] = ["primary", "secondary", "neutral"];
+
+const surfaces = [
+  { name: "white", color: oklch(1, 0, 0), css: "#ffffff" },
+  { name: "black", color: oklch(0, 0, 0), css: "#000000" },
+] as const;
+
+/** WCAG contrast of a color as text on white and on black, so it is clear which colors can carry text. */
+function SurfaceContrast({ hex }: { hex: string }) {
+  const color = parseColor(hex);
+  if (!color) return null;
+  return (
+    <span className="col-span-4 flex gap-3">
+      {surfaces.map((surface) => {
+        const ratio = contrastRatio(color, surface.color);
+        const label = formatRatio(ratio);
+        return (
+          <span key={surface.name} className="flex items-center gap-1 text-[11px] text-muted-foreground tabular-nums">
+            <span
+              aria-hidden
+              className="flex size-3.5 items-center justify-center rounded-[3px] border text-[9px] leading-none font-semibold"
+              style={{ background: surface.css, color: hex }}
+            >
+              A
+            </span>
+            <span aria-hidden>{label}</span>
+            {ratio >= 4.5 && <Check aria-hidden className="size-3 text-success" />}
+            <span className="sr-only">
+              {`Contrast on ${surface.name}: ${label.replace(":", " to ")}${ratio >= 4.5 ? ", passes AA" : ratio >= 3 ? ", passes AA for large text only" : ", fails AA"}.`}
+            </span>
+          </span>
+        );
+      })}
+    </span>
+  );
+}
 
 export function DnaResultEditor({ dna, onChange }: Props) {
   const { fonts } = useFontCatalog();
@@ -27,8 +64,8 @@ export function DnaResultEditor({ dna, onChange }: Props) {
         <Label>Colors</Label>
         <ul className="flex flex-col gap-1.5" aria-label="Extracted colors">
           {dna.colors.map((color, index) => (
-            <li key={index} className="flex items-center gap-2">
-              <label className="relative size-8 shrink-0 cursor-pointer overflow-hidden rounded-md border">
+            <li key={index} className="grid grid-cols-[2rem_minmax(0,1fr)_auto_auto_auto] items-center gap-x-2 gap-y-1">
+              <label className="relative row-span-2 size-8 shrink-0 cursor-pointer overflow-hidden rounded-md border">
                 <span className="absolute inset-0" style={{ background: color.hex }} />
                 <input
                   type="color"
@@ -42,7 +79,7 @@ export function DnaResultEditor({ dna, onChange }: Props) {
                   className="absolute inset-0 cursor-pointer opacity-0"
                 />
               </label>
-              <span className="min-w-0 flex-1 truncate font-mono text-xs uppercase">
+              <span className="truncate font-mono text-xs uppercase">
                 {color.hex}
                 <span className="ml-2 text-subtle-foreground">{Math.round(color.weight * 100)}%</span>
               </span>
@@ -81,6 +118,7 @@ export function DnaResultEditor({ dna, onChange }: Props) {
               >
                 <X />
               </Button>
+              <SurfaceContrast hex={color.hex} />
             </li>
           ))}
         </ul>
