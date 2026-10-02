@@ -8,6 +8,7 @@ import { Switch } from "@/components/ui/switch";
 import { toHex } from "@/lib/color/color";
 import { colorExports } from "@/lib/color/export";
 import { gradientCss } from "@/lib/color/gradient";
+import { useBrandStore } from "@/store/brand-store";
 import { useColorStore } from "@/store/color-store";
 
 export function ColorExport() {
@@ -15,12 +16,20 @@ export function ColorExport() {
   const gradient = useColorStore((state) => state.gradient);
   const format = useColorStore((state) => state.format);
   const shadeOptions = useColorStore((state) => state.shadeOptions);
+  const brandName = useBrandStore((state) => state.profile.name);
   const [includeShades, setIncludeShades] = useState(true);
 
   const formats = useMemo(
     () =>
-      colorExports({ colors: swatches.map((swatch) => swatch.color), gradient, format, includeShades, shadeOptions }),
-    [swatches, gradient, format, includeShades, shadeOptions],
+      colorExports({
+        colors: swatches.map((swatch) => swatch.color),
+        gradient,
+        format,
+        includeShades,
+        shadeOptions,
+        name: brandName.trim() || undefined,
+      }),
+    [swatches, gradient, format, includeShades, shadeOptions, brandName],
   );
 
   return (

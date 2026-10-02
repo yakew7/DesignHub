@@ -1,5 +1,5 @@
 export type ExportLanguage =
-  "css" | "scss" | "json" | "ts" | "tsx" | "js" | "html" | "svg" | "xml" | "dart" | "swift" | "kotlin";
+  "css" | "scss" | "json" | "ts" | "tsx" | "js" | "html" | "svg" | "xml" | "dart" | "swift" | "kotlin" | "text";
 
 export type ExportFormat = {
   id: string;

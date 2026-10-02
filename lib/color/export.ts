@@ -1,4 +1,4 @@
-import { formatColor, toHex } from "@/lib/color/color";
+import { formatColor, toHex, toRgb } from "@/lib/color/color";
 import { gradientCss, gradientCssFallback, sortedStops } from "@/lib/color/gradient";
 import { paletteNames } from "@/lib/color/names";
 import { generateShades, type ShadeOptions } from "@/lib/color/shades";
@@ -11,6 +11,8 @@ export type ColorExportInput = {
   format: ColorFormat;
   includeShades: boolean;
   shadeOptions: ShadeOptions;
+  /** Palette name for formats that carry one (the GIMP palette). */
+  name?: string;
 };
 
 export type NamedColor = { name: string; color: Oklch; shades: { step: number; color: Oklch }[] };
@@ -108,6 +110,25 @@ export function colorTokens(palette: NamedColor[], includeShades: boolean, gradi
   };
 }
 
+/**
+ * GIMP palette (.gpl), which GIMP, Inkscape and Krita all read: a header, then one
+ * "R G B<TAB>name" line per color. With shades, each color and its shades form one row.
+ */
+export function gimpPalette(palette: NamedColor[], includeShades: boolean, name = "DesignHub palette"): string {
+  const line = (color: Oklch, label: string) => {
+    const { r, g, b } = toRgb(color);
+    return `${[r, g, b].map((channel) => String(channel).padStart(3)).join(" ")}\t${label}`;
+  };
+  const lines = palette.flatMap(({ name: colorName, color, shades }) => [
+    line(color, colorName),
+    ...(includeShades ? shades.map((shade) => line(shade.color, `${colorName}-${shade.step}`)) : []),
+  ]);
+  const columns = includeShades && palette[0] ? `Columns: ${palette[0].shades.length + 1}\n` : "";
+  // The name is a single header line, so collapse any line breaks in it.
+  const title = name.replace(/\s+/g, " ").trim() || "DesignHub palette";
+  return `GIMP Palette\nName: ${title}\n${columns}#\n${lines.join("\n")}\n`;
+}
+
 /** SVG has no conic gradients; conic falls back to a linear gradient at the same angle. */
 export function gradientSvg(gradient: Gradient, width = 1200, height = 630): string {
   const stops = sortedStops(gradient)
@@ -149,5 +170,12 @@ export function colorExports(input: ColorExportInput): ExportFormat[] {
       code: `${JSON.stringify(colorTokens(palette, input.includeShades, input.gradient), null, 2)}\n`,
     },
     { id: "svg", label: "SVG gradient", filename: "gradient.svg", language: "svg", code: gradientSvg(input.gradient) },
+    {
+      id: "gpl",
+      label: "GIMP palette",
+      filename: "palette.gpl",
+      language: "text",
+      code: gimpPalette(palette, input.includeShades, input.name),
+    },
   ];
 }
