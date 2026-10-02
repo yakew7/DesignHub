@@ -8,6 +8,7 @@ import { FontBrowser } from "@/components/typography/font-browser";
 import { OpenTypeControls } from "@/components/typography/opentype-controls";
 import { SpecimenControls } from "@/components/typography/specimen-controls";
 import { SpecimenPreview } from "@/components/typography/specimen-preview";
+import { WeightWaterfall } from "@/components/typography/weight-waterfall";
 import { VariablePlayground } from "@/components/typography/variable-playground";
 import { TabSkeleton } from "@/components/ui/tab-skeleton";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -76,6 +77,7 @@ export function TypographyWorkspace() {
             <SpecimenControls />
             <VariablePlayground />
           </div>
+          <WeightWaterfall />
           <OpenTypeControls />
           <FontInspector />
         </div>

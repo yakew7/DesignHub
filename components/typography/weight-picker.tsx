@@ -7,8 +7,9 @@ import { Switch } from "@/components/ui/switch";
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
 import { useFontMeta } from "@/hooks/use-font-catalog";
 import { useTypographyStore } from "@/store/typography-store";
+import type { FontFamily } from "@/types/typography";
 
-const weightNames: Record<number, string> = {
+export const weightNames: Record<number, string> = {
   100: "Thin",
   200: "Extra light",
   300: "Light",
@@ -20,12 +21,17 @@ const weightNames: Record<number, string> = {
   900: "Black",
 };
 
+/** The static weights a family offers, once each and in ascending order. */
+export function availableWeights(meta: FontFamily | undefined): number[] {
+  return meta?.weights.length ? [...new Set(meta.weights)].sort((a, b) => a - b) : [400];
+}
+
 export function WeightPicker() {
   const activeFont = useTypographyStore((state) => state.activeFont);
   const specimen = useTypographyStore((state) => state.specimen);
   const updateSpecimen = useTypographyStore((state) => state.updateSpecimen);
   const meta = useFontMeta(activeFont);
-  const weights = meta?.weights ?? [400];
+  const weights = availableWeights(meta);
 
   useEffect(() => {
     if (!meta || meta.axes?.some((axis) => axis.tag === "wght") || meta.weights.includes(specimen.weight)) return;
