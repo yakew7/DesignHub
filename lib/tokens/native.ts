@@ -1,10 +1,11 @@
-import { toHex, toRgb } from "@/lib/color/color";
+import { contrastRatio, toHex, toRgb } from "@/lib/color/color";
 import { siteConfig } from "@/lib/site";
 import type { Oklch } from "@/types/color";
 import type { DesignTokens } from "@/types/tokens";
 
 /**
- * Generators for native and design-tool formats: Flutter, SwiftUI and Tokens Studio for Figma.
+ * Generators for native and design-tool formats: Flutter, SwiftUI, Jetpack Compose and Tokens
+ * Studio for Figma.
  * Like the web formats they read only `DesignTokens`, so every export describes the same system.
  */
 
@@ -34,19 +35,29 @@ function unique<T extends { id: string }>(items: T[]): T[] {
   return items.filter((item) => (seen.has(item.id) ? false : (seen.add(item.id), true)));
 }
 
-type ColorEntry = { id: string; value: Oklch; comment?: string };
+/** `key` names the source token ("indigo", "indigo/250", "role:primary") so a format can refer back to it. */
+type ColorEntry = { id: string; key: string; value: Oklch; comment?: string };
 
 function colorEntries(tokens: DesignTokens, digitPrefix: string): ColorEntry[] {
   const list: ColorEntry[] = [];
   tokens.colors.forEach((color) => {
-    list.push({ id: ident(color.name, digitPrefix), value: color.value });
+    list.push({ id: ident(color.name, digitPrefix), key: color.name, value: color.value });
     // The underscore keeps "indigo-2" shade 50 (indigo2_50) apart from "indigo" shade 250 (indigo_250).
     color.shades.forEach((shade) =>
-      list.push({ id: ident(`${color.name}_${shade.step}`, digitPrefix), value: shade.value }),
+      list.push({
+        id: ident(`${color.name}_${shade.step}`, digitPrefix),
+        key: `${color.name}/${shade.step}`,
+        value: shade.value,
+      }),
     );
   });
   tokens.semantic.forEach((role) =>
-    list.push({ id: ident(role.name, digitPrefix), value: role.value, comment: `semantic, ${role.ref}` }),
+    list.push({
+      id: ident(role.name, digitPrefix),
+      key: `role:${role.name}`,
+      value: role.value,
+      comment: `semantic, ${role.ref}`,
+    }),
   );
   return unique(list);
 }
@@ -72,7 +83,8 @@ const flutterSlots: Record<string, string> = {
 
 const dartString = (value: string) => `'${value.replace(/\\/g, "\\\\").replace(/'/g, "\\'")}'`;
 
-function dartColor(value: Oklch): string {
+/** `Color(0xAARRGGBB)`: the same constructor spelling in Dart and Kotlin. */
+function argbColor(value: Oklch): string {
   const { r, g, b, alpha } = toRgb(value);
   const hex = [Math.round(alpha * 255), r, g, b].map((channel) => channel.toString(16).padStart(2, "0")).join("");
   return `Color(0x${hex.toUpperCase()})`;
@@ -89,7 +101,7 @@ export function toFlutterTheme(tokens: DesignTokens): string {
   const colorLines = colors
     .map(
       (color) =>
-        `  static const ${color.id} = ${dartColor(color.value)};${color.comment ? ` // ${color.comment}` : ""}`,
+        `  static const ${color.id} = ${argbColor(color.value)};${color.comment ? ` // ${color.comment}` : ""}`,
     )
     .join("\n");
   const doubles = (items: { name: string; px: number }[]) =>
@@ -141,7 +153,7 @@ class ${name}Fonts {
 ThemeData ${lower}Theme({Brightness brightness = Brightness.light}) {
   return ThemeData(
     useMaterial3: true,
-    colorScheme: ColorScheme.fromSeed(seedColor: ${primary ? dartColor(primary) : "Colors.indigo"}, brightness: brightness),${t ? `\n    fontFamily: ${name}Fonts.body,` : ""}
+    colorScheme: ColorScheme.fromSeed(seedColor: ${primary ? argbColor(primary) : "Colors.indigo"}, brightness: brightness),${t ? `\n    fontFamily: ${name}Fonts.body,` : ""}
     cardTheme: CardThemeData(shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(${px(tokens.radius.find((r) => r.name === "lg")?.px ?? 12)}))),${
       textStyles ? `\n    textTheme: const TextTheme(\n${textStyles}\n    ),` : ""
     }
@@ -168,10 +180,13 @@ function swiftColor(value: Oklch): string {
 export function toSwiftUITheme(tokens: DesignTokens): string {
   const name = pascal(tokens.meta.name);
   const prefix = name[0]!.toLowerCase() + name.slice(1);
-  const colors = colorEntries(tokens, "c").map((color) => ({
-    ...color,
-    id: `${prefix}${color.id[0]!.toUpperCase()}${color.id.slice(1)}`,
-  }));
+  // Prefixing upper-cases the first letter, so "indigo" and "Indigo" are de-duplicated again after it.
+  const colors = unique(
+    colorEntries(tokens, "c").map((color) => ({
+      ...color,
+      id: `${prefix}${color.id[0]!.toUpperCase()}${color.id.slice(1)}`,
+    })),
+  );
   const t = tokens.typography;
   const lets = (items: { name: string; px: number }[]) =>
     unique(items.map((item) => ({ id: ident(item.name, "s"), px: item.px })))
@@ -225,6 +240,138 @@ function swiftWeight(value: number): string {
     900: "black",
   };
   return names[weight(value)] ?? "regular";
+}
+
+/* ---------------------------------------------------------- Jetpack Compose */
+
+const kotlinString = (value: string) => `"${value.replace(/\\/g, "\\\\").replace(/"/g, '\\"').replace(/\$/g, "\\$")}"`;
+
+/**
+ * Kotlin keywords are all lowercase, so PascalCase members never clash with one. A member named
+ * "Color" would shadow the Compose constructor inside the colors object, so it gets an underscore.
+ */
+function kotlinMember(id: string): string {
+  const member = `${id[0]!.toUpperCase()}${id.slice(1)}`;
+  return member === "Color" ? "Color_" : member;
+}
+
+const dp = (value: number) => `${px(value)}.dp`;
+const upperFirst = (value: string) => value.charAt(0).toUpperCase() + value.slice(1);
+const white: Oklch = { l: 1, c: 0, h: 0, alpha: 1 };
+const black: Oklch = { l: 0, c: 0, h: 0, alpha: 1 };
+
+/** Material 3 shape slots, smallest to largest, and the radius step each one uses. */
+const composeShapes: [slot: string, radius: string][] = [
+  ["extraSmall", "sm"],
+  ["small", "md"],
+  ["medium", "lg"],
+  ["large", "xl"],
+  ["extraLarge", "2xl"],
+];
+
+/**
+ * Jetpack Compose (Material 3): a colors object, light and dark `ColorScheme`s from the semantic
+ * roles, spacing and radius `Dp` values, `Shapes` and a `<Brand>Theme` composable. Color members
+ * reuse the SwiftUI and Flutter identifiers (indigo_250 vs indigo2_50) in PascalCase.
+ */
+export function toComposeTheme(tokens: DesignTokens): string {
+  // A brand called "Material" would declare its own MaterialTheme next to the Compose one.
+  const name = pascal(tokens.meta.name) === "Material" ? "MaterialBrand" : pascal(tokens.meta.name);
+  const colors = unique(colorEntries(tokens, "c").map((color) => ({ ...color, id: kotlinMember(color.id) })));
+  const members = new Map(colors.map((color) => [color.key, `${name}Colors.${color.id}`]));
+  // Refer to the colors object where the token survived de-duplication, otherwise inline the value.
+  const color = (key: string, value: Oklch) => members.get(key) ?? argbColor(value);
+  const on = (value: Oklch) =>
+    contrastRatio(value, white) >= contrastRatio(value, black) ? "Color.White" : "Color.Black";
+  const dps = (items: { name: string; px: number }[]) =>
+    unique(items.map((item) => ({ id: kotlinMember(ident(item.name, "s")), name: item.name, px: item.px })));
+  const spacing = dps(tokens.spacing);
+  const radius = dps(tokens.radius);
+  const body = (lines: string[]) => (lines.length ? `\n${lines.join("\n")}\n` : "");
+  const t = tokens.typography;
+
+  /** A semantic role as a color reference; `lift` uses its 300 (or 200) shade for dark mode. */
+  const role = (roleName: string, lift = false) => {
+    const item = tokens.semantic.find((entry) => entry.name === roleName);
+    if (!item) return undefined;
+    const source = lift ? tokens.colors.find((entry) => entry.name === item.ref) : undefined;
+    const shade = source?.shades.find((s) => s.step === 300) ?? source?.shades.find((s) => s.step === 200);
+    return source && shade
+      ? { code: color(`${source.name}/${shade.step}`, shade.value), value: shade.value }
+      : { code: color(`role:${item.name}`, item.value), value: item.value };
+  };
+  const scheme = (dark: boolean) => {
+    const lines: string[] = [];
+    const brand = (slot: string, roleName: string) => {
+      const entry = role(roleName, dark);
+      if (entry) lines.push(`    ${slot} = ${entry.code},`, `    on${upperFirst(slot)} = ${on(entry.value)},`);
+    };
+    brand("primary", "primary");
+    brand("secondary", "accent");
+    // Dark mode swaps the light background and the dark foreground.
+    const background = role(dark ? "foreground" : "background");
+    const foreground = role(dark ? "background" : "foreground");
+    if (background) lines.push(`    background = ${background.code},`, `    surface = ${background.code},`);
+    if (foreground) lines.push(`    onBackground = ${foreground.code},`, `    onSurface = ${foreground.code},`);
+    return lines;
+  };
+  const shapes = composeShapes.flatMap(([slot, step]) => {
+    const item = radius.find((entry) => entry.name === step);
+    return item ? [`    ${slot} = RoundedCornerShape(${name}Radius.${item.id}),`] : [];
+  });
+
+  return `// ${headerText(tokens)}
+// Change the package to match your app. Requires Compose Material 3.
+package com.example.ui.theme
+
+import androidx.compose.foundation.isSystemInDarkTheme
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Shapes
+import androidx.compose.material3.darkColorScheme
+import androidx.compose.material3.lightColorScheme
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.unit.dp
+
+object ${name}Colors {${body(
+    colors.map(
+      (entry) => `    val ${entry.id} = ${argbColor(entry.value)}${entry.comment ? ` // ${entry.comment}` : ""}`,
+    ),
+  )}}
+
+object ${name}Spacing {${body(spacing.map((item) => `    val ${item.id} = ${dp(item.px)}`))}}
+
+object ${name}Radius {${body(radius.map((item) => `    val ${item.id} = ${dp(item.px)}`))}}
+${
+  t
+    ? `
+/** Family names: load them with downloadable Google Fonts or add the files to res/font. */
+object ${name}Fonts {
+    const val Heading = ${kotlinString(t.heading.family)}
+    const val Body = ${kotlinString(t.body.family)}
+}
+`
+    : ""
+}
+val ${name}LightColorScheme = lightColorScheme(${body(scheme(false))})
+
+val ${name}DarkColorScheme = darkColorScheme(${body(scheme(true))})
+
+val ${name}Shapes = Shapes(${body(shapes)})
+
+@Composable
+fun ${name}Theme(
+    darkTheme: Boolean = isSystemInDarkTheme(),
+    content: @Composable () -> Unit,
+) {
+    MaterialTheme(
+        colorScheme = if (darkTheme) ${name}DarkColorScheme else ${name}LightColorScheme,
+        shapes = ${name}Shapes,
+        content = content,
+    )
+}
+`;
 }
 
 /* ------------------------------------------------------------ Tokens Studio */

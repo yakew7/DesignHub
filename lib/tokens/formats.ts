@@ -3,7 +3,7 @@ import { colorTokens } from "@/lib/color/export";
 import { gradientCss, gradientCssFallback } from "@/lib/color/gradient";
 import { fontStack } from "@/lib/typography/css";
 import { siteConfig } from "@/lib/site";
-import { toFlutterTheme, toSwiftUITheme, toTokensStudio } from "@/lib/tokens/native";
+import { toComposeTheme, toFlutterTheme, toSwiftUITheme, toTokensStudio } from "@/lib/tokens/native";
 import { googleFontsCssUrl } from "@/lib/typography/google-fonts";
 import type { ExportFormat } from "@/types/export";
 import type { Oklch } from "@/types/color";
@@ -111,6 +111,32 @@ export function toLess(tokens: DesignTokens): string {
     .map((token) => `${name(token.name)}: ${value(token.value)};`)
     .join("\n");
   return `${header(tokens, (text) => `// ${text}`)}\n${vars}\n`;
+}
+
+/**
+ * Stylus variables with the same names as the SCSS export, plus hashes for each scale.
+ * Values with functions (clamp, gradients, rgb() with a "/") go through unquote() so Stylus
+ * passes them through instead of evaluating the math.
+ */
+export function toStylus(tokens: DesignTokens): string {
+  const flat = flatten(tokens);
+  const name = (token: string) => `$${tokens.meta.prefix ? `${tokens.meta.prefix}-` : ""}${token.replace(/\./g, "_")}`;
+  const value = (raw: string) => (raw.includes("(") ? `unquote(${JSON.stringify(raw)})` : raw);
+  const vars = flat.map((token) => `${name(token.name)} = ${value(token.value)}`).join("\n");
+  const hash = (group: string, strip: string) =>
+    flat
+      .filter((token) => token.group === group)
+      .map((token) => `  "${token.name.replace(strip, "")}": ${name(token.name)}`)
+      .join("\n");
+  const hashes = [
+    tokens.colors.length ? `$colors = {\n${hash("color", "color-")}\n}` : "",
+    tokens.typography ? `$type-scale = {\n${hash("text", "text-")}\n}` : "",
+    tokens.spacing.length ? `$spacing = {\n${hash("spacing", "spacing-")}\n}` : "",
+    tokens.radius.length ? `$radii = {\n${hash("radius", "radius-")}\n}` : "",
+  ]
+    .filter(Boolean)
+    .join("\n\n");
+  return `${header(tokens, (text) => `// ${text}`)}\n${vars}\n${hashes ? `\n${hashes}\n` : ""}`;
 }
 
 /** Android `res/values/colors.xml`: palette, shades and semantic roles as #AARRGGBB resources. */
@@ -283,6 +309,34 @@ declare module "styled-components" {
 `;
 }
 
+/**
+ * Plain JavaScript (ES module) for projects without TypeScript: one frozen object per scale
+ * inside a frozen `tokens` object. Keys keep the token spelling ("indigo-2-50") so similar
+ * names can't collide the way camelCase keys would, and start with the prefix setting.
+ */
+export function toJsModule(tokens: DesignTokens): string {
+  const prefix = tokens.meta.prefix ? `${tokens.meta.prefix}-` : "";
+  const groups = new Map<string, Map<string, string>>();
+  flatten(tokens).forEach((token) => {
+    const group = token.group === "semantic" ? "color" : token.group;
+    const key = `${prefix}${token.name.replace(/^(color|gradient|font|text|spacing|radius)-/, "")}`;
+    groups.set(group, (groups.get(group) ?? new Map()).set(key, token.value));
+  });
+  const scales = [...groups]
+    .map(([group, values]) => {
+      const rows = [...values].map(([key, value]) => `    ${objectKey(key)}: ${JSON.stringify(value)},`);
+      return `  ${group}: Object.freeze({\n${rows.join("\n")}\n  }),`;
+    })
+    .join("\n");
+  return `${header(tokens, (text) => `// ${text}`)}
+export const tokens = Object.freeze({
+${scales}
+});
+
+export default tokens;
+`;
+}
+
 /** Vue 3: the theme object, an injection key and a plugin that exposes it as CSS variables. */
 export function toVueTheme(tokens: DesignTokens): string {
   const groups = new Map<string, Record<string, string>>();
@@ -410,6 +464,7 @@ export function tokenFormats(tokens: DesignTokens): ExportFormat[] {
     { id: "css", label: "CSS variables", filename: "tokens.css", language: "css", code: toCss(tokens) },
     { id: "scss", label: "SCSS", filename: "_tokens.scss", language: "scss", code: toScss(tokens) },
     { id: "less", label: "Less", filename: "tokens.less", language: "css", code: toLess(tokens) },
+    { id: "stylus", label: "Stylus", filename: "tokens.styl", language: "css", code: toStylus(tokens) },
     { id: "android", label: "Android XML", filename: "colors.xml", language: "xml", code: toAndroidColors(tokens) },
     { id: "tailwind-v4", label: "Tailwind v4", filename: "theme.css", language: "css", code: toTailwindV4(tokens) },
     {
@@ -419,6 +474,7 @@ export function tokenFormats(tokens: DesignTokens): ExportFormat[] {
       language: "ts",
       code: toTailwindConfig(tokens),
     },
+    { id: "js", label: "JavaScript", filename: "tokens.mjs", language: "js", code: toJsModule(tokens) },
     { id: "react", label: "React theme", filename: "theme.ts", language: "ts", code: toReactTheme(tokens) },
     {
       id: "styled",
@@ -430,6 +486,7 @@ export function tokenFormats(tokens: DesignTokens): ExportFormat[] {
     { id: "vue", label: "Vue theme", filename: "theme.ts", language: "ts", code: toVueTheme(tokens) },
     { id: "flutter", label: "Flutter", filename: "theme.dart", language: "dart", code: toFlutterTheme(tokens) },
     { id: "swiftui", label: "SwiftUI", filename: "Theme.swift", language: "swift", code: toSwiftUITheme(tokens) },
+    { id: "compose", label: "Jetpack Compose", filename: "Theme.kt", language: "kotlin", code: toComposeTheme(tokens) },
     { id: "json", label: "JSON tokens", filename: "tokens.json", language: "json", code: toJsonTokens(tokens) },
     {
       id: "tokens-studio",

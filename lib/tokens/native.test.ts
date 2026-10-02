@@ -1,7 +1,7 @@
 import { describe, expect, test } from "vitest";
 
 import { fromHex } from "@/lib/color/color";
-import { toFlutterTheme, toSwiftUITheme, toTokensStudio } from "@/lib/tokens/native";
+import { toComposeTheme, toFlutterTheme, toSwiftUITheme, toTokensStudio } from "@/lib/tokens/native";
 import type { DesignTokens } from "@/types/tokens";
 
 const shade = (step: number, hex: string) => ({ step, value: fromHex(hex) });
@@ -45,6 +45,38 @@ describe("native formats", () => {
     expect(new Set(ids).size).toBe(ids.length);
     expect(ids).toEqual(expect.arrayContaining(["acmeLabsIndigo_250", "acmeLabsIndigo2_50", "acmeLabsPrimary"]));
     expect(code).not.toMatch(/static let indigo\b/);
+  });
+
+  test("Compose colors are unique PascalCase members referenced by the color schemes", () => {
+    const code = toComposeTheme(tokens);
+    const colors = code.slice(code.indexOf("object AcmeLabsColors {"), code.indexOf("object AcmeLabsSpacing"));
+    const ids = identifiers(colors, /val ([A-Za-z_][A-Za-z0-9_]*) =/g);
+    expect(new Set(ids).size).toBe(ids.length);
+    expect(ids).toEqual(expect.arrayContaining(["Indigo_250", "Indigo2_50", "Primary"]));
+    expect(colors).toContain("val Indigo2 = Color(0xFF6366F1)");
+    expect(code).toMatch(/val AcmeLabsLightColorScheme = lightColorScheme\(\n {4}primary = AcmeLabsColors\.Primary,/);
+    // Dark mode has no 300 or 200 shade of indigo-2 here, so it keeps the primary role.
+    expect(code).toMatch(/darkColorScheme\(\n {4}primary = AcmeLabsColors\.Primary,/);
+    expect(code).toContain("@Composable\nfun AcmeLabsTheme(");
+  });
+
+  test("Compose shapes use the radius tokens and spacing is in dp", () => {
+    const code = toComposeTheme(tokens);
+    expect(code).toContain("    val Lg = 12.dp\n    val Full = 9999.dp");
+    expect(code).toContain("    val S0_5 = 2.dp\n    val S4 = 16.dp");
+    expect(code).toContain("val AcmeLabsShapes = Shapes(\n    medium = RoundedCornerShape(AcmeLabsRadius.Lg),\n)");
+  });
+
+  test("Compose dark scheme lifts brand colors to a lighter shade and never shadows Color", () => {
+    const code = toComposeTheme({
+      ...tokens,
+      colors: [{ name: "color", value: fromHex("#6366f1"), shades: [shade(300, "#a5b4fc")] }],
+      semantic: [{ name: "primary", ref: "color", value: fromHex("#6366f1") }],
+      radius: [],
+    });
+    expect(code).toContain("val Color_ = Color(0xFF6366F1)");
+    expect(code).toMatch(/darkColorScheme\(\n {4}primary = AcmeLabsColors\.Color_300,\n {4}onPrimary = Color\.Black,/);
+    expect(code).toContain("val AcmeLabsShapes = Shapes()");
   });
 
   test("Tokens Studio resolves semantic aliases into the palette", () => {

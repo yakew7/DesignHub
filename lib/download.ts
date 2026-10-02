@@ -16,6 +16,7 @@ const mimeTypes: Record<string, string> = {
   scss: "text/x-scss",
   json: "application/json",
   js: "text/javascript",
+  mjs: "text/javascript",
   ts: "text/typescript",
   tsx: "text/typescript",
   svg: "image/svg+xml",
