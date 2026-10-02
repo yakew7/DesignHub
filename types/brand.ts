@@ -10,6 +10,14 @@ export type BrandVoice = {
   sample: string;
 };
 
+export type BrandValue = { title: string; description: string };
+
+/** The mission statement and up to four values, shown on the Mission & Values page. */
+export type BrandMission = {
+  statement: string;
+  values: BrandValue[];
+};
+
 /** Only what is unique to the brand. Colors, fonts, radius, spacing and shadows live in their own studios. */
 export type BrandProfile = {
   name: string;
@@ -19,6 +27,7 @@ export type BrandProfile = {
   /** Swatch id → role. Missing entries are inferred. */
   roles: Record<string, ColorRole>;
   voice: BrandVoice;
+  mission: BrandMission;
 };
 
 export type BrandColor = { id: string; name: string; hex: string; role: ColorRole };

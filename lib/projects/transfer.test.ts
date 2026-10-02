@@ -44,6 +44,41 @@ describe("project files", () => {
     expect(entry?.snapshot.effects.settings).toEqual(defaultSnapshot().effects.settings);
   });
 
+  test("the mission and values round-trip", () => {
+    const original = project("Acme");
+    original.snapshot.brand.profile.mission = {
+      statement: "Make brands easy.",
+      values: [{ title: "Speed", description: "Ship small, ship often." }],
+    };
+    const [entry] = parseProjectsFile(projectToJson(original));
+    expect(entry?.snapshot.brand.profile.mission).toEqual(original.snapshot.brand.profile.mission);
+  });
+
+  test("an older file without a mission gets the default, and bad values are dropped", () => {
+    const old = defaultSnapshot("Old");
+    const profile: Record<string, unknown> = { ...old.brand.profile };
+    delete profile.mission;
+    const [entry] = parseProjectsFile(
+      JSON.stringify({ format: "designhub.project", version: 1, snapshot: { ...old, brand: { profile } } }),
+    );
+    expect(entry?.snapshot.brand.profile.mission).toEqual(defaultSnapshot().brand.profile.mission);
+
+    const messy = defaultSnapshot("Messy");
+    const values = [
+      { title: "Ok", description: "Fine" },
+      { title: 3 },
+      "nope",
+      ...Array(6).fill({ title: "A", description: "B" }),
+    ];
+    const brand = { profile: { ...messy.brand.profile, mission: { statement: 7, values } } };
+    const [parsed] = parseProjectsFile(
+      JSON.stringify({ format: "designhub.project", version: 1, snapshot: { ...messy, brand } }),
+    );
+    expect(parsed?.snapshot.brand.profile.mission.statement).toBe(defaultSnapshot().brand.profile.mission.statement);
+    expect(parsed?.snapshot.brand.profile.mission.values).toHaveLength(4);
+    expect(parsed?.snapshot.brand.profile.mission.values[0]).toEqual({ title: "Ok", description: "Fine" });
+  });
+
   test("names are trimmed to 60 characters", () => {
     const long = project("x".repeat(100));
     const [entry] = parseProjectsFile(projectToJson(long));

@@ -7,6 +7,7 @@ import {
 } from "@/lib/guidelines/pages/foundations";
 import { imageryPage, socialMediaPage } from "@/lib/guidelines/pages/imagery";
 import { coverPage, introductionPage, voicePage } from "@/lib/guidelines/pages/intro";
+import { missionPage } from "@/lib/guidelines/pages/mission";
 import { clearSpacePage, incorrectUsagePage, logoUsagePage, minimumSizePage } from "@/lib/guidelines/pages/logo";
 import { colorTokensPage, scaleTokensPage } from "@/lib/guidelines/pages/tokens";
 import type { GuidelinePage } from "@/lib/guidelines/types";
@@ -15,6 +16,7 @@ import type { GuidelinePage } from "@/lib/guidelines/types";
 export const guidelinePages: GuidelinePage[] = [
   coverPage,
   introductionPage,
+  missionPage,
   logoUsagePage,
   clearSpacePage,
   minimumSizePage,

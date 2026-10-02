@@ -1,6 +1,7 @@
 import { defaultSnapshot, type BrandSnapshot } from "@/lib/projects/snapshot";
 import { projectName, type BrandProject } from "@/lib/projects/types";
 import { sanitizeSvg } from "@/lib/svg/sanitize";
+import { MAX_BRAND_VALUES } from "@/store/brand-store";
 
 export const PROJECT_FORMAT = "designhub.project";
 export const PROJECTS_FORMAT = "designhub.projects";
@@ -46,6 +47,26 @@ function isSwatch(value: unknown): boolean {
   return isNumber(l) && isNumber(c) && isNumber(h);
 }
 
+type Mission = BrandSnapshot["brand"]["profile"]["mission"];
+
+/** Keeps a mission from a file only when it has the right shape; anything else falls back to the default. */
+function normalizeMission(value: unknown, fallback: Mission): Mission {
+  if (!isObject(value)) return fallback;
+  const values = Array.isArray(value.values)
+    ? value.values
+        .filter(
+          (item): item is { title: string; description: string } =>
+            isObject(item) && typeof item.title === "string" && typeof item.description === "string",
+        )
+        .slice(0, MAX_BRAND_VALUES)
+        .map((item) => ({ title: item.title.slice(0, 40), description: item.description.slice(0, 160) }))
+    : fallback.values;
+  return {
+    statement: typeof value.statement === "string" ? value.statement.slice(0, 220) : fallback.statement,
+    values,
+  };
+}
+
 /**
  * Checks a snapshot from a file and fills anything missing from the defaults, so an
  * older or hand-edited file still opens. The logo is re-sanitized: files are untrusted.
@@ -84,6 +105,7 @@ function normalizeSnapshot(value: unknown): BrandSnapshot {
         logoSvg: logo,
         roles: isObject(brand.roles) ? (brand.roles as BrandSnapshot["brand"]["profile"]["roles"]) : {},
         voice: { ...base.brand.profile.voice, ...(isObject(brand.voice) ? brand.voice : {}) },
+        mission: normalizeMission(brand.mission, base.brand.profile.mission),
       },
     },
     colors: { ...slice("colors"), swatches: swatches as BrandSnapshot["colors"]["swatches"] },

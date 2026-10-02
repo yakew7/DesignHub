@@ -5,6 +5,7 @@ import { useMemo } from "react";
 
 import { SvgPreviewCanvas } from "@/components/canvas/svg-preview-canvas";
 import { GuidelineExportPanel } from "@/components/guidelines/guideline-export-panel";
+import { GuidelineMissionPanel } from "@/components/guidelines/guideline-mission-panel";
 import { GuidelinePageList } from "@/components/guidelines/guideline-page-list";
 import { GuidelineVoicePanel } from "@/components/guidelines/guideline-voice-panel";
 import { StudioLayout } from "@/components/layout/studio-layout";
@@ -66,6 +67,7 @@ export function GuidelinesWorkspace() {
               </ToggleGroup>
             </Panel>
           )}
+          <GuidelineMissionPanel />
           <GuidelineVoicePanel />
         </>
       }

@@ -1,6 +1,6 @@
 import type { VariantContext } from "@/lib/logo/variants";
 import type { DrawContext } from "@/lib/mockups/types";
-import type { BrandVoice } from "@/types/brand";
+import type { BrandMission, BrandVoice } from "@/types/brand";
 import type { DesignTokens } from "@/types/tokens";
 
 /** Layout of the brand book cover. */
@@ -14,6 +14,7 @@ export const coverStyles: { value: CoverStyle; label: string }[] = [
 
 export type GuidelineContext = DrawContext & {
   voice: BrandVoice;
+  mission: BrandMission;
   /** The same token set the Export Engine produces. */
   tokens: DesignTokens;
   logo: VariantContext;
