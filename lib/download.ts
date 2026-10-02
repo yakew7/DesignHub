@@ -21,6 +21,7 @@ const mimeTypes: Record<string, string> = {
   svg: "image/svg+xml",
   html: "text/html",
   txt: "text/plain",
+  md: "text/markdown",
 };
 
 export function downloadText(content: string, filename: string): void {
