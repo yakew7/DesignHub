@@ -10,6 +10,7 @@ DesignHub has no accounts and no server. Everything you make is saved in your ow
 | IndexedDB     | `designhub` database, `icons` table         | Icons you have opened, cached so Icon Studio keeps working offline.                                                                    |
 | IndexedDB     | `designhub` database, `projects` table      | Your brand projects: one full snapshot of the brand per project.                                                                       |
 | localStorage  | `theme`                                     | Your light or dark theme choice (written by `next-themes`).                                                                            |
+| localStorage  | `designhub:panes:<studio>`                  | How wide you dragged each studio pane. Double-click a divider to reset it.                                                             |
 | Cache Storage | `designhub-static-*`, `designhub-runtime-*` | On the hosted site only: the offline app shell and cached Google Fonts and Iconify responses, so DesignHub opens without a connection. |
 
 The database and its tables are defined in [`lib/db.ts`](../lib/db.ts). Every read and write goes through `safeDb`, so blocked or broken storage never breaks a studio.
@@ -20,7 +21,7 @@ Each row in the `kv` table is one Zustand store, saved under the key shown here.
 
 | Key                     | Holds                                                                            | In projects                     |
 | ----------------------- | -------------------------------------------------------------------------------- | ------------------------------- |
-| `designhub:brand`       | Brand name, description, uploaded logo, color roles, voice                       | Yes                             |
+| `designhub:brand`       | Brand name, description, uploaded logo, color roles, voice, mission and values   | Yes                             |
 | `designhub:colors`      | Palette swatches, shade options, gradient, contrast pair                         | Yes (palette, shades, gradient) |
 | `designhub:typography`  | Heading and body fonts, type scale, rhythm, specimen, OpenType features          | Yes (fonts, scale, rhythm)      |
 | `designhub:tokens`      | Export Engine settings: prefix, color format, spacing and radius bases           | Yes                             |
