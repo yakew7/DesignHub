@@ -1,7 +1,9 @@
+import { contrastRatio, oklch, parseColor } from "@/lib/color/color";
 import { logoAspect, nestLogo } from "@/lib/logo/compose";
 import { monochromeSvg } from "@/lib/logo/recolor";
 
-export type LogoVariantId = "color" | "monochrome" | "inverted" | "horizontal" | "stacked" | "wordmark" | "app-icon";
+export type LogoVariantId =
+  "color" | "monochrome" | "inverted" | "horizontal" | "stacked" | "wordmark" | "app-icon" | "avatar";
 
 export type VariantContext = {
   logo: string;
@@ -24,6 +26,8 @@ export type LogoVariant = {
   /** Background the variant is designed for. */
   background: (ctx: VariantContext) => string;
   render: (ctx: VariantContext) => string;
+  /** Square pixel sizes the logo pack exports as PNG. Omitted means one PNG at 4x. */
+  pngSizes?: number[];
 };
 
 const escapeXml = (value: string) => value.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
@@ -38,6 +42,24 @@ function wordmark(ctx: VariantContext, x: number, baseline: number, size: number
 }
 
 const MARK = 160;
+
+/** Clear space around the avatar mark, as a fraction of the mark's height (the logo pack default). */
+export const AVATAR_CLEAR_SPACE = 0.25;
+
+/**
+ * The largest mark of the given aspect ratio whose box, grown by `clearSpace` × its height on every
+ * side, still fits inside a circle of diameter `size`.
+ */
+export function avatarMarkSize(aspect: number, size: number, clearSpace = AVATAR_CLEAR_SPACE) {
+  const height = size / Math.hypot(aspect + 2 * clearSpace, 1 + 2 * clearSpace);
+  return { width: height * aspect, height };
+}
+
+/** White when it reaches 3:1 on the primary color (fine for a mark), otherwise the brand text color. */
+function onPrimary(ctx: VariantContext): string {
+  const primary = parseColor(ctx.primary);
+  return primary && contrastRatio(primary, oklch(1, 0, 0)) >= 3 ? "#ffffff" : ctx.text;
+}
 
 function markOnly(svg: string, ctx: VariantContext): string {
   const width = MARK * logoAspect(svg);
@@ -133,6 +155,29 @@ export const logoVariants: LogoVariant[] = [
         size,
         `<rect width="${size}" height="${size}" rx="${size * 0.22}" fill="${ctx.primary}"/>` +
           nestLogo(monochromeSvg(ctx.logo, "#ffffff"), { x: (size - w) / 2, y: (size - h) / 2, width: w, height: h }),
+        ctx,
+      );
+    },
+  },
+  {
+    id: "avatar",
+    label: "Avatar",
+    description: "Mark centered in a circle, for profile pictures on GitHub, X and Slack.",
+    background: () => "transparent",
+    pngSizes: [400, 1024],
+    render: (ctx) => {
+      const size = 512;
+      const { width, height } = avatarMarkSize(logoAspect(ctx.logo), size);
+      return doc(
+        size,
+        size,
+        `<circle cx="${size / 2}" cy="${size / 2}" r="${size / 2}" fill="${ctx.primary}"/>` +
+          nestLogo(monochromeSvg(ctx.logo, onPrimary(ctx)), {
+            x: (size - width) / 2,
+            y: (size - height) / 2,
+            width,
+            height,
+          }),
         ctx,
       );
     },

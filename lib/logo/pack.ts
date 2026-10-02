@@ -3,6 +3,7 @@ import { imagesToPdf } from "@/lib/export/pdf";
 import { rasterize } from "@/lib/export/raster";
 import { faviconEntries, type FaviconOptions } from "@/lib/icons/favicon";
 import { logoVariants, renderVariant, type LogoVariantId, type VariantContext } from "@/lib/logo/variants";
+import { svgDimensions } from "@/lib/svg-size";
 import { createZip, type ZipEntry } from "@/lib/zip";
 
 export function slugify(name: string): string {
@@ -46,6 +47,7 @@ function usageNotes(ctx: VariantContext, clearSpace: number): string {
     `${ctx.name} logo pack`,
     "",
     "Files: every variant as SVG (vector, preferred), PNG (4x) and PDF, plus a favicon/ folder built from the app icon.",
+    "The avatar comes as PNG at 400 x 400 and 1024 x 1024, ready to upload as a profile picture.",
     "",
     "Usage",
     `- Clear space: keep at least ${Math.round(clearSpace * 100)}% of the logo height free on every side.`,
@@ -68,14 +70,17 @@ export async function buildLogoPack(ctx: VariantContext, clearSpace: number): Pr
   for (const variant of logoVariants) {
     const svg = variant.render(ctx);
     const image = await rasterize(svg, 4);
-    entries.push(
-      { name: `svg/${base}-${variant.id}.svg`, data: svg },
-      { name: `png/${base}-${variant.id}.png`, data: image.bytes },
-      {
-        name: `pdf/${base}-${variant.id}.pdf`,
-        data: await imagesToPdf([{ image }], { title: `${ctx.name} ${variant.label}`, scale: 4 }),
-      },
-    );
+    // Variants with fixed sizes (the avatar) export one square PNG per size instead of the 4x render.
+    const { width } = svgDimensions(svg);
+    const pngs: ZipEntry[] = [];
+    for (const size of variant.pngSizes ?? []) {
+      pngs.push({ name: `png/${base}-${variant.id}-${size}.png`, data: (await rasterize(svg, size / width)).bytes });
+    }
+    if (pngs.length === 0) pngs.push({ name: `png/${base}-${variant.id}.png`, data: image.bytes });
+    entries.push({ name: `svg/${base}-${variant.id}.svg`, data: svg }, ...pngs, {
+      name: `pdf/${base}-${variant.id}.pdf`,
+      data: await imagesToPdf([{ image }], { title: `${ctx.name} ${variant.label}`, scale: 4 }),
+    });
   }
   entries.push(...(await faviconFiles(ctx, "favicon/")));
   return createZip(entries);

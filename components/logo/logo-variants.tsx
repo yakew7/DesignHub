@@ -34,8 +34,11 @@ export function LogoVariants() {
               )}
             >
               <span
-                className={cn("flex h-32 items-center justify-center p-5", variant.id === "app-icon" && "bg-checker")}
-                style={variant.id === "app-icon" ? undefined : { background: variant.background(ctx) }}
+                className={cn(
+                  "flex h-32 items-center justify-center p-5",
+                  variant.background(ctx) === "transparent" && "bg-checker",
+                )}
+                style={variant.background(ctx) === "transparent" ? undefined : { background: variant.background(ctx) }}
               >
                 <BrandLogo svg={svg} className="max-h-full max-w-full" />
               </span>
