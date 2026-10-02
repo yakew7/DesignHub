@@ -4,7 +4,9 @@ import { chevron } from "@/lib/background/generators/chevron";
 import { confetti } from "@/lib/background/generators/confetti";
 import { hexagons } from "@/lib/background/generators/hexagons";
 import { lowPoly } from "@/lib/background/generators/low-poly";
+import { plus } from "@/lib/background/generators/plus";
 import { rings } from "@/lib/background/generators/rings";
+import { starfield } from "@/lib/background/generators/starfield";
 import { stripes } from "@/lib/background/generators/stripes";
 import { sunburst } from "@/lib/background/generators/sunburst";
 import { aurora } from "@/lib/background/generators/aurora";
@@ -15,6 +17,7 @@ import { isometric } from "@/lib/background/generators/isometric";
 import { mesh } from "@/lib/background/generators/mesh";
 import { noise } from "@/lib/background/generators/noise";
 import { topographic } from "@/lib/background/generators/topographic";
+import { voronoi } from "@/lib/background/generators/voronoi";
 import { waves } from "@/lib/background/generators/waves";
 import { wrapSvg } from "@/lib/background/svg";
 import type { BackgroundDefinition, BackgroundKind, BackgroundSettings } from "@/types/background";
@@ -39,6 +42,9 @@ export const backgroundGenerators: BackgroundDefinition[] = [
   sunburst,
   topographic,
   stripes,
+  plus,
+  starfield,
+  voronoi,
 ];
 
 export function getGenerator(kind: BackgroundKind): BackgroundDefinition | undefined {
