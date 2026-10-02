@@ -10,6 +10,7 @@ import { componentNameFromFile, reactComponent, toJsx, withCurrentColor } from "
 import { reactNativeComponent } from "@/lib/svg/react-native";
 import { minify, prettyPrint } from "@/lib/svg/serialize";
 import { buildSprite, spriteUsage } from "@/lib/svg/sprite";
+import { vueComponent } from "@/lib/svg/vue";
 import { useSvgStore } from "@/store/svg-store";
 import type { ExportFormat } from "@/types/export";
 import type { SvgNode } from "@/types/svg";
@@ -56,6 +57,13 @@ export function SvgOutput({ root }: { root: SvgNode | null }) {
         language: "tsx",
         code: native.code,
       },
+      {
+        id: "vue",
+        label: "Vue",
+        filename: `${componentNameFromFile(name)}.vue`,
+        language: "vue",
+        code: vueComponent(codeTree, name),
+      },
       ...(sprite.length
         ? [
             {
@@ -80,7 +88,7 @@ export function SvgOutput({ root }: { root: SvgNode | null }) {
   if (!root) return <p className="text-sm text-muted-foreground">Fix the SVG to see the generated code.</p>;
   return (
     <>
-      <SwitchField label="Use currentColor in JSX / React" checked={currentColor} onChange={setCurrentColor} />
+      <SwitchField label="Use currentColor in components" checked={currentColor} onChange={setCurrentColor} />
       <ExportPanel formats={formats} label="SVG output format" />
       {native?.warnings.length ? (
         <div role="note" className="rounded-md border border-warning/40 bg-warning/5 p-3 text-xs text-muted-foreground">

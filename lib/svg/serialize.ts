@@ -1,6 +1,6 @@
 import type { SvgNode } from "@/types/svg";
 
-const escapeAttribute = (value: string) =>
+export const escapeAttribute = (value: string) =>
   value
     .replace(/&(?!(?:[a-z]+|#\d+|#x[\da-f]+);)/gi, "&amp;")
     .replace(/"/g, "&quot;")
