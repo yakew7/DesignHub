@@ -1,4 +1,6 @@
+import { billboard } from "@/lib/mockups/templates/billboard";
 import { businessCard } from "@/lib/mockups/templates/business-card";
+import { coffeeCup } from "@/lib/mockups/templates/coffee-cup";
 import { desktopDashboard } from "@/lib/mockups/templates/desktop-dashboard";
 import { emailSignature } from "@/lib/mockups/templates/email-signature";
 import { envelope } from "@/lib/mockups/templates/envelope";
@@ -18,7 +20,9 @@ export const mockupTemplates: MockupTemplate[] = [
   envelope,
   sticker,
   poster,
+  billboard,
   merch,
+  coffeeCup,
   idBadge,
   laptopLanding,
   desktopDashboard,
