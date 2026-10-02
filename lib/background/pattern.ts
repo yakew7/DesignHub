@@ -1,10 +1,16 @@
-import { r1 } from "@/lib/background/random";
+import { createRandom, r1 } from "@/lib/background/random";
 import { wrapSvg } from "@/lib/background/svg";
 import type { BackgroundSettings } from "@/types/background";
 
-/** Fills the canvas with a repeating tile. Rotation is handled by `wrapSvg`. */
+/**
+ * Fills the canvas with a repeating tile. Rotation is handled by `wrapSvg`. The seed shifts
+ * where the tile starts, so a new seed moves the pattern instead of drawing the same one.
+ */
 export function patternSvg(settings: BackgroundSettings, tileWidth: number, tileHeight: number, tile: string): string {
-  const defs = `<pattern id="tile" width="${r1(tileWidth)}" height="${r1(tileHeight)}" patternUnits="userSpaceOnUse">${tile}</pattern>`;
+  const random = createRandom(settings.seed);
+  const x = r1(random() * tileWidth);
+  const y = r1(random() * tileHeight);
+  const defs = `<pattern id="tile" x="${x}" y="${y}" width="${r1(tileWidth)}" height="${r1(tileHeight)}" patternUnits="userSpaceOnUse">${tile}</pattern>`;
   return wrapSvg(settings, `<rect width="${settings.width}" height="${settings.height}" fill="url(#tile)"/>`, defs);
 }
 
