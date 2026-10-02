@@ -283,6 +283,8 @@ GitHub Actions run on every push and pull request with Node 22 and pnpm: `ci.yml
 
 ## Keyboard shortcuts
 
+The most used shortcuts are below. See [docs/shortcuts.md](docs/shortcuts.md) for the full list, grouped by studio, or press `?` in the app.
+
 | Keys                   | Action                                                                                                                                                                                                                           |
 | ---------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | `⌘K` / `Ctrl K` or `/` | Command palette: studios, fonts, icons, brand projects and brand downloads                                                                                                                                                       |

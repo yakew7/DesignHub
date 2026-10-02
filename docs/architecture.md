@@ -110,7 +110,7 @@ OKLCH is the source of truth for every color in the app. It is perceptually unif
 
 ## Performance notes
 
-- The command palette and shortcuts dialog mount on first use (`components/layout/lazy-overlays.tsx`).
+- The command palette and shortcuts dialog mount on first use (`components/layout/lazy-overlays.tsx`). Every shortcut is listed in [shortcuts.md](shortcuts.md).
 - Secondary tabs in each studio are loaded with `next/dynamic`.
 - Heavy libraries are imported where they're used: OpenType.js (font inspector), pdf-lib (style guide, brand book, mockup PDF) and html-to-image (snapshots).
 - Brand assets in the Export Engine and project autosave load after hydration with `next/dynamic`.

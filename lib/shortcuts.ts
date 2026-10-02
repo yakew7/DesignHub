@@ -1,3 +1,5 @@
+import { studios } from "@/lib/navigation";
+
 export type ShortcutDefinition = {
   keys: string[];
   description: string;
@@ -10,17 +12,12 @@ export const shortcuts: ShortcutDefinition[] = [
   { keys: ["?"], description: "Show keyboard shortcuts", scope: "Global" },
   { keys: ["⌥", "T"], description: "Toggle dark / light theme", scope: "Global" },
   { keys: ["G", "H"], description: "Go home", scope: "Global" },
-  { keys: ["G", "R"], description: "Go to Brand Studio", scope: "Global" },
-  { keys: ["G", "L"], description: "Go to Logo Studio", scope: "Global" },
-  { keys: ["G", "M"], description: "Go to Mockup Studio", scope: "Global" },
-  { keys: ["G", "T"], description: "Go to Typography Studio", scope: "Global" },
-  { keys: ["G", "C"], description: "Go to Color Studio", scope: "Global" },
-  { keys: ["G", "I"], description: "Go to Icon Studio", scope: "Global" },
-  { keys: ["G", "B"], description: "Go to Background Studio", scope: "Global" },
-  { keys: ["G", "F"], description: "Go to Effects Lab", scope: "Global" },
-  { keys: ["G", "S"], description: "Go to SVG Playground", scope: "Global" },
-  { keys: ["G", "A"], description: "Go to Accessibility Lab", scope: "Global" },
-  { keys: ["G", "E"], description: "Go to Export Engine", scope: "Global" },
+  // "g then letter" navigation, read from the studio list so every studio is listed.
+  ...studios.map((studio): ShortcutDefinition => ({
+    keys: ["G", studio.shortcut.toUpperCase()],
+    description: `Go to ${studio.title}`,
+    scope: "Global",
+  })),
   { keys: ["Space"], description: "Generate palette", scope: "Colors" },
   { keys: ["Z"], description: "Undo palette change", scope: "Colors" },
   { keys: ["⇧", "Z"], description: "Redo palette change", scope: "Colors" },
