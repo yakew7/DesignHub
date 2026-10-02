@@ -265,7 +265,10 @@ const styledGroups: Record<string, string> = {
   effect: "effects",
 };
 
-const camel = (value: string) => value.replace(/-+([a-z0-9])/gi, (_, char: string) => char.toUpperCase());
+// A hyphen between two digits becomes an underscore, so "indigo-2-50" (indigo-2, shade 50) and
+// "indigo-250" stay different keys, matching the Swift and Flutter shade ids.
+const camel = (value: string) =>
+  value.replace(/(\d)-+(?=\d)/g, "$1_").replace(/-+([a-z0-9])/gi, (_, char: string) => char.toUpperCase());
 const upperFirst = (value: string) => value.charAt(0).toUpperCase() + value.slice(1);
 const objectKey = (value: string) =>
   /^[A-Za-z_$][\w$]*$/.test(value) || /^(0|[1-9]\d*)$/.test(value) ? value : JSON.stringify(value);

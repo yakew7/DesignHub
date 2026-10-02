@@ -1,7 +1,7 @@
 import { describe, expect, test } from "vitest";
 
 import { fromHex } from "@/lib/color/color";
-import { tokenFormats, toJsModule, toScss, toStylus } from "@/lib/tokens/formats";
+import { tokenFormats, toJsModule, toScss, toStyledTheme, toStylus } from "@/lib/tokens/formats";
 import type { DesignTokens } from "@/types/tokens";
 
 const tokens = (prefix = ""): DesignTokens => ({
@@ -69,4 +69,12 @@ test("the new formats are registered for the Export Engine and the ZIP", () => {
   expect(formats.map((format) => format.filename)).toEqual(
     expect.arrayContaining(["tokens.mjs", "tokens.styl", "Theme.kt"]),
   );
+});
+
+describe("styled-components theme", () => {
+  test("keeps shades of similarly named colors apart", () => {
+    const theme = toStyledTheme(tokens());
+    expect(theme).toContain('indigo250: "#cdd9f3"');
+    expect(theme).toContain('indigo2_50: "#f1f6ff"');
+  });
 });
