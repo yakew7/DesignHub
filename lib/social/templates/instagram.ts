@@ -1,5 +1,5 @@
-import { logo, mockupDoc, onPrimaryLarge, text } from "@/lib/mockups/kit";
-import { glowBackdrop, gradientBackdrop, heading, lockup, pill } from "@/lib/social/templates/shared";
+import { logo, mockupDoc, onPrimaryLarge, text, wrap } from "@/lib/mockups/kit";
+import { backdrop, glowBackdrop, gradientBackdrop, heading, lockup, pill } from "@/lib/social/templates/shared";
 import type { SocialTemplate } from "@/lib/social/types";
 
 export const instagramSquare: SocialTemplate = {
@@ -23,6 +23,49 @@ export const instagramSquare: SocialTemplate = {
       ${text(pad, W - pad, content.handle, { size: 32, fill: surface.text, font: "bb" })}
       ${text(W - pad, W - pad, content.website, { size: 32, fill: surface.primary, font: "bb", anchor: "end" })}`;
     return mockupDoc(ctx, W, W, body);
+  },
+};
+
+export const instagramPortrait: SocialTemplate = {
+  id: "instagram-portrait",
+  platform: "Instagram",
+  label: "Portrait post",
+  width: 1080,
+  height: 1350,
+  description: "Feed post, 1080 × 1350 (4:5). The profile grid shows a 3:4 center crop.",
+  safe: { x: 90, y: 90, width: 900, height: 1170 },
+  render(ctx) {
+    const { surface, content } = ctx;
+    const W = 1080;
+    const H = 1350;
+    const pad = 110;
+    const onColor = ctx.layout.background === "gradient";
+    const on = onColor ? onPrimaryLarge(ctx) : surface.text;
+    const accent = onColor ? on : surface.primary;
+    const size = 104;
+    const subtitle = wrap(ctx, content.subtitle, W - pad * 2, 36, "b", 2);
+    // Centre the headline block between the lockup and the footer, whatever its line count.
+    const lineCount = wrap(ctx, content.headline, W - pad * 2, size, "h", 4).length;
+    const blockHeight = size * 0.75 + (lineCount - 1) * size * 1.08 + 140 + (subtitle.length - 1) * 48;
+    const top = 260 + (H - pad - 80 - 260 - blockHeight) / 2 + size * 0.75;
+    const title = heading(ctx, content.headline, pad, top, W - pad * 2, size, on, { maxLines: 4 });
+    const subtitleY = title.bottom + 140;
+    const body = `${backdrop(ctx, W, H, () => glowBackdrop(ctx, W, H, 54))}
+      ${lockup(ctx, pad, 190, 60, onColor ? on : undefined, "igp-lockup")}
+      ${title.markup}
+      <rect x="${pad}" y="${title.bottom + 64}" width="120" height="10" rx="5" fill="${accent}"/>
+      ${subtitle
+        .map((line, i) =>
+          text(pad, subtitleY + i * 48, line, {
+            size: 36,
+            fill: onColor ? on : surface.muted,
+            opacity: onColor ? 0.85 : 1,
+          }),
+        )
+        .join("")}
+      ${text(pad, H - pad, content.handle, { size: 32, fill: on, font: "bb" })}
+      ${text(W - pad, H - pad, content.website, { size: 32, fill: accent, font: "bb", anchor: "end" })}`;
+    return mockupDoc(ctx, W, H, body);
   },
 };
 

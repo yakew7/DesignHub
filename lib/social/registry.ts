@@ -1,5 +1,5 @@
 import { githubBannerStyles } from "@/lib/social/templates/github";
-import { instagramSquare, instagramStory } from "@/lib/social/templates/instagram";
+import { instagramPortrait, instagramSquare, instagramStory } from "@/lib/social/templates/instagram";
 import { linkedinCover } from "@/lib/social/templates/linkedin-cover";
 import { ogTemplates } from "@/lib/social/templates/open-graph";
 import { pinterestPin } from "@/lib/social/templates/pinterest";
@@ -9,6 +9,8 @@ import { blueskyBanner } from "@/lib/social/templates/bluesky";
 import { facebookCover } from "@/lib/social/templates/facebook";
 import { linkedinCompanyCover } from "@/lib/social/templates/linkedin-company";
 import { discordBanner } from "@/lib/social/templates/discord";
+import { mastodonHeader } from "@/lib/social/templates/mastodon";
+import { twitchBanner } from "@/lib/social/templates/twitch";
 import type { SocialPlatform, SocialTemplate } from "@/lib/social/types";
 
 /** Templates register here as they are implemented. */
@@ -17,6 +19,7 @@ export const socialTemplates: SocialTemplate[] = [
   linkedinCover,
   xBanner,
   instagramSquare,
+  instagramPortrait,
   instagramStory,
   ...ogTemplates,
   productHuntGallery,
@@ -26,6 +29,8 @@ export const socialTemplates: SocialTemplate[] = [
   blueskyBanner,
   facebookCover,
   discordBanner,
+  twitchBanner,
+  mastodonHeader,
 ];
 
 export const socialPlatforms: SocialPlatform[] = [
@@ -40,6 +45,8 @@ export const socialPlatforms: SocialPlatform[] = [
   "Bluesky",
   "Facebook",
   "Discord",
+  "Twitch",
+  "Mastodon",
 ];
 
 /** Ids from earlier versions, so saved selections keep working. */
