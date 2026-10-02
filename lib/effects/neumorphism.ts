@@ -2,7 +2,8 @@ import { oklch, parseColor, toHex } from "@/lib/color/color";
 import { defineEffect } from "@/lib/effects/define";
 import { px } from "@/lib/effects/css";
 
-function tone(hex: string, delta: number): string {
+/** Shifts a color's OKLCH lightness by `delta`, clamped to 0-1. */
+export function tone(hex: string, delta: number): string {
   const color = parseColor(hex) ?? oklch(0.9, 0.01, 250);
   return toHex(oklch(Math.min(1, Math.max(0, color.l + delta)), color.c, color.h));
 }

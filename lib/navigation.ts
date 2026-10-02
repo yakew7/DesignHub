@@ -159,7 +159,8 @@ export const studios: readonly StudioNavItem[] = [
     id: "effects",
     title: "Effects Lab",
     href: "/effects",
-    description: "Glass, neumorphism, layered shadows, glows, gradient borders and grain - as CSS and Tailwind.",
+    description:
+      "Glass, neumorphism, layered and inner shadows, glows, gradient borders and grain - as CSS and Tailwind.",
     icon: Sparkles,
     shortcut: "f",
     group: "Design",

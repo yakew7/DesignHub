@@ -18,6 +18,7 @@ export const effectDefaults: EffectSettingsMap = {
       { id: "s2", x: 0, y: 8, blur: 24, spread: -4, color: "#000000", opacity: 0.18, inset: false },
     ],
   },
+  inset: { x: 0, y: 2, blur: 6, spread: 0, color: "#000000", opacity: 0.18, fill: "#f4f4f5", radius: 12 },
   glow: { color: "#6366f1", radius: 32, intensity: 0.7, text: false, radiusCorner: 16 },
   border: {
     colors: ["#6366f1", "#f472b6", "#fbbf24"],

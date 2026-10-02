@@ -71,7 +71,7 @@ export function AssetExports() {
         />
         <AssetCard
           title="Effects"
-          description="Glass, neumorphism, shadow, glow, border and grain as .fx-* classes."
+          description="Glass, neumorphism, shadow, inner shadow, glow, border and grain as .fx-* classes."
           actions={
             <>
               <CopyButton value={effectsCss} variant="outline" size="sm" toastMessage="Effects CSS copied">

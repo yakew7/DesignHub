@@ -1,4 +1,4 @@
-export type EffectKind = "glass" | "neumorphism" | "shadow" | "glow" | "border" | "grain";
+export type EffectKind = "glass" | "neumorphism" | "shadow" | "inset" | "glow" | "border" | "grain";
 
 export type GlassSettings = {
   blur: number;
@@ -35,6 +35,19 @@ export type ShadowLayer = {
 
 export type ShadowSettings = { layers: ShadowLayer[]; radius: number };
 
+/** One inset shadow, for inputs, wells and pressed states. */
+export type InsetSettings = {
+  x: number;
+  y: number;
+  blur: number;
+  spread: number;
+  color: string;
+  opacity: number;
+  /** Background of the recessed element. */
+  fill: string;
+  radius: number;
+};
+
 export type GlowSettings = {
   color: string;
   radius: number;
@@ -67,6 +80,7 @@ export type EffectSettingsMap = {
   glass: GlassSettings;
   neumorphism: NeumorphismSettings;
   shadow: ShadowSettings;
+  inset: InsetSettings;
   glow: GlowSettings;
   border: BorderSettings;
   grain: GrainSettings;
