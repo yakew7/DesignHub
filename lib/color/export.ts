@@ -1,4 +1,4 @@
-import { formatColor, toHex, toRgb } from "@/lib/color/color";
+import { formatColor, readableTextColor, toHex, toRgb } from "@/lib/color/color";
 import { gradientCss, gradientCssFallback, sortedStops } from "@/lib/color/gradient";
 import { paletteNames } from "@/lib/color/names";
 import { generateShades, type ShadeOptions } from "@/lib/color/shades";
@@ -14,7 +14,14 @@ export type ColorExportInput = {
   /** Palette name for formats that carry one (the GIMP palette). */
   name?: string;
 };
-
+function escapeXml(value: string): string {
+  return value
+    .replaceAll("&", "&amp;")
+    .replaceAll("<", "&lt;")
+    .replaceAll(">", "&gt;")
+    .replaceAll('"', "&quot;")
+    .replaceAll("'", "&apos;");
+}
 export type NamedColor = { name: string; color: Oklch; shades: { step: number; color: Oklch }[] };
 
 export function namedPalette(colors: Oklch[], shadeOptions: ShadeOptions): NamedColor[] {
@@ -178,4 +185,28 @@ export function colorExports(input: ColorExportInput): ExportFormat[] {
       code: gimpPalette(palette, input.includeShades, input.name),
     },
   ];
+}
+export function paletteSvg(palette: NamedColor[], columnWidth = 240, height = 240): string {
+  const width = Math.max(columnWidth, palette.length * columnWidth);
+
+  const columns = palette
+    .map(({ name, color }, index) => {
+      const x = index * columnWidth;
+      const background = toHex(color);
+      const text = toHex(readableTextColor(color));
+
+      return `  <g>
+    <rect x="${x}" y="0" width="${columnWidth}" height="${height}" fill="${background}"/>
+    <text x="${x + columnWidth / 2}" y="${height / 2 - 8}" fill="${text}" text-anchor="middle"
+      font-family="Arial, Helvetica, sans-serif" font-size="20" font-weight="600">${escapeXml(name)}</text>
+    <text x="${x + columnWidth / 2}" y="${height / 2 + 24}" fill="${text}" text-anchor="middle"
+      font-family="Arial, Helvetica, sans-serif" font-size="16">${escapeXml(background)}</text>
+  </g>`;
+    })
+    .join("\n");
+
+  return `<svg xmlns="http://www.w3.org/2000/svg" width="${width}" height="${height}" viewBox="0 0 ${width} ${height}">
+${columns}
+</svg>
+`;
 }
