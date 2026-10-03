@@ -1,7 +1,7 @@
 import { describe, expect, test } from "vitest";
 
 import { fromHex } from "@/lib/color/color";
-import { colorExports, gimpPalette, type NamedColor } from "@/lib/color/export";
+import { colorExports, gimpPalette, paletteSvg, type NamedColor } from "@/lib/color/export";
 import { defaultShadeOptions } from "@/lib/color/shades";
 
 const palette: NamedColor[] = [
@@ -45,5 +45,37 @@ describe("GIMP palette", () => {
     const gpl = formats.find((format) => format.id === "gpl");
     expect(gpl?.filename).toBe("palette.gpl");
     expect(gpl?.code).toMatch(/^GIMP Palette\nName: DesignHub palette\n#\n 99 102 241\t\S+\n$/);
+  });
+});
+
+describe("Palette SVG", () => {
+  test("renders colors in order with their names and hex values", () => {
+    const svg = paletteSvg(palette);
+
+    expect(svg.indexOf("#6366f1")).toBeLessThan(svg.indexOf("#f59e0b"));
+
+    expect(svg).toContain(">indigo</text>");
+    expect(svg).toContain(">amber</text>");
+
+    expect(svg).toContain(">#6366f1</text>");
+    expect(svg).toContain(">#f59e0b</text>");
+  });
+
+  test("uses readable black or white text based on the background", () => {
+    const svg = paletteSvg([
+      {
+        name: "black",
+        color: fromHex("#000000"),
+        shades: [],
+      },
+      {
+        name: "white",
+        color: fromHex("#ffffff"),
+        shades: [],
+      },
+    ]);
+
+    expect(svg).toContain('fill="#ffffff" text-anchor="middle"');
+    expect(svg).toContain('fill="#000000" text-anchor="middle"');
   });
 });
