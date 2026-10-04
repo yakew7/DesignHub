@@ -19,7 +19,10 @@ export type BackgroundKind =
   | "stripes"
   | "plus"
   | "starfield"
-  | "voronoi";
+  | "voronoi"
+  | "crosshatch"
+  | "circuit"
+  | "halftone";
 
 export type BackgroundSettings = {
   kind: BackgroundKind;

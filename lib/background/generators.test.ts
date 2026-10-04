@@ -1,6 +1,8 @@
 import { describe, expect, test } from "vitest";
 
 import { backgroundCss } from "@/lib/background/export";
+import { circuitTraces, type GridNode } from "@/lib/background/generators/circuit";
+import { halftoneGradient, halftoneStrength } from "@/lib/background/generators/halftone";
 import { voronoiCells, type Point } from "@/lib/background/generators/voronoi";
 import { createRandom } from "@/lib/background/random";
 import { renderBackgroundSvg } from "@/lib/background/registry";
@@ -21,7 +23,7 @@ const settings = (kind: BackgroundKind, patch: Partial<BackgroundSettings> = {})
 
 const nodeCount = (svg: string) => (svg.match(/<[a-zA-Z]/g) ?? []).length;
 
-describe.each(["plus", "starfield", "voronoi"] as const)("%s", (kind) => {
+describe.each(["plus", "starfield", "voronoi", "crosshatch", "circuit", "halftone"] as const)("%s", (kind) => {
   test("the same seed renders the same output", () => {
     for (const patch of [{ seed: 7 }, { seed: 7, rotation: 30, density: 100, scale: 2 }]) {
       expect(renderBackgroundSvg(settings(kind, patch))).toBe(renderBackgroundSvg(settings(kind, patch)));
@@ -97,4 +99,93 @@ test("voronoi renders the largest density quickly", () => {
   renderBackgroundSvg(settings("voronoi", { density: 100, seed: 9 }));
   // The target is 100 ms on a laptop; leave headroom for slow CI machines.
   expect(performance.now() - start).toBeLessThan(250);
+});
+
+test("crosshatch draws through a <pattern> and exports two crossing CSS gradients", () => {
+  expect(renderBackgroundSvg(settings("crosshatch"))).toContain("<pattern");
+  const css = backgroundCss(settings("crosshatch", { rotation: 30 }));
+  expect(css).toContain("repeating-linear-gradient(30deg");
+  expect(css).toContain("repeating-linear-gradient(120deg");
+});
+
+describe("circuit traces", () => {
+  const traces = (seed: number) =>
+    circuitTraces(createRandom(seed), { columns: 60, rows: 40, coverage: 0.6, maxTraces: 700 });
+
+  test.each([1, 2, 3, 42])("never overlap or cross (seed %i)", (seed) => {
+    const nodes = new Set<string>();
+    const diagonals = new Set<string>();
+    for (const trace of traces(seed)) {
+      expect(trace.length).toBeGreaterThanOrEqual(3);
+      trace.forEach(([x, y], i) => {
+        // No node is used twice, by this trace or any other.
+        expect(nodes.has(`${x},${y}`)).toBe(false);
+        nodes.add(`${x},${y}`);
+        const previous = trace[i - 1];
+        if (!previous) return;
+        const dx = x - previous[0];
+        const dy = y - previous[1];
+        expect(Math.max(Math.abs(dx), Math.abs(dy))).toBe(1);
+        if (dx && dy) {
+          // Two diagonals in one grid cell would cross in an X.
+          const cell = `${Math.min(x, previous[0])},${Math.min(y, previous[1])}`;
+          expect(diagonals.has(cell)).toBe(false);
+          diagonals.add(cell);
+        }
+      });
+    }
+  });
+
+  test("turn by at most 45 degrees at a time", () => {
+    const angle = (a: GridNode, b: GridNode) => Math.atan2(b[1] - a[1], b[0] - a[0]);
+    for (const trace of traces(5)) {
+      for (let i = 2; i < trace.length; i += 1) {
+        let turn = Math.abs(angle(trace[i - 1]!, trace[i]!) - angle(trace[i - 2]!, trace[i - 1]!));
+        if (turn > Math.PI) turn = 2 * Math.PI - turn;
+        expect(turn).toBeLessThanOrEqual(Math.PI / 4 + 1e-9);
+      }
+    }
+  });
+
+  test("density adds traces and the SVG stays under 2,500 nodes", () => {
+    const sparse = nodeCount(renderBackgroundSvg(settings("circuit", { density: 0 })));
+    const dense = nodeCount(renderBackgroundSvg(settings("circuit", { density: 100 })));
+    expect(dense).toBeGreaterThan(sparse * 2);
+    for (const patch of [
+      { density: 100, scale: 0.25 },
+      { density: 100, width: 3840, height: 2160, scale: 0.25 },
+    ]) {
+      expect(nodeCount(renderBackgroundSvg(settings("circuit", patch)))).toBeLessThan(2500);
+    }
+  });
+});
+
+describe("halftone", () => {
+  test("dots are largest at a radial gradient's center and fade toward the corners", () => {
+    const gradient = { type: "radial", cx: 400, cy: 300, angle: 0 } as const;
+    const strength = halftoneStrength(gradient, 1600, 900);
+    expect(strength(400, 300)).toBe(1);
+    expect(strength(1600, 900)).toBeCloseTo(0, 5);
+    expect(strength(800, 300)).toBeLessThan(strength(500, 300));
+  });
+
+  test("a linear gradient runs from 0 to 1 across the canvas", () => {
+    const strength = halftoneStrength({ type: "linear", cx: 800, cy: 450, angle: 0 }, 1600, 900);
+    expect(strength(0, 450)).toBeCloseTo(0, 5);
+    expect(strength(800, 0)).toBeCloseTo(0.5, 5);
+    expect(strength(1600, 450)).toBeCloseTo(1, 5);
+  });
+
+  test("seeds pick both gradient types", () => {
+    const types = new Set(
+      Array.from({ length: 20 }, (_, seed) => halftoneGradient(settings("halftone", { seed })).type),
+    );
+    expect(types).toEqual(new Set(["linear", "radial"]));
+  });
+
+  test("keeps the SVG small, even on a 4K canvas", () => {
+    const svg = renderBackgroundSvg(settings("halftone", { density: 100, width: 3840, height: 2160 }));
+    expect(nodeCount(svg)).toBeLessThan(20);
+    expect((svg.match(/M/g) ?? []).length).toBeLessThan(6600);
+  });
 });

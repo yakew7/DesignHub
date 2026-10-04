@@ -1,7 +1,10 @@
 import { bokeh } from "@/lib/background/generators/bokeh";
 import { checks } from "@/lib/background/generators/checks";
 import { chevron } from "@/lib/background/generators/chevron";
+import { circuit } from "@/lib/background/generators/circuit";
 import { confetti } from "@/lib/background/generators/confetti";
+import { crosshatch } from "@/lib/background/generators/crosshatch";
+import { halftone } from "@/lib/background/generators/halftone";
 import { hexagons } from "@/lib/background/generators/hexagons";
 import { lowPoly } from "@/lib/background/generators/low-poly";
 import { plus } from "@/lib/background/generators/plus";
@@ -45,6 +48,9 @@ export const backgroundGenerators: BackgroundDefinition[] = [
   plus,
   starfield,
   voronoi,
+  crosshatch,
+  circuit,
+  halftone,
 ];
 
 export function getGenerator(kind: BackgroundKind): BackgroundDefinition | undefined {
