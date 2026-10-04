@@ -13,7 +13,8 @@ export type ExportLanguage =
   | "kotlin"
   | "text"
   | "vue"
-  | "yaml";
+  | "yaml"
+  | "svelte";
 
 export type ExportFormat = {
   id: string;
