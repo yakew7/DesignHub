@@ -4,6 +4,8 @@ import type { BrandSnapshot } from "@/lib/projects/snapshot";
 export type BrandProject = {
   id: string;
   favorite: boolean;
+  /** Up to five short labels such as "client" or "archived". Records saved before tags have none. */
+  tags: string[];
   createdAt: number;
   updatedAt: number;
   lastOpenedAt: number;

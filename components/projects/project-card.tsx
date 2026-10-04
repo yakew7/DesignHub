@@ -3,6 +3,7 @@
 import { Check, Pencil, Star, Trash2, X } from "lucide-react";
 import { useMemo, useState, type ReactNode } from "react";
 
+import { ProjectTags } from "@/components/projects/project-tags";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -17,6 +18,8 @@ type Props = {
   onOpen: () => void;
   onRename: (name: string) => void;
   onFavorite: () => void;
+  onAddTag: (tag: string) => void;
+  onRemoveTag: (tag: string) => void;
   onDelete: () => void;
   /** Extra actions (duplicate, export). */
   actions?: ReactNode;
@@ -38,7 +41,17 @@ function ago(time: number): string {
   return "just now";
 }
 
-export function ProjectCard({ project, active, onOpen, onRename, onFavorite, onDelete, actions }: Props) {
+export function ProjectCard({
+  project,
+  active,
+  onOpen,
+  onRename,
+  onFavorite,
+  onAddTag,
+  onRemoveTag,
+  onDelete,
+  actions,
+}: Props) {
   const tokens = useMemo(() => snapshotTokens(project.snapshot), [project.snapshot]);
   const name = projectName(project);
   const [editing, setEditing] = useState(false);
@@ -135,6 +148,7 @@ export function ProjectCard({ project, active, onOpen, onRename, onFavorite, onD
         <p className="text-xs text-muted-foreground">
           Edited {ago(project.updatedAt)} · Opened {ago(project.lastOpenedAt)}
         </p>
+        <ProjectTags name={name} tags={project.tags} onAdd={onAddTag} onRemove={onRemoveTag} />
         <div className="mt-auto flex items-center gap-1 pt-1">
           <Button size="sm" variant={active ? "outline" : "default"} onClick={onOpen} disabled={active}>
             {active ? "Current" : "Open"}

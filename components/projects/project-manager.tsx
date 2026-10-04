@@ -1,6 +1,6 @@
 "use client";
 
-import { Copy, Download, FileDown, Link2, Plus, Search, Star, Upload } from "lucide-react";
+import { Copy, Download, FileDown, Link2, Plus, Search, Star, Tag, Upload } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { toast } from "sonner";
@@ -16,12 +16,14 @@ import { useProjects } from "@/hooks/use-projects";
 import { downloadText } from "@/lib/download";
 import { slugify } from "@/lib/logo/pack";
 import {
+  addProjectTag,
   createBlankProject,
   duplicateProject,
   freshProject,
   importProjects,
   openProject,
   removeProject,
+  removeProjectTag,
   renameProject,
   restoreProject,
   saveActiveProject,
@@ -29,17 +31,22 @@ import {
 } from "@/lib/projects/actions";
 import { listProjects } from "@/lib/projects/repository";
 import { projectSorts, sortProjects, type ProjectSort } from "@/lib/projects/sort";
+import { projectTags } from "@/lib/projects/tags";
 import { projectsToJson, projectToJson } from "@/lib/projects/transfer";
 import { projectName, type BrandProject } from "@/lib/projects/types";
 import { cn } from "@/lib/utils";
 import { useProjectStore } from "@/store/project-store";
 import { useUiStore } from "@/store/ui-store";
 
+/** Radix Select can't use an empty value, so "no tag filter" gets a sentinel tags can never equal (they're lowercase). */
+const ALL_TAGS = "__ALL__";
+
 export function ProjectManager() {
   const router = useRouter();
   const { projects, activeId, persistent, run } = useProjects();
   const [query, setQuery] = useState("");
   const [favoritesOnly, setFavoritesOnly] = useState(false);
+  const [tagFilter, setTagFilter] = useState<string | null>(null);
   const [creating, setCreating] = useState(false);
   const [newName, setNewName] = useState("");
   const [deleting, setDeleting] = useState<BrandProject | null>(null);
@@ -87,13 +94,20 @@ export function ProjectManager() {
     }
   }
 
+  const tags = useMemo(() => projectTags(projects ?? []), [projects]);
+  // Removing the last use of the filtered tag would otherwise leave an empty list with no way back.
+  const activeTag = tagFilter && tags.includes(tagFilter) ? tagFilter : null;
+
   const visible = useMemo(() => {
     const term = query.trim().toLowerCase();
     const matching = (projects ?? []).filter(
-      (project) => (!favoritesOnly || project.favorite) && projectName(project).toLowerCase().includes(term),
+      (project) =>
+        (!favoritesOnly || project.favorite) &&
+        (!activeTag || project.tags.includes(activeTag)) &&
+        projectName(project).toLowerCase().includes(term),
     );
     return sortProjects(matching, sort);
-  }, [projects, query, favoritesOnly, sort]);
+  }, [projects, query, favoritesOnly, activeTag, sort]);
 
   async function remove(target: BrandProject) {
     const removed = await run(() => removeProject(target.id));
@@ -140,6 +154,31 @@ export function ProjectManager() {
         >
           <Star className={cn(favoritesOnly && "fill-warning text-warning")} /> Favorites
         </Button>
+        <Select
+          value={activeTag ?? ALL_TAGS}
+          onValueChange={(value) => setTagFilter(value === ALL_TAGS ? null : value)}
+          disabled={tags.length === 0}
+        >
+          <SelectTrigger
+            size="sm"
+            className={cn(
+              "w-40 [&>span]:flex-1 [&>span]:truncate [&>span]:text-left",
+              activeTag && "border-brand/60 text-foreground",
+            )}
+            aria-label="Filter by tag"
+          >
+            <Tag />
+            <SelectValue />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value={ALL_TAGS}>All tags</SelectItem>
+            {tags.map((tag) => (
+              <SelectItem key={tag} value={tag}>
+                {tag}
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
         <Select value={sort} onValueChange={(value) => setSort(value as ProjectSort)}>
           <SelectTrigger size="sm" className="w-44" aria-label="Sort projects">
             <SelectValue />
@@ -197,7 +236,7 @@ export function ProjectManager() {
         </ul>
       ) : visible.length === 0 ? (
         <p className="rounded-lg border border-dashed p-8 text-center text-sm text-muted-foreground">
-          {query || favoritesOnly ? "No projects match." : "No projects yet."}
+          {query || favoritesOnly || activeTag ? "No projects match." : "No projects yet."}
         </p>
       ) : (
         <ul className="grid gap-3 sm:grid-cols-2 xl:grid-cols-3" aria-label="Brand projects">
@@ -209,6 +248,8 @@ export function ProjectManager() {
               onOpen={() => void open(project)}
               onRename={(name) => void run(() => renameProject(project.id, name))}
               onFavorite={() => void run(() => toggleFavorite(project.id))}
+              onAddTag={(tag) => void run(() => addProjectTag(project.id, tag))}
+              onRemoveTag={(tag) => void run(() => removeProjectTag(project.id, tag))}
               onDelete={() => setDeleting(project)}
               actions={
                 <>

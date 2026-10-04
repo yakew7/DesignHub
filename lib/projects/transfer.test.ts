@@ -8,6 +8,7 @@ function project(name: string, patch: Partial<BrandProject> = {}): BrandProject 
   return {
     id: `id-${name}`,
     favorite: false,
+    tags: [],
     createdAt: 1,
     updatedAt: 2,
     lastOpenedAt: 3,
@@ -83,6 +84,48 @@ describe("project files", () => {
     const long = project("x".repeat(100));
     const [entry] = parseProjectsFile(projectToJson(long));
     expect(entry?.snapshot.brand.profile.name).toHaveLength(60);
+  });
+});
+
+describe("tags", () => {
+  test("round-trip in single and multi-project files", () => {
+    const tagged = project("Acme", { tags: ["client", "archived"] });
+    expect(parseProjectsFile(projectToJson(tagged))[0]?.tags).toEqual(["client", "archived"]);
+    const entries = parseProjectsFile(projectsToJson([tagged, project("Plain")]));
+    expect(entries.map((entry) => entry.tags)).toEqual([["client", "archived"], []]);
+  });
+
+  test("an older file without tags imports with none", () => {
+    const old = { format: "designhub.project", version: 1, favorite: true, snapshot: defaultSnapshot("Old") };
+    const [entry] = parseProjectsFile(JSON.stringify(old));
+    expect(entry?.tags).toEqual([]);
+    expect(entry?.favorite).toBe(true);
+    const list = { format: "designhub.projects", version: 1, projects: [{ snapshot: defaultSnapshot("Old") }] };
+    expect(parseProjectsFile(JSON.stringify(list))[0]?.tags).toEqual([]);
+  });
+
+  test("are trimmed, lowercased, deduplicated and capped at five", () => {
+    const tags = [
+      "  Client ",
+      "client",
+      "",
+      "   ",
+      42,
+      null,
+      "Very   long tag name that keeps going",
+      "a",
+      "b",
+      "c",
+      "d",
+    ];
+    const file = { format: "designhub.project", version: 1, tags, snapshot: defaultSnapshot("Messy") };
+    const [entry] = parseProjectsFile(JSON.stringify(file));
+    expect(entry?.tags).toEqual(["client", "very long tag name that", "a", "b", "c"]);
+  });
+
+  test("a value that isn't a list is ignored", () => {
+    const file = { format: "designhub.project", version: 1, tags: "client", snapshot: defaultSnapshot("Odd") };
+    expect(parseProjectsFile(JSON.stringify(file))[0]?.tags).toEqual([]);
   });
 });
 

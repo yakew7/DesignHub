@@ -7,6 +7,7 @@ import { projectName, type BrandProject } from "@/lib/projects/types";
 const make = (name: string, patch: Partial<BrandProject>): BrandProject => ({
   id: name,
   favorite: false,
+  tags: [],
   createdAt: 0,
   updatedAt: 0,
   lastOpenedAt: 0,

@@ -1,4 +1,5 @@
 import { defaultSnapshot, type BrandSnapshot } from "@/lib/projects/snapshot";
+import { normalizeTags } from "@/lib/projects/tags";
 import { projectName, type BrandProject } from "@/lib/projects/types";
 import { sanitizeSvg } from "@/lib/svg/sanitize";
 import { MAX_BRAND_VALUES } from "@/store/brand-store";
@@ -6,7 +7,7 @@ import { MAX_BRAND_VALUES } from "@/store/brand-store";
 export const PROJECT_FORMAT = "designhub.project";
 export const PROJECTS_FORMAT = "designhub.projects";
 
-type ProjectEntry = { favorite: boolean; snapshot: BrandSnapshot };
+type ProjectEntry = { favorite: boolean; tags: string[]; snapshot: BrandSnapshot };
 
 export function projectToJson(project: BrandProject): string {
   return JSON.stringify(
@@ -16,6 +17,7 @@ export function projectToJson(project: BrandProject): string {
       exportedAt: new Date().toISOString(),
       name: projectName(project),
       favorite: project.favorite,
+      tags: project.tags,
       snapshot: project.snapshot,
     },
     null,
@@ -29,7 +31,11 @@ export function projectsToJson(projects: BrandProject[]): string {
       format: PROJECTS_FORMAT,
       version: 1,
       exportedAt: new Date().toISOString(),
-      projects: projects.map((project) => ({ favorite: project.favorite, snapshot: project.snapshot })),
+      projects: projects.map((project) => ({
+        favorite: project.favorite,
+        tags: project.tags,
+        snapshot: project.snapshot,
+      })),
     },
     null,
     2,
@@ -132,12 +138,19 @@ export function parseProjectsFile(text: string): ProjectEntry[] {
   }
   if (!isObject(data)) throw new Error("That file isn't a DesignHub project.");
   if (data.format === PROJECT_FORMAT) {
-    return [{ favorite: data.favorite === true, snapshot: normalizeSnapshot(data.snapshot) }];
+    return [
+      { favorite: data.favorite === true, tags: normalizeTags(data.tags), snapshot: normalizeSnapshot(data.snapshot) },
+    ];
   }
   if (data.format === PROJECTS_FORMAT && Array.isArray(data.projects)) {
     return data.projects.map((entry) => {
       if (!isObject(entry)) throw new Error("A project in this file is damaged.");
-      return { favorite: entry.favorite === true, snapshot: normalizeSnapshot(entry.snapshot) };
+      // Files from before tags have none; tags are untrusted, so they are trimmed and capped.
+      return {
+        favorite: entry.favorite === true,
+        tags: normalizeTags(entry.tags),
+        snapshot: normalizeSnapshot(entry.snapshot),
+      };
     });
   }
   if (data.format === "designhub.brand") {

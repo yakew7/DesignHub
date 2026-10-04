@@ -14,6 +14,7 @@ import {
   saveProject,
   updateProject,
 } from "@/lib/projects/repository";
+import { addTag, removeTag } from "@/lib/projects/tags";
 import { parseProjectsFile } from "@/lib/projects/transfer";
 import { projectName, type BrandProject } from "@/lib/projects/types";
 import { useBrandStore } from "@/store/brand-store";
@@ -42,11 +43,15 @@ export async function saveActiveProject(): Promise<void> {
   await updateProject(activeId, { snapshot: captureSnapshot(), updatedAt: Date.now() });
 }
 
-export async function createProject(snapshot: BrandSnapshot, options: { open?: boolean } = {}): Promise<BrandProject> {
+export async function createProject(
+  snapshot: BrandSnapshot,
+  options: { open?: boolean; tags?: string[] } = {},
+): Promise<BrandProject> {
   const now = Date.now();
   const project: BrandProject = {
     id: newProjectId(),
     favorite: false,
+    tags: options.tags ?? [],
     createdAt: now,
     updatedAt: now,
     lastOpenedAt: options.open ? now : 0,
@@ -88,6 +93,17 @@ export async function renameProject(id: string, name: string): Promise<void> {
   const snapshot = structuredClone(project.snapshot);
   snapshot.brand.profile.name = clean;
   await updateProject(id, { snapshot, updatedAt: Date.now() });
+}
+
+/** Adds a tag (normalized; ignored once the project has five). */
+export async function addProjectTag(id: string, tag: string): Promise<void> {
+  const project = await getProject(id);
+  if (project) await updateProject(id, { tags: addTag(project.tags, tag) });
+}
+
+export async function removeProjectTag(id: string, tag: string): Promise<void> {
+  const project = await getProject(id);
+  if (project) await updateProject(id, { tags: removeTag(project.tags, tag) });
 }
 
 export async function toggleFavorite(id: string): Promise<void> {
@@ -150,7 +166,7 @@ export async function duplicateProject(id: string): Promise<BrandProject | undef
   if (!source) return undefined;
   const snapshot = structuredClone(source.snapshot);
   snapshot.brand.profile.name = `${projectName(source)} copy`.slice(0, 60);
-  return createProject(snapshot);
+  return createProject(snapshot, { tags: source.tags });
 }
 
 /** Keeps names unique so an import never looks like it replaced something. */
@@ -167,7 +183,7 @@ export async function importProjects(text: string): Promise<number> {
   const existing = new Set((await listProjects()).map(projectName));
   for (const entry of entries) {
     uniqueName(entry.snapshot, existing);
-    const project = await createProject(entry.snapshot);
+    const project = await createProject(entry.snapshot, { tags: entry.tags });
     if (entry.favorite) await updateProject(project.id, { favorite: true });
   }
   return entries.length;
