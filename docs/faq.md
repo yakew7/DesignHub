@@ -52,6 +52,12 @@ See the [storage guide](storage.md#back-up-your-work).
 
 Follow the Mockup and social template guidelines in the [Contributing guide](../CONTRIBUTING.md), which explains how to add and register templates.
 
+## Can I host my own copy?
+
+Yes. DesignHub needs no environment variables, API keys or database: build it with `pnpm build` and serve it with `pnpm start`, or deploy it to Vercel, Netlify or Docker. Analytics only load on Vercel, so a self-hosted copy sends nothing.
+
+See the [self-hosting guide](self-hosting.md).
+
 ## Does DesignHub send my designs anywhere?
 
 Your saved projects and settings stay in your browser. DesignHub does not use an application backend to store your work.
