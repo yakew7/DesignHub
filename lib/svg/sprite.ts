@@ -15,15 +15,28 @@ export function symbolId(fileName: string): string {
   return /^[a-z]/.test(slug) ? slug : `icon-${slug || "svg"}`;
 }
 
-/** Prefixes every internal id (and its references) so symbols can't clash inside one sprite. */
+/** `symbolId(name)`, with `-2`, `-3`... appended until it isn't one of `taken`. */
+export function uniqueSymbolId(name: string, taken: Iterable<string>): string {
+  const used = new Set(taken);
+  const base = symbolId(name);
+  let id = base;
+  for (let n = 2; used.has(id); n += 1) id = `${base}-${n}`;
+  return id;
+}
+
+/**
+ * Prefixes every internal id (and its references) so symbols can't clash inside one sprite.
+ * The "_" separator never appears in a symbol id, so "a" + "b-c" and "a-b" + "c" stay distinct
+ * and no internal id can equal a symbol id.
+ */
 function namespaceIds(node: SvgNode, prefix: string): void {
-  const renameUrls = (value: string) => value.replace(/url\(\s*(['"]?)#([^'")\s]+)\1\s*\)/g, `url(#${prefix}-$2)`);
+  const renameUrls = (value: string) => value.replace(/url\(\s*(['"]?)#([^'")\s]+)\1\s*\)/g, `url(#${prefix}_$2)`);
   const visit = (current: SvgNode) => {
     for (const [name, value] of Object.entries(current.attributes)) {
-      if (name === "id") current.attributes[name] = `${prefix}-${value}`;
+      if (name === "id") current.attributes[name] = `${prefix}_${value}`;
       // A bare "#id" is only a reference in href attributes; elsewhere "#fbbf24" is a color.
       else if ((name === "href" || name === "xlink:href") && value.startsWith("#"))
-        current.attributes[name] = `#${prefix}-${value.slice(1)}`;
+        current.attributes[name] = `#${prefix}_${value.slice(1)}`;
       else if (value.includes("url(")) current.attributes[name] = renameUrls(value);
     }
     current.children.forEach(visit);

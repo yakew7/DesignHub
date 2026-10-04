@@ -4,7 +4,7 @@ import { createJSONStorage, persist } from "zustand/middleware";
 import { indexedDbStorage } from "@/lib/db";
 import { defaultOptimizeOptions, type SvgOptimizeOptions } from "@/lib/svg/optimize";
 import { sampleSvg } from "@/lib/svg/sample";
-import { symbolId, type SpriteItem } from "@/lib/svg/sprite";
+import { symbolId, uniqueSymbolId, type SpriteItem } from "@/lib/svg/sprite";
 import type { NodePath } from "@/lib/svg/tree";
 
 type SvgState = {
@@ -39,10 +39,10 @@ export const useSvgStore = create<SvgState>()(
       sprite: [],
       addToSprite: (name, source) =>
         set((state) => {
-          const base = symbolId(name);
-          const taken = new Set(state.sprite.map((item) => item.id));
-          let id = base;
-          for (let n = 2; taken.has(id); n += 1) id = `${base}-${n}`;
+          const id = uniqueSymbolId(
+            name,
+            state.sprite.map((item) => item.id),
+          );
           return { sprite: [...state.sprite, { id, source }] };
         }),
       renameSprite: (index, id) =>

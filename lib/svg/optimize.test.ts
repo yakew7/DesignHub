@@ -132,10 +132,10 @@ describe("sprite builder", () => {
       { id: symbolId("one.svg"), source: withGradient("#abc") },
       { id: symbolId("two.svg"), source: withGradient("#def") },
     ]);
-    expect(sprite).toContain('id="one-g"');
-    expect(sprite).toContain('id="two-g"');
-    expect(sprite).toContain("url(#one-g)");
-    expect(sprite).toContain('href="#two-g"');
+    expect(sprite).toContain('id="one_g"');
+    expect(sprite).toContain('id="two_g"');
+    expect(sprite).toContain("url(#one_g)");
+    expect(sprite).toContain('href="#two_g"');
   });
 
   test("leaves hex colors alone", () => {
