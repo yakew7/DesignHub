@@ -4,11 +4,12 @@ import { ImageDown, Loader2 } from "lucide-react";
 import { useMemo, useState } from "react";
 import { toast } from "sonner";
 
+import { ExportPanel } from "@/components/export/export-panel";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
 import { toHex } from "@/lib/color/color";
-import { colorExports, paletteSvg, namedPalette } from "@/lib/color/export";
+import { colorExports, namedPalette, paletteSvg } from "@/lib/color/export";
 import { gradientCss } from "@/lib/color/gradient";
 import { downloadBlob } from "@/lib/download";
 import { rasterize } from "@/lib/export/raster";
@@ -24,6 +25,7 @@ export function ColorExport() {
   const brandName = useBrandStore((state) => state.profile.name);
   const [includeShades, setIncludeShades] = useState(true);
   const [downloading, setDownloading] = useState(false);
+
   const formats = useMemo(
     () =>
       colorExports({
@@ -37,28 +39,18 @@ export function ColorExport() {
     [swatches, gradient, format, includeShades, shadeOptions, brandName],
   );
 
-  //PNG Download Function
+  /** The palette as a PNG strip (2x), one column per color with its name and hex code. */
   async function downloadPng() {
     if (swatches.length === 0) return;
-
     setDownloading(true);
-
     try {
       const palette = namedPalette(
         swatches.map((swatch) => swatch.color),
         shadeOptions,
       );
-
-      const svg = paletteSvg(palette);
-
-      const image = await rasterize(svg, 2);
-
-      const brand = slugify(brandName.trim() || "brand");
-      const blob = new Blob([image.bytes.slice().buffer], {
-        type: "image/png",
-      });
-
-      downloadBlob(blob, `${brand}-colors.png`);
+      const image = await rasterize(paletteSvg(palette), 2);
+      const blob = new Blob([image.bytes.slice().buffer], { type: "image/png" });
+      downloadBlob(blob, `${slugify(brandName.trim() || "brand")}-colors.png`);
       toast.success("PNG download ready");
     } catch (error) {
       toast.error(error instanceof Error ? error.message : "PNG export failed.");
@@ -68,23 +60,27 @@ export function ColorExport() {
   }
 
   return (
-    <div className="flex flex-wrap items-center gap-4">
-      <div className="flex h-10 flex-1 overflow-hidden rounded-md border" aria-hidden>
-        {swatches.map((swatch) => (
-          <span key={swatch.id} className="flex-1" style={{ background: toHex(swatch.color) }} />
-        ))}
-        <span className="w-24" style={{ background: gradientCss(gradient) }} />
+    <div className="flex flex-col gap-6">
+      <div className="flex flex-wrap items-center gap-4">
+        <div className="flex h-10 flex-1 overflow-hidden rounded-md border" aria-hidden>
+          {swatches.map((swatch) => (
+            <span key={swatch.id} className="flex-1" style={{ background: toHex(swatch.color) }} />
+          ))}
+          <span className="w-24" style={{ background: gradientCss(gradient) }} />
+        </div>
+        <div className="flex items-center gap-2">
+          <Switch id="export-shades" checked={includeShades} onCheckedChange={setIncludeShades} />
+          <Label htmlFor="export-shades">Include 50–950 shades</Label>
+        </div>
+        <Button size="sm" variant="outline" onClick={downloadPng} disabled={downloading || swatches.length === 0}>
+          {downloading ? <Loader2 className="animate-spin" /> : <ImageDown />}
+          Download PNG
+        </Button>
       </div>
-
-      <div className="flex items-center gap-2">
-        <Switch id="export-shades" checked={includeShades} onCheckedChange={setIncludeShades} />
-        <Label htmlFor="export-shades">Include 50–950 shades</Label>
-      </div>
-
-      <Button onClick={downloadPng} disabled={downloading || swatches.length === 0}>
-        {downloading ? <Loader2 className="animate-spin" /> : <ImageDown />}
-        Download PNG
-      </Button>
+      <p className="text-xs text-subtle-foreground">
+        Values use the {format.toUpperCase()} notation selected above. Switch notation to export HEX, RGB, HSL or OKLCH.
+      </p>
+      <ExportPanel formats={formats} label="Color export format" />
     </div>
   );
 }
