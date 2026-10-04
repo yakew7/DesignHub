@@ -16,6 +16,8 @@ export const defaultTargets: TouchTarget[] = [
 type A11yState = {
   tab: A11yTab;
   colors: A11yColors;
+  /** A ring color to try instead of the brand's. null follows the brand primary live. */
+  focusRing: string | null;
   typography: A11yTypography;
   sample: string;
   vision: VisionMode;
@@ -26,6 +28,7 @@ type A11yState = {
   setDyslexiaSimulation: (value: boolean) => void;
   setTab: (tab: A11yTab) => void;
   setColors: (patch: Partial<A11yColors>) => void;
+  setFocusRing: (focusRing: string | null) => void;
   setTypography: (patch: Partial<A11yTypography>) => void;
   setSample: (sample: string) => void;
   setVision: (vision: VisionMode) => void;
@@ -38,6 +41,7 @@ export const useA11yStore = create<A11yState>()(
     (set) => ({
       tab: "contrast",
       colors: { text: "#1f2937", background: "#ffffff", accent: "#4f46e5", onAccent: "#ffffff" },
+      focusRing: null,
       typography: {
         family: "Inter",
         size: 16,
@@ -55,6 +59,7 @@ export const useA11yStore = create<A11yState>()(
       setDyslexiaSimulation: (dyslexiaSimulation) => set({ dyslexiaSimulation }),
       setTab: (tab) => set({ tab }),
       setColors: (patch) => set((state) => ({ colors: { ...state.colors, ...patch } })),
+      setFocusRing: (focusRing) => set({ focusRing }),
       setTypography: (patch) => set((state) => ({ typography: { ...state.typography, ...patch } })),
       setSample: (sample) => set({ sample }),
       setVision: (vision) => set({ vision }),
@@ -65,8 +70,9 @@ export const useA11yStore = create<A11yState>()(
       name: "designhub:a11y",
       version: 1,
       storage: createJSONStorage(() => indexedDbStorage),
-      partialize: ({ colors, typography, sample, vision, targets, targetGap }) => ({
+      partialize: ({ colors, focusRing, typography, sample, vision, targets, targetGap }) => ({
         colors,
+        focusRing,
         typography,
         sample,
         vision,

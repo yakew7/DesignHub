@@ -1,4 +1,4 @@
-import type { contrastSection } from "@/lib/a11y/contrast";
+import type { contrastSection, focusSection } from "@/lib/a11y/contrast";
 import type { Verdict } from "@/lib/a11y/readability";
 import type { targetsSection } from "@/lib/a11y/targets";
 import type { visionSection } from "@/lib/a11y/vision";
@@ -6,6 +6,8 @@ import type { A11yColors, A11yTypography, TouchTarget } from "@/types/a11y";
 
 export type A11yReportInput = {
   colors: A11yColors;
+  /** The focus ring being checked: the brand primary, or the lab's override. */
+  focusRing: string;
   typography: A11yTypography;
   targets: TouchTarget[];
   targetGap: number;
@@ -13,6 +15,7 @@ export type A11yReportInput = {
 
 export type A11yReportSections = {
   contrast: ReturnType<typeof contrastSection>;
+  focusIndicator: ReturnType<typeof focusSection>;
   vision: ReturnType<typeof visionSection>;
   readability: {
     charactersPerLine: number;
@@ -80,6 +83,23 @@ export function contrastTable(rows: A11yReportSections["contrast"]): string {
   );
 }
 
+/** The ring against the page and against the focused button, each needing 3:1. */
+export function focusTable(focus: A11yReportSections["focusIndicator"]): string {
+  return table(
+    ["Check", "Ring", "vs background", "vs component", "Required", "Result"],
+    [
+      [
+        focus.check,
+        code(focus.ring),
+        `${ratio(focus.ratioAgainstBackground)} on ${code(focus.background)}`,
+        `${ratio(focus.ratioAgainstComponent)} on ${code(focus.component)}`,
+        ratio(focus.required),
+        mark(focus.pass) + (focus.suggestion ? ` (try ${code(focus.suggestion)})` : ""),
+      ],
+    ],
+  );
+}
+
 /** The same report as readable Markdown for pull requests and wikis. */
 export function reportToMarkdown(report: A11yReport): string {
   const { settings, sections } = report;
@@ -96,6 +116,7 @@ export function reportToMarkdown(report: A11yReport): string {
         ["Background", code(colors.background)],
         ["Accent", code(colors.accent)],
         ["On accent", code(colors.onAccent)],
+        ["Focus ring", code(settings.focusRing)],
         ["Font", typography.family],
         ["Size", `${typography.size}px`],
         ["Weight", typography.weight],
@@ -108,6 +129,8 @@ export function reportToMarkdown(report: A11yReport): string {
     "## Contrast",
     contrastTable(sections.contrast),
     sections.contrast[0] ? `> ${sections.contrast[0].apca.note}` : "",
+    "## Focus indicator",
+    focusTable(sections.focusIndicator),
     "## Color vision",
     "Contrast after simulating each type of color vision. AA needs 4.5:1.",
     table(

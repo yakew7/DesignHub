@@ -1,12 +1,13 @@
 import { describe, expect, test } from "vitest";
 
-import { contrastSection } from "@/lib/a11y/contrast";
-import { buildReport, contrastTable, reportToMarkdown, type A11yReportInput } from "@/lib/a11y/report";
+import { contrastSection, focusIndicatorCheck, focusSection } from "@/lib/a11y/contrast";
+import { buildReport, contrastTable, focusTable, reportToMarkdown, type A11yReportInput } from "@/lib/a11y/report";
 import { targetsSection } from "@/lib/a11y/targets";
 import { visionSection } from "@/lib/a11y/vision";
 
 const input: A11yReportInput = {
   colors: { text: "#111111", background: "#ffffff", accent: "#8ab4f8", onAccent: "#ffffff" },
+  focusRing: "#6366f1",
   typography: {
     family: "Inter",
     size: 16,
@@ -22,6 +23,7 @@ const input: A11yReportInput = {
 
 const report = buildReport(input, {
   contrast: contrastSection(input.colors),
+  focusIndicator: focusSection(focusIndicatorCheck(input.focusRing, input.colors.background, input.colors.accent)),
   vision: visionSection(input.colors),
   readability: { charactersPerLine: 70, readingEase: 64, gradeLevel: 8, checks: [] },
   touchTargets: targetsSection(input.targets, input.targetGap),
@@ -66,6 +68,19 @@ describe("contrastTable", () => {
   });
 });
 
+describe("focusTable", () => {
+  test("shows both ring ratios and the verdict from the JSON", () => {
+    const focus = report.sections.focusIndicator;
+    const [, check, ring, background, component, required, result] = rows(focusTable(focus).split("\n")[2])[0];
+    expect(check).toBe(focus.check);
+    expect(ring).toBe("`#6366f1`");
+    expect(background).toBe(`${focus.ratioAgainstBackground.toFixed(2)}:1 on \`#ffffff\``);
+    expect(component).toBe(`${focus.ratioAgainstComponent.toFixed(2)}:1 on \`#8ab4f8\``);
+    expect(required).toBe("3.00:1");
+    expect(result.startsWith(focus.pass ? "✅ Pass" : "❌ Fail")).toBe(true);
+  });
+});
+
 describe("reportToMarkdown", () => {
   const markdown = reportToMarkdown({ ...report, generatedAt: "2026-01-01T00:00:00.000Z" });
 
@@ -75,6 +90,7 @@ describe("reportToMarkdown", () => {
       "# Accessibility report",
       "## Settings",
       "## Contrast",
+      "## Focus indicator",
       "## Color vision",
       "## Readability",
       "## Touch targets",
