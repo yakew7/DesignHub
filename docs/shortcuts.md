@@ -37,10 +37,14 @@ A few rules apply everywhere:
 
 ## Typography Studio
 
-| Keys    | Action                         |
-| ------- | ------------------------------ |
-| `F`     | Focus font search              |
-| `Space` | Random font pair (Pairing tab) |
+| Keys         | Action                         |
+| ------------ | ------------------------------ |
+| `F`          | Focus font search              |
+| `Space`      | Random font pair (Pairing tab) |
+| `↑` `↓`      | Move through the font list     |
+| `Home` `End` | First or last font             |
+| `Enter`      | Open the highlighted font      |
+| `S`          | Favorite the highlighted font  |
 
 ## Color Studio
 

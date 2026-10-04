@@ -5,13 +5,23 @@ import { Heart } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useLibraryStore } from "@/store/library-store";
 
-export function FavoriteFontButton({ family, className }: { family: string; className?: string }) {
+export function FavoriteFontButton({
+  family,
+  className,
+  tabIndex,
+}: {
+  family: string;
+  className?: string;
+  /** -1 inside the font listbox, where S toggles the highlighted font instead. */
+  tabIndex?: number;
+}) {
   const favorite = useLibraryStore((state) => state.favoriteFonts.includes(family));
   const toggleFavoriteFont = useLibraryStore((state) => state.toggleFavoriteFont);
 
   return (
     <button
       type="button"
+      tabIndex={tabIndex}
       onClick={() => toggleFavoriteFont(family)}
       aria-pressed={favorite}
       aria-label={favorite ? `Remove ${family} from favorites` : `Add ${family} to favorites`}

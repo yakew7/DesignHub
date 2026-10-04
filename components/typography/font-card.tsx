@@ -17,9 +17,12 @@ type FontCardProps = {
   onSelect: (family: string) => void;
 };
 
-/** One row in the font list: the family name set in its own typeface, plus its details. */
+/**
+ * One option in the font listbox: the family name set in its own typeface, plus its details.
+ * The listbox owns keyboard focus, so nothing in here is a tab stop.
+ */
 export const FontCard = memo(function FontCard({ font, active, onSelect }: FontCardProps) {
-  const { ref, inView } = useInView<HTMLButtonElement>();
+  const { ref, inView } = useInView<HTMLDivElement>();
 
   useEffect(() => {
     // Only the glyphs we render are downloaded, so hundreds of previews stay cheap.
@@ -28,13 +31,12 @@ export const FontCard = memo(function FontCard({ font, active, onSelect }: FontC
 
   return (
     <div className="relative flex w-full">
-      <button
+      {/* Clicks only: the listbox handles Enter and the arrow keys for every row. */}
+      <div
         ref={ref}
-        type="button"
         onClick={() => onSelect(font.family)}
-        aria-pressed={active}
         className={cn(
-          "flex w-full min-w-0 flex-col gap-0.5 rounded-md border border-transparent py-2 pr-11 pl-3 text-left transition-[border-color,background-color] duration-150 hover:bg-surface-raised",
+          "flex w-full cursor-pointer min-w-0 flex-col gap-0.5 rounded-md border border-transparent py-2 pr-11 pl-3 text-left transition-[border-color,background-color] duration-150 hover:bg-surface-raised",
           active && "border-brand/60 bg-surface-raised",
         )}
       >
@@ -45,8 +47,8 @@ export const FontCard = memo(function FontCard({ font, active, onSelect }: FontC
           {fontCategoryLabels[font.category]} · {font.weights.length} {font.weights.length === 1 ? "style" : "weights"}
           {isVariableFont(font) ? <Badge variant="brand">Variable</Badge> : null}
         </span>
-      </button>
-      <FavoriteFontButton family={font.family} className="absolute top-1/2 right-2 -translate-y-1/2" />
+      </div>
+      <FavoriteFontButton family={font.family} tabIndex={-1} className="absolute top-1/2 right-2 -translate-y-1/2" />
     </div>
   );
 });
