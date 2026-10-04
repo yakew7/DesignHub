@@ -153,21 +153,32 @@ export async function duplicateProject(id: string): Promise<BrandProject | undef
   return createProject(snapshot);
 }
 
+/** Keeps names unique so an import never looks like it replaced something. */
+function uniqueName(snapshot: BrandSnapshot, existing: Set<string>): void {
+  let name = snapshot.brand.profile.name.trim() || "Imported brand";
+  for (let n = 2; existing.has(name); n += 1) name = `${snapshot.brand.profile.name} (${n})`;
+  snapshot.brand.profile.name = name;
+  existing.add(name);
+}
+
 /** Adds every project in an exported file. Returns how many were imported. */
 export async function importProjects(text: string): Promise<number> {
   const entries = parseProjectsFile(text);
   const existing = new Set((await listProjects()).map(projectName));
   for (const entry of entries) {
-    const snapshot = entry.snapshot;
-    // Keep names unique so an import never looks like it replaced something.
-    let name = snapshot.brand.profile.name.trim() || "Imported brand";
-    for (let n = 2; existing.has(name); n += 1) name = `${snapshot.brand.profile.name} (${n})`;
-    snapshot.brand.profile.name = name;
-    existing.add(name);
-    const project = await createProject(snapshot);
+    uniqueName(entry.snapshot, existing);
+    const project = await createProject(entry.snapshot);
     if (entry.favorite) await updateProject(project.id, { favorite: true });
   }
   return entries.length;
+}
+
+/** Adds a brand from a share link as a new project and opens it. The open project is saved, never replaced. */
+export async function importSharedProject(snapshot: BrandSnapshot): Promise<BrandProject> {
+  await ensureInitialProject();
+  const copy = structuredClone(snapshot);
+  uniqueName(copy, new Set((await listProjects()).map(projectName)));
+  return createProject(copy, { open: true });
 }
 
 /** The latest copy of a project, including unsaved live edits when it is open. */

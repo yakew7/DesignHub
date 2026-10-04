@@ -1,10 +1,11 @@
 "use client";
 
-import { Copy, Download, FileDown, Plus, Search, Star, Upload } from "lucide-react";
+import { Copy, Download, FileDown, Link2, Plus, Search, Star, Upload } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { toast } from "sonner";
 
+import { copyShareLink } from "@/components/projects/copy-share-link";
 import { ProjectCard } from "@/components/projects/project-card";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
@@ -221,6 +222,17 @@ export function ProjectManager() {
                     }
                   >
                     <Copy />
+                  </Button>
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    className="size-8"
+                    aria-label={`Copy share link for ${projectName(project)}`}
+                    onClick={() =>
+                      void freshProject(project.id).then((latest) => copyShareLink((latest ?? project).snapshot))
+                    }
+                  >
+                    <Link2 />
                   </Button>
                   <Button
                     variant="ghost"
