@@ -32,6 +32,8 @@ Released 2026-09-23. The first public release: a complete, local-first design an
 - Studio pane sizes are remembered per studio (in localStorage), restored before first paint; double-click a divider to reset it.
 - A keyboard shortcuts guide (`docs/shortcuts.md`), checked against the shortcuts dialog by a test. The dialog now lists the `G` then `D`, `O`, `U` and `P` shortcuts too.
 - Tests that render every background generator, social template and mockup template and check the SVG is well-formed at the right size.
+- A Lighthouse CI workflow that checks accessibility, best practices and SEO (100) and performance (90, as a warning) on the main routes for every pull request.
+- Unit tests for readability, the SVG sprite builder and every registered effect.
 
 #### Brand Studio
 
@@ -67,6 +69,7 @@ Released 2026-09-23. The first public release: a complete, local-first design an
 - High-resolution PNG (up to 4×) and PDF export.
 - A Merch mockup with a T-shirt and a tote bag, an ID badge on a lanyard, and an email signature that can be copied as rich HTML.
 - Coffee cup and billboard mockups.
+- Shopping bag and browser tab mockups; the browser tab shows the app icon as a favicon at 16 px with a 2x callout.
 
 #### Social Media Studio
 
@@ -79,6 +82,7 @@ Released 2026-09-23. The first public release: a complete, local-first design an
 - Pinterest pin (1000 x 1500), Bluesky banner, Facebook cover, LinkedIn company page cover and Discord server banner templates.
 - Choose which templates go into the social asset ZIP.
 - Twitch channel banner, Mastodon header (with the avatar zone marked) and Instagram portrait post (1080 x 1350) templates.
+- YouTube channel banner (with the 1546 x 423 safe area), Reddit community banner and Tumblr header templates.
 
 #### Brand Guidelines
 
@@ -87,6 +91,8 @@ Released 2026-09-23. The first public release: a complete, local-first design an
 - Export the full book as a PDF with pdf-lib, or any page as PNG.
 - Three cover layouts (Gradient, Minimal, Editorial) that persist and apply to every PDF export. The book is seventeen pages, with Imagery and Social media pages drawn from the brand.
 - A Mission and values page: a statement and up to four values, edited in place and saved with brand projects.
+- The PDF has bookmarks for every included page and a clickable contents page.
+- Download website: the brand book as a static site ZIP with real HTML text, the page art, logo files and token downloads, ready for GitHub Pages or Netlify.
 
 #### Brand Projects
 
@@ -95,6 +101,8 @@ Released 2026-09-23. The first public release: a complete, local-first design an
 - The open project autosaves as you work in any studio.
 - Import and export projects as JSON, one at a time or all at once, with validation and logo sanitizing on import.
 - Sort projects by last opened, last edited, name or created date, and undo a delete from the toast.
+- Tags (up to five per project) with a tag filter; tags are exported and validated on import.
+- Share a brand as a link: the snapshot is compressed and checksummed into the URL hash, validated like an imported file and added as a new project after a prompt. The uploaded logo is left out if the link would be too long.
 
 #### Typography Studio
 
@@ -112,6 +120,7 @@ Released 2026-09-23. The first public release: a complete, local-first design an
 - Typography exports: CSS, Tailwind v4, SCSS, React/TypeScript, JSON tokens and a Google Fonts embed.
 - A Compare toggle that shows the active font next to a pinned second font with the same text and settings, plus Swap and Close compare.
 - A weight waterfall under the specimen that loads each weight only when it scrolls into view; click a row to use that weight.
+- The font list is a keyboard listbox: arrow keys, Page Up / Down, Home / End, `Enter` to pick and `S` to favorite.
 
 #### Color Studio
 
@@ -126,6 +135,7 @@ Released 2026-09-23. The first public release: a complete, local-first design an
 - Color exports: CSS variables, Tailwind v4, DTCG JSON tokens and SVG gradients.
 - Import palettes from Coolors URLs or any text containing 3- or 6-digit hex codes.
 - Export the palette as a GIMP / Inkscape / Krita palette (`.gpl`).
+- Download the palette as a PNG swatch strip, next to the code formats.
 
 #### Icon Studio
 
@@ -137,10 +147,11 @@ Released 2026-09-23. The first public release: a complete, local-first design an
 - Exports: SVG, React TSX component, CSS data URI, PNG (16-1024px) and ICO.
 - Reliable loading: automatic fallback to Iconify mirror hosts, per-request timeouts, progressive batches, retry for failed icons and a clear error state. Icons render when IndexedDB is blocked, and exported SVG is valid XML in every browser.
 - Export an icon as a Vue 3 single-file component.
+- Export an icon as a Svelte 5 component.
 
 #### Background Studio
 
-- Twenty-one procedural generators: waves, organic blobs (Paper.js smoothing), mesh gradients, aurora, noise textures, dot, grid and isometric patterns, concentric rings, checkerboard, low-poly mosaic, bokeh, confetti, chevron, honeycomb hexagons, sunburst, topographic contour lines, rotated stripes, plus signs, a starfield and Voronoi cells (computed in plain TypeScript, edge to edge).
+- Twenty-four procedural generators: waves, organic blobs (Paper.js smoothing), mesh gradients, aurora, noise textures, dot, grid and isometric patterns, concentric rings, checkerboard, low-poly mosaic, bokeh, confetti, chevron, honeycomb hexagons, sunburst, topographic contour lines, rotated stripes, plus signs, a starfield, Voronoi cells (computed in plain TypeScript, edge to edge), crosshatch, a circuit board with non-overlapping traces and halftone dots.
 - Deterministic seeds with randomize (`Space`), color controls with a "use palette" shortcut, density, scale, rotation and canvas presets.
 - Exports: SVG, PNG (1× and 2×) and CSS backgrounds (native gradients where possible, inline SVG otherwise).
 - The dots, checks, chevron and hexagons patterns now follow the seed, so a new seed shifts them.
@@ -151,6 +162,7 @@ Released 2026-09-23. The first public release: a complete, local-first design an
 - Live preview on gradient, photo, light and dark backdrops.
 - Exports: CSS, Tailwind arbitrary-property classes, Tailwind v4 `@utility`, SCSS mixins and React style objects, plus an `effects.css` bundle.
 - An inner shadow effect with Input, Pressed and Deep well presets, in every export format and in `effects.css`.
+- A long shadow effect for boxes and text, with an angle, length and fade, at most 60 shadow steps.
 
 #### SVG Playground
 
@@ -160,6 +172,7 @@ Released 2026-09-23. The first public release: a complete, local-first design an
 - Converters: SVG → JSX, SVG → React component and SVG → React Native (react-native-svg).
 - Sprite generator with namespaced symbol ids and usage snippets.
 - An SVG to Vue component converter.
+- A CSS data URI output that encodes only what it must, so it is shorter than base64. Sprite ids no longer collide when symbol and internal ids share hyphens.
 
 #### Accessibility Lab
 
@@ -171,6 +184,7 @@ Released 2026-09-23. The first public release: a complete, local-first design an
 - Downloadable JSON accessibility report.
 - APCA (WCAG 3 draft) Lc contrast next to every WCAG 2 ratio, with Bronze targets per text role and an APCA section in the report.
 - Download the report as Markdown, with a contrast table (ratio, AA / AAA and APCA Lc).
+- A focus indicator check (WCAG 2.4.13 and 1.4.11): the brand's focus ring against the page and the focused component, with a one-click fix, in both reports.
 
 #### Export Engine
 
@@ -185,6 +199,7 @@ Released 2026-09-23. The first public release: a complete, local-first design an
 - A "Made with DesignHub" credit in the metadata of every exported PNG and PDF, in generated SVGs, and in the README of every ZIP pack. The artwork itself is never changed.
 - More token formats: styled-components / Emotion theme, Flutter `ThemeData`, SwiftUI `Color` extensions and Tokens Studio (Figma) JSON.
 - JavaScript module (`tokens.mjs`), Stylus and Jetpack Compose (`Theme.kt`) formats. Similar color names (such as `indigo` shade 250 and `indigo-2` shade 50) stay separate keys in the styled-components theme.
+- YAML tokens and a Sass map with a `token($group, $name)` function.
 
 ### Performance
 
@@ -219,4 +234,4 @@ Released 2026-09-23. The first public release: a complete, local-first design an
 - `.env.example` documenting the one optional variable and every external service (none need a key).
 - README, ROADMAP and CONTRIBUTING cover every studio, including the brand platform.
 - A storage guide (`docs/storage.md`) listing everything DesignHub saves in the browser and how to reset it, plus Logo, Brand DNA and Projects screenshots in the README.
-- A FAQ (`docs/faq.md`) and a keyboard shortcuts guide (`docs/shortcuts.md`).
+- A FAQ (`docs/faq.md`), a keyboard shortcuts guide (`docs/shortcuts.md`) and a self-hosting guide (`docs/self-hosting.md`) for Vercel, Netlify, a Node server and Docker.
