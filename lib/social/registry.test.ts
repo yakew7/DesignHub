@@ -27,6 +27,9 @@ test.each([
   ["twitch-banner", 1200, 480],
   ["mastodon-header", 1500, 500],
   ["instagram-portrait", 1080, 1350],
+  ["youtube-banner", 2560, 1440],
+  ["reddit-banner", 1920, 384],
+  ["tumblr-header", 3000, 1055],
 ])("%s is registered at %ix%i and included in the full pack", (id, width, height) => {
   const template = getSocialTemplate(id);
   expect(template).toMatchObject({ width, height });

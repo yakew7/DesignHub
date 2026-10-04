@@ -46,7 +46,9 @@ export type SocialPlatform =
   | "Facebook"
   | "Bluesky"
   | "Twitch"
-  | "Mastodon";
+  | "Mastodon"
+  | "Reddit"
+  | "Tumblr";
 
 export type SocialTemplate = {
   id: string;

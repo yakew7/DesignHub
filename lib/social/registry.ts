@@ -11,6 +11,9 @@ import { linkedinCompanyCover } from "@/lib/social/templates/linkedin-company";
 import { discordBanner } from "@/lib/social/templates/discord";
 import { mastodonHeader } from "@/lib/social/templates/mastodon";
 import { twitchBanner } from "@/lib/social/templates/twitch";
+import { youtubeBanner } from "@/lib/social/templates/youtube-banner";
+import { redditBanner } from "@/lib/social/templates/reddit";
+import { tumblrHeader } from "@/lib/social/templates/tumblr";
 import type { SocialPlatform, SocialTemplate } from "@/lib/social/types";
 
 /** Templates register here as they are implemented. */
@@ -24,6 +27,7 @@ export const socialTemplates: SocialTemplate[] = [
   ...ogTemplates,
   productHuntGallery,
   youtubeThumbnail,
+  youtubeBanner,
   pinterestPin,
   linkedinCompanyCover,
   blueskyBanner,
@@ -31,6 +35,8 @@ export const socialTemplates: SocialTemplate[] = [
   discordBanner,
   twitchBanner,
   mastodonHeader,
+  redditBanner,
+  tumblrHeader,
 ];
 
 export const socialPlatforms: SocialPlatform[] = [
@@ -47,6 +53,8 @@ export const socialPlatforms: SocialPlatform[] = [
   "Discord",
   "Twitch",
   "Mastodon",
+  "Reddit",
+  "Tumblr",
 ];
 
 /** Ids from earlier versions, so saved selections keep working. */
