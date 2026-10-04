@@ -1,0 +1,40 @@
+name: Lighthouse
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: lighthouse-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  lighthouse:
+    name: Lighthouse CI
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - uses: pnpm/action-setup@v6
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 22
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm build
+      # Starts `pnpm start` (see lighthouserc.json), audits the home page and four studios three
+      # times each, checks the thresholds and writes the reports to .lighthouseci/.
+      # Accessibility, best practices and SEO must score 100. Performance below 90 is only a
+      # warning: shared CI runners are noisy, so the same build can swing several points
+      # between runs, and failing on it would block pull requests that changed nothing.
+      - run: pnpm dlx @lhci/cli autorun
+      - uses: actions/upload-artifact@v7
+        if: always()
+        with:
+          name: lighthouse-reports
+          path: .lighthouseci/
+          retention-days: 14
+          if-no-files-found: ignore

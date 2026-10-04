@@ -50,6 +50,19 @@ pnpm typecheck && pnpm test && pnpm lint && pnpm format:check && pnpm check:dash
 
 CI (`.github/workflows/ci.yml`, `lint.yml`, `typecheck.yml` and `em-dash.yml`) runs these on every push and pull request with Node 22.
 
+### Lighthouse
+
+`lighthouse.yml` builds the app and runs [Lighthouse CI](https://github.com/GoogleChrome/lighthouse-ci) on the home page, `/brand`, `/colors`, `/typography` and `/social` for every pull request and push to `main`. Accessibility, best practices and SEO must score 100; performance below 90 is a warning, because CI runners are noisy. The thresholds live in `lighthouserc.json`, and the HTML reports are uploaded as the `lighthouse-reports` artifact.
+
+To run it locally (it needs Chrome, and nothing else running on port 3000):
+
+```bash
+pnpm build
+pnpm dlx @lhci/cli autorun
+```
+
+It starts `pnpm start` itself, stops it when done and writes the reports to `.lighthouseci/` (gitignored). Open the `.html` files there to see what failed.
+
 ## Branch naming
 
 Create a branch from `main` using a type prefix and a short, kebab-case description:

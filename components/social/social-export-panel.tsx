@@ -133,7 +133,7 @@ export function SocialExportPanel({ svg, ctx, template }: Props) {
             <Label>README snippet</Label>
             <CopyButton value={readme} label="Copy README snippet" toastMessage="README snippet copied" />
           </div>
-          <pre className="max-h-56 overflow-auto rounded-md border bg-surface-raised p-2.5 font-mono text-[11px] leading-relaxed whitespace-pre-wrap text-muted-foreground">
+          <pre className="max-h-56 overflow-auto rounded-md border bg-surface-raised p-2.5 font-mono text-xs leading-relaxed whitespace-pre-wrap text-muted-foreground">
             {readme}
           </pre>
           <div className="flex items-center justify-between gap-3">
@@ -142,11 +142,11 @@ export function SocialExportPanel({ svg, ctx, template }: Props) {
             </Label>
             <Switch id="social-credit" checked={credit} onCheckedChange={setCredit} />
           </div>
-          <p className="text-[11px] text-subtle-foreground">
+          <p className="text-xs text-subtle-foreground">
             Save the PNG as <code>.github/banner.png</code> in your repository, then paste this at the top of your
             README. For the link preview, upload the same PNG under Settings, Social preview.
           </p>
-          <p className="flex flex-wrap items-center gap-1.5 text-[11px] text-subtle-foreground">
+          <p className="flex flex-wrap items-center gap-1.5 text-xs text-subtle-foreground">
             Want it featured in the DesignHub gallery? Add the
             <CopyButton
               value="made-with-designhub"
@@ -154,7 +154,7 @@ export function SocialExportPanel({ svg, ctx, template }: Props) {
               toastMessage="Topic copied"
               variant="outline"
               size="sm"
-              className="h-6 px-2 font-mono text-[11px]"
+              className="h-6 px-2 font-mono text-xs"
             >
               made-with-designhub
             </CopyButton>
@@ -168,10 +168,10 @@ export function SocialExportPanel({ svg, ctx, template }: Props) {
             <Label>Meta tags</Label>
             <CopyButton value={meta} label="Copy meta tags" toastMessage="Meta tags copied" />
           </div>
-          <pre className="max-h-56 overflow-auto rounded-md border bg-surface-raised p-2.5 font-mono text-[11px] leading-relaxed whitespace-pre-wrap text-muted-foreground">
+          <pre className="max-h-56 overflow-auto rounded-md border bg-surface-raised p-2.5 font-mono text-xs leading-relaxed whitespace-pre-wrap text-muted-foreground">
             {meta}
           </pre>
-          <p className="text-[11px] text-subtle-foreground">Upload the PNG as og.png at your site root.</p>
+          <p className="text-xs text-subtle-foreground">Upload the PNG as og.png at your site root.</p>
         </div>
       ) : null}
     </Panel>
