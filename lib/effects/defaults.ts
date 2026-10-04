@@ -30,4 +30,5 @@ export const effectDefaults: EffectSettingsMap = {
     speed: 4,
   },
   grain: { scale: 180, opacity: 0.25, frequency: 0.8, blend: "overlay" },
+  "long-shadow": { angle: 45, length: 48, color: "#312e81", fade: 0.6, target: "box", fill: "#6366f1", radius: 12 },
 };

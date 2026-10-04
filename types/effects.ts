@@ -1,4 +1,4 @@
-export type EffectKind = "glass" | "neumorphism" | "shadow" | "inset" | "glow" | "border" | "grain";
+export type EffectKind = "glass" | "neumorphism" | "shadow" | "inset" | "glow" | "border" | "grain" | "long-shadow";
 
 export type GlassSettings = {
   blur: number;
@@ -76,6 +76,23 @@ export type GrainSettings = {
   blend: BlendMode;
 };
 
+export type LongShadowTarget = "box" | "text";
+
+/** A flat-design shadow that runs out at an angle, built from stacked hard-edged steps. */
+export type LongShadowSettings = {
+  /** Direction the shadow runs, in degrees clockwise from the right (45 is down and to the right). */
+  angle: number;
+  /** In px. */
+  length: number;
+  color: string;
+  /** 0 keeps the shadow solid, 1 fades it out completely by its far end. */
+  fade: number;
+  target: LongShadowTarget;
+  /** Background of the box (box target only). */
+  fill: string;
+  radius: number;
+};
+
 export type EffectSettingsMap = {
   glass: GlassSettings;
   neumorphism: NeumorphismSettings;
@@ -84,6 +101,7 @@ export type EffectSettingsMap = {
   glow: GlowSettings;
   border: BorderSettings;
   grain: GrainSettings;
+  "long-shadow": LongShadowSettings;
 };
 
 /** A CSS property/value pair. Vendor-prefixed duplicates are allowed. */

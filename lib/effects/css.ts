@@ -55,7 +55,7 @@ export function reactStyle(name: string, effect: EffectCss): string {
     effect.extra || effect.global
       ? "\n// This effect also needs the extra rules from the CSS tab (pseudo-elements / keyframes).\n"
       : "";
-  return `import type { CSSProperties } from "react";\n${note}\nexport const ${name}Style: CSSProperties = {\n${entries.join("\n")}\n};\n`;
+  return `import type { CSSProperties } from "react";\n${note}\nexport const ${camelCase(name)}Style: CSSProperties = {\n${entries.join("\n")}\n};\n`;
 }
 
 /** Tailwind arbitrary-value syntax: spaces become underscores, literal underscores are escaped. */
