@@ -1,7 +1,16 @@
 import { describe, expect, test } from "vitest";
 
 import { fromHex } from "@/lib/color/color";
-import { tokenFormats, toJsModule, toScss, toStyledTheme, toStylus } from "@/lib/tokens/formats";
+import {
+  tokenFormats,
+  toJsModule,
+  toSassMap,
+  toScss,
+  toStyledTheme,
+  toStylus,
+  toYaml,
+  yamlString,
+} from "@/lib/tokens/formats";
 import type { DesignTokens } from "@/types/tokens";
 
 const tokens = (prefix = ""): DesignTokens => ({
@@ -67,7 +76,7 @@ describe("Stylus", () => {
 test("the new formats are registered for the Export Engine and the ZIP", () => {
   const formats = tokenFormats(tokens());
   expect(formats.map((format) => format.filename)).toEqual(
-    expect.arrayContaining(["tokens.mjs", "tokens.styl", "Theme.kt"]),
+    expect.arrayContaining(["tokens.mjs", "tokens.styl", "Theme.kt", "tokens.yaml", "_tokens-map.scss"]),
   );
 });
 
@@ -76,5 +85,52 @@ describe("styled-components theme", () => {
     const theme = toStyledTheme(tokens());
     expect(theme).toContain('indigo250: "#cdd9f3"');
     expect(theme).toContain('indigo2_50: "#f1f6ff"');
+  });
+});
+
+describe("YAML", () => {
+  test("writes colors, spacing and the prefix with # values quoted", () => {
+    const yaml = toYaml(tokens("acme"));
+    expect(yaml).toMatch(/^# Acme Labs - design tokens/);
+    expect(yaml).toContain('color:\n  acme-indigo: "#6366f1"\n');
+    expect(yaml).toContain('  acme-indigo-2-50: "#f1f6ff"\n');
+    expect(yaml).toContain('semantic:\n  acme-primary: "#6366f1"\n');
+    expect(yaml).toContain("spacing:\n  acme-0.5: 0.125rem\n  acme-4: 1rem\n");
+    expect(yaml).toContain('  acme-shadow-md: "0 1px 2px rgb(0 0 0 / 0.1)"\n');
+  });
+
+  test("quotes keys and values YAML would read as numbers, booleans or comments", () => {
+    const yaml = toYaml(tokens());
+    expect(yaml).toContain('spacing:\n  "0.5": 0.125rem\n  "4": 1rem\n');
+    expect(["yes", "No", "null", "~", "0", "1e3", "0x1f", ".inf", "#fff", "a: b"].map(yamlString)).toEqual([
+      '"yes"',
+      '"No"',
+      '"null"',
+      '"~"',
+      '"0"',
+      '"1e3"',
+      '"0x1f"',
+      '".inf"',
+      '"#fff"',
+      '"a: b"',
+    ]);
+    expect(yamlString("0.125rem")).toBe("0.125rem");
+  });
+});
+
+describe("Sass map", () => {
+  test("nests every group in $tokens and adds a token() lookup", () => {
+    const sass = toSassMap(tokens("acme"));
+    expect(sass).toContain('@use "sass:map";');
+    expect(sass).toContain('$tokens: (\n  "color": (\n    "indigo": #6366f1,\n    "indigo-250": #cdd9f3,');
+    expect(sass).toContain('  "spacing": (\n    "0.5": 0.125rem,\n    "4": 1rem,\n  ),');
+    expect(sass).toContain('"shadow-md": 0 1px 2px rgb(0 0 0 / 0.1),');
+    expect(sass).toContain("@function token($group, $name) {");
+    expect(sass).toContain("@return map.get($tokens, $group, $name);");
+  });
+
+  test("wraps values with commas so they stay one map entry", () => {
+    const layered = { ...tokens(), effects: [{ name: "shadow-lg", value: "0 1px 2px #000, 0 4px 8px #000" }] };
+    expect(toSassMap(layered)).toContain('"shadow-lg": (0 1px 2px #000, 0 4px 8px #000),');
   });
 });

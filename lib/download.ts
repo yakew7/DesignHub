@@ -23,6 +23,7 @@ const mimeTypes: Record<string, string> = {
   html: "text/html",
   txt: "text/plain",
   md: "text/markdown",
+  yaml: "application/yaml",
 };
 
 export function downloadText(content: string, filename: string): void {

@@ -139,6 +139,76 @@ export function toStylus(tokens: DesignTokens): string {
   return `${header(tokens, (text) => `// ${text}`)}\n${vars}\n${hashes ? `\n${hashes}\n` : ""}`;
 }
 
+/** Groups and keys shared by the YAML and Sass map exports: the flat names without their group prefix. */
+function groupedTokens(tokens: DesignTokens, prefix = ""): Map<string, Map<string, string>> {
+  const groups = new Map<string, Map<string, string>>();
+  flatten(tokens).forEach((token) => {
+    const key = `${prefix}${token.name.replace(/^(color|gradient|font|text|spacing|radius)-/, "")}`;
+    groups.set(token.group, (groups.get(token.group) ?? new Map()).set(key, token.value));
+  });
+  return groups;
+}
+
+// YAML 1.1 and 1.2 read these plain scalars as booleans, null or numbers instead of strings.
+const yamlReserved = /^(y|n|yes|no|on|off|true|false|null|~|[-+]?\.?(inf|nan))$/i;
+const yamlNumber =
+  /^[-+]?(0x[0-9a-f_]+|0o?[0-7_]+|0b[01_]+|[0-9][0-9_]*(\.[0-9_]*)?(e[-+]?[0-9]+)?|\.[0-9_]+(e[-+]?[0-9]+)?)$/i;
+
+/**
+ * A YAML scalar that always reads back as the same string. Plain words like `0.125rem` stay
+ * bare; anything YAML could misread (`#fff` is a comment, `0.5` a number, `yes` a boolean,
+ * `: ` a mapping) is double quoted, and a JSON string is a valid double-quoted YAML scalar.
+ */
+export function yamlString(value: string): string {
+  const plain = /^[A-Za-z0-9][\w.%-]*$/.test(value) && !yamlReserved.test(value) && !yamlNumber.test(value);
+  return plain ? value : JSON.stringify(value);
+}
+
+/** YAML (tokens.yaml): one mapping per group, written by hand so it needs no dependency. */
+export function toYaml(tokens: DesignTokens): string {
+  const groups = groupedTokens(tokens, tokens.meta.prefix ? `${tokens.meta.prefix}-` : "");
+  const body = [...groups]
+    .map(([group, values]) => {
+      const rows = [...values].map(([key, value]) => `  ${yamlString(key)}: ${yamlString(value)}`);
+      return `${group}:\n${rows.join("\n")}`;
+    })
+    .join("\n");
+  return `${header(tokens, (text) => `# ${text}`)}\n${body}\n`;
+}
+
+/**
+ * Sass map (_tokens-map.scss): every group as a nested map plus a `token($group, $name)`
+ * lookup. Keys are quoted strings and the function interpolates its arguments, so
+ * `token(spacing, 4)` and `token("spacing", "4")` find the same entry.
+ */
+export function toSassMap(tokens: DesignTokens): string {
+  // Commas separate map entries, so values with a comma (font stacks, layered shadows) get parentheses.
+  const value = (raw: string) => (raw.includes(",") ? `(${raw})` : raw);
+  const groups = [...groupedTokens(tokens)]
+    .map(([group, values]) => {
+      const rows = [...values].map(([key, raw]) => `    "${key}": ${value(raw)},`);
+      return `  "${group}": (\n${rows.join("\n")}\n  ),`;
+    })
+    .join("\n");
+  return `${header(tokens, (text) => `// ${text}`)}
+@use "sass:map";
+
+$tokens: (
+${groups}
+);
+
+/// Looks up one token, e.g. color: token(semantic, primary); or padding: token(spacing, 4);
+@function token($group, $name) {
+  $group: "#{$group}";
+  $name: "#{$name}";
+  @if not map.has-key($tokens, $group, $name) {
+    @error "Unknown token #{$group}.#{$name}";
+  }
+  @return map.get($tokens, $group, $name);
+}
+`;
+}
+
 /** Android `res/values/colors.xml`: palette, shades and semantic roles as #AARRGGBB resources. */
 export function toAndroidColors(tokens: DesignTokens): string {
   const prefix = tokens.meta.prefix ? `${tokens.meta.prefix}_` : "";
@@ -466,6 +536,13 @@ export function tokenFormats(tokens: DesignTokens): ExportFormat[] {
   return [
     { id: "css", label: "CSS variables", filename: "tokens.css", language: "css", code: toCss(tokens) },
     { id: "scss", label: "SCSS", filename: "_tokens.scss", language: "scss", code: toScss(tokens) },
+    {
+      id: "sass-map",
+      label: "Sass map",
+      filename: "_tokens-map.scss",
+      language: "scss",
+      code: toSassMap(tokens),
+    },
     { id: "less", label: "Less", filename: "tokens.less", language: "css", code: toLess(tokens) },
     { id: "stylus", label: "Stylus", filename: "tokens.styl", language: "css", code: toStylus(tokens) },
     { id: "android", label: "Android XML", filename: "colors.xml", language: "xml", code: toAndroidColors(tokens) },
@@ -491,6 +568,7 @@ export function tokenFormats(tokens: DesignTokens): ExportFormat[] {
     { id: "swiftui", label: "SwiftUI", filename: "Theme.swift", language: "swift", code: toSwiftUITheme(tokens) },
     { id: "compose", label: "Jetpack Compose", filename: "Theme.kt", language: "kotlin", code: toComposeTheme(tokens) },
     { id: "json", label: "JSON tokens", filename: "tokens.json", language: "json", code: toJsonTokens(tokens) },
+    { id: "yaml", label: "YAML", filename: "tokens.yaml", language: "yaml", code: toYaml(tokens) },
     {
       id: "tokens-studio",
       label: "Tokens Studio",
