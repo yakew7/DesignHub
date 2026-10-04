@@ -1,5 +1,6 @@
 import { splitIconId } from "@/lib/icons/iconify";
 import { buildIconSvg } from "@/lib/icons/svg";
+import { svgCssUrl } from "@/lib/svg/data-uri";
 import type { ExportFormat } from "@/types/export";
 import type { IconData, IconId, IconStyle } from "@/types/icons";
 
@@ -91,7 +92,7 @@ function svelteComponent(id: IconId, icon: IconData, style: IconStyle): string {
 function cssDataUri(icon: IconData, style: IconStyle): string {
   // currentColor has no meaning inside a background image, so use a mask for monochrome icons.
   const svg = buildIconSvg(icon, { ...style, size: 24, color: style.color === "currentColor" ? "#000" : style.color });
-  const uri = `url("data:image/svg+xml,${encodeURIComponent(svg)}")`;
+  const uri = svgCssUrl(svg);
   return style.color === "currentColor"
     ? `.icon {\n  display: inline-block;\n  width: 1em;\n  height: 1em;\n  background-color: currentColor;\n  mask: ${uri} no-repeat center / contain;\n}\n`
     : `.icon {\n  display: inline-block;\n  width: 1em;\n  height: 1em;\n  background: ${uri} no-repeat center / contain;\n}\n`;
