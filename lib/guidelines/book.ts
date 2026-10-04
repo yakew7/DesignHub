@@ -8,7 +8,8 @@ const PAGE_PT = { width: 960, height: 600 };
 
 /**
  * Renders every included page at 2× and binds them into one PDF with pdf-lib.
- * Pages are JPEG so a full book stays a few megabytes.
+ * Pages are JPEG so a full book stays a few megabytes. Bookmarks and the clickable
+ * contents list come from `ctx.contents`, so they skip switched-off pages too.
  */
 export async function buildBrandBook(
   ctx: GuidelineContext,
@@ -26,6 +27,10 @@ export async function buildBrandBook(
     author: ctx.brand.name,
     subject: ctx.brand.description,
     keywords: ["brand guidelines", ctx.brand.name, ...pages.map((page) => page.title)],
+    finish: async (doc) => {
+      const { addBookNavigation } = await import("@/lib/guidelines/outline");
+      addBookNavigation(doc, ctx.contents);
+    },
   });
   onProgress?.(pages.length + 1, pages.length + 1);
   return pdf;

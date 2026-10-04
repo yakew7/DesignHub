@@ -1,3 +1,5 @@
+import type { PDFDocument } from "pdf-lib";
+
 import { CREDIT_TEXT } from "@/lib/export/credit";
 import type { RasterImage } from "@/lib/export/raster";
 
@@ -11,7 +13,15 @@ export type PdfPage = {
  * One image per page, each page sized to its image. pdf-lib is loaded on demand.
  * `scale` is the rasterization factor, so a 2× image lands at its original size.
  */
-export type PdfMeta = { title: string; scale?: number; author?: string; subject?: string; keywords?: string[] };
+export type PdfMeta = {
+  title: string;
+  scale?: number;
+  author?: string;
+  subject?: string;
+  keywords?: string[];
+  /** Runs after the pages are added, for extras like bookmarks and links. */
+  finish?: (pdf: PDFDocument) => void | Promise<void>;
+};
 
 export async function imagesToPdf(pages: PdfPage[], meta: PdfMeta): Promise<Uint8Array> {
   const { PDFDocument } = await import("pdf-lib");
@@ -33,5 +43,6 @@ export async function imagesToPdf(pages: PdfPage[], meta: PdfMeta): Promise<Uint
     const target = pdf.addPage([width, height]);
     target.drawImage(png, { x: 0, y: 0, width, height });
   }
+  await meta.finish?.(pdf);
   return pdf.save();
 }

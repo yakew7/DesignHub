@@ -103,6 +103,24 @@ export const coverPage: GuidelinePage = {
   },
 };
 
+const TOC_X = MARGIN + CONTENT_WIDTH * 0.52 + 80;
+const TOC_WIDTH = PAGE_WIDTH - MARGIN - TOC_X;
+
+/**
+ * Where each row of the Introduction contents list sits, in page units. The PDF export
+ * reads the rects to turn every row into a link to its page.
+ */
+export function contentsRows(contents: GuidelineContext["contents"]) {
+  const entries = contents.filter((entry) => entry.id !== "cover");
+  const rowH = Math.min(44, 560 / Math.max(1, entries.length));
+  return entries.map((entry, i) => {
+    const baseline = CONTENT_TOP + 70 + i * rowH;
+    // Centered on the 18px text, which sits about 6px above its baseline.
+    const rect = { x: TOC_X + 16, y: baseline - 6 - rowH / 2, width: TOC_WIDTH - 32, height: rowH };
+    return { entry, baseline, rect };
+  });
+}
+
 export const introductionPage: GuidelinePage = {
   id: "introduction",
   title: "Introduction",
@@ -124,15 +142,10 @@ export const introductionPage: GuidelinePage = {
       })
       .join("");
 
-    const tocX = left + colW + 80;
-    const tocW = PAGE_WIDTH - MARGIN - tocX;
-    const entries = ctx.contents.filter((entry) => entry.id !== "cover");
-    const rowH = Math.min(44, 560 / Math.max(1, entries.length));
-    const toc = entries
-      .map((entry, i) => {
-        const y = CONTENT_TOP + 70 + i * rowH;
-        return `${text(tocX + 32, y, String(entry.number).padStart(2, "0"), { size: 16, fill: surface.primaryText, font: "bb" })}
-          ${text(tocX + 80, y, entry.title, { size: 18, fill: entry.id === "introduction" ? surface.muted : surface.text })}`;
+    const toc = contentsRows(ctx.contents)
+      .map(({ entry, baseline: y }) => {
+        return `${text(TOC_X + 32, y, String(entry.number).padStart(2, "0"), { size: 16, fill: surface.primaryText, font: "bb" })}
+          ${text(TOC_X + 80, y, entry.title, { size: 18, fill: entry.id === "introduction" ? surface.muted : surface.text })}`;
       })
       .join("");
 
@@ -151,8 +164,8 @@ export const introductionPage: GuidelinePage = {
         surface.muted,
         3,
       )}
-      ${card(ctx, tocX, CONTENT_TOP - 10, tocW, 640)}
-      ${caption(ctx, tocX + 32, CONTENT_TOP + 28, "Contents")}
+      ${card(ctx, TOC_X, CONTENT_TOP - 10, TOC_WIDTH, 640)}
+      ${caption(ctx, TOC_X + 32, CONTENT_TOP + 28, "Contents")}
       ${toc}`;
     return guidelinePage(ctx, number, { section: "Introduction", title: `Welcome to ${brand.name}` }, body);
   },

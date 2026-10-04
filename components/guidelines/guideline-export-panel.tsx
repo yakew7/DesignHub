@@ -1,6 +1,6 @@
 "use client";
 
-import { FileText, ImageDown, Loader2 } from "lucide-react";
+import { FileText, Globe, ImageDown, Loader2 } from "lucide-react";
 import { useState } from "react";
 import { toast } from "sonner";
 
@@ -15,6 +15,7 @@ type Props = { ctx: GuidelineContext; pages: GuidelinePage[]; page: GuidelinePag
 
 export function GuidelineExportPanel({ ctx, pages, page, svg }: Props) {
   const [busy, setBusy] = useState(false);
+  const [siteBusy, setSiteBusy] = useState(false);
   const [progress, setProgress] = useState<number | null>(null);
 
   async function downloadBook() {
@@ -30,6 +31,25 @@ export function GuidelineExportPanel({ ctx, pages, page, svg }: Props) {
       toast.error("Export failed in this browser.");
     } finally {
       setProgress(null);
+    }
+  }
+
+  async function downloadSite() {
+    setSiteBusy(true);
+    try {
+      const { buildBrandSite } = await import("@/lib/guidelines/site");
+      const zip = buildBrandSite(ctx, pages);
+      downloadBlob(
+        new Blob([zip.slice().buffer], { type: "application/zip" }),
+        `${slugify(ctx.brand.name)}-brand-site.zip`,
+      );
+      toast.success("Website ready", {
+        description: "Unzip it and open index.html, or upload the folder to any host.",
+      });
+    } catch {
+      toast.error("Export failed in this browser.");
+    } finally {
+      setSiteBusy(false);
     }
   }
 
@@ -72,6 +92,9 @@ export function GuidelineExportPanel({ ctx, pages, page, svg }: Props) {
           <div className="h-full bg-brand transition-[width] duration-200" style={{ width: `${progress}%` }} />
         </div>
       ) : null}
+      <Button variant="outline" onClick={downloadSite} disabled={siteBusy || pages.length === 0}>
+        {siteBusy ? <Loader2 className="animate-spin" /> : <Globe />} Download website
+      </Button>
       <Button variant="outline" onClick={downloadPage} disabled={!svg || busy}>
         {busy ? <Loader2 className="animate-spin" /> : <ImageDown />} This page (PNG)
       </Button>
