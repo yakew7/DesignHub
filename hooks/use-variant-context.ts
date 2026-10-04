@@ -5,9 +5,8 @@ import { useEffect, useMemo, useState } from "react";
 import { useBrandTokens } from "@/hooks/use-brand";
 import { useBrandFonts } from "@/hooks/use-brand-fonts";
 import { useEmbeddedFont } from "@/hooks/use-embedded-font";
-import { brandSurface } from "@/lib/brand/theme";
 import { measureText } from "@/lib/logo/measure";
-import type { VariantContext } from "@/lib/logo/variants";
+import { variantContext, type VariantContext } from "@/lib/logo/variants";
 
 /** Everything a logo variant needs, derived from the live brand. */
 export function useVariantContext(): VariantContext {
@@ -25,22 +24,10 @@ export function useVariantContext(): VariantContext {
     };
   }, [heading, fontCss]);
 
-  return useMemo(() => {
-    const light = brandSurface(brand, "light");
-    const dark = brandSurface(brand, "dark");
-    return {
-      logo: brand.logo.svg,
-      name: brand.name,
-      fontFamily: heading,
-      fontWeight: headingWeight,
-      fontCss,
-      measure: (text: string, size: number) => measureText(text, heading, headingWeight, size),
-      primary: light.primary,
-      text: light.text,
-      light: light.background,
-      dark: dark.background,
-    };
+  return useMemo(
+    () => variantContext(brand, fontCss, (text, size) => measureText(text, heading, headingWeight, size)),
     // fontsReady is a dependency on purpose: it re-runs measurement after web fonts load.
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [brand, heading, headingWeight, fontCss, fontsReady]);
+    [brand, heading, headingWeight, fontCss, fontsReady],
+  );
 }

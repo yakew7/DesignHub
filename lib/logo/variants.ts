@@ -1,6 +1,8 @@
+import { brandSurface } from "@/lib/brand/theme";
 import { contrastRatio, oklch, parseColor } from "@/lib/color/color";
 import { logoAspect, nestLogo } from "@/lib/logo/compose";
 import { monochromeSvg } from "@/lib/logo/recolor";
+import type { BrandTokens } from "@/types/brand";
 
 export type LogoVariantId =
   "color" | "monochrome" | "inverted" | "horizontal" | "stacked" | "wordmark" | "app-icon" | "avatar";
@@ -29,6 +31,31 @@ export type LogoVariant = {
   /** Square pixel sizes the logo pack exports as PNG. Omitted means one PNG at 4x. */
   pngSizes?: number[];
 };
+
+/**
+ * Everything a variant needs, from the brand tokens. Variants use the light surface's primary and
+ * text in both themes, so the app icon and favicon look the same wherever they are drawn.
+ */
+export function variantContext(
+  brand: BrandTokens,
+  fontCss: string,
+  measure: (text: string, size: number) => number,
+): VariantContext {
+  const light = brandSurface(brand, "light");
+  const dark = brandSurface(brand, "dark");
+  return {
+    logo: brand.logo.svg,
+    name: brand.name,
+    fontFamily: brand.typography.heading,
+    fontWeight: brand.typography.headingWeight,
+    fontCss,
+    measure,
+    primary: light.primary,
+    text: light.text,
+    light: light.background,
+    dark: dark.background,
+  };
+}
 
 const escapeXml = (value: string) => value.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
 

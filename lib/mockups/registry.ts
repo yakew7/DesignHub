@@ -1,4 +1,5 @@
 import { billboard } from "@/lib/mockups/templates/billboard";
+import { browserTab } from "@/lib/mockups/templates/browser-tab";
 import { businessCard } from "@/lib/mockups/templates/business-card";
 import { coffeeCup } from "@/lib/mockups/templates/coffee-cup";
 import { desktopDashboard } from "@/lib/mockups/templates/desktop-dashboard";
@@ -10,6 +11,7 @@ import { laptopLanding } from "@/lib/mockups/templates/laptop-landing";
 import { merch } from "@/lib/mockups/templates/merch";
 import { mobileApp } from "@/lib/mockups/templates/mobile-app";
 import { poster } from "@/lib/mockups/templates/poster";
+import { shoppingBag } from "@/lib/mockups/templates/shopping-bag";
 import { sticker } from "@/lib/mockups/templates/sticker";
 import type { MockupTemplate } from "@/lib/mockups/types";
 
@@ -23,10 +25,12 @@ export const mockupTemplates: MockupTemplate[] = [
   billboard,
   merch,
   coffeeCup,
+  shoppingBag,
   idBadge,
   laptopLanding,
   desktopDashboard,
   mobileApp,
+  browserTab,
   emailSignature,
 ];
 

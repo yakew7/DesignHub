@@ -3,7 +3,7 @@ import { describe, expect, test } from "vitest";
 import { brandSurface } from "@/lib/brand/theme";
 import { buildBrandTokens } from "@/lib/brand/tokens";
 import { measureText } from "@/lib/logo/measure";
-import { mockupTemplates } from "@/lib/mockups/registry";
+import { getTemplate, mockupTemplates } from "@/lib/mockups/registry";
 import type { MockupContext } from "@/lib/mockups/types";
 import { defaultSnapshot } from "@/lib/projects/snapshot";
 import { resolveSocialContent } from "@/lib/social/content";
@@ -86,4 +86,10 @@ describe.each(mockupTemplates.map((template) => [template.id, template] as const
   test("escapes the brand name", () => {
     expect(xmlError(template.render(mockupContext("light", trickyName)))).toBeNull();
   });
+});
+
+test("the browser tab draws the app icon favicon at 16 px in the tab, the 1x callout and the 2x zoom", () => {
+  const svg = getTemplate("browser-tab")!.render(mockupContext("light"));
+  const favicons = svg.match(/<svg[^>]* width="16" height="16" viewBox="0 0 512 512"/g) ?? [];
+  expect(favicons).toHaveLength(3);
 });
