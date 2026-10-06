@@ -23,7 +23,8 @@ export type BackgroundKind =
   | "crosshatch"
   | "circuit"
   | "halftone"
-  | "triangles";
+  | "triangles"
+  | "squiggle";
 
 /** Halftone gradient shape: forced linear or radial, or picked by the seed. */
 export type HalftoneGradientChoice = "seeded" | "linear" | "radial";

@@ -24,7 +24,7 @@ const settings = (kind: BackgroundKind, patch: Partial<BackgroundSettings> = {})
 
 const nodeCount = (svg: string) => (svg.match(/<[a-zA-Z]/g) ?? []).length;
 
-describe.each(["plus", "starfield", "voronoi", "crosshatch", "circuit", "halftone", "triangles"] as const)(
+describe.each(["plus", "starfield", "voronoi", "crosshatch", "circuit", "halftone", "triangles", "squiggle"] as const)(
   "%s",
   (kind) => {
     test("the same seed renders the same output", () => {
@@ -47,6 +47,15 @@ describe.each(["plus", "starfield", "voronoi", "crosshatch", "circuit", "halfton
 
 test("plus draws through a <pattern>", () => {
   expect(renderBackgroundSvg(settings("plus"))).toContain("<pattern");
+});
+
+test("squiggle uses a seeded SVG pattern and its CSS export", () => {
+  const svg = renderBackgroundSvg(settings("squiggle"));
+  expect(svg).toContain("<pattern");
+  expect(svg).toContain('stroke-linecap="round"');
+  const css = backgroundCss(settings("squiggle"));
+  expect(css).toContain("background-image:");
+  expect(css).toContain("data:image/svg+xml");
 });
 
 test("starfield density controls the star count and stays under 1,500 nodes", () => {
