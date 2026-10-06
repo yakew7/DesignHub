@@ -94,6 +94,23 @@ export function wrap(
   return lines;
 }
 
+/** Shortens `value` with an ellipsis until it fits `maxWidth` on one line, even when it is a single long word. */
+export function truncate(
+  ctx: DrawContext,
+  value: string,
+  maxWidth: number,
+  size: number,
+  font: "h" | "b" | "bb" = "b",
+): string {
+  const family = font === "h" ? ctx.brand.typography.heading : ctx.brand.typography.body;
+  const weight = font === "h" ? ctx.brand.typography.headingWeight : font === "bb" ? 600 : 400;
+  const measure = (s: string) => ctx.measure(s, family, weight, size);
+  if (measure(value) <= maxWidth) return value;
+  let out = value;
+  while (out.length > 1 && measure(`${out.trimEnd()}...`) > maxWidth) out = out.slice(0, -1);
+  return `${out.trimEnd()}...`;
+}
+
 /** Placeholder paragraph lines, for body copy that only needs to read as text. */
 export function lines(x: number, y: number, width: number, count: number, gap: number, fill: string): string {
   let out = "";

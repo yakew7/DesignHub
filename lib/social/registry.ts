@@ -14,6 +14,8 @@ import { twitchBanner } from "@/lib/social/templates/twitch";
 import { youtubeBanner } from "@/lib/social/templates/youtube-banner";
 import { redditBanner } from "@/lib/social/templates/reddit";
 import { tumblrHeader } from "@/lib/social/templates/tumblr";
+import { dribbbleShot } from "@/lib/social/templates/dribbble";
+import { behanceCover } from "@/lib/social/templates/behance";
 import type { SocialPlatform, SocialTemplate } from "@/lib/social/types";
 
 /** Templates register here as they are implemented. */
@@ -37,6 +39,8 @@ export const socialTemplates: SocialTemplate[] = [
   mastodonHeader,
   redditBanner,
   tumblrHeader,
+  dribbbleShot,
+  behanceCover,
 ];
 
 export const socialPlatforms: SocialPlatform[] = [
@@ -55,6 +59,8 @@ export const socialPlatforms: SocialPlatform[] = [
   "Mastodon",
   "Reddit",
   "Tumblr",
+  "Dribbble",
+  "Behance",
 ];
 
 /** Ids from earlier versions, so saved selections keep working. */

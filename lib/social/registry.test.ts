@@ -30,6 +30,8 @@ test.each([
   ["youtube-banner", 2560, 1440],
   ["reddit-banner", 1920, 384],
   ["tumblr-header", 3000, 1055],
+  ["dribbble-shot", 1600, 1200],
+  ["behance-cover", 808, 632],
 ])("%s is registered at %ix%i and included in the full pack", (id, width, height) => {
   const template = getSocialTemplate(id);
   expect(template).toMatchObject({ width, height });
