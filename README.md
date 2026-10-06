@@ -49,7 +49,7 @@ A typical design session bounces between a font site, a palette generator, a con
 | **Typography Studio** | Google Fonts, variable axes, pairing, fluid type scale, OpenType  | CSS · Tailwind · SCSS · React · JSON tokens                                                                                                        |
 | **Color Studio**      | Palettes, harmonies, OKLCH, shades 50–950, gradients, WCAG        | CSS variables · Tailwind · JSON tokens · SVG gradient · GIMP palette · ASE · PNG                                                                   |
 | **Icon Studio**       | 200,000+ Iconify icons, restyling, favicons                       | SVG · React · Vue · Svelte · Angular · CSS · PNG · ICO · favicon ZIP                                                                               |
-| **Background Studio** | 25 generators: waves, mesh, aurora, voronoi, circuit, halftone…   | SVG · PNG (1× / 2×) · CSS background                                                                                                               |
+| **Background Studio** | 26 generators: waves, mesh, aurora, voronoi, circuit, halftone…   | SVG · PNG (1× / 2×) · CSS background                                                                                                               |
 | **Effects Lab**       | Glass, neumorphism, shadows, inner and long shadow, glow, grain   | CSS · Tailwind classes · Tailwind `@utility` · SCSS · React                                                                                        |
 | **SVG Playground**    | Inspect, edit, optimize, convert, build sprites                   | Optimized SVG · JSX · React · React Native · Vue · Svelte · CSS data URI · sprite                                                                  |
 | **Accessibility Lab** | WCAG contrast, color vision, readability, dyslexia, touch targets | JSON and Markdown audit report                                                                                                                     |
@@ -159,7 +159,7 @@ A typical design session bounces between a font site, a palette generator, a con
 
 ### Background Studio
 
-- Twenty-five procedural generators: **waves, blobs, mesh gradients, aurora, noise texture, dots, grid, isometric, rings, checks, plus signs, crosshatch, triangles, low poly, voronoi cells, circuit board, halftone, bokeh, starfield, confetti, chevron, hexagons, sunburst, topographic contours and stripes**
+- Twenty-six procedural generators: **waves, blobs, mesh gradients, aurora, noise texture, dots, grid, isometric, rings, checks, plus signs, crosshatch, triangles, squiggle, low poly, voronoi cells, circuit board, halftone, bokeh, starfield, confetti, chevron, hexagons, sunburst, topographic contours and stripes**
 - Seeded and deterministic - every seed reproduces exactly; **Randomize** (or `Space`) rolls a new one
 - Shared controls for colors (or one click to use your Color Studio palette), density, scale, rotation and canvas size (desktop, Full HD, Open Graph, square, story)
 - Blobs are smoothed with **Paper.js** (loaded on demand); noise uses SVG `feTurbulence`
