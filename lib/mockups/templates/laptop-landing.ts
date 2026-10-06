@@ -1,28 +1,70 @@
-import { lines, logo, mockupDoc, onPrimaryLarge, text, wrap } from "@/lib/mockups/kit";
+import { lines, logo, mockupDoc, onPrimaryLarge, text, truncate, wrap } from "@/lib/mockups/kit";
 import { laptop, studio } from "@/lib/mockups/templates/devices";
 import type { MockupContext, MockupTemplate } from "@/lib/mockups/types";
 
 const SW = 1440;
 const SH = 900;
 
+const PAD = 96;
+const NAV = ["Product", "Pricing", "Docs", "Company"];
+
+type Box = { x: number; width: number };
+export type LandingNav = {
+  name: Box & { text: string; size: number };
+  links: (Box & { label: string })[];
+  cta: Box & { label: string };
+};
+
+/**
+ * Lays out the top bar so the brand name never runs into the links: links move right of a
+ * long name, then drop from the end, then the name shrinks and finally truncates.
+ */
+export function landingNav(ctx: MockupContext, width: number): LandingNav {
+  const { brand, content } = ctx;
+  const { heading, headingWeight } = brand.typography;
+  const measureBody = (value: string, size: number) => ctx.measure(value, brand.typography.body, 600, size);
+  const linkSize = 17;
+  const gap = 40;
+  const label = content.cta || "Get started";
+  const ctaW = measureBody(label, 19) + 56;
+  const cta = { x: width - PAD - ctaW, width: ctaW, label };
+  const nameX = PAD + 50;
+  const limit = cta.x - gap;
+  const widths = NAV.map((item) => ctx.measure(item, brand.typography.body, 400, linkSize));
+
+  let size = 22;
+  let nameW = ctx.measure(brand.name, heading, headingWeight, size);
+  for (let count = NAV.length; count > 0; count--) {
+    const linksW = widths.slice(0, count).reduce((sum, w) => sum + w, 0) + gap * (count - 1);
+    const start = Math.max(width / 2 - 200, nameX + nameW + 48);
+    if (start + linksW > limit) continue;
+    let x = start;
+    const links = NAV.slice(0, count).map((item, i) => {
+      const link = { x, width: widths[i]!, label: item };
+      x += widths[i]! + gap;
+      return link;
+    });
+    return { name: { x: nameX, width: nameW, text: brand.name, size }, links, cta };
+  }
+
+  // No room for any link: give the name the whole bar, shrinking it before truncating.
+  const room = limit - nameX;
+  if (nameW > room) size = Math.max(16, Math.floor((size * room) / nameW));
+  const name = truncate(ctx, brand.name, room, size, "h");
+  nameW = ctx.measure(name, heading, headingWeight, size);
+  return { name: { x: nameX, width: nameW, text: name, size }, links: [], cta };
+}
+
 export function landingPage(ctx: MockupContext, width: number, height: number): string {
   const { surface, content, brand } = ctx;
   const onPrimary = onPrimaryLarge(ctx);
   const r = Math.min(brand.radius, 20);
-  const pad = 96;
-  const measureBody = (value: string, size: number) => ctx.measure(value, brand.typography.body, 600, size);
+  const pad = PAD;
 
-  const nav = ["Product", "Pricing", "Docs", "Company"];
-  let navX = width / 2 - 200;
-  const navLinks = nav
-    .map((item) => {
-      const out = text(navX, 64, item, { size: 17, fill: surface.muted });
-      navX += measureBody(item, 17) + 40;
-      return out;
-    })
-    .join("");
-  const cta = content.cta || "Get started";
-  const ctaW = measureBody(cta, 19) + 56;
+  const nav = landingNav(ctx, width);
+  const navLinks = nav.links.map((link) => text(link.x, 64, link.label, { size: 17, fill: surface.muted })).join("");
+  const cta = nav.cta.label;
+  const ctaW = nav.cta.width;
 
   const size = 72;
   const headline = wrap(ctx, content.headline, width * 0.46, size, "h", 3);
@@ -46,10 +88,11 @@ export function landingPage(ctx: MockupContext, width: number, height: number): 
 
   const cardX = width * 0.56;
   const cardW = width - cardX - pad;
+  const eyebrow = truncate(ctx, `NEW  ·  ${brand.name.toUpperCase()} 2.0`, cardX - 40 - pad, 15, "bb", 3);
   const hero = `<rect x="${cardX}" y="150" width="${cardW}" height="440" rx="${r + 6}" fill="url(#hero)"/>
     <rect x="${cardX + 40}" y="200" width="${cardW - 80}" height="340" rx="${r}" fill="${surface.background}" fill-opacity=".94"/>
     ${logo(ctx, { x: cardX + 72, y: 236, width: 44, height: 44 }, undefined, "lp-card")}
-    ${text(cardX + 132, 267, brand.name, { size: 22, fill: surface.text, font: "h" })}
+    ${text(cardX + 132, 267, truncate(ctx, brand.name, cardW - 204, 22, "h"), { size: 22, fill: surface.text, font: "h" })}
     ${lines(cardX + 72, 318, cardW - 144, 3, 26, surface.border)}
     <rect x="${cardX + 72}" y="420" width="${(cardW - 160) / 2}" height="84" rx="${r}" fill="${surface.secondary}" fill-opacity=".14"/>
     <rect x="${cardX + 88 + (cardW - 160) / 2}" y="420" width="${(cardW - 160) / 2}" height="84" rx="${r}" fill="${surface.primary}" fill-opacity=".14"/>`;
@@ -70,12 +113,12 @@ export function landingPage(ctx: MockupContext, width: number, height: number): 
   return `<defs><linearGradient id="hero" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="${surface.primary}"/><stop offset="1" stop-color="${surface.secondary}"/></linearGradient></defs>
     <rect width="${width}" height="${height}" fill="${surface.background}"/>
     ${logo(ctx, { x: pad, y: 40, width: 36, height: 36 }, undefined, "lp-nav")}
-    ${text(pad + 50, 66, brand.name, { size: 22, fill: surface.text, font: "h" })}
+    ${text(nav.name.x, 66, nav.name.text, { size: nav.name.size, fill: surface.text, font: "h" })}
     ${navLinks}
     <rect x="${width - pad - ctaW}" y="34" width="${ctaW}" height="48" rx="${Math.min(r, 24)}" fill="${surface.primary}"/>
     ${text(width - pad - ctaW / 2, 65, cta, { size: 19, fill: onPrimary, font: "bb", anchor: "middle" })}
     <rect y="112" width="${width}" height="1" fill="${surface.border}"/>
-    ${text(pad, 190, `NEW  ·  ${brand.name.toUpperCase()} 2.0`, { size: 15, fill: surface.primaryText, font: "bb", spacing: 3 })}
+    ${text(pad, 190, eyebrow, { size: 15, fill: surface.primaryText, font: "bb", spacing: 3 })}
     ${title}
     ${subText}
     <rect x="${pad}" y="${btnY}" width="${ctaW + 20}" height="60" rx="${Math.min(r, 30)}" fill="${surface.primary}"/>

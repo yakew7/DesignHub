@@ -94,17 +94,21 @@ export function wrap(
   return lines;
 }
 
-/** Shortens `value` with an ellipsis until it fits `maxWidth` on one line, even when it is a single long word. */
+/**
+ * Shortens `value` with an ellipsis until it fits `maxWidth` on one line, even when it is a
+ * single long word. `spacing` is the letter-spacing the text is drawn with.
+ */
 export function truncate(
   ctx: DrawContext,
   value: string,
   maxWidth: number,
   size: number,
   font: "h" | "b" | "bb" = "b",
+  spacing = 0,
 ): string {
   const family = font === "h" ? ctx.brand.typography.heading : ctx.brand.typography.body;
   const weight = font === "h" ? ctx.brand.typography.headingWeight : font === "bb" ? 600 : 400;
-  const measure = (s: string) => ctx.measure(s, family, weight, size);
+  const measure = (s: string) => ctx.measure(s, family, weight, size) + spacing * s.length;
   if (measure(value) <= maxWidth) return value;
   let out = value;
   while (out.length > 1 && measure(`${out.trimEnd()}...`) > maxWidth) out = out.slice(0, -1);

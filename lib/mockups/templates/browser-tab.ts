@@ -1,6 +1,6 @@
 import { nestLogo } from "@/lib/logo/compose";
 import { renderVariant, variantContext } from "@/lib/logo/variants";
-import { mockupDoc, text } from "@/lib/mockups/kit";
+import { mockupDoc, text, truncate } from "@/lib/mockups/kit";
 import { screen, studio } from "@/lib/mockups/templates/devices";
 import { landingPage } from "@/lib/mockups/templates/laptop-landing";
 import type { MockupContext, MockupTemplate } from "@/lib/mockups/types";
@@ -24,15 +24,6 @@ function chrome(dark: boolean): Chrome {
     : { strip: "#dee1e6", tab: "#ffffff", field: "#f1f3f4", text: "#202124", muted: "#5f6368", glyph: "#9aa0a6" };
 }
 
-/** Shortens `value` with an ellipsis until it fits `maxWidth`, the way a tab truncates its title. */
-function fit(ctx: MockupContext, value: string, maxWidth: number, size: number): string {
-  const measure = (s: string) => ctx.measure(s, ctx.brand.typography.body, 400, size);
-  if (measure(value) <= maxWidth) return value;
-  let out = value;
-  while (out.length > 1 && measure(`${out}...`) > maxWidth) out = out.slice(0, -1);
-  return `${out.trimEnd()}...`;
-}
-
 /** One tab at the local origin. The active tab joins the toolbar with flared bottom corners. */
 function tab(ctx: MockupContext, c: Chrome, title: string, icon: string, active: boolean): string {
   const h = STRIP - 8;
@@ -42,7 +33,7 @@ function tab(ctx: MockupContext, c: Chrome, title: string, icon: string, active:
     : `<path d="M${TAB} ${10} V${h - 10}" stroke="${c.glyph}" stroke-opacity=".6" stroke-width="1"/>`;
   return `${shape}
     ${icon}
-    ${text(40, 24, fit(ctx, title, TAB - 40 - 34, 13), { size: 13, fill: active ? c.text : c.muted })}
+    ${text(40, 24, truncate(ctx, title, TAB - 40 - 34, 13), { size: 13, fill: active ? c.text : c.muted })}
     <path d="M${TAB - 24} 15 l8 8 m0 -8 l-8 8" stroke="${active ? c.text : c.muted}" stroke-width="1.4" stroke-linecap="round"/>`;
 }
 
