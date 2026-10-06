@@ -18,8 +18,13 @@ export function evaluateTargets(targets: TouchTarget[], gap: number): TargetResu
     const aaa = target.width >= MIN_AAA && target.height >= MIN_AAA;
     const bigEnough = target.width >= MIN_AA && target.height >= MIN_AA;
     const neighbors = [targets[index - 1], targets[index + 1]].filter((item): item is TouchTarget => Boolean(item));
-    // Spacing exception: the 24px circle around this target's center must not reach any neighbor.
-    const spaced = neighbors.every((neighbor) => target.width / 2 + gap + neighbor.width / 2 >= MIN_AA);
+    // Spacing exception: the 24px circle on this target's center must not intersect a neighbor,
+    // nor the 24px circle of a neighbor that is itself undersized.
+    const spaced = neighbors.every((neighbor) => {
+      const reach = target.width / 2 + gap;
+      const neighborUndersized = neighbor.width < MIN_AA || neighbor.height < MIN_AA;
+      return neighborUndersized ? reach + neighbor.width / 2 >= MIN_AA : reach >= MIN_AA / 2;
+    });
     const aa = bigEnough || spaced;
     const reason = aaa
       ? "Meets 44×44 (AAA)."

@@ -84,7 +84,7 @@ export function scoreBody(heading: FontFamily, body: FontFamily): number {
 
 export function suggestBodies(heading: FontFamily, fonts: FontFamily[], limit = 6): FontFamily[] {
   return fonts
-    .filter(isBodyCandidate)
+    .filter((font) => font.family !== heading.family && isBodyCandidate(font))
     .map((font) => ({ font, score: scoreBody(heading, font) }))
     .sort((a, b) => b.score - a.score)
     .slice(0, limit)
@@ -106,7 +106,10 @@ export function randomPair(
   random: () => number = Math.random,
 ): FontPair {
   const pool = fonts.filter((font) => font.rank <= 150);
-  const headingPool = pool.filter((font) => font.category !== "monospace");
+  // A locked body must not be drawn as the heading too.
+  const headingPool = pool.filter(
+    (font) => font.category !== "monospace" && !(locks.body && font.family === current.body),
+  );
   const heading = locks.heading ? fonts.find((font) => font.family === current.heading) : pick(headingPool, random);
   if (!heading) return current;
 
