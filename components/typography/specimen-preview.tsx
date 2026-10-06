@@ -1,13 +1,15 @@
 "use client";
 
-import { ArrowLeftRight, Columns2, Pin, X } from "lucide-react";
+import { ArrowLeftRight, Columns2, Languages, Pin, X } from "lucide-react";
 import type { CSSProperties, ReactNode } from "react";
 
 import { Button } from "@/components/ui/button";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useFontMeta } from "@/hooks/use-font-catalog";
 import { useGoogleFont } from "@/hooks/use-google-font";
 import { nearestWeight } from "@/lib/typography/compare";
 import { fontStack, fontVariationSettings, openTypeFeatureSettings } from "@/lib/typography/css";
+import { matchSample, needsExtendedGlyphs, specimenSamples } from "@/lib/typography/samples";
 import { cn } from "@/lib/utils";
 import { useTypographyStore } from "@/store/typography-store";
 
@@ -76,6 +78,38 @@ function SpecimenPane({ family, label, textId, useAxes, actions }: PaneProps) {
   );
 }
 
+const CUSTOM = "custom";
+
+/** Swaps the specimen text for a sample in another language or script. */
+function SampleMenu() {
+  const text = useTypographyStore((state) => state.specimen.text);
+  const applySample = useTypographyStore((state) => state.applySample);
+  const current = matchSample(text);
+
+  return (
+    <Select value={current?.id ?? CUSTOM} onValueChange={(id) => id !== CUSTOM && applySample(id)}>
+      <SelectTrigger
+        size="sm"
+        className="w-auto min-w-40 max-w-full [&>span]:flex-1 [&>span]:truncate [&>span]:text-left"
+        aria-label="Sample text"
+      >
+        <Languages />
+        <SelectValue />
+      </SelectTrigger>
+      <SelectContent>
+        {specimenSamples.map((sample) => (
+          <SelectItem key={sample.id} value={sample.id}>
+            {sample.label}
+          </SelectItem>
+        ))}
+        <SelectItem value={CUSTOM} disabled>
+          Your own text
+        </SelectItem>
+      </SelectContent>
+    </Select>
+  );
+}
+
 /** Large, editable specimen for the active font, optionally next to a pinned second font. */
 export function SpecimenPreview({ className }: { className?: string }) {
   const activeFont = useTypographyStore((state) => state.activeFont);
@@ -83,11 +117,14 @@ export function SpecimenPreview({ className }: { className?: string }) {
   const setCompareFont = useTypographyStore((state) => state.setCompareFont);
   const startCompare = useTypographyStore((state) => state.startCompare);
   const swapCompare = useTypographyStore((state) => state.swapCompare);
+  const extended = useTypographyStore((state) => needsExtendedGlyphs(state.specimen.text));
   const comparing = compareFont !== null;
 
   return (
     <div className={cn("flex min-h-44 flex-col gap-4 rounded-lg border bg-card p-6", className)}>
       <div className="flex flex-wrap items-center justify-end gap-2">
+        <SampleMenu />
+        <span className="flex-1" />
         {comparing && (
           <Button variant="ghost" size="sm" onClick={swapCompare}>
             <ArrowLeftRight /> Swap
@@ -127,6 +164,11 @@ export function SpecimenPreview({ className }: { className?: string }) {
           <SpecimenPane family={compareFont} label="Pinned" textId="specimen-text-compare" useAxes={false} />
         )}
       </div>
+      {extended && (
+        <p className="text-xs text-muted-foreground">
+          Characters a font doesn&apos;t include fall back to another font, so check the shapes before you choose it.
+        </p>
+      )}
     </div>
   );
 }

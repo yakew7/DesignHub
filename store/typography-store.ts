@@ -5,10 +5,11 @@ import { indexedDbStorage } from "@/lib/db";
 import { defaultFontFilters, type FontFilters } from "@/lib/typography/filter";
 import { defaultCompareFont } from "@/lib/typography/compare";
 import { toggleFeature as applyFeatureToggle } from "@/lib/typography/opentype-features";
+import { specimenSamples } from "@/lib/typography/samples";
 
 import type { OpenTypeSettings, SpecimenSettings, TextRhythm, TypeScaleSettings } from "@/types/typography";
 
-export const DEFAULT_SPECIMEN_TEXT = "The quick brown fox jumps over the lazy dog";
+export const DEFAULT_SPECIMEN_TEXT = specimenSamples[0]!.text;
 
 export const defaultSpecimen: SpecimenSettings = {
   text: DEFAULT_SPECIMEN_TEXT,
@@ -80,6 +81,8 @@ type TypographyState = {
   swapCompare: () => void;
   setPair: (pair: { heading?: string; body?: string }) => void;
   updateSpecimen: (patch: Partial<SpecimenSettings>) => void;
+  /** Replaces the specimen text with one of `specimenSamples`. */
+  applySample: (id: string) => void;
   setAxis: (tag: string, value: number) => void;
   updateScale: (patch: Partial<TypeScaleSettings>) => void;
   toggleFeature: (tag: keyof OpenTypeSettings) => void;
@@ -119,6 +122,11 @@ export const useTypographyStore = create<TypographyState>()(
       setPair: ({ heading, body }) =>
         set((state) => ({ headingFont: heading ?? state.headingFont, bodyFont: body ?? state.bodyFont })),
       updateSpecimen: (patch) => set((state) => ({ specimen: { ...state.specimen, ...patch } })),
+      applySample: (id) =>
+        set((state) => {
+          const sample = specimenSamples.find((item) => item.id === id);
+          return sample ? { specimen: { ...state.specimen, text: sample.text } } : state;
+        }),
       setAxis: (tag, value) =>
         set((state) => ({ specimen: { ...state.specimen, axes: { ...state.specimen.axes, [tag]: value } } })),
       updateScale: (patch) => set((state) => ({ scale: { ...state.scale, ...patch } })),
