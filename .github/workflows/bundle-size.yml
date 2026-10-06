@@ -1,0 +1,50 @@
+name: Bundle size
+
+on:
+  pull_request:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: bundle-size-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  bundle-size:
+    name: First-load JS compared with the base branch
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - uses: pnpm/action-setup@v6
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 22
+          cache: pnpm
+      # The base branch is built in a worktree outside the workspace, so neither build sees
+      # the other's files. It is measured with this branch's script, which main may not have.
+      - name: Check out the base branch
+        env:
+          BASE_SHA: ${{ github.event.pull_request.base.sha }}
+        run: |
+          git fetch --no-tags --depth=1 origin "$BASE_SHA"
+          git worktree add --detach "$RUNNER_TEMP/base" "$BASE_SHA"
+      - name: Build the base branch
+        working-directory: ${{ runner.temp }}/base
+        run: |
+          pnpm install --frozen-lockfile
+          pnpm build
+      - name: Measure the base branch
+        run: node scripts/bundle-size.mjs --dir "$RUNNER_TEMP/base" --json "$RUNNER_TEMP/bundle-size-base.json" > /dev/null
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm build
+      # Writes the table to the job summary and fails if any route grew by more than 10%.
+      - name: Compare with the base branch
+        run: pnpm bundle:size --base "$RUNNER_TEMP/bundle-size-base.json" --json bundle-size.json
+      - uses: actions/upload-artifact@v7
+        if: always()
+        with:
+          name: bundle-size
+          path: bundle-size.json
+          retention-days: 14
+          if-no-files-found: ignore

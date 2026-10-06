@@ -15,7 +15,8 @@
     "format": "prettier --write .",
     "format:check": "prettier --check .",
     "fonts:catalog": "node scripts/generate-font-catalog.mjs",
-    "check:dashes": "node scripts/check-em-dash.mjs"
+    "check:dashes": "node scripts/check-em-dash.mjs",
+    "bundle:size": "node scripts/bundle-size.mjs"
   },
   "packageManager": "pnpm@11.17.0",
   "engines": {

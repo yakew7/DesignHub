@@ -32,3 +32,6 @@ pnpm-debug.log*
 
 # Lighthouse CI reports (pnpm dlx @lhci/cli autorun)
 /.lighthouseci/
+
+# Bundle size reports (pnpm bundle:size --json)
+/bundle-size*.json

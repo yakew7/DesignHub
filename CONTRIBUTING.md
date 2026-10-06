@@ -41,6 +41,7 @@ The app runs at [http://localhost:3000](http://localhost:3000). There is no back
 | `pnpm format:check`  | Verify formatting without writing                                   |
 | `pnpm fonts:catalog` | Regenerate `lib/typography/catalog.json` from Google Fonts metadata |
 | `pnpm check:dashes`  | Fail if any file contains an em dash (also runs in CI)              |
+| `pnpm bundle:size`   | Report each route's first-load JS after a build (see below)         |
 
 Before pushing, run the same checks as CI:
 
@@ -62,6 +63,19 @@ pnpm dlx @lhci/cli autorun
 ```
 
 It starts `pnpm start` itself, stops it when done and writes the reports to `.lighthouseci/` (gitignored). Open the `.html` files there to see what failed.
+
+### Bundle size
+
+`bundle-size.yml` builds the pull request and its base branch, then runs `scripts/bundle-size.mjs` to compare the first-load client JS of every route. The table of sizes and changes appears in the job summary, and the check fails if any route grows by more than 10% (gzipped). Next.js 16 no longer prints these sizes in `next build`, so the script reads them from the build output: the shared runtime in `.next/build-manifest.json` plus each page's entry chunks from its client reference manifest.
+
+To run it locally, build, save a baseline, make your change, build again and compare:
+
+```bash
+git switch main && pnpm build && pnpm bundle:size --json bundle-size-main.json
+git switch my-branch && pnpm build && pnpm bundle:size --base bundle-size-main.json
+```
+
+`--threshold <percent>` changes the limit and `--dir <path>` measures another checkout's `.next` folder. `bundle-size*.json` files are gitignored.
 
 ## Branch naming
 
