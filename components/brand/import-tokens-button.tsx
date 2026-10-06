@@ -5,9 +5,8 @@ import { useRef } from "react";
 import { toast } from "sonner";
 
 import { Button } from "@/components/ui/button";
-import { parseTokensFile, summarizeImport, type ImportedTokens } from "@/lib/brand/import-tokens";
+import type { ImportedTokens } from "@/lib/brand/import-tokens";
 import { createStop } from "@/lib/color/gradient";
-import { applySnapshot, captureSnapshot } from "@/lib/projects/snapshot";
 import { loadFontCatalog } from "@/lib/typography/catalog";
 import { createSwatch, useColorStore } from "@/store/color-store";
 import { useTokensStore } from "@/store/tokens-store";
@@ -46,7 +45,14 @@ export function ImportTokensButton() {
       return;
     }
     try {
-      const [text, catalog] = await Promise.all([file.text(), loadFontCatalog()]);
+      // The parser and snapshots load with the file, so they stay out of the page's first load.
+      const [text, catalog, { parseTokensFile, summarizeImport }, { applySnapshot, captureSnapshot }] =
+        await Promise.all([
+          file.text(),
+          loadFontCatalog(),
+          import("@/lib/brand/import-tokens"),
+          import("@/lib/projects/snapshot"),
+        ]);
       const families = new Set(catalog.map((font) => font.family));
       const imported = parseTokensFile(text, { isKnownFont: (family) => families.has(family) });
       const before = captureSnapshot();

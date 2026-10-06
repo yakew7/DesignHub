@@ -9,7 +9,6 @@ import { Label } from "@/components/ui/label";
 import { useBrandTokens } from "@/hooks/use-brand";
 import { svgToDataUrl } from "@/lib/icons/svg";
 import { readSvgFile } from "@/lib/svg/read-file";
-import { sanitizeSvg } from "@/lib/svg/sanitize";
 import { useBrandStore } from "@/store/brand-store";
 
 export function BrandLogoField() {
@@ -20,7 +19,9 @@ export function BrandLogoField() {
   async function upload(file: File | undefined) {
     if (!file) return;
     try {
-      const clean = sanitizeSvg(await readSvgFile(file));
+      // The sanitizer (an SVG parser and optimizer) loads with the first upload.
+      const [source, { sanitizeSvg }] = await Promise.all([readSvgFile(file), import("@/lib/svg/sanitize")]);
+      const clean = sanitizeSvg(source);
       if (!clean) throw new Error("That file isn't a valid SVG.");
       updateProfile({ logoSvg: clean });
       toast.success("Logo updated");

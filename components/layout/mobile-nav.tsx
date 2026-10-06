@@ -1,27 +1,45 @@
 "use client";
 
-import { useState } from "react";
+import dynamic from "next/dynamic";
+import { useRef, useState } from "react";
 import { Menu } from "lucide-react";
 
-import { SidebarNav } from "@/components/layout/sidebar-nav";
 import { Button } from "@/components/ui/button";
-import { Sheet, SheetContent, SheetDescription, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
+
+const loadSheet = () => import("@/components/layout/mobile-nav-sheet").then((m) => m.MobileNavSheet);
+
+// The sheet (a modal dialog) is only needed once someone opens the menu, so it stays out of the
+// first load of every page.
+const MobileNavSheet = dynamic(loadSheet, { ssr: false });
 
 export function MobileNav() {
   const [open, setOpen] = useState(false);
+  const [mounted, setMounted] = useState(false);
+  const triggerRef = useRef<HTMLButtonElement>(null);
 
   return (
-    <Sheet open={open} onOpenChange={setOpen}>
-      <SheetTrigger asChild>
-        <Button variant="ghost" size="icon" className="-ml-2 lg:hidden" aria-label="Open navigation">
-          <Menu />
-        </Button>
-      </SheetTrigger>
-      <SheetContent side="left" className="pt-12">
-        <SheetTitle className="sr-only">Navigation</SheetTitle>
-        <SheetDescription className="sr-only">Jump to a DesignHub studio.</SheetDescription>
-        <SidebarNav onNavigate={() => setOpen(false)} />
-      </SheetContent>
-    </Sheet>
+    <>
+      <Button
+        ref={triggerRef}
+        variant="ghost"
+        size="icon"
+        className="-ml-2 lg:hidden"
+        aria-label="Open navigation"
+        aria-haspopup="dialog"
+        aria-expanded={open}
+        aria-controls={open ? "mobile-nav" : undefined}
+        data-state={open ? "open" : "closed"}
+        // Fetch the sheet as soon as the button is about to be used.
+        onPointerEnter={() => void loadSheet()}
+        onFocus={() => void loadSheet()}
+        onClick={() => {
+          setMounted(true);
+          setOpen(true);
+        }}
+      >
+        <Menu />
+      </Button>
+      {mounted ? <MobileNavSheet open={open} onOpenChange={setOpen} triggerRef={triggerRef} /> : null}
+    </>
   );
 }
