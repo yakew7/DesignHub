@@ -2,6 +2,8 @@
 
 The Export Engine turns what you have designed in each studio into one `DesignTokens` object (`types/tokens.ts`), then renders it into every format. Because all formats are generated from the same flat token list, they never disagree.
 
+New to the vocabulary? The [glossary](glossary.md) defines design tokens, semantic roles, shades, OKLCH, DTCG and the other terms used here.
+
 ## What's included
 
 | Group           | Source                                              | Example names                                                           |

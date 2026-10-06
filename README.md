@@ -9,7 +9,7 @@
 An open-source, local-first design & brand identity toolkit.
 Build a brand, then everything it needs: logo variants, mockups, social assets, a brand book and design tokens. Plus typography, color, icons, backgrounds, effects, SVG and accessibility tools, in one fast, keyboard-first workspace.
 
-[Features](#features) · [Screenshots](#screenshots) · [Quick start](#quick-start) · [Roadmap](https://github.com/yakew7/DesignHub/blob/main/ROADMAP.md) · [FAQ](https://github.com/yakew7/DesignHub/blob/main/docs/faq.md) · [Self-hosting](https://github.com/yakew7/DesignHub/blob/main/docs/self-hosting.md) · [Contributing](https://github.com/yakew7/DesignHub/blob/main/CONTRIBUTING.md)
+[Features](#features) · [Screenshots](#screenshots) · [Quick start](#quick-start) · [Roadmap](https://github.com/yakew7/DesignHub/blob/main/ROADMAP.md) · [FAQ](https://github.com/yakew7/DesignHub/blob/main/docs/faq.md) · [Glossary](https://github.com/yakew7/DesignHub/blob/main/docs/glossary.md) · [Self-hosting](https://github.com/yakew7/DesignHub/blob/main/docs/self-hosting.md) · [Contributing](https://github.com/yakew7/DesignHub/blob/main/CONTRIBUTING.md)
 
 [![CI](https://github.com/yakew7/DesignHub/actions/workflows/ci.yml/badge.svg)](https://github.com/yakew7/DesignHub/actions/workflows/ci.yml)
 ![MIT License](https://img.shields.io/badge/license-MIT-6366f1)
@@ -373,7 +373,7 @@ DesignHub/
 └── docs/                   # Architecture notes and screenshots
 ```
 
-Read [docs/architecture.md](docs/architecture.md) for how the pieces fit together and [docs/design-tokens.md](docs/design-tokens.md) for the token format.
+Read [docs/architecture.md](docs/architecture.md) for how the pieces fit together and [docs/design-tokens.md](docs/design-tokens.md) for the token format. [docs/glossary.md](docs/glossary.md) defines the terms DesignHub uses.
 
 ## Privacy
 
