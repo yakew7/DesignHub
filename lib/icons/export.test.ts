@@ -38,4 +38,34 @@ describe("icon exports", () => {
     );
     expect(svelte?.code).toContain(".a&#123;fill:red&#125;");
   });
+
+  test("Angular standalone component binds size and color inputs on the svg", () => {
+    const angular = iconExports("tabler:brand-github", icon, { ...defaultIconStyle, color: "#ef4444" }).find(
+      (format) => format.id === "angular",
+    );
+    expect(angular?.filename).toBe("brand-github-icon.component.ts");
+    expect(angular?.language).toBe("ts");
+    expect(angular?.code).toContain('selector: "brand-github-icon",');
+    expect(angular?.code).toContain("standalone: true,");
+    expect(angular?.code).toMatch(
+      /<svg [^>]*\[attr\.width\]="size" \[attr\.height\]="size"[^>]*\[style\.color\]="color">/,
+    );
+    expect(angular?.code).toContain("export class BrandGithubIconComponent {");
+    expect(angular?.code).toContain('@Input() size: string | number = "1em";');
+    expect(angular?.code).toContain('@Input() color = "#ef4444";');
+    // The body keeps currentColor so the color input can recolor it.
+    expect(angular?.code).toContain('stroke="currentColor"');
+    expect(angular?.code).toContain('stroke-width="2"');
+  });
+
+  test("Angular component escapes template syntax and template literal characters", () => {
+    const tricky = { ...icon, body: "<style>@media print{.a{fill:red}}</style><text>`${x}` \\ {{ y }}</text>" };
+    const angular = iconExports("tabler:brand-github", tricky, defaultIconStyle).find(
+      (format) => format.id === "angular",
+    );
+    expect(angular?.code).toContain("<g ngNonBindable>");
+    // <style> is raw text in Angular templates, so its CSS is left as written.
+    expect(angular?.code).toContain("<style>@media print{.a{fill:red}}</style>");
+    expect(angular?.code).toContain("<text>\\`\\$&#123;x&#125;\\` \\\\ &#123;&#123; y &#125;&#125;</text>");
+  });
 });
