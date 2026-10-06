@@ -22,7 +22,20 @@ export type BackgroundKind =
   | "voronoi"
   | "crosshatch"
   | "circuit"
-  | "halftone";
+  | "halftone"
+  | "triangles";
+
+/** Halftone gradient shape: forced linear or radial, or picked by the seed. */
+export type HalftoneGradientChoice = "seeded" | "linear" | "radial";
+
+/**
+ * Settings that only one generator reads. Every field is optional, so other generators and
+ * backgrounds saved before a field existed keep working.
+ */
+export type BackgroundOptions = {
+  /** Halftone only. Missing means "seeded". */
+  halftoneGradient?: HalftoneGradientChoice;
+};
 
 export type BackgroundSettings = {
   kind: BackgroundKind;
@@ -39,6 +52,8 @@ export type BackgroundSettings = {
   rotation: number;
   width: number;
   height: number;
+  /** Generator-specific settings. Optional, so older saved backgrounds still load. */
+  options?: BackgroundOptions;
 };
 
 export type BackgroundDefinition = {
@@ -52,5 +67,5 @@ export type BackgroundDefinition = {
   /** Needs Paper.js (loaded lazily); renders with a built-in fallback until it's ready. */
   usesPaper?: boolean;
   /** Preferred starting values when the user switches to this generator. */
-  defaults?: Partial<Omit<BackgroundSettings, "kind" | "seed" | "width" | "height">>;
+  defaults?: Partial<Omit<BackgroundSettings, "kind" | "seed" | "width" | "height" | "options">>;
 };

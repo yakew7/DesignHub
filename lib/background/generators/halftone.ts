@@ -18,11 +18,17 @@ export type HalftoneGradient = {
   angle: number;
 };
 
-/** The seed picks a linear or radial gradient, moves its center and turns a linear one. */
+/**
+ * The seed moves the gradient center and turns a linear one. It also picks linear or radial,
+ * unless the gradient option forces one; the draw is made either way, so forcing the type
+ * keeps the same center and angle.
+ */
 export function halftoneGradient(settings: BackgroundSettings): HalftoneGradient {
   const random = createRandom(settings.seed);
+  const seeded = random() < 0.5 ? "radial" : "linear";
+  const choice = settings.options?.halftoneGradient ?? "seeded";
   return {
-    type: random() < 0.5 ? "radial" : "linear",
+    type: choice === "seeded" ? seeded : choice,
     cx: range(random, 0.2, 0.8) * settings.width,
     cy: range(random, 0.2, 0.8) * settings.height,
     angle: random() * Math.PI * 2,

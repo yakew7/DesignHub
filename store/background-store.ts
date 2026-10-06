@@ -3,7 +3,7 @@ import { createJSONStorage, persist } from "zustand/middleware";
 
 import { randomSeed } from "@/lib/background/random";
 import { indexedDbStorage } from "@/lib/db";
-import type { BackgroundDefinition, BackgroundKind, BackgroundSettings } from "@/types/background";
+import type { BackgroundDefinition, BackgroundOptions, BackgroundKind, BackgroundSettings } from "@/types/background";
 
 export const defaultBackground: BackgroundSettings = {
   kind: "waves",
@@ -15,11 +15,14 @@ export const defaultBackground: BackgroundSettings = {
   rotation: 0,
   width: 1600,
   height: 900,
+  options: {},
 };
 
 type BackgroundState = {
   settings: BackgroundSettings;
   update: (patch: Partial<BackgroundSettings>) => void;
+  /** Merges into the generator-specific options, keeping the ones not in the patch. */
+  updateOptions: (patch: Partial<BackgroundOptions>) => void;
   setKind: (kind: BackgroundKind, definition?: BackgroundDefinition) => void;
   randomize: () => void;
   setColor: (index: number, color: string) => void;
@@ -35,6 +38,8 @@ export const useBackgroundStore = create<BackgroundState>()(
     (set) => ({
       settings: defaultBackground,
       update: (patch) => set((state) => ({ settings: { ...state.settings, ...patch } })),
+      updateOptions: (patch) =>
+        set((state) => ({ settings: { ...state.settings, options: { ...state.settings.options, ...patch } } })),
       setKind: (kind, definition) =>
         set((state) => ({ settings: { ...state.settings, ...definition?.defaults, kind } })),
       randomize: () => set((state) => ({ settings: { ...state.settings, seed: randomSeed() } })),
@@ -56,6 +61,24 @@ export const useBackgroundStore = create<BackgroundState>()(
         ),
       reset: () => set({ settings: defaultBackground }),
     }),
-    { name: "designhub:backgrounds", version: 1, storage: createJSONStorage(() => indexedDbStorage) },
+    {
+      name: "designhub:backgrounds",
+      version: 2,
+      storage: createJSONStorage(() => indexedDbStorage),
+      // v1 had no generator options; the merge below fills anything missing from the defaults.
+      migrate: (persisted) => persisted as BackgroundState,
+      merge: (persisted, current) => {
+        const saved = (persisted ?? {}) as Partial<BackgroundState>;
+        return {
+          ...current,
+          ...saved,
+          settings: {
+            ...current.settings,
+            ...saved.settings,
+            options: { ...current.settings.options, ...saved.settings?.options },
+          },
+        };
+      },
+    },
   ),
 );

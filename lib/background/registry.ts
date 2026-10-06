@@ -19,6 +19,7 @@ import { grid } from "@/lib/background/generators/grid";
 import { isometric } from "@/lib/background/generators/isometric";
 import { mesh } from "@/lib/background/generators/mesh";
 import { noise } from "@/lib/background/generators/noise";
+import { triangles } from "@/lib/background/generators/triangles";
 import { topographic } from "@/lib/background/generators/topographic";
 import { voronoi } from "@/lib/background/generators/voronoi";
 import { waves } from "@/lib/background/generators/waves";
@@ -51,6 +52,7 @@ export const backgroundGenerators: BackgroundDefinition[] = [
   crosshatch,
   circuit,
   halftone,
+  triangles,
 ];
 
 export function getGenerator(kind: BackgroundKind): BackgroundDefinition | undefined {

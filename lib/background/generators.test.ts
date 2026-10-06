@@ -3,6 +3,7 @@ import { describe, expect, test } from "vitest";
 import { backgroundCss } from "@/lib/background/export";
 import { circuitTraces, type GridNode } from "@/lib/background/generators/circuit";
 import { halftoneGradient, halftoneStrength } from "@/lib/background/generators/halftone";
+import { triangleSlot } from "@/lib/background/generators/triangles";
 import { voronoiCells, type Point } from "@/lib/background/generators/voronoi";
 import { createRandom } from "@/lib/background/random";
 import { renderBackgroundSvg } from "@/lib/background/registry";
@@ -23,21 +24,26 @@ const settings = (kind: BackgroundKind, patch: Partial<BackgroundSettings> = {})
 
 const nodeCount = (svg: string) => (svg.match(/<[a-zA-Z]/g) ?? []).length;
 
-describe.each(["plus", "starfield", "voronoi", "crosshatch", "circuit", "halftone"] as const)("%s", (kind) => {
-  test("the same seed renders the same output", () => {
-    for (const patch of [{ seed: 7 }, { seed: 7, rotation: 30, density: 100, scale: 2 }]) {
-      expect(renderBackgroundSvg(settings(kind, patch))).toBe(renderBackgroundSvg(settings(kind, patch)));
-    }
-  });
+describe.each(["plus", "starfield", "voronoi", "crosshatch", "circuit", "halftone", "triangles"] as const)(
+  "%s",
+  (kind) => {
+    test("the same seed renders the same output", () => {
+      for (const patch of [{ seed: 7 }, { seed: 7, rotation: 30, density: 100, scale: 2 }]) {
+        expect(renderBackgroundSvg(settings(kind, patch))).toBe(renderBackgroundSvg(settings(kind, patch)));
+      }
+    });
 
-  test("different seeds render different output", () => {
-    expect(renderBackgroundSvg(settings(kind, { seed: 1 }))).not.toBe(renderBackgroundSvg(settings(kind, { seed: 2 })));
-  });
+    test("different seeds render different output", () => {
+      expect(renderBackgroundSvg(settings(kind, { seed: 1 }))).not.toBe(
+        renderBackgroundSvg(settings(kind, { seed: 2 })),
+      );
+    });
 
-  test("exports a CSS rule", () => {
-    expect(backgroundCss(settings(kind))).toContain("background-image:");
-  });
-});
+    test("exports a CSS rule", () => {
+      expect(backgroundCss(settings(kind))).toContain("background-image:");
+    });
+  },
+);
 
 test("plus draws through a <pattern>", () => {
   expect(renderBackgroundSvg(settings("plus"))).toContain("<pattern");
@@ -183,9 +189,49 @@ describe("halftone", () => {
     expect(types).toEqual(new Set(["linear", "radial"]));
   });
 
+  test("the gradient option forces the type and keeps the seeded center and angle", () => {
+    for (let seed = 0; seed < 10; seed += 1) {
+      const seeded = halftoneGradient(settings("halftone", { seed }));
+      expect(halftoneGradient(settings("halftone", { seed, options: { halftoneGradient: "seeded" } }))).toEqual(seeded);
+      for (const type of ["linear", "radial"] as const) {
+        const forced = halftoneGradient(settings("halftone", { seed, options: { halftoneGradient: type } }));
+        expect(forced).toEqual({ ...seeded, type });
+      }
+    }
+  });
+
+  test("renders the same output without options as before they existed", () => {
+    expect(renderBackgroundSvg(settings("halftone"))).toBe(
+      renderBackgroundSvg(settings("halftone", { options: { halftoneGradient: "seeded" } })),
+    );
+  });
+
   test("keeps the SVG small, even on a 4K canvas", () => {
     const svg = renderBackgroundSvg(settings("halftone", { density: 100, width: 3840, height: 2160 }));
     expect(nodeCount(svg)).toBeLessThan(20);
     expect((svg.match(/M/g) ?? []).length).toBeLessThan(6600);
+  });
+});
+
+describe("triangles", () => {
+  test("draws through a <pattern>", () => {
+    expect(renderBackgroundSvg(settings("triangles"))).toContain("<pattern");
+  });
+
+  test.each([2, 3, 4, 5, 6])("no two triangles that share an edge get the same color (%i colors)", (count) => {
+    for (let row = 0; row < 6; row += 1) {
+      for (let column = -1; column < 12; column += 1) {
+        const slot = triangleSlot(column, row, count, 1);
+        expect(triangleSlot(column + 1, row, count, 1)).not.toBe(slot);
+        expect(triangleSlot(column, row + 1, count, 1)).not.toBe(slot);
+      }
+    }
+  });
+
+  test("density sets the triangle size", () => {
+    const tileWidth = (svg: string) => Number(/<pattern[^>]* width="([\d.]+)"/.exec(svg)?.[1]);
+    const sparse = tileWidth(renderBackgroundSvg(settings("triangles", { density: 0 })));
+    const dense = tileWidth(renderBackgroundSvg(settings("triangles", { density: 100 })));
+    expect(sparse).toBeGreaterThan(dense * 3);
   });
 });
