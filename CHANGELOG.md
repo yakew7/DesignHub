@@ -34,6 +34,8 @@ Released 2026-09-23. The first public release: a complete, local-first design an
 - Tests that render every background generator, social template and mockup template and check the SVG is well-formed at the right size.
 - A Lighthouse CI workflow that checks accessibility, best practices and SEO (100) and performance (90, as a warning) on the main routes for every pull request.
 - Unit tests for readability, the SVG sprite builder and every registered effect.
+- A bundle size check on pull requests (`pnpm bundle:size`): first-load JS per route, compared with the base branch, failing on growth over 10%.
+- Unit tests for gradients, touch targets and font pairing. They fixed an undersized touch target passing WCAG 2.5.8 next to a large neighbor, and a random pairing that could pair a font with itself.
 
 #### Brand Studio
 
@@ -51,6 +53,7 @@ Released 2026-09-23. The first public release: a complete, local-first design an
 - Staged loading states, editable results with a copy button for each extracted color, and one-click apply to the brand with undo.
 - Paste an image from the clipboard anywhere on the page, and an Ignore background option that leaves the flat border color out of the palette.
 - Each extracted color shows its contrast on white and black, with screen-reader text.
+- Combine up to five images into one result, weighted by image area, each with its own Ignore background switch.
 
 #### Logo Studio
 
@@ -60,6 +63,7 @@ Released 2026-09-23. The first public release: a complete, local-first design an
 - Logo pack export: every variant as SVG, PNG and PDF in one ZIP with usage notes.
 - A favicon package (.zip) built from the app icon variant, also included in the logo pack as `favicon/`.
 - A circular avatar variant for profile pictures, added to the logo pack as SVG, PDF and 400 and 1024 px PNGs.
+- Animated SVG export: the logo draws itself in from measured path lengths, then the fills fade in. It plays once or loops and shows the final logo under reduced motion.
 
 #### Mockup Studio
 
@@ -70,6 +74,7 @@ Released 2026-09-23. The first public release: a complete, local-first design an
 - A Merch mockup with a T-shirt and a tote bag, an ID badge on a lanyard, and an email signature that can be copied as rich HTML.
 - Coffee cup and billboard mockups.
 - Shopping bag and browser tab mockups; the browser tab shows the app icon as a favicon at 16 px with a 2x callout.
+- Long brand names no longer overlap the landing page navigation in the laptop and browser tab mockups: links move, drop or the name shrinks and truncates.
 
 #### Social Media Studio
 
@@ -83,16 +88,18 @@ Released 2026-09-23. The first public release: a complete, local-first design an
 - Choose which templates go into the social asset ZIP.
 - Twitch channel banner, Mastodon header (with the avatar zone marked) and Instagram portrait post (1080 x 1350) templates.
 - YouTube channel banner (with the 1546 x 423 safe area), Reddit community banner and Tumblr header templates.
+- Dribbble shot (1600 x 1200) and Behance project cover (808 x 632) templates.
 
 #### Brand Guidelines
 
 - A complete brand book generated from the brand: cover, introduction, logo usage, clear space, minimum size, incorrect usage, color palette, typography, iconography, imagery, UI components, accessibility, voice and tone, social media, and a two-page design token appendix.
 - Pages can be switched off; numbering and contents update automatically. Voice and tone are edited in place.
 - Export the full book as a PDF with pdf-lib, or any page as PNG.
-- Three cover layouts (Gradient, Minimal, Editorial) that persist and apply to every PDF export. The book is seventeen pages, with Imagery and Social media pages drawn from the brand.
+- Three cover layouts (Gradient, Minimal, Editorial) that persist and apply to every PDF export. The book is eighteen pages, with Imagery and Social media pages drawn from the brand.
 - A Mission and values page: a statement and up to four values, edited in place and saved with brand projects.
 - The PDF has bookmarks for every included page and a clickable contents page.
 - Download website: the brand book as a static site ZIP with real HTML text, the page art, logo files and token downloads, ready for GitHub Pages or Netlify.
+- A Co-branding page: the logo next to a neutral partner mark, with the divider, clear space spacing, size balance and a do and a don't.
 
 #### Brand Projects
 
@@ -121,6 +128,7 @@ Released 2026-09-23. The first public release: a complete, local-first design an
 - A Compare toggle that shows the active font next to a pinned second font with the same text and settings, plus Swap and Close compare.
 - A weight waterfall under the specimen that loads each weight only when it scrolls into view; click a row to use that weight.
 - The font list is a keyboard listbox: arrow keys, Page Up / Down, Home / End, `Enter` to pick and `S` to favorite.
+- Sample texts in English, Spanish, German, Vietnamese, Greek and Cyrillic, plus numbers and punctuation, with a note when characters fall back.
 
 #### Color Studio
 
@@ -136,6 +144,7 @@ Released 2026-09-23. The first public release: a complete, local-first design an
 - Import palettes from Coolors URLs or any text containing 3- or 6-digit hex codes.
 - Export the palette as a GIMP / Inkscape / Krita palette (`.gpl`).
 - Download the palette as a PNG swatch strip, next to the code formats.
+- Download the palette as an Adobe Swatch Exchange (`.ase`) file, with shades grouped per color.
 
 #### Icon Studio
 
@@ -148,10 +157,11 @@ Released 2026-09-23. The first public release: a complete, local-first design an
 - Reliable loading: automatic fallback to Iconify mirror hosts, per-request timeouts, progressive batches, retry for failed icons and a clear error state. Icons render when IndexedDB is blocked, and exported SVG is valid XML in every browser.
 - Export an icon as a Vue 3 single-file component.
 - Export an icon as a Svelte 5 component.
+- Export an icon as an Angular standalone component.
 
 #### Background Studio
 
-- Twenty-four procedural generators: waves, organic blobs (Paper.js smoothing), mesh gradients, aurora, noise textures, dot, grid and isometric patterns, concentric rings, checkerboard, low-poly mosaic, bokeh, confetti, chevron, honeycomb hexagons, sunburst, topographic contour lines, rotated stripes, plus signs, a starfield, Voronoi cells (computed in plain TypeScript, edge to edge), crosshatch, a circuit board with non-overlapping traces and halftone dots.
+- Twenty-five procedural generators: waves, organic blobs (Paper.js smoothing), mesh gradients, aurora, noise textures, dot, grid and isometric patterns, concentric rings, checkerboard, low-poly mosaic, bokeh, confetti, chevron, honeycomb hexagons, sunburst, topographic contour lines, rotated stripes, plus signs, a starfield, Voronoi cells (computed in plain TypeScript, edge to edge), crosshatch, a circuit board with non-overlapping traces, halftone dots (linear, radial or seeded) and triangles.
 - Deterministic seeds with randomize (`Space`), color controls with a "use palette" shortcut, density, scale, rotation and canvas presets.
 - Exports: SVG, PNG (1× and 2×) and CSS backgrounds (native gradients where possible, inline SVG otherwise).
 - The dots, checks, chevron and hexagons patterns now follow the seed, so a new seed shifts them.
@@ -163,6 +173,7 @@ Released 2026-09-23. The first public release: a complete, local-first design an
 - Exports: CSS, Tailwind arbitrary-property classes, Tailwind v4 `@utility`, SCSS mixins and React style objects, plus an `effects.css` bundle.
 - An inner shadow effect with Input, Pressed and Deep well presets, in every export format and in `effects.css`.
 - A long shadow effect for boxes and text, with an angle, length and fade, at most 60 shadow steps.
+- The long shadow fades evenly on boxes: each step's opacity is set so the stacked copies follow a straight ramp.
 
 #### SVG Playground
 
@@ -173,6 +184,7 @@ Released 2026-09-23. The first public release: a complete, local-first design an
 - Sprite generator with namespaced symbol ids and usage snippets.
 - An SVG to Vue component converter.
 - A CSS data URI output that encodes only what it must, so it is shorter than base64. Sprite ids no longer collide when symbol and internal ids share hyphens.
+- An SVG to Svelte component converter. Renaming a sprite symbol is free while typing and is de-duplicated on blur or `Enter`, so two symbols never share an id.
 
 #### Accessibility Lab
 
@@ -185,6 +197,7 @@ Released 2026-09-23. The first public release: a complete, local-first design an
 - APCA (WCAG 3 draft) Lc contrast next to every WCAG 2 ratio, with Bronze targets per text role and an APCA section in the report.
 - Download the report as Markdown, with a contrast table (ratio, AA / AAA and APCA Lc).
 - A focus indicator check (WCAG 2.4.13 and 1.4.11): the brand's focus ring against the page and the focused component, with a one-click fix, in both reports.
+- Text contrast across the brand gradient: the worst point for white, black and the brand text color, in both reports.
 
 #### Export Engine
 
@@ -200,6 +213,7 @@ Released 2026-09-23. The first public release: a complete, local-first design an
 - More token formats: styled-components / Emotion theme, Flutter `ThemeData`, SwiftUI `Color` extensions and Tokens Studio (Figma) JSON.
 - JavaScript module (`tokens.mjs`), Stylus and Jetpack Compose (`Theme.kt`) formats. Similar color names (such as `indigo` shade 250 and `indigo-2` shade 50) stay separate keys in the styled-components theme.
 - YAML tokens and a Sass map with a `token($group, $name)` function.
+- UnoCSS and Panda CSS presets; Panda gets semantic tokens with `_dark` values.
 
 ### Performance
 
@@ -219,6 +233,7 @@ Released 2026-09-23. The first public release: a complete, local-first design an
 - Studio layouts keep a fixed height on desktop, so long control columns scroll inside their pane instead of pushing the preview out of view.
 - Brand assets in the Export Engine, project autosave and every PDF, ZIP and rasterizing step load on demand.
 - The font browser is virtualized, so only visible rows (plus overscan) stay in the DOM while scrolling.
+- Dexie, dialogs and click-only code load on first use and the service worker registers after load, lifting mobile Lighthouse on `/brand` and `/colors` by about 0.01 to 0.03.
 
 ### Documentation
 
@@ -234,4 +249,4 @@ Released 2026-09-23. The first public release: a complete, local-first design an
 - `.env.example` documenting the one optional variable and every external service (none need a key).
 - README, ROADMAP and CONTRIBUTING cover every studio, including the brand platform.
 - A storage guide (`docs/storage.md`) listing everything DesignHub saves in the browser and how to reset it, plus Logo, Brand DNA and Projects screenshots in the README.
-- A FAQ (`docs/faq.md`), a keyboard shortcuts guide (`docs/shortcuts.md`) and a self-hosting guide (`docs/self-hosting.md`) for Vercel, Netlify, a Node server and Docker.
+- A FAQ (`docs/faq.md`), a keyboard shortcuts guide (`docs/shortcuts.md`) and a self-hosting guide (`docs/self-hosting.md`), a design tokens glossary (`docs/glossary.md`) for Vercel, Netlify, a Node server and Docker.
