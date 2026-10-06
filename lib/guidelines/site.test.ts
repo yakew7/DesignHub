@@ -124,6 +124,22 @@ describe("brand book website", () => {
   });
 });
 
+describe("co-branding page", () => {
+  test("is in the site and its contents, with a placeholder partner, unless switched off", () => {
+    const { files } = site();
+    const page = files.get("co-branding/index.html") ?? "";
+    expect(page).toContain("<h1>Co-branding</h1>");
+    expect(page).toContain("<h2>DIVIDER</h2>");
+    expect(page).toContain("<h2>SIZE BALANCE</h2>");
+    expect(files.get("assets/pages/co-branding.svg")).toContain(">Partner</text>");
+    expect(files.get("index.html")).toContain("Co-branding");
+
+    const without = site(["co-branding"]).files;
+    expect(without.has("co-branding/index.html")).toBe(false);
+    expect(without.get("index.html")).not.toContain("Co-branding");
+  });
+});
+
 describe("pageBlocks", () => {
   test("joins wrapped lines and items on one baseline", () => {
     const svg = `<svg>
