@@ -136,6 +136,78 @@ export function gimpPalette(palette: NamedColor[], includeShades: boolean, name 
   return `GIMP Palette\nName: ${title}\n${columns}#\n${lines.join("\n")}\n`;
 }
 
+const aseGroupStart = 0xc001;
+const aseGroupEnd = 0xc002;
+const aseColorEntry = 0x0001;
+/** Swatch type 2 is a normal (process) color; 0 would be global and 1 spot. */
+const aseNormal = 2;
+
+type AseBlock = { type: number; name?: string; rgb?: [number, number, number] };
+
+/**
+ * Adobe Swatch Exchange (.ase), which Photoshop, Illustrator and InDesign import. The format is
+ * big-endian: an "ASEF" signature, version 1.0 and a block count, then one block per color
+ * (a UTF-16 name and three RGB floats from 0 to 1). With shades, each color and its shades
+ * sit in a group named after the color.
+ */
+export function adobeSwatchExchange(palette: NamedColor[], includeShades: boolean): Uint8Array<ArrayBuffer> {
+  const entry = (color: Oklch, name: string): AseBlock => {
+    const { r, g, b } = toRgb(color);
+    return { type: aseColorEntry, name, rgb: [r / 255, g / 255, b / 255] };
+  };
+  const blocks = palette.flatMap(({ name, color, shades }): AseBlock[] =>
+    includeShades
+      ? [
+          { type: aseGroupStart, name },
+          entry(color, name),
+          ...shades.map((shade) => entry(shade.color, `${name}-${shade.step}`)),
+          { type: aseGroupEnd },
+        ]
+      : [entry(color, name)],
+  );
+
+  // A name is its length in UTF-16 code units (counting the terminator), the units, then a 0.
+  const nameBytes = (name: string | undefined) => (name === undefined ? 0 : 2 + (name.length + 1) * 2);
+  const bodyLength = (block: AseBlock) => nameBytes(block.name) + (block.rgb ? 4 + 3 * 4 + 2 : 0);
+  const size = 12 + blocks.reduce((total, block) => total + 6 + bodyLength(block), 0);
+
+  const buffer = new ArrayBuffer(size);
+  const view = new DataView(buffer);
+  let offset = 0;
+  const ascii = (text: string) => [...text].forEach((char) => view.setUint8(offset++, char.charCodeAt(0)));
+  const uint16 = (value: number) => {
+    view.setUint16(offset, value);
+    offset += 2;
+  };
+  const uint32 = (value: number) => {
+    view.setUint32(offset, value);
+    offset += 4;
+  };
+
+  ascii("ASEF");
+  uint16(1);
+  uint16(0);
+  uint32(blocks.length);
+  blocks.forEach((block) => {
+    uint16(block.type);
+    uint32(bodyLength(block));
+    if (block.name !== undefined) {
+      uint16(block.name.length + 1);
+      for (let i = 0; i < block.name.length; i++) uint16(block.name.charCodeAt(i));
+      uint16(0);
+    }
+    if (block.rgb) {
+      ascii("RGB ");
+      block.rgb.forEach((channel) => {
+        view.setFloat32(offset, channel);
+        offset += 4;
+      });
+      uint16(aseNormal);
+    }
+  });
+  return new Uint8Array(buffer);
+}
+
 /** SVG has no conic gradients; conic falls back to a linear gradient at the same angle. */
 export function gradientSvg(gradient: Gradient, width = 1200, height = 630): string {
   const stops = sortedStops(gradient)

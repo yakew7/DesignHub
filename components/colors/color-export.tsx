@@ -1,6 +1,6 @@
 "use client";
 
-import { ImageDown, Loader2 } from "lucide-react";
+import { ImageDown, Loader2, SwatchBook } from "lucide-react";
 import { useMemo, useState } from "react";
 import { toast } from "sonner";
 
@@ -9,7 +9,7 @@ import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
 import { toHex } from "@/lib/color/color";
-import { colorExports, namedPalette, paletteSvg } from "@/lib/color/export";
+import { adobeSwatchExchange, colorExports, namedPalette, paletteSvg } from "@/lib/color/export";
 import { gradientCss } from "@/lib/color/gradient";
 import { downloadBlob } from "@/lib/download";
 import { rasterize } from "@/lib/export/raster";
@@ -59,6 +59,18 @@ export function ColorExport() {
     }
   }
 
+  /** The palette as Adobe Swatch Exchange for Photoshop, Illustrator and InDesign; shades follow the switch. */
+  function downloadAse() {
+    if (swatches.length === 0) return;
+    const palette = namedPalette(
+      swatches.map((swatch) => swatch.color),
+      shadeOptions,
+    );
+    const blob = new Blob([adobeSwatchExchange(palette, includeShades)], { type: "application/octet-stream" });
+    downloadBlob(blob, `${slugify(brandName.trim() || "brand")}-colors.ase`);
+    toast.success("ASE download ready");
+  }
+
   return (
     <div className="flex flex-col gap-6">
       <div className="flex flex-wrap items-center gap-4">
@@ -75,6 +87,10 @@ export function ColorExport() {
         <Button size="sm" variant="outline" onClick={downloadPng} disabled={downloading || swatches.length === 0}>
           {downloading ? <Loader2 className="animate-spin" /> : <ImageDown />}
           Download PNG
+        </Button>
+        <Button size="sm" variant="outline" onClick={downloadAse} disabled={swatches.length === 0}>
+          <SwatchBook />
+          Download ASE
         </Button>
       </div>
       <p className="text-xs text-subtle-foreground">
