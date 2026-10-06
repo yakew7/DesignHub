@@ -169,7 +169,7 @@ export const studios: readonly StudioNavItem[] = [
     id: "svg",
     title: "SVG Playground",
     href: "/svg",
-    description: "Inspect, edit and optimize SVG. Convert to JSX, React, React Native, Vue or a sprite sheet.",
+    description: "Inspect, edit and optimize SVG. Convert to JSX, React, React Native, Vue, Svelte or a sprite sheet.",
     icon: PenTool,
     shortcut: "s",
     group: "Tools",

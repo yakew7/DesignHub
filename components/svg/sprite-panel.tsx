@@ -1,7 +1,7 @@
 "use client";
 
 import { Download, Plus, Trash2, Upload } from "lucide-react";
-import { useMemo, useRef } from "react";
+import { useId, useMemo, useRef, useState } from "react";
 import { toast } from "sonner";
 
 import { Button } from "@/components/ui/button";
@@ -10,10 +10,59 @@ import { Panel } from "@/components/ui/panel";
 import { downloadText } from "@/lib/download";
 import { svgToDataUrl } from "@/lib/icons/svg";
 import { readSvgFile } from "@/lib/svg/read-file";
-import { buildSprite } from "@/lib/svg/sprite";
+import { buildSprite, commitSymbolId, symbolIdClashes, type SpriteItem } from "@/lib/svg/sprite";
 import { useSvgStore } from "@/store/svg-store";
 
 const MAX_ITEMS = 100;
+
+/**
+ * Typing stays free; the id is slugged and de-duplicated only when the field commits (blur or
+ * Enter), so "star" never jumps to "star-2" mid-word. A hint shows while the name clashes.
+ */
+function SymbolIdInput({
+  sprite,
+  index,
+  onCommit,
+}: {
+  sprite: SpriteItem[];
+  index: number;
+  onCommit: (value: string) => void;
+}) {
+  const id = sprite[index]?.id ?? "";
+  const [draft, setDraft] = useState<string | null>(null);
+  const hintId = useId();
+  const value = draft ?? id;
+  const clash = draft !== null && symbolIdClashes(sprite, index, draft);
+
+  function commit() {
+    if (draft !== null) onCommit(draft);
+    setDraft(null);
+  }
+
+  return (
+    <div className="flex min-w-0 flex-1 flex-col gap-1">
+      <Input
+        value={value}
+        onChange={(event) => setDraft(event.target.value)}
+        onBlur={commit}
+        onKeyDown={(event) => {
+          if (event.key === "Enter") commit();
+          if (event.key === "Escape") setDraft(null);
+        }}
+        aria-label={`Symbol id ${index + 1}`}
+        aria-invalid={clash || undefined}
+        aria-describedby={clash ? hintId : undefined}
+        className="h-8 min-w-0 font-mono text-xs"
+      />
+      {clash ? (
+        <p id={hintId} role="status" className="text-xs text-muted-foreground">
+          Another symbol uses this id. It will be saved as{" "}
+          <code className="font-mono">{commitSymbolId(sprite, index, value)}</code>.
+        </p>
+      ) : null}
+    </div>
+  );
+}
 
 export function SpritePanel() {
   const sprite = useSvgStore((state) => state.sprite);
@@ -77,19 +126,15 @@ export function SpritePanel() {
         <>
           <ul className="flex flex-col gap-1.5" aria-label="Sprite symbols">
             {sprite.map((item, index) => (
-              <li key={`${item.id}-${index}`} className="flex items-center gap-2">
+              // Keyed by position so committing a new id with Enter keeps focus in the field.
+              <li key={index} className="flex items-start gap-2">
                 {/* eslint-disable-next-line @next/next/no-img-element -- SVG data URL preview */}
                 <img
                   src={svgToDataUrl(item.source)}
                   alt=""
                   className="bg-checker size-8 shrink-0 rounded-md border object-contain p-1"
                 />
-                <Input
-                  value={item.id}
-                  onChange={(event) => renameSprite(index, event.target.value)}
-                  aria-label={`Symbol id ${index + 1}`}
-                  className="h-8 min-w-0 font-mono text-xs"
-                />
+                <SymbolIdInput sprite={sprite} index={index} onCommit={(value) => renameSprite(index, value)} />
                 <Button
                   variant="ghost"
                   size="icon"

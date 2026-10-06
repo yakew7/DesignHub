@@ -4,7 +4,7 @@ import { createJSONStorage, persist } from "zustand/middleware";
 import { indexedDbStorage } from "@/lib/db";
 import { defaultOptimizeOptions, type SvgOptimizeOptions } from "@/lib/svg/optimize";
 import { sampleSvg } from "@/lib/svg/sample";
-import { symbolId, uniqueSymbolId, type SpriteItem } from "@/lib/svg/sprite";
+import { commitSymbolId, dedupeSpriteIds, uniqueSymbolId, type SpriteItem } from "@/lib/svg/sprite";
 import type { NodePath } from "@/lib/svg/tree";
 
 type SvgState = {
@@ -17,7 +17,8 @@ type SvgState = {
   select: (path: NodePath | null) => void;
   sprite: SpriteItem[];
   addToSprite: (name: string, source: string) => void;
-  renameSprite: (index: number, id: string) => void;
+  /** Commits a typed name (on blur or Enter), numbering it if another symbol already uses the id. */
+  renameSprite: (index: number, name: string) => void;
   removeFromSprite: (index: number) => void;
   clearSprite: () => void;
   currentColor: boolean;
@@ -45,10 +46,11 @@ export const useSvgStore = create<SvgState>()(
           );
           return { sprite: [...state.sprite, { id, source }] };
         }),
-      renameSprite: (index, id) =>
-        set((state) => ({
-          sprite: state.sprite.map((item, i) => (i === index ? { ...item, id: symbolId(id) } : item)),
-        })),
+      renameSprite: (index, name) =>
+        set((state) => {
+          const id = commitSymbolId(state.sprite, index, name);
+          return { sprite: state.sprite.map((item, i) => (i === index ? { ...item, id } : item)) };
+        }),
       removeFromSprite: (index) => set((state) => ({ sprite: state.sprite.filter((_, i) => i !== index) })),
       clearSprite: () => set({ sprite: [] }),
       currentColor: false,
@@ -58,8 +60,13 @@ export const useSvgStore = create<SvgState>()(
     }),
     {
       name: "designhub:svg",
-      version: 1,
+      version: 2,
       storage: createJSONStorage(() => indexedDbStorage),
+      // Version 1 renamed symbols on every keystroke without de-duplicating, so saved ids can repeat.
+      migrate: (persisted) => {
+        const state = persisted as SvgState;
+        return { ...state, sprite: dedupeSpriteIds(state.sprite ?? []) };
+      },
       partialize: ({ name, source, options, currentColor, sprite }) => ({
         name,
         source,

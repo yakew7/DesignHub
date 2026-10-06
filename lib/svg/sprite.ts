@@ -24,6 +24,35 @@ export function uniqueSymbolId(name: string, taken: Iterable<string>): string {
   return id;
 }
 
+const otherIds = (items: SpriteItem[], index: number) => items.filter((_, i) => i !== index).map((item) => item.id);
+
+/**
+ * The id the symbol at `index` gets when a typed name is committed (on blur or Enter): slugged, and
+ * numbered if another symbol already uses it. A blank name keeps the current id.
+ */
+export function commitSymbolId(items: SpriteItem[], index: number, name: string): string {
+  const current = items[index]?.id ?? "";
+  if (!name.trim()) return current;
+  return uniqueSymbolId(name, otherIds(items, index));
+}
+
+/** True while a typed name would slug to an id another symbol already uses. */
+export function symbolIdClashes(items: SpriteItem[], index: number, name: string): boolean {
+  return name.trim() !== "" && otherIds(items, index).includes(symbolId(name));
+}
+
+/** Renumbers repeated ids, e.g. in sprites saved before renames were de-duplicated. */
+export function dedupeSpriteIds(items: SpriteItem[]): SpriteItem[] {
+  const taken: string[] = [];
+  return items.map((item) => {
+    const id = taken.includes(item.id)
+      ? uniqueSymbolId(item.id, [...taken, ...items.map((other) => other.id)])
+      : item.id;
+    taken.push(id);
+    return id === item.id ? item : { ...item, id };
+  });
+}
+
 /**
  * Prefixes every internal id (and its references) so symbols can't clash inside one sprite.
  * The "_" separator never appears in a symbol id, so "a" + "b-c" and "a-b" + "c" stay distinct

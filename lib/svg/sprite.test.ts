@@ -1,6 +1,15 @@
 import { describe, expect, test } from "vitest";
 
-import { buildSprite, spriteUsage, symbolId, uniqueSymbolId, type SpriteItem } from "@/lib/svg/sprite";
+import {
+  buildSprite,
+  commitSymbolId,
+  dedupeSpriteIds,
+  spriteUsage,
+  symbolId,
+  symbolIdClashes,
+  uniqueSymbolId,
+  type SpriteItem,
+} from "@/lib/svg/sprite";
 import { xmlError } from "@/lib/test/xml";
 
 const ids = (svg: string) => [...svg.matchAll(/\sid="([^"]+)"/g)].map((match) => match[1]);
@@ -28,6 +37,56 @@ describe("symbolId", () => {
     expect(uniqueSymbolId("star.svg", [])).toBe("star");
     expect(uniqueSymbolId("star.svg", ["star"])).toBe("star-2");
     expect(uniqueSymbolId("Star.svg", ["star", "star-2"])).toBe("star-3");
+  });
+});
+
+describe("renaming a symbol", () => {
+  const items: SpriteItem[] = [
+    { id: "star", source: "<svg/>" },
+    { id: "heart", source: "<svg/>" },
+    { id: "star-2", source: "<svg/>" },
+  ];
+
+  test("commit slugs the name and numbers it past ids other symbols use", () => {
+    expect(commitSymbolId(items, 1, "Star")).toBe("star-3");
+    expect(commitSymbolId(items, 1, "star-2")).toBe("star-2-2");
+    expect(commitSymbolId(items, 1, "Moon Big")).toBe("moon-big");
+  });
+
+  test("commit keeps a symbol's own id and ignores blank names", () => {
+    expect(commitSymbolId(items, 0, "star")).toBe("star");
+    expect(commitSymbolId(items, 2, "star-2")).toBe("star-2");
+    expect(commitSymbolId(items, 1, "   ")).toBe("heart");
+  });
+
+  test("committed ids are always unique", () => {
+    let sprite = [...items];
+    for (const [index, name] of [
+      [1, "star"],
+      [0, "star-3"],
+      [2, "STAR"],
+    ] as const) {
+      const id = commitSymbolId(sprite, index, name);
+      sprite = sprite.map((item, i) => (i === index ? { ...item, id } : item));
+      expect(new Set(sprite.map((item) => item.id)).size).toBe(sprite.length);
+    }
+  });
+
+  test("partial names never clash mid-word, the full clash is reported", () => {
+    expect(["s", "st", "sta"].map((name) => symbolIdClashes(items, 1, name))).toEqual([false, false, false]);
+    expect(symbolIdClashes(items, 1, "star")).toBe(true);
+    expect(symbolIdClashes(items, 0, "star")).toBe(false);
+    expect(symbolIdClashes(items, 1, "")).toBe(false);
+  });
+
+  test("dedupeSpriteIds renumbers repeats from older saves", () => {
+    const saved = [
+      { id: "star", source: "a" },
+      { id: "star", source: "b" },
+      { id: "star-2", source: "c" },
+    ];
+    expect(dedupeSpriteIds(saved).map((item) => item.id)).toEqual(["star", "star-3", "star-2"]);
+    expect(dedupeSpriteIds(items)).toEqual(items);
   });
 });
 
