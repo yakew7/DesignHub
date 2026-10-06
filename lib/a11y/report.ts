@@ -1,4 +1,5 @@
 import type { contrastSection, focusSection } from "@/lib/a11y/contrast";
+import type { gradientSection } from "@/lib/a11y/gradient-contrast";
 import type { Verdict } from "@/lib/a11y/readability";
 import type { targetsSection } from "@/lib/a11y/targets";
 import type { visionSection } from "@/lib/a11y/vision";
@@ -16,6 +17,7 @@ export type A11yReportInput = {
 export type A11yReportSections = {
   contrast: ReturnType<typeof contrastSection>;
   focusIndicator: ReturnType<typeof focusSection>;
+  gradientText: ReturnType<typeof gradientSection>;
   vision: ReturnType<typeof visionSection>;
   readability: {
     charactersPerLine: number;
@@ -100,6 +102,22 @@ export function focusTable(focus: A11yReportSections["focusIndicator"]): string 
   );
 }
 
+/** The lowest contrast of each text color anywhere on the gradient, and where it is. */
+export function gradientTable(gradient: A11yReportSections["gradientText"]): string {
+  return table(
+    ["Text", "Worst ratio", "Where", "Gradient there", "Required", "Result", "AA large"],
+    gradient.results.map((row) => [
+      `${row.text} ${code(row.color)}`,
+      ratio(row.worstRatio),
+      `${row.worstPosition}%`,
+      code(row.worstBackground),
+      ratio(row.required),
+      mark(row.pass),
+      mark(row.passLarge),
+    ]),
+  );
+}
+
 /** The same report as readable Markdown for pull requests and wikis. */
 export function reportToMarkdown(report: A11yReport): string {
   const { settings, sections } = report;
@@ -131,6 +149,9 @@ export function reportToMarkdown(report: A11yReport): string {
     sections.contrast[0] ? `> ${sections.contrast[0].apca.note}` : "",
     "## Focus indicator",
     focusTable(sections.focusIndicator),
+    "## Text on the brand gradient",
+    `${sections.gradientText.samples} points sampled along ${code(sections.gradientText.gradient)} in ${sections.gradientText.interpolation}. Each row is the lowest contrast anywhere on it.`,
+    gradientTable(sections.gradientText),
     "## Color vision",
     "Contrast after simulating each type of color vision. AA needs 4.5:1.",
     table(

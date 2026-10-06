@@ -1,9 +1,18 @@
 import { describe, expect, test } from "vitest";
 
 import { contrastSection, focusIndicatorCheck, focusSection } from "@/lib/a11y/contrast";
-import { buildReport, contrastTable, focusTable, reportToMarkdown, type A11yReportInput } from "@/lib/a11y/report";
+import { gradientSection, gradientTextColors, gradientTextContrast } from "@/lib/a11y/gradient-contrast";
+import {
+  buildReport,
+  contrastTable,
+  focusTable,
+  gradientTable,
+  reportToMarkdown,
+  type A11yReportInput,
+} from "@/lib/a11y/report";
 import { targetsSection } from "@/lib/a11y/targets";
 import { visionSection } from "@/lib/a11y/vision";
+import { defaultGradient } from "@/lib/color/gradient";
 
 const input: A11yReportInput = {
   colors: { text: "#111111", background: "#ffffff", accent: "#8ab4f8", onAccent: "#ffffff" },
@@ -24,6 +33,7 @@ const input: A11yReportInput = {
 const report = buildReport(input, {
   contrast: contrastSection(input.colors),
   focusIndicator: focusSection(focusIndicatorCheck(input.focusRing, input.colors.background, input.colors.accent)),
+  gradientText: gradientSection(defaultGradient, gradientTextContrast(defaultGradient, gradientTextColors("#1f2937"))),
   vision: visionSection(input.colors),
   readability: { charactersPerLine: 70, readingEase: 64, gradeLevel: 8, checks: [] },
   touchTargets: targetsSection(input.targets, input.targetGap),
@@ -81,6 +91,23 @@ describe("focusTable", () => {
   });
 });
 
+describe("gradientTable", () => {
+  test("has one row per text color with the worst ratio and where it is", () => {
+    const section = report.sections.gradientText;
+    const lines = gradientTable(section).split("\n");
+    expect(lines).toHaveLength(2 + 3);
+    section.results.forEach((item, index) => {
+      const [, text, worst, where, background, required, result] = rows(lines[index + 2])[0];
+      expect(text).toBe(`${item.text} \`${item.color}\``);
+      expect(worst).toBe(`${item.worstRatio.toFixed(2)}:1`);
+      expect(where).toBe(`${item.worstPosition}%`);
+      expect(background).toBe(`\`${item.worstBackground}\``);
+      expect(required).toBe("4.50:1");
+      expect(result).toBe(item.pass ? "✅ Pass" : "❌ Fail");
+    });
+  });
+});
+
 describe("reportToMarkdown", () => {
   const markdown = reportToMarkdown({ ...report, generatedAt: "2026-01-01T00:00:00.000Z" });
 
@@ -91,6 +118,7 @@ describe("reportToMarkdown", () => {
       "## Settings",
       "## Contrast",
       "## Focus indicator",
+      "## Text on the brand gradient",
       "## Color vision",
       "## Readability",
       "## Touch targets",

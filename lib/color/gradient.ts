@@ -1,4 +1,5 @@
 import { formatColor, oklch, toHex } from "@/lib/color/color";
+import { OKLab, OKLCH, sRGB, to } from "@/lib/color/engine";
 import { randomColor } from "@/lib/color/generate";
 import { createId } from "@/lib/id";
 import type { Gradient, GradientStop, Oklch } from "@/types/color";
@@ -70,7 +71,42 @@ export function randomGradient(base: Gradient, random: () => number = Math.rando
   return { ...gradientFromColors(colors, base), angle: Math.round(random() * 36) * 10 };
 }
 
-/** Color at a position (0–100) by interpolating neighbouring stops in OKLCH. */
+type Coords = [number, number, number];
+
+const spaces = { oklab: OKLab, srgb: sRGB } as const;
+
+/** Below this chroma a hue is powerless (CSS Color 4) and takes the other stop's hue. */
+const ACHROMATIC = 0.0001;
+
+function mixOklch(left: Oklch, right: Oklch, t: number): Oklch {
+  const leftHue = left.c < ACHROMATIC ? right.h : left.h;
+  const rightHue = right.c < ACHROMATIC ? leftHue : right.h;
+  // CSS takes the shorter way around the hue circle by default.
+  let hueDelta = rightHue - leftHue;
+  if (hueDelta > 180) hueDelta -= 360;
+  if (hueDelta < -180) hueDelta += 360;
+  return oklch(
+    left.l + (right.l - left.l) * t,
+    left.c + (right.c - left.c) * t,
+    leftHue + hueDelta * t,
+    left.alpha + (right.alpha - left.alpha) * t,
+  );
+}
+
+/** Mixes two colors the way a CSS gradient does in OKLab or (gamma-encoded) sRGB. */
+function mixIn(space: keyof typeof spaces, left: Oklch, right: Oklch, t: number): Oklch {
+  const coords = (color: Oklch): Coords => {
+    const [a, b, c] = to({ space: OKLCH, coords: [color.l, color.c, color.h], alpha: 1 }, spaces[space]).coords;
+    return [a ?? 0, b ?? 0, c ?? 0];
+  };
+  const a = coords(left);
+  const b = coords(right);
+  const mixed: Coords = [a[0] + (b[0] - a[0]) * t, a[1] + (b[1] - a[1]) * t, a[2] + (b[2] - a[2]) * t];
+  const [l, c, h] = to({ space: spaces[space], coords: mixed, alpha: 1 }, OKLCH).coords;
+  return oklch(l ?? 0, c ?? 0, h ?? 0, left.alpha + (right.alpha - left.alpha) * t);
+}
+
+/** Color at a position (0-100), interpolating the neighbouring stops in the gradient's color space. */
 export function colorAt(gradient: Gradient, position: number): Oklch {
   const stops = sortedStops(gradient);
   const first = stops[0];
@@ -82,13 +118,7 @@ export function colorAt(gradient: Gradient, position: number): Oklch {
   const right = stops[index] ?? last;
   const left = stops[index - 1] ?? first;
   const t = (position - left.position) / Math.max(right.position - left.position, 0.0001);
-  let hueDelta = right.color.h - left.color.h;
-  if (hueDelta > 180) hueDelta -= 360;
-  if (hueDelta < -180) hueDelta += 360;
-  return oklch(
-    left.color.l + (right.color.l - left.color.l) * t,
-    left.color.c + (right.color.c - left.color.c) * t,
-    left.color.h + hueDelta * t,
-    left.color.alpha + (right.color.alpha - left.color.alpha) * t,
-  );
+  return gradient.interpolation === "oklch"
+    ? mixOklch(left.color, right.color, t)
+    : mixIn(gradient.interpolation, left.color, right.color, t);
 }

@@ -8,6 +8,7 @@ import { VisionPanel } from "@/components/accessibility/vision-panel";
 import { VisionPreview } from "@/components/accessibility/vision-preview";
 import { ContrastResults } from "@/components/accessibility/contrast-results";
 import { FocusIndicatorResults } from "@/components/accessibility/focus-indicator-results";
+import { GradientContrastResults } from "@/components/accessibility/gradient-contrast-results";
 import { ReadabilityPanel } from "@/components/accessibility/readability-panel";
 import { TargetsPanel } from "@/components/accessibility/targets-panel";
 import { TargetsPreview } from "@/components/accessibility/targets-preview";
@@ -53,6 +54,7 @@ export function A11yWorkspace() {
             <A11yColorsPanel />
             <ContrastResults />
             <FocusIndicatorResults />
+            <GradientContrastResults />
           </TabsContent>
           <TabsContent value="vision" className="flex flex-col gap-4">
             <VisionPanel compare={compare} onCompareChange={setCompare} />

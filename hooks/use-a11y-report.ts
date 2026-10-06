@@ -3,8 +3,10 @@
 import { useMemo } from "react";
 
 import { useFocusRing } from "@/hooks/use-focus-ring";
+import { useGradientContrast } from "@/hooks/use-gradient-contrast";
 import { useReadability } from "@/hooks/use-readability";
 import { contrastSection, focusIndicatorCheck, focusSection } from "@/lib/a11y/contrast";
+import { gradientSection } from "@/lib/a11y/gradient-contrast";
 import { buildReport, type A11yReport } from "@/lib/a11y/report";
 import { targetsSection } from "@/lib/a11y/targets";
 import { visionSection } from "@/lib/a11y/vision";
@@ -18,6 +20,7 @@ export function useA11yReport(): A11yReport {
   const targetGap = useA11yStore((state) => state.targetGap);
   const readability = useReadability();
   const { ring } = useFocusRing();
+  const gradientText = useGradientContrast();
 
   return useMemo(
     () =>
@@ -26,6 +29,7 @@ export function useA11yReport(): A11yReport {
         {
           contrast: contrastSection(colors),
           focusIndicator: focusSection(focusIndicatorCheck(ring, colors.background, colors.accent)),
+          gradientText: gradientSection(gradientText.gradient, gradientText.results),
           vision: visionSection(colors),
           readability: {
             charactersPerLine: Math.round(readability.charsPerLine),
@@ -36,6 +40,6 @@ export function useA11yReport(): A11yReport {
           touchTargets: targetsSection(targets, targetGap),
         },
       ),
-    [colors, ring, typography, targets, targetGap, readability],
+    [colors, ring, gradientText, typography, targets, targetGap, readability],
   );
 }

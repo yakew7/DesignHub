@@ -24,4 +24,4 @@ import {
 [XYZ_D65, sRGB_Linear, sRGB, HSL, P3, OKLab, OKLCH].forEach((space) => ColorSpace.register(space));
 
 export type ColorObject = PlainColorObject;
-export { contrastAPCA, contrastWCAG21, deltaEOK, getColor, inGamut, to, toGamut, OKLCH, sRGB_Linear };
+export { contrastAPCA, contrastWCAG21, deltaEOK, getColor, inGamut, to, toGamut, OKLCH, OKLab, sRGB, sRGB_Linear };
