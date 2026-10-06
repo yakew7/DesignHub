@@ -1,6 +1,6 @@
 "use client";
 
-import { Check, ImageUp, Loader2, RotateCcw, Sparkles, TriangleAlert } from "lucide-react";
+import { Check, ImageUp, Loader2, RotateCcw, Sparkles, TriangleAlert, X } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import { toast } from "sonner";
 
@@ -16,7 +16,7 @@ import { useRovingRadio } from "@/hooks/use-roving-radio";
 import { applyBrandDna } from "@/lib/brand-dna/apply";
 import { ACCEPTED_IMAGES, loadDnaImage } from "@/lib/brand-dna/image";
 import { dnaProviders, getDnaProvider } from "@/lib/brand-dna/registry";
-import { dnaStages, type BrandDna, type DnaImage, type DnaStage } from "@/lib/brand-dna/types";
+import { dnaStages, MAX_DNA_IMAGES, type BrandDna, type DnaImage, type DnaStage } from "@/lib/brand-dna/types";
 import { applySnapshot } from "@/lib/projects/snapshot";
 import { cn } from "@/lib/utils";
 import { useBrandDnaStore } from "@/store/brand-dna-store";
@@ -30,37 +30,40 @@ export function BrandDnaWorkspace() {
   const setIgnoreBackground = useBrandDnaStore((state) => state.setIgnoreBackground);
   const provider = getDnaProvider(providerId);
   const providersRef = useRovingRadio<HTMLDivElement>();
-  const [image, setImage] = useState<DnaImage | null>(null);
+  const [images, setImages] = useState<DnaImage[]>([]);
   const [dna, setDna] = useState<BrandDna | null>(null);
   const [status, setStatus] = useState<Status>({ kind: "idle" });
+  const [notice, setNotice] = useState<string | null>(null);
   const [dragging, setDragging] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
   const abortRef = useRef<AbortController | null>(null);
+  // The latest images, for async uploads and the unmount cleanup.
+  const imagesRef = useRef<DnaImage[]>([]);
+  imagesRef.current = images;
 
   useEffect(
     () => () => {
       abortRef.current?.abort();
+      imagesRef.current.forEach((item) => URL.revokeObjectURL(item.url));
     },
     [],
   );
-  useEffect(
-    () => () => {
-      if (image) URL.revokeObjectURL(image.url);
-    },
-    [image],
-  );
 
-  async function analyze(target: DnaImage, providerKey = providerId, ignore = ignoreBackground) {
+  async function analyze(targets: DnaImage[], providerKey = providerId) {
     abortRef.current?.abort();
     const controller = new AbortController();
     abortRef.current = controller;
     setDna(null);
+    if (targets.length === 0) {
+      setStatus({ kind: "idle" });
+      return;
+    }
     setStatus({ kind: "running", stage: "reading" });
     try {
-      const result = await getDnaProvider(providerKey).analyze(target, {
+      const result = await getDnaProvider(providerKey).analyze(targets, {
         signal: controller.signal,
         onStage: (stage) => setStatus({ kind: "running", stage }),
-        ignoreBackground: ignore,
+        ignoreBackground,
       });
       if (controller.signal.aborted) return;
       setDna(result);
@@ -71,15 +74,53 @@ export function BrandDnaWorkspace() {
     }
   }
 
-  async function upload(file: File | undefined) {
-    if (!file) return;
-    try {
-      const next = await loadDnaImage(file);
-      setImage(next);
-      void analyze(next);
-    } catch (error) {
-      setStatus({ kind: "error", message: error instanceof Error ? error.message : "Could not read that image." });
+  function replaceImages(next: DnaImage[]) {
+    imagesRef.current = next;
+    setImages(next);
+    void analyze(next);
+  }
+
+  async function upload(files: File[]) {
+    if (files.length === 0) return;
+    const room = MAX_DNA_IMAGES - imagesRef.current.length;
+    const messages: string[] = [];
+    if (files.length > room) {
+      messages.push(
+        `You can combine up to ${MAX_DNA_IMAGES} images. ${
+          room > 0 ? `Added the first ${room}. Remove` : "Remove"
+        } one to add another.`,
+      );
     }
+    const loaded: DnaImage[] = [];
+    for (const file of files.slice(0, Math.max(0, room))) {
+      try {
+        loaded.push({ ...(await loadDnaImage(file)), ignoreBackground });
+      } catch (error) {
+        messages.push(
+          `${file.name}: ${error instanceof Error ? error.message : "This browser couldn't read that image."}`,
+        );
+      }
+    }
+    setNotice(messages.length > 0 ? messages.join(" ") : null);
+    if (loaded.length === 0) return;
+    // Another upload may have finished meanwhile; never go over the limit.
+    const current = imagesRef.current;
+    const fits = loaded.slice(0, Math.max(0, MAX_DNA_IMAGES - current.length));
+    loaded.slice(fits.length).forEach((item) => URL.revokeObjectURL(item.url));
+    if (fits.length > 0) replaceImages([...current, ...fits]);
+  }
+
+  function remove(id: string) {
+    const target = images.find((item) => item.id === id);
+    if (target) URL.revokeObjectURL(target.url);
+    setNotice(null);
+    replaceImages(images.filter((item) => item.id !== id));
+  }
+
+  function setImageBackground(id: string, value: boolean) {
+    // The last choice becomes the default for the next upload.
+    setIgnoreBackground(value);
+    replaceImages(images.map((item) => (item.id === id ? { ...item, ignoreBackground: value } : item)));
   }
 
   // Paste an image from the clipboard anywhere on the page (except while typing in a field).
@@ -95,7 +136,7 @@ export function BrandDnaWorkspace() {
           ?.getAsFile();
       if (!file) return;
       event.preventDefault();
-      void uploadRef.current(file);
+      void uploadRef.current([file]);
     };
     window.addEventListener("paste", onPaste);
     return () => window.removeEventListener("paste", onPaste);
@@ -118,7 +159,10 @@ export function BrandDnaWorkspace() {
       id="brand-dna"
       controls={
         <>
-          <Panel title="Source image" description="A logo, product shot or moodboard. It never leaves your device.">
+          <Panel
+            title="Source images"
+            description={`A logo, product shot or up to ${MAX_DNA_IMAGES} moodboard images, combined by area. They never leave your device.`}
+          >
             <button
               type="button"
               onClick={() => inputRef.current?.click()}
@@ -130,7 +174,7 @@ export function BrandDnaWorkspace() {
               onDrop={(event) => {
                 event.preventDefault();
                 setDragging(false);
-                void upload(event.dataTransfer.files[0]);
+                void upload([...event.dataTransfer.files]);
               }}
               className={cn(
                 "flex min-h-32 flex-col items-center justify-center gap-2 rounded-lg border border-dashed p-4 text-sm text-muted-foreground transition-colors duration-150 hover:border-border-strong hover:text-foreground",
@@ -138,37 +182,73 @@ export function BrandDnaWorkspace() {
               )}
             >
               <ImageUp className="size-5" />
-              <span>{image ? "Replace image" : "Drop, paste or click to upload"}</span>
+              <span>
+                {images.length === 0
+                  ? "Drop, paste or click to upload"
+                  : `Add images (${images.length} of ${MAX_DNA_IMAGES})`}
+              </span>
               <span className="text-[11px] text-subtle-foreground">PNG, JPEG, WebP, GIF, AVIF or SVG, up to 10 MB</span>
             </button>
             <input
               ref={inputRef}
               type="file"
+              multiple
               accept={ACCEPTED_IMAGES.join(",")}
               className="sr-only"
               tabIndex={-1}
-              aria-label="Source image"
+              aria-label="Source images"
               onChange={(event) => {
-                void upload(event.target.files?.[0]);
+                void upload([...(event.target.files ?? [])]);
                 event.target.value = "";
               }}
             />
-            <div className="flex items-center justify-between gap-3">
-              <Label htmlFor="dna-ignore-background" className="flex flex-col items-start gap-0.5">
-                Ignore background
-                <span className="text-[11px] font-normal text-subtle-foreground">
-                  Leaves a flat backdrop, like the white behind a logo, out of the palette.
-                </span>
-              </Label>
-              <Switch
-                id="dna-ignore-background"
-                checked={ignoreBackground}
-                onCheckedChange={(value) => {
-                  setIgnoreBackground(value);
-                  if (image) void analyze(image, providerId, value);
-                }}
-              />
-            </div>
+            {notice ? (
+              <p role="alert" className="flex items-start gap-2 text-xs text-destructive">
+                <TriangleAlert className="mt-px size-3.5 shrink-0" /> {notice}
+              </p>
+            ) : null}
+            {images.length > 0 ? (
+              <ul aria-label="Uploaded images" className="flex flex-col gap-2">
+                {images.map((item) => (
+                  <li key={item.id} className="flex items-center gap-3 rounded-md border p-2">
+                    <span className="flex size-12 shrink-0 items-center justify-center overflow-hidden rounded bg-checker">
+                      {/* eslint-disable-next-line @next/next/no-img-element -- local object URL */}
+                      <img src={item.url} alt="" className="max-h-full max-w-full object-contain" />
+                    </span>
+                    <div className="flex min-w-0 flex-1 flex-col gap-1.5">
+                      <span className="truncate text-xs font-medium" title={item.name}>
+                        {item.name}
+                      </span>
+                      <div className="flex items-center gap-2">
+                        <Switch
+                          id={`dna-ignore-${item.id}`}
+                          checked={item.ignoreBackground ?? ignoreBackground}
+                          onCheckedChange={(value) => setImageBackground(item.id, value)}
+                        />
+                        <Label htmlFor={`dna-ignore-${item.id}`} className="text-[11px] font-normal whitespace-nowrap">
+                          Ignore background
+                        </Label>
+                      </div>
+                    </div>
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      className="size-8"
+                      aria-label={`Remove ${item.name}`}
+                      onClick={() => remove(item.id)}
+                    >
+                      <X />
+                    </Button>
+                  </li>
+                ))}
+              </ul>
+            ) : null}
+            {images.length > 0 ? (
+              <p className="text-[11px] text-subtle-foreground">
+                Ignore background leaves a flat backdrop, like the white behind a logo, out of that image&apos;s
+                palette.
+              </p>
+            ) : null}
           </Panel>
           <Panel title="Provider">
             <div ref={providersRef} role="radiogroup" aria-label="Analysis provider" className="flex flex-col gap-1.5">
@@ -180,7 +260,7 @@ export function BrandDnaWorkspace() {
                   aria-checked={item.id === provider.id}
                   onClick={() => {
                     setProvider(item.id);
-                    if (image) void analyze(image, item.id);
+                    if (images.length > 0) void analyze(images, item.id);
                   }}
                   className={cn(
                     "flex flex-col gap-1 rounded-md border p-2.5 text-left transition-colors duration-150 hover:border-border-strong",
@@ -201,10 +281,17 @@ export function BrandDnaWorkspace() {
       }
       preview={
         <div className="flex min-h-80 flex-1 flex-col gap-4 rounded-lg border bg-surface-raised p-4">
-          {image ? (
-            <div className="relative flex min-h-0 flex-1 items-center justify-center overflow-hidden rounded-md bg-checker">
-              {/* eslint-disable-next-line @next/next/no-img-element -- local object URL */}
-              <img src={image.url} alt={`Uploaded ${image.name}`} className="max-h-full max-w-full object-contain" />
+          {images.length > 0 ? (
+            <div className={cn("grid min-h-0 flex-1 gap-2", images.length > 1 && "grid-cols-2 sm:grid-cols-3")}>
+              {images.map((item) => (
+                <div
+                  key={item.id}
+                  className="relative flex min-h-24 items-center justify-center overflow-hidden rounded-md bg-checker"
+                >
+                  {/* eslint-disable-next-line @next/next/no-img-element -- local object URL */}
+                  <img src={item.url} alt={`Uploaded ${item.name}`} className="max-h-full max-w-full object-contain" />
+                </div>
+              ))}
             </div>
           ) : (
             <div className="flex flex-1 flex-col items-center justify-center gap-2 text-center text-sm text-muted-foreground">
@@ -269,8 +356,8 @@ export function BrandDnaWorkspace() {
                   variant="outline"
                   size="icon"
                   aria-label="Analyze again"
-                  onClick={() => image && void analyze(image)}
-                  disabled={!image || running}
+                  onClick={() => void analyze(images)}
+                  disabled={images.length === 0 || running}
                 >
                   <RotateCcw />
                 </Button>

@@ -2,6 +2,8 @@ import type { ColorRole } from "@/types/brand";
 
 /** An image prepared for analysis: downscaled pixels plus a preview URL. */
 export type DnaImage = {
+  /** Unique per upload, so the same file can be added twice and removed on its own. */
+  id: string;
   name: string;
   /** Object URL for the preview; revoke when done. */
   url: string;
@@ -11,7 +13,12 @@ export type DnaImage = {
   pixels: Uint8ClampedArray;
   sampleWidth: number;
   sampleHeight: number;
+  /** Leave this image's flat background out of the palette. Falls back to `DnaOptions`. */
+  ignoreBackground?: boolean;
 };
+
+/** A moodboard combines at most this many images into one result. */
+export const MAX_DNA_IMAGES = 5;
 
 export type DnaColor = { hex: string; weight: number; role: ColorRole };
 
@@ -40,7 +47,10 @@ export const dnaStages: { id: DnaStage; label: string }[] = [
 export type DnaOptions = {
   signal?: AbortSignal;
   onStage?: (stage: DnaStage) => void;
-  /** Leave a flat background (a logo on white) out of the palette. Providers may ignore it. */
+  /**
+   * Leave a flat background (a logo on white) out of the palette, for images that don't
+   * set their own `ignoreBackground`. Providers may ignore it.
+   */
   ignoreBackground?: boolean;
 };
 
@@ -56,5 +66,6 @@ export type BrandDnaProvider = {
   local: boolean;
   /** Returns mocked data. Surfaced in the UI so it is never mistaken for real analysis. */
   mocked: boolean;
-  analyze: (image: DnaImage, options?: DnaOptions) => Promise<BrandDna>;
+  /** Analyzes one to `MAX_DNA_IMAGES` images as one moodboard and returns one result. */
+  analyze: (images: DnaImage[], options?: DnaOptions) => Promise<BrandDna>;
 };

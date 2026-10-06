@@ -1,6 +1,12 @@
 import { describe, expect, test } from "vitest";
 
-import { detectBackground, extractPalette, hexOf } from "@/lib/brand-dna/palette";
+import {
+  detectBackground,
+  extractCombinedPalette,
+  extractPalette,
+  hexOf,
+  mergePixelSets,
+} from "@/lib/brand-dna/palette";
 
 const SIZE = 40;
 
@@ -61,5 +67,57 @@ describe("extractPalette", () => {
     expect(hexes).toEqual(expect.arrayContaining(["#e53935", "#1e40af"]));
     const total = palette.reduce((sum, item) => sum + item.weight, 0);
     expect(total).toBeCloseTo(1, 5);
+  });
+});
+
+describe("merging pixel sets", () => {
+  const red = image(() => [229, 57, 53]);
+  const blue = image(() => [30, 64, 175]);
+
+  test("two equal images split the palette evenly", () => {
+    const merged = mergePixelSets([{ pixels: red }, { pixels: blue }]);
+    expect(merged).toHaveLength(2);
+    expect(merged.map((item) => item.share)).toEqual([0.5, 0.5]);
+  });
+
+  test("weights each image by area, not by its sampled pixel count", () => {
+    const palette = extractCombinedPalette([
+      { pixels: red, weight: 3 },
+      { pixels: blue, weight: 1 },
+    ]);
+    expect(palette.map((item) => hexOf(item.color))).toEqual(["#e53935", "#1e40af"]);
+    expect(palette[0]!.weight).toBeCloseTo(0.75, 5);
+    expect(palette[1]!.weight).toBeCloseTo(0.25, 5);
+  });
+
+  test("buckets shared by both images average their color", () => {
+    const merged = mergePixelSets([{ pixels: image(() => [200, 0, 0]) }, { pixels: image(() => [202, 0, 0]) }]);
+    expect(merged).toHaveLength(1);
+    expect(merged[0]!.r).toBeCloseTo(201, 5);
+    expect(merged[0]!.share).toBeCloseTo(1, 5);
+  });
+
+  test("each image keeps its own background exclusion", () => {
+    const background = detectBackground(logoOnWhite, SIZE, SIZE);
+    const white = image(() => [255, 255, 255]);
+    const combined = extractCombinedPalette([{ pixels: logoOnWhite, exclude: background }, { pixels: white }]);
+    // The logo's backdrop is dropped, but the second, plain white image still counts.
+    expect(combined.map((item) => hexOf(item.color))).toEqual(
+      expect.arrayContaining(["#ffffff", "#e53935", "#1e40af"]),
+    );
+    const logoOnly = extractCombinedPalette([{ pixels: logoOnWhite, exclude: background }]);
+    expect(logoOnly.map((item) => hexOf(item.color))).not.toContain("#ffffff");
+  });
+
+  test("is deterministic and does not depend on input order", () => {
+    const a = extractCombinedPalette([{ pixels: logoOnWhite }, { pixels: gradient }]);
+    const b = extractCombinedPalette([{ pixels: logoOnWhite }, { pixels: gradient }]);
+    const c = extractCombinedPalette([{ pixels: gradient }, { pixels: logoOnWhite }]);
+    expect(b).toEqual(a);
+    expect(c.map((item) => hexOf(item.color))).toEqual(a.map((item) => hexOf(item.color)));
+  });
+
+  test("a single set matches extractPalette", () => {
+    expect(extractCombinedPalette([{ pixels: gradient }], 5)).toEqual(extractPalette(gradient, 5));
   });
 });

@@ -6,16 +6,16 @@ Brand DNA providers turn an uploaded image into editable brand suggestions. The 
 
 `BrandDnaProvider` is defined in `lib/brand-dna/types.ts`:
 
-| Field         | Meaning                                                                              |
-| ------------- | ------------------------------------------------------------------------------------ |
-| `id`          | Stable identifier stored by the Brand DNA provider selector.                         |
-| `label`       | Name shown in the selector.                                                          |
-| `description` | Short explanation shown below the name.                                              |
-| `local`       | Set to `true` when analysis stays on the device. The UI then shows a Private badge.  |
-| `mocked`      | Set to `true` when the result is sample data. The UI then shows a Sample data badge. |
-| `analyze`     | Accepts a `DnaImage` and optional `DnaOptions`, then returns a `Promise<BrandDna>`.  |
+| Field         | Meaning                                                                                   |
+| ------------- | ----------------------------------------------------------------------------------------- |
+| `id`          | Stable identifier stored by the Brand DNA provider selector.                              |
+| `label`       | Name shown in the selector.                                                               |
+| `description` | Short explanation shown below the name.                                                   |
+| `local`       | Set to `true` when analysis stays on the device. The UI then shows a Private badge.       |
+| `mocked`      | Set to `true` when the result is sample data. The UI then shows a Sample data badge.      |
+| `analyze`     | Accepts one to five `DnaImage`s and optional `DnaOptions`, returns a `Promise<BrandDna>`. |
 
-The `DnaImage` contains the file name, preview URL, original dimensions and downscaled RGBA pixels. `DnaOptions` can include an `AbortSignal` and an `onStage` callback. Report the `reading`, `palette`, `mood`, and `type` stages as work advances, then report `done`. Pass the signal to cancellable work and stop when it is aborted.
+The images form one moodboard and get one combined result. Each `DnaImage` contains an id, the file name, preview URL, original dimensions, downscaled RGBA pixels and its own `ignoreBackground` choice; weigh images by their original area (`width * height`), as `extractCombinedPalette` in `lib/brand-dna/palette.ts` does. `DnaOptions` can include an `AbortSignal` and an `onStage` callback. Report the `reading`, `palette`, `mood`, and `type` stages as work advances, then report `done`. Pass the signal to cancellable work and stop when it is aborted.
 
 A `BrandDna` result contains:
 
@@ -42,7 +42,7 @@ export const grayscaleProvider: BrandDnaProvider = {
   description: "Returns a fixed grayscale palette.",
   local: true,
   mocked: false,
-  async analyze(_image, options = {}) {
+  async analyze(_images, options = {}) {
     const { signal, onStage } = options;
     signal?.throwIfAborted();
 

@@ -1,4 +1,5 @@
 import type { DnaImage } from "@/lib/brand-dna/types";
+import { createId } from "@/lib/id";
 
 const SAMPLE = 160;
 export const MAX_IMAGE_BYTES = 10_000_000;
@@ -28,7 +29,7 @@ export async function loadDnaImage(file: File): Promise<DnaImage> {
     if (!context) throw new Error("Canvas is not available.");
     context.drawImage(image, 0, 0, sampleWidth, sampleHeight);
     const pixels = context.getImageData(0, 0, sampleWidth, sampleHeight).data;
-    return { name: file.name, url, width, height, pixels, sampleWidth, sampleHeight };
+    return { id: createId("dna"), name: file.name, url, width, height, pixels, sampleWidth, sampleHeight };
   } catch (error) {
     URL.revokeObjectURL(url);
     throw error;

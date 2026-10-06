@@ -36,7 +36,7 @@ const samples: BrandDna[] = [
 
 /**
  * Stand-in for a vision model, for building the UI without a paid API. It waits like a
- * network call and returns sample data chosen from the file name.
+ * network call and returns sample data chosen from the file names.
  */
 export const mockAiProvider: BrandDnaProvider = {
   id: "mock-ai",
@@ -44,7 +44,7 @@ export const mockAiProvider: BrandDnaProvider = {
   description: "Simulates a vision model with sample data. Use it to develop against the provider interface.",
   local: true,
   mocked: true,
-  async analyze(image, options: DnaOptions = {}) {
+  async analyze(images, options: DnaOptions = {}) {
     const { signal, onStage } = options;
     for (const stage of ["reading", "palette", "mood", "type"] as const) {
       onStage?.(stage);
@@ -57,6 +57,7 @@ export const mockAiProvider: BrandDnaProvider = {
       });
     }
     onStage?.("done");
-    return structuredClone(samples[hashString(image.name) % samples.length]!);
+    const key = images.map((image) => image.name).join("\n");
+    return structuredClone(samples[hashString(key) % samples.length]!);
   },
 };

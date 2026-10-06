@@ -1,5 +1,11 @@
-import { detectBackground, extractPalette, hexOf, type WeightedColor } from "@/lib/brand-dna/palette";
-import type { BrandDna, BrandDnaProvider, DnaColor, DnaOptions } from "@/lib/brand-dna/types";
+import { detectBackground, extractCombinedPalette, hexOf, type WeightedColor } from "@/lib/brand-dna/palette";
+import {
+  MAX_DNA_IMAGES,
+  type BrandDna,
+  type BrandDnaProvider,
+  type DnaColor,
+  type DnaOptions,
+} from "@/lib/brand-dna/types";
 
 type Mood = { id: string; personality: string[]; heading: string; body: string; radius: number };
 
@@ -58,16 +64,26 @@ export const localProvider: BrandDnaProvider = {
     "Extracts the palette and suggests type, radius and personality with simple heuristics. Free, private, instant.",
   local: true,
   mocked: false,
-  async analyze(image, options: DnaOptions = {}) {
+  async analyze(images, options: DnaOptions = {}) {
     const { signal, onStage, ignoreBackground = true } = options;
+    if (images.length === 0) throw new Error("Add an image to analyze.");
+    if (images.length > MAX_DNA_IMAGES) throw new Error(`Combine at most ${MAX_DNA_IMAGES} images.`);
     onStage?.("reading");
     await wait(120, signal);
     onStage?.("palette");
-    const background = ignoreBackground ? detectBackground(image.pixels, image.sampleWidth, image.sampleHeight) : null;
-    let palette = extractPalette(image.pixels, 6, { exclude: background });
-    // An image that is nothing but its background (a blank canvas) still gets a palette.
-    if (palette.length === 0 && background) palette = extractPalette(image.pixels, 6);
-    if (palette.length === 0) throw new Error("The image is fully transparent.");
+    // Each image keeps its own background handling and counts by its area.
+    const backgrounds = images.map((image) =>
+      (image.ignoreBackground ?? ignoreBackground)
+        ? detectBackground(image.pixels, image.sampleWidth, image.sampleHeight)
+        : null,
+    );
+    // An image that is nothing but its background (a blank canvas) still counts as that color.
+    const palette = extractCombinedPalette(
+      images.map((image, i) => ({ pixels: image.pixels, weight: image.width * image.height, exclude: backgrounds[i] })),
+      6,
+    );
+    if (palette.length === 0)
+      throw new Error(images.length > 1 ? "The images are fully transparent." : "The image is fully transparent.");
     await wait(160, signal);
     onStage?.("mood");
     const mood = readMood(palette);
@@ -85,6 +101,8 @@ export const localProvider: BrandDnaProvider = {
       role:
         item === primary ? "primary" : item === secondary ? "secondary" : item.color.c < 0.05 ? "neutral" : "secondary",
     }));
+    const sampled = images.reduce((sum, image) => sum + image.sampleWidth * image.sampleHeight, 0);
+    const left = [...new Set(backgrounds.flatMap((background) => (background ? [hexOf(background)] : [])))];
     const result: BrandDna = {
       colors,
       heading: mood.heading,
@@ -94,9 +112,13 @@ export const localProvider: BrandDnaProvider = {
       radius: mood.radius,
       confidence: Math.min(0.9, 0.45 + palette.length * 0.07),
       notes: [
-        `${palette.length} distinct colors found in ${image.sampleWidth * image.sampleHeight} sampled pixels.`,
+        `${palette.length} distinct colors found in ${sampled} sampled pixels${
+          images.length > 1 ? ` across ${images.length} images, weighted by area` : ""
+        }.`,
         `Mood reads as ${mood.id.toLowerCase()} from overall chroma and lightness.`,
-        ...(background ? [`Left out the ${hexOf(background)} background.`] : []),
+        ...(left.length > 0
+          ? [`Left out the ${left.join(", ")} ${left.length > 1 ? "backgrounds" : "background"}.`]
+          : []),
       ],
     };
     onStage?.("done");
