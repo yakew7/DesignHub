@@ -4,10 +4,12 @@ import { fromHex } from "@/lib/color/color";
 import {
   tokenFormats,
   toJsModule,
+  toPandaPreset,
   toSassMap,
   toScss,
   toStyledTheme,
   toStylus,
+  toUnoConfig,
   toYaml,
   yamlString,
 } from "@/lib/tokens/formats";
@@ -76,7 +78,15 @@ describe("Stylus", () => {
 test("the new formats are registered for the Export Engine and the ZIP", () => {
   const formats = tokenFormats(tokens());
   expect(formats.map((format) => format.filename)).toEqual(
-    expect.arrayContaining(["tokens.mjs", "tokens.styl", "Theme.kt", "tokens.yaml", "_tokens-map.scss"]),
+    expect.arrayContaining([
+      "tokens.mjs",
+      "tokens.styl",
+      "Theme.kt",
+      "tokens.yaml",
+      "_tokens-map.scss",
+      "uno.config.ts",
+      "panda.preset.ts",
+    ]),
   );
 });
 
@@ -132,5 +142,71 @@ describe("Sass map", () => {
   test("wraps values with commas so they stay one map entry", () => {
     const layered = { ...tokens(), effects: [{ name: "shadow-lg", value: "0 1px 2px #000, 0 4px 8px #000" }] };
     expect(toSassMap(layered)).toContain('"shadow-lg": (0 1px 2px #000, 0 4px 8px #000),');
+  });
+});
+
+describe("UnoCSS", () => {
+  test("nests shades under each color and prepends the prefix to theme keys", () => {
+    const uno = toUnoConfig(tokens("acme"));
+    expect(uno).toContain('import { defineConfig, presetWind3, type PresetWind3Theme } from "unocss";');
+    expect(uno).toContain("presets: [presetWind3()],");
+    expect(uno).toContain('"acme-indigo": { 250: "#cdd9f3", DEFAULT: "#6366f1" },');
+    expect(uno).toContain('"acme-indigo-2": { 50: "#f1f6ff", DEFAULT: "#0f172a" },');
+    expect(uno).toContain('"acme-primary": "#6366f1",');
+    expect(uno).toContain('spacing: { "acme-0.5": "0.125rem", "acme-4": "1rem" },');
+    expect(uno).toContain('borderRadius: { "acme-lg": "0.75rem" },');
+    expect(uno).toContain('boxShadow: { "acme-md": "0 1px 2px rgb(0 0 0 / 0.1)" },');
+  });
+
+  test("leaves keys bare without a prefix", () => {
+    expect(toUnoConfig(tokens())).toContain('indigo: { 250: "#cdd9f3", DEFAULT: "#6366f1" },');
+  });
+});
+
+describe("Panda CSS", () => {
+  const withRoles: DesignTokens = {
+    ...tokens(),
+    colors: [
+      {
+        name: "indigo",
+        value: fromHex("#6366f1"),
+        shades: [
+          { step: 200, value: fromHex("#c7d2fe") },
+          { step: 300, value: fromHex("#a5b4fc") },
+        ],
+      },
+      { name: "slate", value: fromHex("#0f172a"), shades: [] },
+    ],
+    semantic: [
+      { name: "primary", ref: "indigo", value: fromHex("#6366f1") },
+      { name: "foreground", ref: "slate", value: fromHex("#0f172a") },
+      { name: "background", ref: "white", value: fromHex("#ffffff") },
+    ],
+  };
+
+  test("writes base tokens for every scale", () => {
+    const panda = toPandaPreset(withRoles);
+    expect(panda).toContain('import { definePreset } from "@pandacss/dev";');
+    expect(panda).toContain('name: "acme-labs",');
+    expect(panda).toContain('200: { value: "#c7d2fe" },');
+    expect(panda).toContain('DEFAULT: { value: "#6366f1" },');
+    expect(panda).toContain('slate: { value: "#0f172a" },');
+    expect(panda).toContain('spacing: { 4: { value: "1rem" }, "0.5": { value: "0.125rem" } },');
+    expect(panda).toContain('radii: { lg: { value: "0.75rem" } },');
+    expect(panda).toContain('shadows: { md: { value: "0 1px 2px rgb(0 0 0 / 0.1)" } },');
+  });
+
+  test("semantic tokens reference the base tokens, with lifted and swapped _dark values", () => {
+    const panda = toPandaPreset(withRoles);
+    expect(panda).toContain('primary: { value: { base: "{colors.indigo}", _dark: "{colors.indigo.300}" } },');
+    // Dark mode swaps background and foreground; white has no base token, so it keeps its value.
+    expect(panda).toContain('foreground: { value: { base: "{colors.slate}", _dark: "#ffffff" } },');
+    expect(panda).toContain('background: { value: { base: "#ffffff", _dark: "{colors.slate}" } },');
+  });
+
+  test("prefixes token keys and the references to them", () => {
+    const panda = toPandaPreset({ ...withRoles, meta: { ...withRoles.meta, prefix: "acme" } });
+    expect(panda).toContain('"acme-slate": { value: "#0f172a" },');
+    expect(panda).toContain('_dark: "{colors.acme-indigo.300}"');
   });
 });

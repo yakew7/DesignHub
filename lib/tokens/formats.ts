@@ -3,7 +3,14 @@ import { colorTokens } from "@/lib/color/export";
 import { gradientCss, gradientCssFallback } from "@/lib/color/gradient";
 import { fontStack } from "@/lib/typography/css";
 import { siteConfig } from "@/lib/site";
-import { toComposeTheme, toFlutterTheme, toSwiftUITheme, toTokensStudio } from "@/lib/tokens/native";
+import {
+  roleColor,
+  toComposeTheme,
+  toFlutterTheme,
+  toSwiftUITheme,
+  toTokensStudio,
+  type RoleColor,
+} from "@/lib/tokens/native";
 import { googleFontsCssUrl } from "@/lib/typography/google-fonts";
 import type { ExportFormat } from "@/types/export";
 import type { Oklch } from "@/types/color";
@@ -300,6 +307,166 @@ export default {
 `;
 }
 
+/** Effects named `${kind}-${name}` (shadow-card, blur-glass) as a { name: value } scale. */
+function effectScale(tokens: DesignTokens, kind: string, prefix: string): Record<string, string> {
+  return Object.fromEntries(
+    tokens.effects
+      .filter((effect) => effect.name.startsWith(`${kind}-`))
+      .map((effect) => [`${prefix}${effect.name.slice(kind.length + 1)}`, effect.value]),
+  );
+}
+
+type Literal = string | number | Literal[] | { [key: string]: Literal };
+
+/**
+ * A value as a TypeScript literal with bare keys where they're valid, like hand-written config.
+ * Objects and arrays that fit on one line (a `{ value: "#fff" }` token) stay on one line.
+ */
+function tsLiteral(value: Literal, indent = ""): string {
+  if (typeof value !== "object") return JSON.stringify(value);
+  const inner = `${indent}  `;
+  const items = Array.isArray(value)
+    ? value.map((item) => tsLiteral(item, inner))
+    : Object.entries(value).map(([key, item]) => `${objectKey(key)}: ${tsLiteral(item, inner)}`);
+  const [open, close] = Array.isArray(value) ? ["[", "]"] : ["{", "}"];
+  const line = Array.isArray(value) ? `[${items.join(", ")}]` : items.length ? `{ ${items.join(", ")} }` : "{}";
+  if (!line.includes("\n") && indent.length + line.length <= 80) return line;
+  return `${open}\n${items.map((item) => `${inner}${item},`).join("\n")}\n${indent}${close}`;
+}
+
+/** Drops empty scales so the generated theme only lists what the tokens contain. */
+const nonEmpty = (scales: Record<string, { [key: string]: Literal }>) =>
+  Object.fromEntries(Object.entries(scales).filter(([, scale]) => Object.keys(scale).length > 0));
+
+/**
+ * UnoCSS (uno.config.ts): the tokens as a `presetWind3` theme. Colors with shades become
+ * { DEFAULT, 50, 100… } objects so both `bg-indigo` and `bg-indigo-500` work, and the prefix
+ * setting is prepended to every theme key (`bg-acme-indigo-500`).
+ */
+export function toUnoConfig(tokens: DesignTokens): string {
+  const prefix = tokens.meta.prefix ? `${tokens.meta.prefix}-` : "";
+  const color = (value: Oklch) => formatColor(value, tokens.meta.colorFormat);
+  const t = tokens.typography;
+  const theme = nonEmpty({
+    colors: Object.fromEntries([
+      ...tokens.colors.map((token) => [
+        `${prefix}${token.name}`,
+        token.shades.length
+          ? { DEFAULT: color(token.value), ...Object.fromEntries(token.shades.map((s) => [s.step, color(s.value)])) }
+          : color(token.value),
+      ]),
+      ...tokens.semantic.map((role) => [`${prefix}${role.name}`, color(role.value)]),
+    ]),
+    fontFamily: t
+      ? {
+          [`${prefix}heading`]: fontStack(t.heading.family, t.heading.category),
+          [`${prefix}body`]: fontStack(t.body.family, t.body.category),
+        }
+      : {},
+    fontSize: Object.fromEntries(
+      (t?.steps ?? []).map((step) => [
+        `${prefix}${step.name}`,
+        [step.clamp, String(step.step > 0 ? t!.rhythm.headingLineHeight : t!.rhythm.bodyLineHeight)],
+      ]),
+    ),
+    spacing: Object.fromEntries(tokens.spacing.map((s) => [`${prefix}${s.name}`, px(s.px)])),
+    borderRadius: Object.fromEntries(tokens.radius.map((r) => [`${prefix}${r.name}`, px(r.px)])),
+    boxShadow: effectScale(tokens, "shadow", prefix),
+    blur: effectScale(tokens, "blur", prefix),
+  });
+  return `${header(tokens, (text) => `// ${text}`)}
+import { defineConfig, presetWind3, type PresetWind3Theme } from "unocss";
+
+export default defineConfig<PresetWind3Theme>({
+  presets: [presetWind3()],
+  theme: ${tsLiteral(theme, "  ")},
+});
+`;
+}
+
+/**
+ * Panda CSS (panda.preset.ts): base tokens for colors, fonts, font sizes, spacing, radii,
+ * shadows and blurs, plus semantic color tokens that reference them (`{colors.indigo.300}`)
+ * with a `_dark` value for each role. List it in `presets` after the base preset in panda.config.ts.
+ */
+export function toPandaPreset(tokens: DesignTokens): string {
+  const prefix = tokens.meta.prefix ? `${tokens.meta.prefix}-` : "";
+  const color = (value: Oklch) => formatColor(value, tokens.meta.colorFormat);
+  const scale = (entries: [string, string][]) =>
+    Object.fromEntries(entries.map(([key, value]) => [`${prefix}${key}`, { value }]));
+  const effect = (kind: string) =>
+    Object.fromEntries(Object.entries(effectScale(tokens, kind, prefix)).map(([key, value]) => [key, { value }]));
+  const t = tokens.typography;
+
+  const colors = Object.fromEntries(
+    tokens.colors.map((token): [string, Literal] => [
+      `${prefix}${token.name}`,
+      token.shades.length
+        ? {
+            DEFAULT: { value: color(token.value) },
+            ...Object.fromEntries(token.shades.map((s) => [s.step, { value: color(s.value) }])),
+          }
+        : { value: color(token.value) },
+    ]),
+  );
+  // Roles point at the base tokens; the synthesized white or black has no base token, so it keeps its value.
+  const reference = (entry: RoleColor) =>
+    entry.color
+      ? `{colors.${prefix}${entry.color}${entry.step !== undefined ? `.${entry.step}` : ""}}`
+      : color(entry.value);
+  const semanticColors = Object.fromEntries(
+    tokens.semantic.flatMap((role) => {
+      const light = roleColor(tokens, role.name);
+      const dark = roleColor(tokens, role.name, true);
+      return light && dark
+        ? [[`${prefix}${role.name}`, { value: { base: reference(light), _dark: reference(dark) } }]]
+        : [];
+    }),
+  );
+
+  const preset = {
+    name:
+      tokens.meta.name
+        .toLowerCase()
+        .replace(/[^a-z0-9]+/g, "-")
+        .replace(/^-+|-+$/g, "") || "designhub",
+    theme: {
+      extend: {
+        tokens: nonEmpty({
+          colors,
+          fonts: scale(
+            t
+              ? [
+                  ["heading", fontStack(t.heading.family, t.heading.category)],
+                  ["body", fontStack(t.body.family, t.body.category)],
+                ]
+              : [],
+          ),
+          fontWeights: scale(
+            t
+              ? [
+                  ["heading", String(t.rhythm.headingWeight)],
+                  ["body", String(t.rhythm.bodyWeight)],
+                ]
+              : [],
+          ),
+          fontSizes: scale((t?.steps ?? []).map((step) => [step.name, step.clamp])),
+          spacing: scale(tokens.spacing.map((s) => [s.name, px(s.px)])),
+          radii: scale(tokens.radius.map((r) => [r.name, px(r.px)])),
+          shadows: effect("shadow"),
+          blurs: effect("blur"),
+        }),
+        ...(tokens.semantic.length ? { semanticTokens: { colors: semanticColors } } : {}),
+      },
+    },
+  };
+  return `${header(tokens, (text) => `// ${text}`)}
+import { definePreset } from "@pandacss/dev";
+
+export default definePreset(${tsLiteral(preset)});
+`;
+}
+
 export function toReactTheme(tokens: DesignTokens): string {
   const groups = new Map<string, Record<string, string>>();
   flatten(tokens).forEach((token) => {
@@ -554,6 +721,8 @@ export function tokenFormats(tokens: DesignTokens): ExportFormat[] {
       language: "ts",
       code: toTailwindConfig(tokens),
     },
+    { id: "unocss", label: "UnoCSS", filename: "uno.config.ts", language: "ts", code: toUnoConfig(tokens) },
+    { id: "panda", label: "Panda CSS", filename: "panda.preset.ts", language: "ts", code: toPandaPreset(tokens) },
     { id: "js", label: "JavaScript", filename: "tokens.mjs", language: "js", code: toJsModule(tokens) },
     { id: "react", label: "React theme", filename: "theme.ts", language: "ts", code: toReactTheme(tokens) },
     {

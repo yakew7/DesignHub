@@ -62,6 +62,29 @@ function colorEntries(tokens: DesignTokens, digitPrefix: string): ColorEntry[] {
   return unique(list);
 }
 
+/**
+ * Where a semantic role's color comes from in light or dark mode. `role` is the semantic role
+ * that supplies it, `color` the palette color it points at (missing for the synthesized white
+ * and black) and `step` the shade, when dark mode lifts the role to one.
+ */
+export type RoleColor = { role: string; color?: string; step?: number; value: Oklch };
+
+/**
+ * A semantic role in light or dark mode. Dark mode swaps the light background and the dark
+ * foreground, and lifts every other role to its palette color's 300 (or 200) shade so it stays
+ * readable on the dark background. Compose and the Panda CSS preset share this.
+ */
+export function roleColor(tokens: DesignTokens, roleName: string, dark = false): RoleColor | undefined {
+  const swap: Record<string, string> = { background: "foreground", foreground: "background" };
+  const swapped = dark ? swap[roleName] : undefined;
+  const item = tokens.semantic.find((entry) => entry.name === (swapped ?? roleName));
+  if (!item) return undefined;
+  const source = tokens.colors.find((entry) => entry.name === item.ref);
+  const lift = dark && !swapped ? source : undefined;
+  const shade = lift?.shades.find((s) => s.step === 300) ?? lift?.shades.find((s) => s.step === 200);
+  return { role: item.name, color: source?.name, step: shade?.step, value: shade?.value ?? item.value };
+}
+
 const px = (value: number) => (value >= 9999 ? 9999 : Math.round(value * 100) / 100);
 const weight = (value: number) => Math.min(900, Math.max(100, Math.round(value / 100) * 100));
 
@@ -290,15 +313,13 @@ export function toComposeTheme(tokens: DesignTokens): string {
   const body = (lines: string[]) => (lines.length ? `\n${lines.join("\n")}\n` : "");
   const t = tokens.typography;
 
-  /** A semantic role as a color reference; `lift` uses its 300 (or 200) shade for dark mode. */
-  const role = (roleName: string, lift = false) => {
-    const item = tokens.semantic.find((entry) => entry.name === roleName);
-    if (!item) return undefined;
-    const source = lift ? tokens.colors.find((entry) => entry.name === item.ref) : undefined;
-    const shade = source?.shades.find((s) => s.step === 300) ?? source?.shades.find((s) => s.step === 200);
-    return source && shade
-      ? { code: color(`${source.name}/${shade.step}`, shade.value), value: shade.value }
-      : { code: color(`role:${item.name}`, item.value), value: item.value };
+  /** A semantic role as a color reference: the lifted shade in dark mode, otherwise the role itself. */
+  const role = (roleName: string, dark: boolean) => {
+    const entry = roleColor(tokens, roleName, dark);
+    if (!entry) return undefined;
+    return entry.step !== undefined
+      ? { code: color(`${entry.color}/${entry.step}`, entry.value), value: entry.value }
+      : { code: color(`role:${entry.role}`, entry.value), value: entry.value };
   };
   const scheme = (dark: boolean) => {
     const lines: string[] = [];
@@ -308,9 +329,8 @@ export function toComposeTheme(tokens: DesignTokens): string {
     };
     brand("primary", "primary");
     brand("secondary", "accent");
-    // Dark mode swaps the light background and the dark foreground.
-    const background = role(dark ? "foreground" : "background");
-    const foreground = role(dark ? "background" : "foreground");
+    const background = role("background", dark);
+    const foreground = role("foreground", dark);
     if (background) lines.push(`    background = ${background.code},`, `    surface = ${background.code},`);
     if (foreground) lines.push(`    onBackground = ${foreground.code},`, `    onSurface = ${foreground.code},`);
     return lines;
