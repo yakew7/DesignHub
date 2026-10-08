@@ -6,6 +6,7 @@ import { SwitchField } from "@/components/effects/fields";
 import { ExportPanel } from "@/components/export/export-panel";
 import { useOptimizedSvg } from "@/hooks/use-optimized-svg";
 import { useOptimizedTree } from "@/hooks/use-optimized-tree";
+import { angularComponent, kebabCase } from "@/lib/svg/angular";
 import { componentNameFromFile, reactComponent, toJsx, withCurrentColor } from "@/lib/svg/jsx";
 import { svgBackgroundCss } from "@/lib/svg/data-uri";
 import { reactNativeComponent } from "@/lib/svg/react-native";
@@ -72,6 +73,13 @@ export function SvgOutput({ root }: { root: SvgNode | null }) {
         filename: `${componentNameFromFile(name)}.svelte`,
         language: "svelte",
         code: svelteComponent(codeTree),
+      },
+      {
+        id: "angular",
+        label: "Angular",
+        filename: `${kebabCase(componentNameFromFile(name))}.component.ts`,
+        language: "ts",
+        code: angularComponent(codeTree, name),
       },
       {
         id: "css",
