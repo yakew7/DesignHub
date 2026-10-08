@@ -2,7 +2,17 @@ import { describe, expect, test } from "vitest";
 
 import { brandSurface } from "@/lib/brand/theme";
 import { buildBrandTokens } from "@/lib/brand/tokens";
+import { colorDistance, contrastRatio, fromHex } from "@/lib/color/color";
+import { formatRatio } from "@/lib/color/contrast";
 import { effectTokens } from "@/lib/effects/bundle";
+import {
+  colorProportions,
+  colorUsagePage,
+  lowContrastPair,
+  offPaletteColor,
+  textCombinations,
+} from "@/lib/guidelines/pages/color-usage";
+import { introductionPage } from "@/lib/guidelines/pages/intro";
 import { guidelinePages } from "@/lib/guidelines/registry";
 import { brandSiteFiles, pageBlocks } from "@/lib/guidelines/site";
 import type { GuidelineContext } from "@/lib/guidelines/types";
@@ -10,9 +20,10 @@ import { measureText } from "@/lib/logo/measure";
 import { defaultSnapshot } from "@/lib/projects/snapshot";
 import { xmlError } from "@/lib/test/xml";
 import { buildTokens } from "@/lib/tokens/build";
+import type { BrandColor } from "@/types/brand";
 
 /** The default brand as the guideline pages see it, built the way the hooks build it. */
-function guidelineContext(name: string, excluded: string[]) {
+function guidelineContext(name: string, excluded: string[], mode: "light" | "dark" = "light") {
   const { brand, colors, typography, tokens, effects, logo } = defaultSnapshot(name);
   const tokensForBrand = buildBrandTokens({
     profile: brand.profile,
@@ -27,12 +38,12 @@ function guidelineContext(name: string, excluded: string[]) {
     spacingBase: tokens.settings.spacingBase,
     shadowLayers: effects.settings.shadow.layers,
   });
-  const surface = brandSurface(tokensForBrand, "light");
+  const surface = brandSurface(tokensForBrand, mode);
   const pages = guidelinePages.filter((page) => !excluded.includes(page.id));
   const ctx: GuidelineContext = {
     brand: tokensForBrand,
     surface,
-    mode: "light",
+    mode,
     fontCss: "",
     measure: measureText,
     voice: brand.profile.voice,
@@ -137,6 +148,85 @@ describe("co-branding page", () => {
     const without = site(["co-branding"]).files;
     expect(without.has("co-branding/index.html")).toBe(false);
     expect(without.get("index.html")).not.toContain("Co-branding");
+  });
+});
+
+/** The same context with another palette, as if it had been edited in Color Studio. */
+function withPalette(ctx: GuidelineContext, all: BrandColor[]): GuidelineContext {
+  return { ...ctx, brand: { ...ctx.brand, colors: { ...ctx.brand.colors, all } } };
+}
+
+describe("color usage page", () => {
+  test("is in the site and its contents unless switched off", () => {
+    const { files } = site();
+    const page = files.get("color-usage/index.html") ?? "";
+    expect(page).toContain("<h1>Color usage</h1>");
+    expect(page).toContain("<h2>PROPORTIONS</h2>");
+    expect(page).toContain("<h2>APPROVED TEXT ON COLOR</h2>");
+    expect(page).toContain("<p>60% Dominant: Backgrounds, surfaces and body text</p>");
+    expect(files.get("index.html")).toContain("Color Usage");
+
+    const without = site(["color-usage"]).files;
+    expect(without.has("color-usage/index.html")).toBe(false);
+    expect(without.has("assets/pages/color-usage.svg")).toBe(false);
+    expect(without.get("index.html")).not.toContain("Color Usage");
+  });
+
+  test("numbers the page after the palette and lists it in the contents", () => {
+    const { ctx } = guidelineContext("Acme Labs", []);
+    const palette = ctx.contents.find((entry) => entry.id === "color-palette");
+    const usage = ctx.contents.find((entry) => entry.id === "color-usage");
+    expect(usage?.number).toBe((palette?.number ?? 0) + 1);
+    expect(introductionPage.render(ctx, 2)).toContain(">Color Usage</text>");
+    const skipped = guidelineContext("Acme Labs", ["color-usage"]).ctx.contents;
+    expect(skipped.find((entry) => entry.id === "typography")?.number).toBe(usage?.number);
+  });
+
+  test("splits 60 / 30 / 10 across the roles and hands a missing role to the neutrals", () => {
+    const { ctx } = guidelineContext("Acme Labs", []);
+    const shares = colorProportions(ctx);
+    expect(shares.reduce((sum, group) => sum + group.share, 0)).toBe(100);
+    const noSecondary = withPalette(ctx, [
+      { id: "a", name: "Ink", hex: "#111827", role: "neutral" },
+      { id: "b", name: "Ember", hex: "#e53935", role: "primary" },
+    ]);
+    expect(colorProportions(noSecondary).map((group) => [group.label, group.share])).toEqual([
+      ["Dominant", 90],
+      ["Accent", 10],
+    ]);
+  });
+
+  test("shows only combinations that reach 4.5:1, with their real ratios, in light and dark", () => {
+    for (const mode of ["light", "dark"] as const) {
+      const { ctx } = guidelineContext("Acme Labs", [], mode);
+      const combos = textCombinations(ctx);
+      expect(combos.length).toBeGreaterThan(0);
+      const svg = colorUsagePage.render(ctx, 10);
+      expect(xmlError(svg)).toBeNull();
+      for (const combo of combos) {
+        const ratio = contrastRatio(fromHex(combo.foreground.hex), fromHex(combo.background.hex));
+        expect(combo.ratio).toBeCloseTo(ratio, 6);
+        expect(ratio).toBeGreaterThanOrEqual(4.5);
+        expect(svg).toContain(`>${formatRatio(ratio)}</text>`);
+      }
+    }
+  });
+
+  test("follows the live palette in its don'ts", () => {
+    const { ctx } = guidelineContext("Acme Labs", []);
+    const custom = withPalette(ctx, [
+      { id: "a", name: "Ink", hex: "#111827", role: "neutral" },
+      { id: "b", name: "Sun", hex: "#fbbf24", role: "secondary" },
+      { id: "c", name: "Ember", hex: "#e53935", role: "primary" },
+    ]);
+    const low = lowContrastPair(custom);
+    expect(low?.foreground.name).toBe("Ember");
+    expect(low?.background.name).toBe("Sun");
+    expect(low?.ratio).toBeLessThan(3);
+    const foreign = fromHex(offPaletteColor(custom));
+    for (const color of custom.brand.colors.all)
+      expect(colorDistance(foreign, fromHex(color.hex))).toBeGreaterThan(0.1);
+    expect(colorUsagePage.render(custom, 10)).toContain("Don't set text in Ember on Sun");
   });
 });
 
