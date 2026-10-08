@@ -46,17 +46,19 @@ export function ImportTokensButton() {
     }
     try {
       // The parser and snapshots load with the file, so they stay out of the page's first load.
-      const [text, catalog, { parseTokensFile, summarizeImport }, { applySnapshot, captureSnapshot }] =
+      const [text, catalog, { parseTokensFile, summarizeImport }, { applySnapshot, captureSnapshot }, { checkpoint }] =
         await Promise.all([
           file.text(),
           loadFontCatalog(),
           import("@/lib/brand/import-tokens"),
           import("@/lib/projects/snapshot"),
+          import("@/lib/projects/versions"),
         ]);
       const families = new Set(catalog.map((font) => font.family));
       const imported = parseTokensFile(text, { isKnownFont: (family) => families.has(family) });
       const before = captureSnapshot();
       applyImport(imported);
+      void checkpoint("token-import", before);
       toast.success("Tokens imported", {
         description: `${[...summarizeImport(imported), ...imported.notes].join(". ")}.`,
         action: { label: "Undo", onClick: () => applySnapshot(before) },

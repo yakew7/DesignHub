@@ -5,12 +5,23 @@ import { Trash2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { toHex } from "@/lib/color/color";
 import { createSwatch, useColorStore } from "@/store/color-store";
-import { useLibraryStore } from "@/store/library-store";
+import { useLibraryStore, type SavedPalette } from "@/store/library-store";
 
 export function SavedPalettes() {
   const palettes = useLibraryStore((state) => state.savedPalettes);
   const deletePalette = useLibraryStore((state) => state.deletePalette);
   const setSwatches = useColorStore((state) => state.setSwatches);
+
+  async function load(palette: SavedPalette) {
+    // Snapshots and history load on click, so they stay out of the studio's first load.
+    const [{ captureSnapshot }, { checkpoint }] = await Promise.all([
+      import("@/lib/projects/snapshot"),
+      import("@/lib/projects/versions"),
+    ]);
+    const before = captureSnapshot();
+    setSwatches(palette.colors.map((color) => createSwatch(color)));
+    void checkpoint("palette", before);
+  }
 
   if (palettes.length === 0) return null;
 
@@ -24,7 +35,7 @@ export function SavedPalettes() {
           <li key={palette.id} className="group flex flex-col gap-2 rounded-lg border bg-card p-2">
             <button
               type="button"
-              onClick={() => setSwatches(palette.colors.map((color) => createSwatch(color)))}
+              onClick={() => void load(palette)}
               className="flex h-14 overflow-hidden rounded-md"
               aria-label={`Load palette ${palette.name}`}
             >

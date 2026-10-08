@@ -145,6 +145,8 @@ export function BrandDnaWorkspace() {
   function apply() {
     if (!dna) return;
     const before = applyBrandDna(dna);
+    // History loads on apply, so it stays out of the studio's first load.
+    void import("@/lib/projects/versions").then(({ checkpoint }) => checkpoint("brand-dna", before));
     toast.success("Brand DNA applied", {
       description: "Palette, fonts, radius and personality were updated.",
       action: { label: "Undo", onClick: () => applySnapshot(before) },

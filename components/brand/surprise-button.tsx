@@ -9,11 +9,13 @@ import { Button } from "@/components/ui/button";
 export function SurpriseButton() {
   async function surprise() {
     // Loaded on click: the generator and snapshots aren't needed to show the page.
-    const [{ surpriseBrand }, { applySnapshot }] = await Promise.all([
+    const [{ surpriseBrand }, { applySnapshot }, { checkpoint }] = await Promise.all([
       import("@/lib/brand/surprise"),
       import("@/lib/projects/snapshot"),
+      import("@/lib/projects/versions"),
     ]);
     const before = surpriseBrand();
+    void checkpoint("surprise", before);
     toast.success("New direction applied", {
       description: "Palette, fonts, radius and shadow changed. Locked colors stayed.",
       action: { label: "Undo", onClick: () => applySnapshot(before) },

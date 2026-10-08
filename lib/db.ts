@@ -1,6 +1,7 @@
 import type { Dexie, EntityTable } from "dexie";
 import type { StateStorage } from "zustand/middleware";
 
+import type { ProjectVersion } from "@/lib/projects/history";
 import type { BrandProject } from "@/lib/projects/types";
 
 type KeyValueRecord = {
@@ -23,6 +24,7 @@ type DesignHubDatabase = Dexie & {
   kv: EntityTable<KeyValueRecord, "key">;
   icons: EntityTable<CachedIconRecord, "id">;
   projects: EntityTable<BrandProject, "id">;
+  versions: EntityTable<ProjectVersion, "id">;
 };
 
 /** Opens the database. Dexie is loaded on first use, so it stays out of every page's first load. */
@@ -34,6 +36,13 @@ async function createDatabase(): Promise<DesignHubDatabase> {
   db.version(2).stores({ kv: "key, updatedAt", icons: "id, cachedAt" });
   // v3: local brand projects, each a full snapshot of the brand-defining stores.
   db.version(3).stores({ kv: "key, updatedAt", icons: "id, cachedAt", projects: "id, updatedAt, lastOpenedAt" });
+  // v4: version history per project. Only a new table, so older databases keep every row.
+  db.version(4).stores({
+    kv: "key, updatedAt",
+    icons: "id, cachedAt",
+    projects: "id, updatedAt, lastOpenedAt",
+    versions: "id, projectId, createdAt",
+  });
   // An older tab must let go, or this tab's upgrade would block forever.
   db.on("versionchange", () => {
     db.close();
@@ -106,5 +115,8 @@ export const indexedDbStorage: StateStorage = {
 
 /** Removes every locally stored DesignHub record. */
 export async function clearLocalData(): Promise<void> {
-  await safeDb((db) => Promise.all([db.kv.clear(), db.icons.clear(), db.projects.clear()]), undefined);
+  await safeDb(
+    (db) => Promise.all([db.kv.clear(), db.icons.clear(), db.projects.clear(), db.versions.clear()]),
+    undefined,
+  );
 }

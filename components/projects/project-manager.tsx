@@ -1,12 +1,26 @@
 "use client";
 
-import { Copy, Download, FileDown, Link2, Plus, Search, Star, Tag, Upload } from "lucide-react";
+import {
+  ArrowLeftRight,
+  Copy,
+  Download,
+  FileDown,
+  History,
+  Link2,
+  Plus,
+  Search,
+  Star,
+  Tag,
+  Upload,
+} from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { toast } from "sonner";
 
 import { copyShareLink } from "@/components/projects/copy-share-link";
 import { ProjectCard } from "@/components/projects/project-card";
+import { ProjectCompare } from "@/components/projects/project-compare";
+import { ProjectHistory } from "@/components/projects/project-history";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
@@ -43,13 +57,15 @@ const ALL_TAGS = "__ALL__";
 
 export function ProjectManager() {
   const router = useRouter();
-  const { projects, activeId, persistent, run } = useProjects();
+  const { projects, activeId, persistent, refresh, run } = useProjects();
   const [query, setQuery] = useState("");
   const [favoritesOnly, setFavoritesOnly] = useState(false);
   const [tagFilter, setTagFilter] = useState<string | null>(null);
   const [creating, setCreating] = useState(false);
   const [newName, setNewName] = useState("");
   const [deleting, setDeleting] = useState<BrandProject | null>(null);
+  const [comparing, setComparing] = useState(false);
+  const [history, setHistory] = useState<BrandProject | null>(null);
   const fileRef = useRef<HTMLInputElement>(null);
   const newProjectRequested = useUiStore((state) => state.newProjectRequested);
   const clearNewProjectRequest = useUiStore((state) => state.clearNewProjectRequest);
@@ -118,7 +134,7 @@ export function ProjectManager() {
       action: {
         label: "Undo",
         onClick: () =>
-          void run(() => restoreProject(removed.project, removed.wasActive)).then(() =>
+          void run(() => restoreProject(removed.project, removed.wasActive, removed.versions)).then(() =>
             toast.success(`Restored ${name}`),
           ),
       },
@@ -192,6 +208,9 @@ export function ProjectManager() {
           </SelectContent>
         </Select>
         <span className="flex-1" />
+        <Button variant="outline" size="sm" onClick={() => setComparing(true)} disabled={(projects?.length ?? 0) < 2}>
+          <ArrowLeftRight /> Compare
+        </Button>
         <Button variant="outline" size="sm" onClick={() => fileRef.current?.click()}>
           <Upload /> Import
         </Button>
@@ -257,6 +276,15 @@ export function ProjectManager() {
                     variant="ghost"
                     size="icon"
                     className="size-8"
+                    aria-label={`History of ${projectName(project)}`}
+                    onClick={() => setHistory(project)}
+                  >
+                    <History />
+                  </Button>
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    className="size-8"
                     aria-label={`Duplicate ${projectName(project)}`}
                     onClick={() =>
                       void run(() => duplicateProject(project.id)).then(() => toast.success("Project duplicated"))
@@ -290,6 +318,9 @@ export function ProjectManager() {
           ))}
         </ul>
       )}
+
+      <ProjectCompare open={comparing} onOpenChange={setComparing} projects={projects ?? []} initialId={activeId} />
+      <ProjectHistory project={history} onClose={() => setHistory(null)} onChanged={() => void refresh()} />
 
       <Dialog open={creating} onOpenChange={setCreating}>
         <DialogContent>

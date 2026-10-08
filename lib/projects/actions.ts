@@ -14,9 +14,18 @@ import {
   saveProject,
   updateProject,
 } from "@/lib/projects/repository";
+import { sameSnapshot, type ProjectVersion } from "@/lib/projects/history";
 import { addTag, removeTag } from "@/lib/projects/tags";
 import { parseProjectsFile } from "@/lib/projects/transfer";
 import { projectName, type BrandProject } from "@/lib/projects/types";
+import {
+  autoVersion,
+  checkpoint,
+  deleteVersions,
+  listVersions,
+  putVersions,
+  recordVersion,
+} from "@/lib/projects/versions";
 import { useBrandStore } from "@/store/brand-store";
 import { useProjectStore } from "@/store/project-store";
 
@@ -36,11 +45,14 @@ export async function ready(): Promise<void> {
   await Promise.all([whenSnapshotStoresHydrated(), whenProjectStoreHydrated()]);
 }
 
-/** Writes the live stores into the active project. */
+/** Writes the live stores into the active project, keeping a timed version every few minutes of editing. */
 export async function saveActiveProject(): Promise<void> {
   const { activeId } = useProjectStore.getState();
   if (!activeId || !snapshotStoresHydrated() || !useProjectStore.persist.hasHydrated()) return;
-  await updateProject(activeId, { snapshot: captureSnapshot(), updatedAt: Date.now() });
+  const snapshot = captureSnapshot();
+  const previous = await getProject(activeId);
+  await updateProject(activeId, { snapshot, updatedAt: Date.now() });
+  if (previous && !sameSnapshot(previous.snapshot, snapshot)) await autoVersion(activeId, previous.snapshot);
 }
 
 export async function createProject(
@@ -111,25 +123,61 @@ export async function toggleFavorite(id: string): Promise<void> {
   if (project) await updateProject(id, { favorite: !project.favorite });
 }
 
-/** Deletes a project. Deleting the open one switches to the most recent other project. */
-export async function removeProject(id: string): Promise<{ project: BrandProject; wasActive: boolean } | null> {
+type RemovedProject = { project: BrandProject; wasActive: boolean; versions: ProjectVersion[] };
+
+/** Deletes a project and its history. Deleting the open one switches to the most recent other project. */
+export async function removeProject(id: string): Promise<RemovedProject | null> {
   // Read the latest copy first (saving live edits if it is open) so undo restores everything.
   const project = await freshProject(id);
   if (!project) return null;
+  const versions = await listVersions(id);
   await deleteProject(id);
+  await deleteVersions(id);
   const { activeId, setActive } = useProjectStore.getState();
   const wasActive = activeId === id;
-  if (!wasActive) return { project, wasActive };
+  if (!wasActive) return { project, wasActive, versions };
   const rest = (await listProjects()).sort((a, b) => b.lastOpenedAt - a.lastOpenedAt);
   setActive(null);
   if (rest[0]) await openProject(rest[0].id);
-  return { project, wasActive };
+  return { project, wasActive, versions };
 }
 
-/** Puts a deleted project back with the same id, reopening it if it was the open one. */
-export async function restoreProject(project: BrandProject, reopen: boolean): Promise<void> {
+/** Puts a deleted project and its history back with the same ids, reopening it if it was the open one. */
+export async function restoreProject(
+  project: BrandProject,
+  reopen: boolean,
+  versions: ProjectVersion[] = [],
+): Promise<void> {
   await saveProject(project);
+  if (versions.length) await putVersions(project.id, versions);
   if (reopen) await openProject(project.id);
+}
+
+/** Replaces a project's brand: in the live stores when it is open, otherwise only in storage. */
+async function replaceSnapshot(id: string, snapshot: BrandSnapshot): Promise<void> {
+  if (useProjectStore.getState().activeId === id) {
+    applySnapshot(snapshot);
+    await saveActiveProject();
+  } else {
+    await updateProject(id, { snapshot: structuredClone(snapshot), updatedAt: Date.now() });
+  }
+}
+
+/**
+ * Restores a version. The state it replaces is kept as a version first, and returned so the
+ * restore can be undone with `undoRestore`.
+ */
+export async function restoreVersion(id: string, version: ProjectVersion): Promise<BrandSnapshot | null> {
+  const current = await freshProject(id);
+  if (!current) return null;
+  await recordVersion(id, current.snapshot, "restore");
+  await replaceSnapshot(id, version.snapshot);
+  return current.snapshot;
+}
+
+/** Puts back the state a restore replaced. */
+export async function undoRestore(id: string, previous: BrandSnapshot): Promise<void> {
+  if (await getProject(id)) await replaceSnapshot(id, previous);
 }
 
 let initializing: Promise<void> | null = null;
@@ -192,6 +240,7 @@ export async function importProjects(text: string): Promise<number> {
 /** Adds a brand from a share link as a new project and opens it. The open project is saved, never replaced. */
 export async function importSharedProject(snapshot: BrandSnapshot): Promise<BrandProject> {
   await ensureInitialProject();
+  await checkpoint("share-import");
   const copy = structuredClone(snapshot);
   uniqueName(copy, new Set((await listProjects()).map(projectName)));
   return createProject(copy, { open: true });

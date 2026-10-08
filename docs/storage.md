@@ -9,6 +9,7 @@ DesignHub has no accounts and no server. Everything you make is saved in your ow
 | IndexedDB     | `designhub` database, `kv` table            | The settings of every studio (one row per store, listed below).                                                                        |
 | IndexedDB     | `designhub` database, `icons` table         | Icons you have opened, cached so Icon Studio keeps working offline.                                                                    |
 | IndexedDB     | `designhub` database, `projects` table      | Your brand projects: one full snapshot of the brand per project.                                                                       |
+| IndexedDB     | `designhub` database, `versions` table      | Version history: up to 20 earlier snapshots per project, deleted with the project.                                                     |
 | localStorage  | `theme`                                     | Your light or dark theme choice (written by `next-themes`).                                                                            |
 | localStorage  | `designhub:panes:<studio>`                  | How wide you dragged each studio pane. Double-click a divider to reset it.                                                             |
 | Cache Storage | `designhub-static-*`, `designhub-runtime-*` | On the hosted site only: the offline app shell and cached Google Fonts and Iconify responses, so DesignHub opens without a connection. |
@@ -39,6 +40,15 @@ Each row in the `kv` table is one Zustand store, saved under the key shown here.
 | `designhub:a11y`        | Accessibility Lab colors, text settings and targets                              | No                              |
 
 Uploaded images for Brand DNA are never saved. They stay in memory until you leave the page.
+
+## Version history
+
+Each project keeps up to 20 versions in the `versions` table (added in database version 4; older databases upgrade in place and keep every project). A version is a full brand snapshot with its project id, the time it was taken and why:
+
+- every few minutes while you edit the open project (the state before the latest edits), and
+- just before Surprise me, a token import, Brand DNA's Apply to brand, a share link import or loading a saved palette.
+
+A version identical to the newest one is skipped, and the oldest is dropped once a project has 20. **History** on a project card lists them with a preview of what each one changes. Restoring keeps the replaced state as a new version, and the toast's **Undo** puts it straight back. Deleting a project deletes its history (undoing the delete brings both back). History is not included in project exports or share links.
 
 ## Private browsing and blocked storage
 
