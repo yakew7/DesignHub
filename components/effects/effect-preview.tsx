@@ -14,6 +14,8 @@ function isDark(hex: string): boolean {
 
 export const PREVIEW_SELECTOR = ".dh-effect-preview";
 
+const PLAIN = new Set<Backdrop>(["light", "dark"]);
+
 const backdrops: { value: Backdrop; label: string }[] = [
   { value: "gradient", label: "Gradient" },
   { value: "photo", label: "Photo" },
@@ -22,9 +24,12 @@ const backdrops: { value: Backdrop; label: string }[] = [
 ];
 
 export function EffectPreview({ effect }: { effect: EffectCss | null }) {
-  const backdrop = useEffectsStore((state) => state.backdrop);
+  const chosen = useEffectsStore((state) => state.backdrop);
   const setBackdrop = useEffectsStore((state) => state.setBackdrop);
   const surface = effect?.surface;
+  const plain = Boolean(effect?.plainBackdrop);
+  // A gradient fill disappears into a busy backdrop, so those effects fall back to the dark one.
+  const backdrop = plain && !PLAIN.has(chosen) ? "dark" : chosen;
   const dark = surface ? isDark(surface) : backdrop !== "light";
 
   return (
@@ -39,7 +44,7 @@ export function EffectPreview({ effect }: { effect: EffectCss | null }) {
           disabled={Boolean(surface)}
         >
           {backdrops.map((item) => (
-            <ToggleGroupItem key={item.value} value={item.value}>
+            <ToggleGroupItem key={item.value} value={item.value} disabled={plain && !PLAIN.has(item.value)}>
               {item.label}
             </ToggleGroupItem>
           ))}

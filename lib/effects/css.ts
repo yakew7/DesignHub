@@ -66,10 +66,15 @@ export function tailwindValue(value: string): string {
     .replace(/\s+/g, "_");
 }
 
-/** Arbitrary properties (`[backdrop-filter:blur(12px)]`) work for any declaration in Tailwind v3.2+ and v4. */
+/**
+ * Arbitrary properties (`[backdrop-filter:blur(12px)]`) work for any declaration in Tailwind v3.2+ and v4.
+ * Tailwind adds vendor prefixes itself, so a -webkit- twin of an unprefixed declaration is left out;
+ * prefixed-only properties such as -webkit-text-fill-color are kept.
+ */
 export function tailwindClasses(declarations: CssDeclaration[]): string {
+  const unprefixed = new Set(declarations.map(({ property }) => property));
   return declarations
-    .filter(({ property }) => !property.startsWith("-webkit-"))
+    .filter(({ property }) => !(property.startsWith("-webkit-") && unprefixed.has(property.slice(8))))
     .map(({ property, value }) => `[${property}:${tailwindValue(value)}]`)
     .join(" ");
 }

@@ -1,4 +1,7 @@
-export type EffectKind = "glass" | "neumorphism" | "shadow" | "inset" | "glow" | "border" | "grain" | "long-shadow";
+import type { Gradient } from "@/types/color";
+
+export type EffectKind =
+  "glass" | "neumorphism" | "shadow" | "inset" | "glow" | "border" | "grain" | "long-shadow" | "gradient-text";
 
 export type GlassSettings = {
   blur: number;
@@ -93,6 +96,24 @@ export type LongShadowSettings = {
   radius: number;
 };
 
+/** Where gradient text takes its colors from: the Color Studio gradient, or stops set in the effect. */
+export type GradientTextSource = "studio" | "custom";
+
+/** Text filled with a gradient (background-clip: text). */
+export type GradientTextSettings = {
+  source: GradientTextSource;
+  /** Gradient stops for the custom source. */
+  colors: string[];
+  /** Direction of the custom gradient, in degrees. */
+  angle: number;
+  /** Solid text color where gradient text isn't supported. null uses the gradient's first color. */
+  fallback: string | null;
+  /** Slowly shifts the gradient back and forth across the text. */
+  animated: boolean;
+  /** Seconds for one sweep across the text. */
+  speed: number;
+};
+
 export type EffectSettingsMap = {
   glass: GlassSettings;
   neumorphism: NeumorphismSettings;
@@ -102,6 +123,13 @@ export type EffectSettingsMap = {
   border: BorderSettings;
   grain: GrainSettings;
   "long-shadow": LongShadowSettings;
+  "gradient-text": GradientTextSettings;
+};
+
+/** State from other studios an effect may build on. Effects read it here instead of copying it into their settings. */
+export type EffectContext = {
+  /** The Color Studio gradient. */
+  gradient: Gradient;
 };
 
 /** A CSS property/value pair. Vendor-prefixed duplicates are allowed. */
@@ -119,6 +147,8 @@ export type EffectCss = {
   surface?: string;
   /** Preview-only: give the sample card a solid fill (shadows and glows need something to cast from). */
   needsFill?: boolean;
+  /** Preview-only: the effect paints its own gradient, so it is shown on the light or dark backdrop, not a busy one. */
+  plainBackdrop?: boolean;
 };
 
 export type EffectBackdrop = "gradient" | "photo" | "light" | "dark";

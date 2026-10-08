@@ -1,13 +1,14 @@
 import { border } from "@/lib/effects/border";
-import type { AnyEffectDefinition, EffectDefinition } from "@/lib/effects/define";
+import { defaultEffectContext, type AnyEffectDefinition, type EffectDefinition } from "@/lib/effects/define";
 import { glass } from "@/lib/effects/glass";
+import { gradientText } from "@/lib/effects/gradient-text";
 import { glow } from "@/lib/effects/glow";
 import { grain } from "@/lib/effects/grain";
 import { inset } from "@/lib/effects/inset";
 import { longShadow } from "@/lib/effects/long-shadow";
 import { neumorphism } from "@/lib/effects/neumorphism";
 import { shadow } from "@/lib/effects/shadow";
-import type { EffectCss, EffectKind, EffectSettingsMap } from "@/types/effects";
+import type { EffectContext, EffectCss, EffectKind, EffectSettingsMap } from "@/types/effects";
 
 /** Effects register here as they are implemented. */
 export const effectDefinitions: AnyEffectDefinition[] = [
@@ -19,9 +20,14 @@ export const effectDefinitions: AnyEffectDefinition[] = [
   border,
   grain,
   longShadow,
+  gradientText,
 ];
 
-export function generateEffect<K extends EffectKind>(kind: K, settings: EffectSettingsMap[K]): EffectCss | null {
+export function generateEffect<K extends EffectKind>(
+  kind: K,
+  settings: EffectSettingsMap[K],
+  context: EffectContext = defaultEffectContext,
+): EffectCss | null {
   const definition = effectDefinitions.find((item) => item.kind === kind) as EffectDefinition<K> | undefined;
-  return definition ? definition.generate(settings) : null;
+  return definition ? definition.generate(settings, context) : null;
 }

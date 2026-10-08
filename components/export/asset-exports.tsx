@@ -15,6 +15,7 @@ import { effectsBundle } from "@/lib/effects/bundle";
 import { svgToDataUrl } from "@/lib/icons/svg";
 import { useBackgroundStore } from "@/store/background-store";
 import { useA11yReport } from "@/hooks/use-a11y-report";
+import { useEffectContext } from "@/hooks/use-effect-context";
 import { useOptimizedSvg } from "@/hooks/use-optimized-svg";
 import { stampReport } from "@/lib/a11y/report";
 import { formatBytes } from "@/lib/svg-size";
@@ -28,7 +29,8 @@ export function AssetExports() {
 
   const backgroundSvg = useMemo(() => renderBackgroundSvg(background), [background]);
   const backgroundStyles = useMemo(() => backgroundCss(background), [background]);
-  const effectsCss = useMemo(() => effectsBundle(effects), [effects]);
+  const effectContext = useEffectContext();
+  const effectsCss = useMemo(() => effectsBundle(effects, effectContext), [effects, effectContext]);
   const svgName = useSvgStore((state) => state.name);
   const optimized = useOptimizedSvg();
   const a11y = useA11yReport();

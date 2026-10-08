@@ -203,7 +203,7 @@ Background generators live in `lib/background/generators/` and are pure function
 ## Adding an effect
 
 1. Add the settings type to `EffectSettingsMap` in `types/effects.ts` and its defaults to `lib/effects/defaults.ts`.
-2. Create `lib/effects/<name>.ts` with `defineEffect({ kind, label, description, generate })`. `generate` returns `declarations` (property/value pairs), plus optional `extra` (selector-scoped rules such as `::after`), `global` (top-level `@property` / `@keyframes`), `surface` and `needsFill` for the preview.
+2. Create `lib/effects/<name>.ts` with `defineEffect({ kind, label, description, generate })`. `generate` returns `declarations` (property/value pairs), plus optional `extra` (selector-scoped rules such as `::after`), `global` (top-level `@property` / `@keyframes`), `surface` and `needsFill` for the preview. An effect that builds on another studio's state (gradient text uses the Color Studio gradient) reads it from the optional second argument, `context`, instead of copying it into its settings.
 3. Add a controls component in `components/effects/` and register it in `components/effects/controls-map.tsx`.
 4. Every effect automatically gets CSS, Tailwind classes, `@utility`, SCSS and React output, so keep declarations framework-neutral and respect `prefers-reduced-motion` for anything animated.
 

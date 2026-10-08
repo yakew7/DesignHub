@@ -3,6 +3,7 @@ import type { ComponentType } from "react";
 import { BorderControls } from "@/components/effects/border-controls";
 import { GlassControls } from "@/components/effects/glass-controls";
 import { GlowControls } from "@/components/effects/glow-controls";
+import { GradientTextControls } from "@/components/effects/gradient-text-controls";
 import { GrainControls } from "@/components/effects/grain-controls";
 import { InsetControls } from "@/components/effects/inset-controls";
 import { LongShadowControls } from "@/components/effects/long-shadow-controls";
@@ -20,4 +21,5 @@ export const effectControls: Partial<Record<EffectKind, ComponentType>> = {
   border: BorderControls,
   grain: GrainControls,
   "long-shadow": LongShadowControls,
+  "gradient-text": GradientTextControls,
 };

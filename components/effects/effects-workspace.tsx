@@ -10,6 +10,7 @@ import { EffectPreview } from "@/components/effects/effect-preview";
 import { StudioLayout } from "@/components/layout/studio-layout";
 import { Button } from "@/components/ui/button";
 import { Panel } from "@/components/ui/panel";
+import { useEffectContext } from "@/hooks/use-effect-context";
 import { generateEffect } from "@/lib/effects/registry";
 import { useEffectsStore } from "@/store/effects-store";
 
@@ -17,7 +18,8 @@ export function EffectsWorkspace() {
   const kind = useEffectsStore((state) => state.kind);
   const settings = useEffectsStore((state) => state.settings);
   const reset = useEffectsStore((state) => state.reset);
-  const effect = useMemo(() => generateEffect(kind, settings[kind]), [kind, settings]);
+  const context = useEffectContext();
+  const effect = useMemo(() => generateEffect(kind, settings[kind], context), [kind, settings, context]);
   const Controls = effectControls[kind];
 
   return (
