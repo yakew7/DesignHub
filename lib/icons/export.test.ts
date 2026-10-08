@@ -68,4 +68,25 @@ describe("icon exports", () => {
     expect(angular?.code).toContain("<style>@media print{.a{fill:red}}</style>");
     expect(angular?.code).toContain("<text>\\`\\$&#123;x&#125;\\` \\\\ &#123;&#123; y &#125;&#125;</text>");
   });
+
+  test("Solid component spreads props onto the svg and keeps SVG attributes", () => {
+    const solid = iconExports("tabler:brand-github", icon, defaultIconStyle).find((format) => format.id === "solid");
+    expect(solid?.label).toBe("Solid");
+    expect(solid?.filename).toBe("BrandGithubIcon.tsx");
+    expect(solid?.language).toBe("tsx");
+    expect(solid?.code).toContain('import type { JSX } from "solid-js";');
+    expect(solid?.code).toContain("export function BrandGithubIcon(props: JSX.SvgSVGAttributes<SVGSVGElement>) {");
+    expect(solid?.code).toMatch(/<svg [^>]*width="1em" height="1em"[^>]*\{\.\.\.props\}>/);
+    expect(solid?.code).toContain('stroke-width="2"');
+    expect(solid?.code).not.toContain("strokeWidth");
+    expect(solid?.code).not.toContain("className");
+  });
+
+  test("Solid component escapes braces so JSX doesn't read them as expressions", () => {
+    const styled = { ...icon, body: "<style>.a{fill:red}</style><path class='a' d='M0 0h24'/><use xlink:href='#p'/>" };
+    const solid = iconExports("tabler:brand-github", styled, defaultIconStyle).find((format) => format.id === "solid");
+    expect(solid?.code).toContain(".a&#123;fill:red&#125;");
+    expect(solid?.code).toContain("class='a'");
+    expect(solid?.code).toContain("<use href='#p'/>");
+  });
 });
