@@ -2,6 +2,7 @@ import { formatColor, readableTextColor, toHex, toRgb } from "@/lib/color/color"
 import { gradientCss, gradientCssFallback, sortedStops } from "@/lib/color/gradient";
 import { paletteNames } from "@/lib/color/names";
 import { generateShades, type ShadeOptions } from "@/lib/color/shades";
+import { createZip } from "@/lib/zip";
 import type { ExportFormat } from "@/types/export";
 import type { ColorFormat, Gradient, Oklch } from "@/types/color";
 
@@ -208,6 +209,77 @@ export function adobeSwatchExchange(palette: NamedColor[], includeShades: boolea
   return new Uint8Array(buffer);
 }
 
+/** The palette as named colors, each followed by its shades when they're included. */
+function paletteEntries(palette: NamedColor[], includeShades: boolean): { name: string; color: Oklch }[] {
+  return palette.flatMap(({ name, color, shades }) => [
+    { name, color },
+    ...(includeShades ? shades.map((shade) => ({ name: `${name}-${shade.step}`, color: shade.color })) : []),
+  ]);
+}
+
+const unit = (value: number) => Number(value.toFixed(6));
+
+/**
+ * Sketch palette (.sketchpalette), the JSON read by the Sketch Palettes plugin: format 2.0,
+ * with each color as named red, green, blue and alpha floats from 0 to 1.
+ */
+export function sketchPalette(palette: NamedColor[], includeShades: boolean): string {
+  const colors = paletteEntries(palette, includeShades).map(({ name, color }) => {
+    const { r, g, b, alpha } = toRgb(color);
+    return { name, red: unit(r / 255), green: unit(g / 255), blue: unit(b / 255), alpha: unit(alpha) };
+  });
+  return `${JSON.stringify({ compatibleVersion: "2.0", pluginVersion: "2.22", colors, gradients: [], images: [] }, null, 2)}\n`;
+}
+
+/** Procreate palettes hold 30 swatches (a 10 by 3 grid). */
+export const procreateSwatchLimit = 30;
+
+export type ProcreatePalette = {
+  bytes: Uint8Array<ArrayBuffer>;
+  /** Shades were asked for but didn't fit, so only the base colors are in the file. */
+  shadesDropped: boolean;
+  /** Base colors past the swatch limit that were left out. */
+  colorsDropped: number;
+};
+
+/** sRGB channels from 0 to 255 as hue, saturation and brightness from 0 to 1. */
+function hsb(r: number, g: number, b: number): { hue: number; saturation: number; brightness: number } {
+  const max = Math.max(r, g, b);
+  const delta = max - Math.min(r, g, b);
+  let hue = 0;
+  if (delta > 0) {
+    if (max === r) hue = ((g - b) / delta + 6) % 6;
+    else if (max === g) hue = (b - r) / delta + 2;
+    else hue = (r - g) / delta + 4;
+  }
+  return { hue: unit(hue / 6), saturation: max === 0 ? 0 : unit(delta / max), brightness: unit(max / 255) };
+}
+
+/**
+ * Procreate swatches (.swatches): a ZIP holding Swatches.json, a one-palette array with a name
+ * and up to 30 HSB swatches. Shades go in when the whole palette fits; otherwise the file falls
+ * back to the base colors (and the first 30 of those), which the result reports.
+ */
+export function procreateSwatches(
+  palette: NamedColor[],
+  includeShades: boolean,
+  name = "DesignHub palette",
+): ProcreatePalette {
+  const withShades = paletteEntries(palette, includeShades);
+  const fits = withShades.length <= procreateSwatchLimit;
+  const entries = fits ? withShades : paletteEntries(palette, false);
+  const swatches = entries.slice(0, procreateSwatchLimit).map(({ color }) => {
+    const { r, g, b, alpha } = toRgb(color);
+    return { ...hsb(r, g, b), alpha: unit(alpha), colorSpace: 0 };
+  });
+  const title = name.replace(/\s+/g, " ").trim() || "DesignHub palette";
+  return {
+    bytes: createZip([{ name: "Swatches.json", data: JSON.stringify([{ name: title, swatches }]) }]),
+    shadesDropped: includeShades && !fits,
+    colorsDropped: Math.max(0, entries.length - procreateSwatchLimit),
+  };
+}
+
 /** SVG has no conic gradients; conic falls back to a linear gradient at the same angle. */
 export function gradientSvg(gradient: Gradient, width = 1200, height = 630): string {
   const stops = sortedStops(gradient)
@@ -255,6 +327,13 @@ export function colorExports(input: ColorExportInput): ExportFormat[] {
       filename: "palette.gpl",
       language: "text",
       code: gimpPalette(palette, input.includeShades, input.name),
+    },
+    {
+      id: "sketch",
+      label: "Sketch palette",
+      filename: "palette.sketchpalette",
+      language: "json",
+      code: sketchPalette(palette, input.includeShades),
     },
   ];
 }

@@ -33,7 +33,7 @@ function dosDateTime(date: Date): { time: number; date: number } {
   };
 }
 
-export function createZip(entries: ZipEntry[], now = new Date()): Uint8Array {
+export function createZip(entries: ZipEntry[], now = new Date()): Uint8Array<ArrayBuffer> {
   const encoder = new TextEncoder();
   const stamp = dosDateTime(now);
   const files = entries.map((entry) => {
