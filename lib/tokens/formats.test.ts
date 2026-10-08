@@ -3,6 +3,8 @@ import { describe, expect, test } from "vitest";
 import { fromHex } from "@/lib/color/color";
 import {
   tokenFormats,
+  toBootstrapVariables,
+  toChakraTheme,
   toJsModule,
   toPandaPreset,
   toSassMap,
@@ -86,8 +88,12 @@ test("the new formats are registered for the Export Engine and the ZIP", () => {
       "_tokens-map.scss",
       "uno.config.ts",
       "panda.preset.ts",
+      "_bootstrap-variables.scss",
     ]),
   );
+  expect(formats.map((format) => format.id)).toEqual(expect.arrayContaining(["chakra", "bootstrap"]));
+  // Chakra shares theme.ts with React and Vue, which the ZIP puts in a folder per format.
+  expect(formats.find((format) => format.id === "chakra")?.filename).toBe("theme.ts");
 });
 
 describe("styled-components theme", () => {
@@ -163,27 +169,27 @@ describe("UnoCSS", () => {
   });
 });
 
-describe("Panda CSS", () => {
-  const withRoles: DesignTokens = {
-    ...tokens(),
-    colors: [
-      {
-        name: "indigo",
-        value: fromHex("#6366f1"),
-        shades: [
-          { step: 200, value: fromHex("#c7d2fe") },
-          { step: 300, value: fromHex("#a5b4fc") },
-        ],
-      },
-      { name: "slate", value: fromHex("#0f172a"), shades: [] },
-    ],
-    semantic: [
-      { name: "primary", ref: "indigo", value: fromHex("#6366f1") },
-      { name: "foreground", ref: "slate", value: fromHex("#0f172a") },
-      { name: "background", ref: "white", value: fromHex("#ffffff") },
-    ],
-  };
+const withRoles: DesignTokens = {
+  ...tokens(),
+  colors: [
+    {
+      name: "indigo",
+      value: fromHex("#6366f1"),
+      shades: [
+        { step: 200, value: fromHex("#c7d2fe") },
+        { step: 300, value: fromHex("#a5b4fc") },
+      ],
+    },
+    { name: "slate", value: fromHex("#0f172a"), shades: [] },
+  ],
+  semantic: [
+    { name: "primary", ref: "indigo", value: fromHex("#6366f1") },
+    { name: "foreground", ref: "slate", value: fromHex("#0f172a") },
+    { name: "background", ref: "white", value: fromHex("#ffffff") },
+  ],
+};
 
+describe("Panda CSS", () => {
   test("writes base tokens for every scale", () => {
     const panda = toPandaPreset(withRoles);
     expect(panda).toContain('import { definePreset } from "@pandacss/dev";');
@@ -208,5 +214,71 @@ describe("Panda CSS", () => {
     const panda = toPandaPreset({ ...withRoles, meta: { ...withRoles.meta, prefix: "acme" } });
     expect(panda).toContain('"acme-slate": { value: "#0f172a" },');
     expect(panda).toContain('_dark: "{colors.acme-indigo.300}"');
+  });
+});
+
+describe("Chakra UI", () => {
+  test("builds a system from defineConfig with base tokens", () => {
+    const chakra = toChakraTheme(withRoles);
+    expect(chakra).toContain('import { createSystem, defaultConfig, defineConfig } from "@chakra-ui/react";');
+    expect(chakra).toContain("export const system = createSystem(defaultConfig, config);");
+    expect(chakra).toContain('300: { value: "#a5b4fc" },');
+    expect(chakra).toContain('DEFAULT: { value: "#6366f1" },');
+    expect(chakra).toContain('spacing: { 4: { value: "1rem" }, "0.5": { value: "0.125rem" } },');
+    expect(chakra).toContain('radii: { lg: { value: "0.75rem" } },');
+    expect(chakra).toContain('shadows: { md: { value: "0 1px 2px rgb(0 0 0 / 0.1)" } },');
+  });
+
+  test("semantic colors reference base tokens with _dark values", () => {
+    const chakra = toChakraTheme({ ...withRoles, meta: { ...withRoles.meta, prefix: "acme" } });
+    expect(chakra).toContain('"acme-primary": {');
+    expect(chakra).toContain('value: { base: "{colors.acme-indigo}", _dark: "{colors.acme-indigo.300}" },');
+    expect(chakra).toContain('"acme-background": { value: { base: "#ffffff", _dark: "{colors.acme-slate}" } },');
+  });
+});
+
+describe("Bootstrap", () => {
+  test("overrides Bootstrap's variables with hex colors whatever the color format", () => {
+    const bootstrap = toBootstrapVariables({
+      ...withRoles,
+      meta: { ...withRoles.meta, colorFormat: "oklch" },
+      semantic: [...withRoles.semantic, { name: "accent", ref: "indigo", value: fromHex("#a5b4fc") }],
+      radius: [
+        { name: "sm", px: 4 },
+        { name: "md", px: 8 },
+      ],
+    });
+    expect(bootstrap).toContain("$primary: #6366f1;\n");
+    expect(bootstrap).toContain("$secondary: #a5b4fc;\n");
+    expect(bootstrap).toContain("$body-color: #0f172a;\n");
+    expect(bootstrap).toContain("$body-bg: #ffffff;\n");
+    expect(bootstrap).toContain("$spacer: 1rem;\n");
+    expect(bootstrap).toContain("$border-radius: 0.5rem;\n$border-radius-sm: 0.25rem;\n");
+    expect(bootstrap).toContain("$box-shadow: 0 1px 2px rgb(0 0 0 / 0.1);\n");
+    expect(bootstrap).not.toContain("oklch");
+  });
+
+  test("writes font variables from the typography and skips what's missing", () => {
+    const bootstrap = toBootstrapVariables({
+      ...tokens(),
+      typography: {
+        heading: { family: "Space Grotesk", category: "sans-serif", weights: [600], italic: false, rank: 1 },
+        body: { family: "Inter", category: "sans-serif", weights: [400], italic: false, rank: 1 },
+        steps: [],
+        rhythm: {
+          headingWeight: 600,
+          bodyWeight: 400,
+          headingLineHeight: 1.1,
+          bodyLineHeight: 1.6,
+          headingTracking: 0,
+          bodyTracking: 0,
+        },
+      },
+    });
+    expect(bootstrap).toContain('$font-family-sans-serif: "Inter", ');
+    expect(bootstrap).toContain('$headings-font-family: "Space Grotesk", ');
+    expect(bootstrap).toContain("$headings-font-weight: 600;\n");
+    expect(bootstrap).toContain("$line-height-base: 1.6;\n");
+    expect(bootstrap).not.toContain("$body-bg");
   });
 });

@@ -385,11 +385,11 @@ export default defineConfig<PresetWind3Theme>({
 }
 
 /**
- * Panda CSS (panda.preset.ts): base tokens for colors, fonts, font sizes, spacing, radii,
- * shadows and blurs, plus semantic color tokens that reference them (`{colors.indigo.300}`)
- * with a `_dark` value for each role. List it in `presets` after the base preset in panda.config.ts.
+ * Base and semantic tokens in the `{ value }` shape Panda CSS and Chakra UI v3 share: colors,
+ * fonts, font weights, font sizes, spacing, radii, shadows and blurs, plus semantic colors that
+ * reference the base tokens (`{colors.indigo.300}`) with a `_dark` value for each role.
  */
-export function toPandaPreset(tokens: DesignTokens): string {
+function presetTokens(tokens: DesignTokens) {
   const prefix = tokens.meta.prefix ? `${tokens.meta.prefix}-` : "";
   const color = (value: Oklch) => formatColor(value, tokens.meta.colorFormat);
   const scale = (entries: [string, string][]) =>
@@ -424,46 +424,115 @@ export function toPandaPreset(tokens: DesignTokens): string {
     }),
   );
 
+  return {
+    tokens: nonEmpty({
+      colors,
+      fonts: scale(
+        t
+          ? [
+              ["heading", fontStack(t.heading.family, t.heading.category)],
+              ["body", fontStack(t.body.family, t.body.category)],
+            ]
+          : [],
+      ),
+      fontWeights: scale(
+        t
+          ? [
+              ["heading", String(t.rhythm.headingWeight)],
+              ["body", String(t.rhythm.bodyWeight)],
+            ]
+          : [],
+      ),
+      fontSizes: scale((t?.steps ?? []).map((step) => [step.name, step.clamp])),
+      spacing: scale(tokens.spacing.map((s) => [s.name, px(s.px)])),
+      radii: scale(tokens.radius.map((r) => [r.name, px(r.px)])),
+      shadows: effect("shadow"),
+      blurs: effect("blur"),
+    }),
+    ...(tokens.semantic.length ? { semanticTokens: { colors: semanticColors } } : {}),
+  };
+}
+
+/**
+ * Panda CSS (panda.preset.ts): the shared preset tokens under `theme.extend`. List it in
+ * `presets` after the base preset in panda.config.ts.
+ */
+export function toPandaPreset(tokens: DesignTokens): string {
   const preset = {
     name:
       tokens.meta.name
         .toLowerCase()
         .replace(/[^a-z0-9]+/g, "-")
         .replace(/^-+|-+$/g, "") || "designhub",
-    theme: {
-      extend: {
-        tokens: nonEmpty({
-          colors,
-          fonts: scale(
-            t
-              ? [
-                  ["heading", fontStack(t.heading.family, t.heading.category)],
-                  ["body", fontStack(t.body.family, t.body.category)],
-                ]
-              : [],
-          ),
-          fontWeights: scale(
-            t
-              ? [
-                  ["heading", String(t.rhythm.headingWeight)],
-                  ["body", String(t.rhythm.bodyWeight)],
-                ]
-              : [],
-          ),
-          fontSizes: scale((t?.steps ?? []).map((step) => [step.name, step.clamp])),
-          spacing: scale(tokens.spacing.map((s) => [s.name, px(s.px)])),
-          radii: scale(tokens.radius.map((r) => [r.name, px(r.px)])),
-          shadows: effect("shadow"),
-          blurs: effect("blur"),
-        }),
-        ...(tokens.semantic.length ? { semanticTokens: { colors: semanticColors } } : {}),
-      },
-    },
+    theme: { extend: presetTokens(tokens) },
   };
   return `${header(tokens, (text) => `// ${text}`)}
 import { definePreset } from "@pandacss/dev";
 
 export default definePreset(${tsLiteral(preset)});
+`;
+}
+
+/**
+ * Chakra UI v3 (theme.ts): the shared preset tokens as a `defineConfig` theme, merged onto
+ * Chakra's default config with `createSystem`. Pass it to `<ChakraProvider value={system}>`.
+ */
+export function toChakraTheme(tokens: DesignTokens): string {
+  return `${header(tokens, (text) => `// ${text}`)}
+import { createSystem, defaultConfig, defineConfig } from "@chakra-ui/react";
+
+const config = defineConfig({
+  theme: ${tsLiteral(presetTokens(tokens), "  ")},
+});
+
+export const system = createSystem(defaultConfig, config);
+
+export default system;
+`;
+}
+
+/**
+ * Bootstrap 5 (_bootstrap-variables.scss): overrides for Bootstrap's `!default` variables, to
+ * import before Bootstrap. Colors are always hex because Bootstrap runs them through Sass color
+ * functions (tint-color, shade-color) that can't read oklch().
+ */
+export function toBootstrapVariables(tokens: DesignTokens): string {
+  const hex = (name: string) => {
+    const role = tokens.semantic.find((item) => item.name === name);
+    return role ? toHex(role.value) : undefined;
+  };
+  const radius = (name: string) => {
+    const step = tokens.radius.find((item) => item.name === name);
+    return step ? px(step.px) : undefined;
+  };
+  // Bootstrap's $spacer is 1rem, the same as spacing-4 at the default base.
+  const spacer = tokens.spacing.find((item) => item.name === "4");
+  const t = tokens.typography;
+  const vars: [string, string | number | undefined][] = [
+    ["primary", hex("primary")],
+    ["secondary", hex("accent")],
+    ["body-color", hex("foreground")],
+    ["body-bg", hex("background")],
+    ["font-family-sans-serif", t ? fontStack(t.body.family, t.body.category) : undefined],
+    ["headings-font-family", t ? fontStack(t.heading.family, t.heading.category) : undefined],
+    ["font-weight-normal", t?.rhythm.bodyWeight],
+    ["headings-font-weight", t?.rhythm.headingWeight],
+    ["line-height-base", t?.rhythm.bodyLineHeight],
+    ["headings-line-height", t?.rhythm.headingLineHeight],
+    ["spacer", spacer && spacer.px > 0 ? px(spacer.px) : undefined],
+    ["border-radius", radius("md")],
+    ["border-radius-sm", radius("sm")],
+    ["border-radius-lg", radius("lg")],
+    ["border-radius-xl", radius("xl")],
+    ["border-radius-xxl", radius("2xl")],
+    ["box-shadow", tokens.effects.find((effect) => effect.name.startsWith("shadow-"))?.value],
+  ];
+  const lines = vars.flatMap(([name, value]) => (value === undefined ? [] : [`$${name}: ${value};`]));
+  return `${header(tokens, (text) => `// ${text}`)}
+// Bootstrap 5 variable overrides. Import this file before Bootstrap:
+//   @import "bootstrap-variables";
+//   @import "bootstrap/scss/bootstrap";
+${lines.join("\n")}
 `;
 }
 
@@ -723,6 +792,14 @@ export function tokenFormats(tokens: DesignTokens): ExportFormat[] {
     },
     { id: "unocss", label: "UnoCSS", filename: "uno.config.ts", language: "ts", code: toUnoConfig(tokens) },
     { id: "panda", label: "Panda CSS", filename: "panda.preset.ts", language: "ts", code: toPandaPreset(tokens) },
+    { id: "chakra", label: "Chakra UI", filename: "theme.ts", language: "ts", code: toChakraTheme(tokens) },
+    {
+      id: "bootstrap",
+      label: "Bootstrap",
+      filename: "_bootstrap-variables.scss",
+      language: "scss",
+      code: toBootstrapVariables(tokens),
+    },
     { id: "js", label: "JavaScript", filename: "tokens.mjs", language: "js", code: toJsModule(tokens) },
     { id: "react", label: "React theme", filename: "theme.ts", language: "ts", code: toReactTheme(tokens) },
     {

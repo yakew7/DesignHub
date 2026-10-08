@@ -72,7 +72,7 @@ export type RoleColor = { role: string; color?: string; step?: number; value: Ok
 /**
  * A semantic role in light or dark mode. Dark mode swaps the light background and the dark
  * foreground, and lifts every other role to its palette color's 300 (or 200) shade so it stays
- * readable on the dark background. Compose and the Panda CSS preset share this.
+ * readable on the dark background. Compose and the Panda CSS and Chakra UI exports share this.
  */
 export function roleColor(tokens: DesignTokens, roleName: string, dark = false): RoleColor | undefined {
   const swap: Record<string, string> = { background: "foreground", foreground: "background" };
