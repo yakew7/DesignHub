@@ -1,4 +1,4 @@
-import { oklch } from "@/lib/color/color";
+import { colorDistance, oklch } from "@/lib/color/color";
 import { OKLCH, sRGB_Linear, to, toGamut } from "@/lib/color/engine";
 import type { Oklch } from "@/types/color";
 
@@ -41,4 +41,9 @@ export function simulateVision(color: Oklch, type: VisionType): Oklch {
   const clamped = out.map((value) => Math.min(1, Math.max(0, value))) as [number, number, number];
   const [l, c, h] = to({ space: sRGB_Linear, coords: clamped, alpha: 1 }, "oklch").coords;
   return oklch(l ?? 0, c ?? 0, h ?? 0, color.alpha);
+}
+
+/** OKLab distance (ΔE OK) between two colors as a person with `type` vision would see them. */
+export function simulatedDistance(a: Oklch, b: Oklch, type: VisionType): number {
+  return colorDistance(simulateVision(a, type), simulateVision(b, type));
 }

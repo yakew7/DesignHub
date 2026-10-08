@@ -7,11 +7,12 @@ import {
   contrastTable,
   focusTable,
   gradientTable,
+  paletteVisionTable,
   reportToMarkdown,
   type A11yReportInput,
 } from "@/lib/a11y/report";
 import { targetsSection } from "@/lib/a11y/targets";
-import { visionSection } from "@/lib/a11y/vision";
+import { paletteVisionSection, visionSection } from "@/lib/a11y/vision";
 import { defaultGradient } from "@/lib/color/gradient";
 
 const input: A11yReportInput = {
@@ -28,6 +29,11 @@ const input: A11yReportInput = {
   },
   targets: [{ id: "a", label: "Icon | button", width: 20, height: 20 }],
   targetGap: 8,
+  palette: [
+    { name: "Red", hex: "#e53935" },
+    { name: "Green", hex: "#43a047" },
+    { name: "Blue", hex: "#1e88e5" },
+  ],
 };
 
 const report = buildReport(input, {
@@ -35,6 +41,7 @@ const report = buildReport(input, {
   focusIndicator: focusSection(focusIndicatorCheck(input.focusRing, input.colors.background, input.colors.accent)),
   gradientText: gradientSection(defaultGradient, gradientTextContrast(defaultGradient, gradientTextColors("#1f2937"))),
   vision: visionSection(input.colors),
+  paletteVision: paletteVisionSection(input.palette),
   readability: { charactersPerLine: 70, readingEase: 64, gradeLevel: 8, checks: [] },
   touchTargets: targetsSection(input.targets, input.targetGap),
 });
@@ -108,6 +115,34 @@ describe("gradientTable", () => {
   });
 });
 
+describe("paletteVisionTable", () => {
+  test("lists each confusable pair with the same numbers as the JSON", () => {
+    const section = report.sections.paletteVision;
+    const pairs = section.modes.flatMap((mode) => mode.pairs.map((pair) => ({ mode: mode.mode, pair })));
+    const lines = paletteVisionTable(section).split("\n");
+    expect(lines).toHaveLength(2 + pairs.length);
+    const deuteranopia = pairs.findIndex(({ mode }) => mode === "deuteranopia");
+    expect(deuteranopia).toBeGreaterThanOrEqual(0);
+    const { pair } = pairs[deuteranopia];
+    const [, mode, colors, distance, typical, required, result, suggestion] = rows(lines[deuteranopia + 2])[0];
+    expect(mode).toBe("deuteranopia");
+    expect(colors).toBe("Red `#e53935` and Green `#43a047`");
+    expect(distance).toBe(pair.distance.toFixed(3));
+    expect(typical).toBe(pair.typicalDistance.toFixed(3));
+    expect(required).toBe("0.060");
+    expect(result).toBe("❌ Fail");
+    expect(suggestion).toBe(
+      `Change ${pair.suggestion?.color} to \`${pair.suggestion?.to}\` (${pair.suggestion?.distance.toFixed(3)})`,
+    );
+  });
+
+  test("the JSON report carries the check", () => {
+    const json = JSON.parse(JSON.stringify(report));
+    expect(json.sections.paletteVision.threshold).toBe(0.06);
+    expect(json.sections.paletteVision.pass).toBe(false);
+  });
+});
+
 describe("reportToMarkdown", () => {
   const markdown = reportToMarkdown({ ...report, generatedAt: "2026-01-01T00:00:00.000Z" });
 
@@ -120,6 +155,7 @@ describe("reportToMarkdown", () => {
       "## Focus indicator",
       "## Text on the brand gradient",
       "## Color vision",
+      "## Palette under color vision",
       "## Readability",
       "## Touch targets",
     ]);

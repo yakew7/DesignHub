@@ -5,6 +5,7 @@ import { useState } from "react";
 import { A11yColorsPanel } from "@/components/accessibility/a11y-colors-panel";
 import { VisionFilters } from "@/components/accessibility/vision-filters";
 import { VisionPanel } from "@/components/accessibility/vision-panel";
+import { PaletteVisionResults } from "@/components/accessibility/palette-vision-results";
 import { VisionPreview } from "@/components/accessibility/vision-preview";
 import { ContrastResults } from "@/components/accessibility/contrast-results";
 import { FocusIndicatorResults } from "@/components/accessibility/focus-indicator-results";
@@ -58,6 +59,7 @@ export function A11yWorkspace() {
           </TabsContent>
           <TabsContent value="vision" className="flex flex-col gap-4">
             <VisionPanel compare={compare} onCompareChange={setCompare} />
+            <PaletteVisionResults section={report.sections.paletteVision} />
           </TabsContent>
           <TabsContent value="readability" className="flex flex-col gap-4">
             <A11yTypePanel />

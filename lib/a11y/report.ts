@@ -2,7 +2,7 @@ import type { contrastSection, focusSection } from "@/lib/a11y/contrast";
 import type { gradientSection } from "@/lib/a11y/gradient-contrast";
 import type { Verdict } from "@/lib/a11y/readability";
 import type { targetsSection } from "@/lib/a11y/targets";
-import type { visionSection } from "@/lib/a11y/vision";
+import type { PaletteColor, PaletteVisionSection, visionSection } from "@/lib/a11y/vision";
 import type { A11yColors, A11yTypography, TouchTarget } from "@/types/a11y";
 
 export type A11yReportInput = {
@@ -12,6 +12,8 @@ export type A11yReportInput = {
   typography: A11yTypography;
   targets: TouchTarget[];
   targetGap: number;
+  /** The brand palette from Color Studio, checked for colors that collapse under color blindness. */
+  palette: PaletteColor[];
 };
 
 export type A11yReportSections = {
@@ -19,6 +21,7 @@ export type A11yReportSections = {
   focusIndicator: ReturnType<typeof focusSection>;
   gradientText: ReturnType<typeof gradientSection>;
   vision: ReturnType<typeof visionSection>;
+  paletteVision: PaletteVisionSection;
   readability: {
     charactersPerLine: number;
     readingEase: number;
@@ -118,6 +121,35 @@ export function gradientTable(gradient: A11yReportSections["gradientText"]): str
   );
 }
 
+/** One row per palette pair that becomes too similar under a simulation, with its lightness fix. */
+export function paletteVisionTable(section: PaletteVisionSection): string {
+  return table(
+    ["Mode", "Colors", "Distance", "Typical vision", "Required", "Result", "Suggestion"],
+    section.modes.flatMap((mode) =>
+      mode.pairs.map((pair) => [
+        mode.mode,
+        `${pair.a.name} ${code(pair.a.hex)} and ${pair.b.name} ${code(pair.b.hex)}`,
+        pair.distance.toFixed(3),
+        pair.typicalDistance.toFixed(3),
+        section.threshold.toFixed(3),
+        mark(false),
+        pair.suggestion
+          ? `Change ${pair.suggestion.color} to ${code(pair.suggestion.to)} (${pair.suggestion.distance.toFixed(3)})`
+          : "Pick a different hue",
+      ]),
+    ),
+  );
+}
+
+function paletteVisionMarkdown(section: PaletteVisionSection): string {
+  const checked = section.colors.map((color) => `${color.name} ${code(color.hex)}`).join(", ");
+  const intro = `OKLab distance (ΔE OK) between each pair of palette colors after simulating each type of color vision. Pairs below ${section.threshold} are hard to tell apart in charts and status colors. Checked: ${checked || "no colors"}.`;
+  if (section.pass) {
+    return `${intro}\n\n${mark(true)}: every pair stays distinguishable under ${section.modes.map((mode) => mode.mode).join(", ")}.`;
+  }
+  return `${intro}\n\n${paletteVisionTable(section)}`;
+}
+
 /** The same report as readable Markdown for pull requests and wikis. */
 export function reportToMarkdown(report: A11yReport): string {
   const { settings, sections } = report;
@@ -161,6 +193,8 @@ export function reportToMarkdown(report: A11yReport): string {
         ...mode.pairs.map((item) => `${ratio(item.ratio)} ${item.passAA ? "✅" : "❌"}`),
       ]),
     ),
+    "## Palette under color vision",
+    paletteVisionMarkdown(sections.paletteVision),
     "## Readability",
     `Characters per line: ${sections.readability.charactersPerLine}. Reading ease: ${sections.readability.readingEase}. Grade level: ${sections.readability.gradeLevel}.`,
     table(
