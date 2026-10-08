@@ -25,7 +25,11 @@ function walkPaints(node: SvgNode, visit: PaintVisitor): void {
   if (style) {
     node.attributes.style = style.replace(
       /(^|;)\s*(fill|stroke|stop-color|flood-color|color)\s*:\s*([^;]+)/gi,
-      (_, lead: string, property: string, value: string) => `${lead}${property}:${visit(value)}`,
+      (_, lead: string, property: string, value: string) => {
+        // Keep `!important` out of the color itself, and put it back after the new one.
+        const [, color = value, important = ""] = value.match(/^(.*?)\s*(!\s*important)?\s*$/i) ?? [];
+        return `${lead}${property}:${visit(color)}${important && ` ${important}`}`;
+      },
     );
   }
   node.children.forEach((child) => walkPaints(child, visit));
