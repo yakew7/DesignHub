@@ -1,6 +1,6 @@
 # Contributing to DesignHub
 
-Thanks for helping build DesignHub! This guide covers everything from your first clone to a merged pull request. By participating you agree to follow our [Code of Conduct](CODE_OF_CONDUCT.md).
+Thanks for helping build DesignHub! This guide covers everything from your first clone to a merged pull request. New here? [Your first contribution](docs/first-contribution.md) walks through one real change, adding a social template, from fork to merged pull request. By participating you agree to follow our [Code of Conduct](CODE_OF_CONDUCT.md).
 
 ## Ways to contribute
 

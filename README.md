@@ -402,7 +402,7 @@ See [ROADMAP.md](ROADMAP.md) for details.
 
 ## Contributing
 
-Contributions of all sizes are welcome - bug reports, docs, new export formats or a whole new studio. Start with [CONTRIBUTING.md](CONTRIBUTING.md), and please follow our [Code of Conduct](CODE_OF_CONDUCT.md). Security issues: see [SECURITY.md](SECURITY.md).
+Contributions of all sizes are welcome - bug reports, docs, new export formats or a whole new studio. Start with [CONTRIBUTING.md](CONTRIBUTING.md), or follow [Your first contribution](docs/first-contribution.md) for a step-by-step walkthrough of one change from fork to merged pull request, and please follow our [Code of Conduct](CODE_OF_CONDUCT.md). Security issues: see [SECURITY.md](SECURITY.md).
 
 ## License
 
