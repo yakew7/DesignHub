@@ -64,7 +64,7 @@ export function TypographyWorkspace() {
       */}
       <TabsContent
         value="browse"
-        className="grid gap-4 lg:h-[calc(100dvh-19rem)] lg:flex-none lg:min-h-[560px] lg:grid-cols-[minmax(300px,380px)_minmax(0,1fr)] lg:grid-rows-[auto_minmax(0,1fr)]"
+        className="grid grid-cols-1 gap-4 lg:h-[calc(100dvh-19rem)] lg:flex-none lg:min-h-[560px] lg:grid-cols-[minmax(300px,380px)_minmax(0,1fr)] lg:grid-rows-[auto_minmax(0,1fr)]"
       >
         <SpecimenPreview className="lg:col-start-2 lg:row-start-1" />
         <FontBrowser

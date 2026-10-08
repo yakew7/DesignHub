@@ -55,7 +55,7 @@ export function ModuleCards() {
           One workspace. Every design decision.
         </h2>
       </div>
-      <ul className="grid gap-4 md:grid-cols-2">
+      <ul className="grid grid-cols-1 gap-4 md:grid-cols-2">
         {studios.map((studio) => {
           const Icon = studio.icon;
           return (

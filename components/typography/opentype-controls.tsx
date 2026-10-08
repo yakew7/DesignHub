@@ -18,9 +18,9 @@ export function OpenTypeControls() {
       title="OpenType features"
       description="Support varies per font. Samples render in the active font so you can see what it ships."
     >
-      <div className="grid gap-6 sm:grid-cols-2">
+      <div className="grid grid-cols-1 gap-6 sm:grid-cols-2">
         {featureGroups.map((group) => (
-          <fieldset key={group.title} className="flex flex-col gap-1">
+          <fieldset key={group.title} className="flex min-w-0 flex-col gap-1">
             <legend className="pb-2 text-[11px] font-medium uppercase tracking-[0.12em] text-subtle-foreground">
               {group.title}
             </legend>
