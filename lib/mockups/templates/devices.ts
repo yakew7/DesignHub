@@ -1,8 +1,19 @@
 import type { MockupContext } from "@/lib/mockups/types";
 
-/** Nested <svg> so screen content is drawn in its own coordinates and clipped to the display. */
-export function screen(x: number, y: number, width: number, height: number, body: string): string {
-  return `<svg x="${x}" y="${y}" width="${width}" height="${height}" viewBox="0 0 ${width} ${height}" overflow="hidden">${body}</svg>`;
+/**
+ * Nested <svg> so screen content is drawn in its own coordinates and clipped to the display.
+ * Content drawn at a different size (`viewWidth` × `viewHeight`) is scaled to fit.
+ */
+export function screen(
+  x: number,
+  y: number,
+  width: number,
+  height: number,
+  body: string,
+  viewWidth = width,
+  viewHeight = height,
+): string {
+  return `<svg x="${x}" y="${y}" width="${width}" height="${height}" viewBox="0 0 ${viewWidth} ${viewHeight}" overflow="hidden">${body}</svg>`;
 }
 
 /** A studio backdrop for screen mockups, lighter than the desk used for print. */
@@ -39,6 +50,24 @@ export function monitor(x: number, y: number, sw: number, sh: number, content: s
     <rect width="${w}" height="${h}" rx="24" fill="#e7e8eb" filter="url(#soft)"/>
     <rect x="${bezel - 6}" y="${bezel - 6}" width="${sw + 12}" height="${sh + 12}" rx="8" fill="#111216"/>
     ${screen(bezel, bezel, sw, sh, content)}
+  </g>`;
+}
+
+/**
+ * Tablet with an even bezel and a front camera on the top edge, in either orientation. The
+ * display is `sw` × `sh`; `content` is drawn at `cw` × `ch` and scaled to fill it.
+ */
+export function tablet(x: number, y: number, sw: number, sh: number, content: string, cw = sw, ch = sh): string {
+  const bezel = 26;
+  const w = sw + bezel * 2;
+  const h = sh + bezel * 2;
+  const id = `tablet-${x}-${y}`;
+  return `<g transform="translate(${x} ${y})">
+    <rect width="${w}" height="${h}" rx="42" fill="#1d1e22" filter="url(#soft)"/>
+    <rect x="1.5" y="1.5" width="${w - 3}" height="${h - 3}" rx="40.5" fill="none" stroke="#45464d" stroke-width="3"/>
+    <circle cx="${w / 2}" cy="${bezel / 2}" r="4" fill="#3a3b41"/>
+    <clipPath id="${id}"><rect x="${bezel}" y="${bezel}" width="${sw}" height="${sh}" rx="18"/></clipPath>
+    <g clip-path="url(#${id})">${screen(bezel, bezel, sw, sh, content, cw, ch)}</g>
   </g>`;
 }
 

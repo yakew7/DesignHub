@@ -1,4 +1,4 @@
-import { logo, mockupDoc, onPrimaryLarge, text } from "@/lib/mockups/kit";
+import { logo, mockupDoc, onPrimaryLarge, text, truncate } from "@/lib/mockups/kit";
 import { monitor, studio } from "@/lib/mockups/templates/devices";
 import type { MockupContext, MockupTemplate } from "@/lib/mockups/types";
 
@@ -107,7 +107,7 @@ export function dashboard(ctx: MockupContext, width: number, height: number): st
     <rect width="${side}" height="${height}" fill="${surface.surface}"/>
     <rect x="${side}" width="1" height="${height}" fill="${surface.border}"/>
     ${logo(ctx, { x: 32, y: 32, width: 36, height: 36 }, undefined, "db-nav")}
-    ${text(80, 58, brand.name, { size: 22, fill: surface.text, font: "h" })}
+    ${text(80, 58, truncate(ctx, brand.name, side - 80 - 24, 22, "h"), { size: 22, fill: surface.text, font: "h" })}
     ${navItems}
     ${text(main, 90, "Overview", { size: 34, fill: surface.text, font: "h" })}
     <rect x="${width - 48 - 380}" y="54" width="300" height="48" rx="${Math.min(r, 24)}" fill="${surface.surface}" stroke="${surface.border}"/>

@@ -13,6 +13,7 @@ import { mobileApp } from "@/lib/mockups/templates/mobile-app";
 import { poster } from "@/lib/mockups/templates/poster";
 import { shoppingBag } from "@/lib/mockups/templates/shopping-bag";
 import { sticker } from "@/lib/mockups/templates/sticker";
+import { tabletScreens } from "@/lib/mockups/templates/tablet";
 import type { MockupTemplate } from "@/lib/mockups/types";
 
 /** Templates register here as they are implemented. */
@@ -30,6 +31,7 @@ export const mockupTemplates: MockupTemplate[] = [
   laptopLanding,
   desktopDashboard,
   mobileApp,
+  tabletScreens,
   browserTab,
   emailSignature,
 ];
