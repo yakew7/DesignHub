@@ -1,6 +1,6 @@
-import { text } from "@/lib/mockups/kit";
+import { text, textWidth, truncate } from "@/lib/mockups/kit";
 import { githubBanner, H, W } from "@/lib/social/templates/github/kit";
-import { backdrop, heading } from "@/lib/social/templates/shared";
+import { backdrop, heading, share } from "@/lib/social/templates/shared";
 
 /** Magazine layout: rules, a folio line and a big bold headline. */
 export const githubEditorial = githubBanner("Editorial", "Large bold heading in a magazine layout.", (ctx) => {
@@ -19,17 +19,33 @@ export const githubEditorial = githubBanner("Editorial", "Large bold heading in 
     maxLines: 3,
     leading,
   });
+  // The folio and the footer each share their row between a left and a right item.
+  const folio = "NO. 01  ·  OPEN SOURCE";
+  const name = truncate(
+    ctx,
+    content.name.toUpperCase(),
+    W - p * 2 - 26 - textWidth(ctx, folio, 15, "bb", 3) - 48,
+    15,
+    "bb",
+    3,
+  );
+  const links = `${content.website}   /   github.com/${content.github}`;
+  const [subtitleMax, linksMax] = share(
+    textWidth(ctx, content.subtitle, 19),
+    textWidth(ctx, links, 19, "bb"),
+    W - p * 2 - 48,
+  );
   const rule = (y: number, weight = 1.5) =>
     `<rect x="${p}" y="${y}" width="${W - p * 2}" height="${weight}" fill="${surface.text}" fill-opacity=".85"/>`;
   return {
     body: `${backdrop(ctx, W, H, () => `<rect width="${W}" height="${H}" fill="${surface.background}"/>`)}
       <rect x="${p}" y="${top - 13}" width="14" height="14" fill="${surface.primary}"/>
-      ${text(p + 26, top, "NO. 01  ·  OPEN SOURCE", { size: 15, fill: surface.text, font: "bb", spacing: 3 })}
-      ${text(W - p, top, content.name.toUpperCase(), { size: 15, fill: surface.text, font: "bb", anchor: "end", spacing: 3 })}
+      ${text(p + 26, top, folio, { size: 15, fill: surface.text, font: "bb", spacing: 3 })}
+      ${text(W - p, top, name, { size: 15, fill: surface.text, font: "bb", anchor: "end", spacing: 3 })}
       ${rule(top + 24, 3)}
       ${title.markup}
       ${rule(H - p - 48)}
-      ${text(p, H - p, content.subtitle, { size: 19, fill: surface.muted })}
-      ${text(W - p, H - p, `${content.website}   /   github.com/${content.github}`, { size: 19, fill: surface.text, font: "bb", anchor: "end" })}`,
+      ${text(p, H - p, truncate(ctx, content.subtitle, subtitleMax, 19), { size: 19, fill: surface.muted })}
+      ${text(W - p, H - p, truncate(ctx, links, linksMax, 19, "bb"), { size: 19, fill: surface.text, font: "bb", anchor: "end" })}`,
   };
 });

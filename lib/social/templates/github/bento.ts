@@ -1,4 +1,4 @@
-import { logo, text } from "@/lib/mockups/kit";
+import { logo, text, truncate } from "@/lib/mockups/kit";
 import { body, branchIcon, githubBanner, H, starIcon, W } from "@/lib/social/templates/github/kit";
 import { backdrop, heading } from "@/lib/social/templates/shared";
 
@@ -37,10 +37,10 @@ export const githubBento = githubBanner("Bento", "Modular cards in a modern bent
       ${card(colX, bottomY, halfW, botH)}
       ${branchIcon(colX + 28, bottomY + 28, 28, surface.primaryText)}
       ${text(colX + 28, bottomY + botH - 48, "GitHub", { size: 14, fill: surface.muted, font: "bb" })}
-      ${text(colX + 28, bottomY + botH - 22, content.github, { size: 20, fill: surface.text, font: "bb" })}
+      ${text(colX + 28, bottomY + botH - 22, truncate(ctx, content.github, halfW - 56, 20, "bb"), { size: 20, fill: surface.text, font: "bb" })}
       ${card(colX + halfW + gap, bottomY, halfW, botH)}
       ${starIcon(colX + halfW + gap + 28, bottomY + 28, 28, "#f5b83d")}
       ${text(colX + halfW + gap + 28, bottomY + botH - 48, "Website", { size: 14, fill: surface.muted, font: "bb" })}
-      ${text(colX + halfW + gap + 28, bottomY + botH - 22, content.website, { size: 20, fill: surface.text, font: "bb" })}`,
+      ${text(colX + halfW + gap + 28, bottomY + botH - 22, truncate(ctx, content.website, halfW - 56, 20, "bb"), { size: 20, fill: surface.text, font: "bb" })}`,
   };
 });

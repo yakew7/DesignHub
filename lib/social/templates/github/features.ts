@@ -1,5 +1,5 @@
-import { onPrimaryLarge, text } from "@/lib/mockups/kit";
-import { githubBanner, githubChip, H, W, websitePill } from "@/lib/social/templates/github/kit";
+import { onPrimaryLarge, text, truncate } from "@/lib/mockups/kit";
+import { githubBanner, H, linkRow, W } from "@/lib/social/templates/github/kit";
 import { backdrop, glowBackdrop, heading, lockup } from "@/lib/social/templates/shared";
 
 /** The tagline "Open source. Local first. Free forever." becomes three feature rows. */
@@ -18,18 +18,22 @@ export const githubFeatures = githubBanner("Features", "Headline plus a checklis
   const r = Math.min(brand.radius + 6, 24);
   const on = onPrimaryLarge(ctx);
   const title = heading(ctx, content.headline, p, 280, W * 0.5, 58, surface.text, { maxLines: 3 });
-  const site = websitePill(ctx, p, H - p - 44, 18, { fill: surface.primary, text: on });
-  const repo = githubChip(ctx, p + site.width + 12, H - p - 44, 18, {
-    fill: surface.background,
-    text: surface.text,
-    stroke: surface.border,
-  });
   const items = featuresFrom(content.subtitle);
   const cw = 420;
   const rowH = 74;
   const ch = 96 + items.length * rowH;
   const cx = W - p - cw;
   const cy = (H - ch) / 2;
+  // The links stay left of the checklist card.
+  const links = linkRow(
+    ctx,
+    p,
+    H - p - 44,
+    18,
+    cx - 32 - p,
+    { fill: surface.primary, text: on },
+    { fill: surface.background, text: surface.text, stroke: surface.border },
+  );
   const rows = items
     .map((item, i) => {
       const y = cy + 96 + i * rowH;
@@ -42,12 +46,11 @@ export const githubFeatures = githubBanner("Features", "Headline plus a checklis
   return {
     defs: `<filter id="feat-shadow" x="-20%" y="-20%" width="140%" height="150%"><feDropShadow dx="0" dy="20" stdDeviation="26" flood-color="#000" flood-opacity="${ctx.mode === "dark" ? 0.4 : 0.12}"/></filter>`,
     body: `${backdrop(ctx, W, H, () => glowBackdrop(ctx, W, H, 40))}
-      ${lockup(ctx, p, 124, 44, undefined, "feat-lockup")}
+      ${lockup(ctx, p, 124, 44, undefined, "feat-lockup", W - p * 2)}
       ${title.markup}
-      ${site.markup}
-      ${repo.markup}
+      ${links.markup}
       <g filter="url(#feat-shadow)"><rect x="${cx}" y="${cy}" width="${cw}" height="${ch}" rx="${r}" fill="${surface.background}" stroke="${surface.border}"/></g>
-      ${text(cx + 32, cy + 52, `WHY ${content.name.toUpperCase()}`, { size: 14, fill: surface.primaryText, font: "bb", spacing: 3 })}
+      ${text(cx + 32, cy + 52, truncate(ctx, `WHY ${content.name.toUpperCase()}`, cw - 64, 14, "bb", 3), { size: 14, fill: surface.primaryText, font: "bb", spacing: 3 })}
       ${rows}`,
   };
 });

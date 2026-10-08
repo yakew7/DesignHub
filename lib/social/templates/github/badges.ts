@@ -1,14 +1,16 @@
 import { brandSurface } from "@/lib/brand/theme";
-import { logo, text } from "@/lib/mockups/kit";
+import { logo, text, truncate } from "@/lib/mockups/kit";
 import { githubBanner, gridPattern, H, W } from "@/lib/social/templates/github/kit";
 import type { SocialContext } from "@/lib/social/types";
 import { backdrop, heading, lockup } from "@/lib/social/templates/shared";
 
 /** A shields.io-style two-tone badge. Returns the markup and its width. */
-function badge(ctx: SocialContext, x: number, y: number, label: string, value: string, color: string) {
+function badge(ctx: SocialContext, x: number, y: number, label: string, full: string, color: string) {
   const size = 17;
   const h = 34;
   const measure = (value: string) => ctx.measure(value, ctx.brand.typography.body, 600, size);
+  // A long link is shortened so the row keeps room for the next badge.
+  const value = truncate(ctx, full, 320, size, "bb");
   const lw = measure(label) + 26;
   const vw = measure(value) + 26;
   const r = Math.min(ctx.brand.radius, 8);
@@ -44,7 +46,7 @@ export const githubBadges = githubBanner("Badges", "Classic layout with README-s
   return {
     defs: gridPattern("badge-grid", 40, surface.text, ctx.mode === "dark" ? 0.045 : 0.04),
     body: `${backdrop(ctx, W, H, () => `<rect width="${W}" height="${H}" fill="${surface.background}"/><rect width="${W}" height="${H}" fill="url(#badge-grid)"/>`)}
-      ${lockup(ctx, p, 124, 48, undefined, "badge-lockup")}
+      ${lockup(ctx, p, 124, 48, undefined, "badge-lockup", W - p * 2)}
       ${title.markup}
       ${text(p, title.bottom + 60, content.subtitle, { size: 24, fill: surface.muted })}
       ${badges}

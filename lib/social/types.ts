@@ -50,7 +50,9 @@ export type SocialPlatform =
   | "Reddit"
   | "Tumblr"
   | "Dribbble"
-  | "Behance";
+  | "Behance"
+  | "Patreon"
+  | "Kick";
 
 export type SocialTemplate = {
   id: string;

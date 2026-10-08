@@ -1,4 +1,5 @@
-import { escapeXml, mockupDoc, text, wrap } from "@/lib/mockups/kit";
+import { escapeXml, mockupDoc, text, truncate, wrap } from "@/lib/mockups/kit";
+import { share } from "@/lib/social/templates/shared";
 import type { SocialContext, SocialTemplate } from "@/lib/social/types";
 
 export const W = 1280;
@@ -51,6 +52,15 @@ export function body(
   return { markup, bottom: y + (lines.length - 1) * size * leading };
 }
 
+/** Width of one character of the system mono font, as a share of the font size. */
+export const MONO_ADVANCE = 0.6;
+
+/** Shortens monospace text with an ellipsis to at most `maxWidth`. */
+export function truncateMono(value: string, maxWidth: number, size: number): string {
+  const fit = Math.floor(maxWidth / (size * MONO_ADVANCE));
+  return value.length <= fit ? value : `${value.slice(0, Math.max(1, fit - 3)).trimEnd()}...`;
+}
+
 /** Monospace text (system mono font, which every OS ships). */
 export function mono(
   x: number,
@@ -74,17 +84,18 @@ export function starIcon(x: number, y: number, size: number, color: string): str
   return `<path transform="translate(${x} ${y}) scale(${s})" d="M12 2.5l2.9 6 6.6.9-4.8 4.6 1.2 6.5L12 17.4l-5.9 3.1 1.2-6.5-4.8-4.6 6.6-.9z" fill="${color}"/>`;
 }
 
-/** "github.com/user" chip with a branch icon. Returns the markup and its width. */
+/** "github.com/user" chip with a branch icon, at most `maxWidth` wide. Returns the markup and its width. */
 export function githubChip(
   ctx: SocialContext,
   x: number,
   y: number,
   size: number,
   colors: { fill: string; text: string; stroke?: string },
+  maxWidth = Infinity,
 ): { markup: string; width: number } {
-  const label = `github.com/${ctx.content.github}`;
   const height = size * 2.3;
   const icon = size * 1.1;
+  const label = truncate(ctx, `github.com/${ctx.content.github}`, maxWidth - size * 2.5 - icon, size, "bb");
   const width = ctx.measure(label, ctx.brand.typography.body, 600, size) + size * 2 + icon + size * 0.5;
   const markup = `<rect x="${x}" y="${y}" width="${width}" height="${height}" rx="${Math.min(ctx.brand.radius, height / 2)}" fill="${colors.fill}"${colors.stroke ? ` stroke="${colors.stroke}" stroke-width="1.5"` : ""}/>
     ${branchIcon(x + size, y + (height - icon) / 2, icon, colors.text)}
@@ -92,20 +103,42 @@ export function githubChip(
   return { markup, width };
 }
 
-/** Website pill in the primary color. */
+/** Website pill in the primary color, at most `maxWidth` wide. */
 export function websitePill(
   ctx: SocialContext,
   x: number,
   y: number,
   size: number,
   colors: { fill: string; text: string; stroke?: string },
+  maxWidth = Infinity,
 ): { markup: string; width: number } {
-  const label = ctx.content.website;
+  const label = truncate(ctx, ctx.content.website, maxWidth - size * 2, size, "bb");
   const height = size * 2.3;
   const width = ctx.measure(label, ctx.brand.typography.body, 600, size) + size * 2;
   const markup = `<rect x="${x}" y="${y}" width="${width}" height="${height}" rx="${Math.min(ctx.brand.radius, height / 2)}" fill="${colors.fill}"${colors.stroke ? ` stroke="${colors.stroke}" stroke-width="1.5"` : ""}/>
     ${text(x + width / 2, y + height / 2 + size * 0.36, label, { size, fill: colors.text, font: "bb", anchor: "middle" })}`;
   return { markup, width };
+}
+
+/** The website pill and the repository chip side by side, together at most `maxWidth` wide. */
+export function linkRow(
+  ctx: SocialContext,
+  x: number,
+  y: number,
+  size: number,
+  maxWidth: number,
+  siteColors: { fill: string; text: string; stroke?: string },
+  repoColors: { fill: string; text: string; stroke?: string },
+  gap = 12,
+): { markup: string; width: number } {
+  const [siteMax, repoMax] = share(
+    websitePill(ctx, x, y, size, siteColors).width,
+    githubChip(ctx, x, y, size, repoColors).width,
+    maxWidth - gap,
+  );
+  const site = websitePill(ctx, x, y, size, siteColors, siteMax);
+  const repo = githubChip(ctx, x + site.width + gap, y, size, repoColors, repoMax);
+  return { markup: `${site.markup}${repo.markup}`, width: site.width + gap + repo.width };
 }
 
 /** Faint square grid. */

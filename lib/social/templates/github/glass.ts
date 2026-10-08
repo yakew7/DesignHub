@@ -1,5 +1,5 @@
-import { logo, onPrimaryLarge, text } from "@/lib/mockups/kit";
-import { body, githubBanner, githubChip, H, W, websitePill } from "@/lib/social/templates/github/kit";
+import { logo, onPrimaryLarge, text, truncate } from "@/lib/mockups/kit";
+import { body, githubBanner, H, linkRow, W } from "@/lib/social/templates/github/kit";
 import { backdrop, heading } from "@/lib/social/templates/shared";
 
 /**
@@ -27,14 +27,15 @@ export const githubGlass = githubBanner("Glass", "Frosted, layered panels over s
   const description = body(ctx, content.headline, panel.x + 56, title.bottom + 52, panel.w - 112, 23, muted, {
     maxLines: 2,
   });
-  const site = websitePill(ctx, panel.x + 56, panel.y + panel.h - 96, 18, {
-    fill: surface.primary,
-    text: onPrimaryLarge(ctx),
-  });
-  const repo = githubChip(ctx, panel.x + 56 + site.width + 12, panel.y + panel.h - 96, 18, {
-    fill: dark ? "rgba(255,255,255,0.1)" : "rgba(255,255,255,0.6)",
-    text: glassText,
-  });
+  const links = linkRow(
+    ctx,
+    panel.x + 56,
+    panel.y + panel.h - 96,
+    18,
+    panel.w - 112,
+    { fill: surface.primary, text: onPrimaryLarge(ctx) },
+    { fill: dark ? "rgba(255,255,255,0.1)" : "rgba(255,255,255,0.6)", text: glassText },
+  );
   return {
     defs: `<filter id="glass-blur" x="-50%" y="-50%" width="200%" height="200%"><feGaussianBlur stdDeviation="70"/></filter>
       <filter id="glass-frost" x="-50%" y="-50%" width="200%" height="200%"><feGaussianBlur stdDeviation="40"/></filter>
@@ -44,11 +45,10 @@ export const githubGlass = githubBanner("Glass", "Frosted, layered panels over s
       <g filter="url(#glass-shadow)">${frosted(panel.x, panel.y, panel.w, panel.h, "glass-panel")}</g>
       <g filter="url(#glass-shadow)">${frosted(card.x, card.y, card.w, card.h, "glass-card")}</g>
       ${logo(ctx, { x: card.x + 70, y: card.y + 60, width: card.w - 140, height: card.h - 140 }, undefined, "glass-mark")}
-      ${text(card.x + card.w / 2, card.y + card.h - 34, content.website, { size: 15, fill: muted, anchor: "middle", font: "bb" })}
+      ${text(card.x + card.w / 2, card.y + card.h - 34, truncate(ctx, content.website, card.w - 48, 15, "bb"), { size: 15, fill: muted, anchor: "middle", font: "bb" })}
       ${text(panel.x + 56, panel.y + 72, "OPEN SOURCE", { size: 14, fill: muted, font: "bb", spacing: 4 })}
       ${title.markup}
       ${description.markup}
-      ${site.markup}
-      ${repo.markup}`,
+      ${links.markup}`,
   };
 });

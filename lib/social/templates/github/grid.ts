@@ -1,5 +1,14 @@
 import { logo, text } from "@/lib/mockups/kit";
-import { body, githubBanner, githubChip, gridPattern, H, mono, W } from "@/lib/social/templates/github/kit";
+import {
+  body,
+  githubBanner,
+  githubChip,
+  gridPattern,
+  H,
+  mono,
+  truncateMono,
+  W,
+} from "@/lib/social/templates/github/kit";
 import { backdrop, heading } from "@/lib/social/templates/shared";
 
 /** Blueprint grid, crosshairs and dimension lines: a developer aesthetic. */
@@ -17,16 +26,20 @@ export const githubGrid = githubBanner("Grid", "Technical grid background with a
   const description = body(ctx, content.headline, p, title.bottom + 56, bx - p - 80, 24, surface.muted, {
     maxLines: 2,
   });
-  const chip = githubChip(ctx, p, H - p - 44, 18, {
-    fill: surface.background,
-    text: surface.text,
-    stroke: surface.border,
-  });
+  const chip = githubChip(
+    ctx,
+    p,
+    H - p - 44,
+    18,
+    { fill: surface.background, text: surface.text, stroke: surface.border },
+    bx - 40 - p,
+  );
+  const path = `~/${content.github}/${content.name.toLowerCase().replace(/\s+/g, "-")}`;
   return {
     defs: `${gridPattern("g-minor", 20, line, dark ? 0.05 : 0.05)}${gridPattern("g-major", 100, line, dark ? 0.1 : 0.09)}`,
     body: `${backdrop(ctx, W, H, () => `<rect width="${W}" height="${H}" fill="${surface.background}"/><rect width="${W}" height="${H}" fill="url(#g-minor)"/><rect width="${W}" height="${H}" fill="url(#g-major)"/>`)}
       ${cross(40, 40)}${cross(W - 40, 40)}${cross(40, H - 40)}${cross(W - 40, H - 40)}
-      ${mono(p, p + 16, `~/${content.github}/${content.name.toLowerCase().replace(/\s+/g, "-")}`, { size: 17, fill: surface.primaryText, weight: 600 })}
+      ${mono(p, p + 16, truncateMono(path, W - p * 2 - 240, 17), { size: 17, fill: surface.primaryText, weight: 600 })}
       ${mono(W - p, p + 16, "x:0  y:0  w:1280  h:640", { size: 14, fill: surface.muted, anchor: "end" })}
       ${title.markup}
       ${description.markup}

@@ -25,7 +25,7 @@ export const productHuntGallery: SocialTemplate = {
       <rect x="${fx}" y="${fy}" width="${fw}" height="48" rx="${r + 6}" fill="${surface.surface}"/>
       <rect x="${fx}" y="${fy + 24}" width="${fw}" height="24" fill="${surface.surface}"/>
       <circle cx="${fx + 26}" cy="${fy + 24}" r="6" fill="#ff5f57"/><circle cx="${fx + 46}" cy="${fy + 24}" r="6" fill="#febc2e"/><circle cx="${fx + 66}" cy="${fy + 24}" r="6" fill="#28c840"/>
-      ${lockup(ctx, fx + 40, fy + 100, 36, undefined, "ph-frame")}
+      ${lockup(ctx, fx + 40, fy + 100, 36, undefined, "ph-frame", 400)}
       ${lines(fx + 40, fy + 150, 380, 3, 28, surface.border)}
       <rect x="${fx + 460}" y="${fy + 84}" width="360" height="190" rx="${r}" fill="${surface.primary}" fill-opacity=".14"/>
       <rect x="${fx + 490}" y="${fy + 220}" width="120" height="24" rx="12" fill="${surface.primary}"/>
@@ -69,7 +69,7 @@ export const youtubeThumbnail: SocialTemplate = {
     });
     const body = `${glowBackdrop(ctx, W2, H2, 64)}
       <rect x="0" y="0" width="16" height="${H2}" fill="${surface.primary}"/>
-      ${lockup(ctx, pad, 120, 46, undefined, "yt-lockup")}
+      ${lockup(ctx, pad, 120, 46, undefined, "yt-lockup", 720)}
       ${title.markup}
       ${cta.markup}
       <circle cx="${W2 - 250}" cy="${H2 / 2}" r="190" fill="${surface.primary}" fill-opacity=".16"/>

@@ -1,4 +1,4 @@
-import { logo, mockupDoc, onPrimaryLarge, text } from "@/lib/mockups/kit";
+import { logo, mockupDoc, onPrimaryLarge, text, truncate } from "@/lib/mockups/kit";
 import { backdrop, gradientBackdrop, heading, pill } from "@/lib/social/templates/shared";
 import type { SocialTemplate } from "@/lib/social/types";
 
@@ -18,7 +18,7 @@ export const facebookCover: SocialTemplate = {
     const onColor = ctx.layout.background === "auto" || ctx.layout.background === "gradient";
     const on = onColor ? onPrimaryLarge(ctx) : surface.text;
     const title = heading(ctx, content.headline, W / 2, 330, 1100, 64, on, { maxLines: 2, anchor: "middle" });
-    const label = content.website;
+    const label = truncate(ctx, content.website, 1100 - 22 * 2.2, 22, "bb");
     const width = ctx.measure(label, ctx.brand.typography.body, 600, 22) + 22 * 2.2;
     const site = pill(ctx, (W - width) / 2, title.bottom + 90, label, 22, {
       fill: onColor ? on : surface.primary,

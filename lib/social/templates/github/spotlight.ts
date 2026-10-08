@@ -1,5 +1,5 @@
 import { brandSurface } from "@/lib/brand/theme";
-import { logo, text } from "@/lib/mockups/kit";
+import { logo, text, truncate } from "@/lib/mockups/kit";
 import { githubBanner, H, W } from "@/lib/social/templates/github/kit";
 import { backdrop } from "@/lib/social/templates/shared";
 
@@ -18,7 +18,7 @@ export const githubSpotlight = githubBanner("Spotlight", "Dramatic lighting, a h
       <ellipse cx="${W / 2}" cy="${H - 70}" rx="360" ry="46" fill="url(#spot-floor)"/>
       <circle cx="${W / 2}" cy="${cy}" r="${mark * 0.5}" fill="${stage.primary}" fill-opacity=".45" filter="url(#spot-glow)"/>
       ${logo(ctx, { x: W / 2 - mark / 2, y: cy - mark / 2, width: mark, height: mark }, undefined, "spot-mark")}
-      ${text(W / 2, H - 112, content.name, { size: 34, fill: "#ffffff", font: "h", anchor: "middle" })}
-      ${text(W / 2, H - 74, `${content.website}  ·  github.com/${content.github}`, { size: 17, fill: "#ffffff", anchor: "middle", opacity: 0.6 })}`,
+      ${text(W / 2, H - 112, truncate(ctx, content.name, W - 160, 34, "h"), { size: 34, fill: "#ffffff", font: "h", anchor: "middle" })}
+      ${text(W / 2, H - 74, truncate(ctx, `${content.website}  ·  github.com/${content.github}`, W - 160, 17), { size: 17, fill: "#ffffff", anchor: "middle", opacity: 0.6 })}`,
   };
 });

@@ -1,5 +1,5 @@
 import { logo, onPrimaryLarge, text } from "@/lib/mockups/kit";
-import { body, githubBanner, githubChip, H, W, websitePill } from "@/lib/social/templates/github/kit";
+import { body, githubBanner, H, linkRow, W } from "@/lib/social/templates/github/kit";
 import { backdrop, heading } from "@/lib/social/templates/shared";
 
 /** Content on the left, a slanted brand block with a huge logo on the right. */
@@ -12,12 +12,16 @@ export const githubSplit = githubBanner("Split", "Content left, a large logo rig
   const textWidth = edge - p - 70;
   const title = heading(ctx, content.name, p, 250, textWidth, 76, surface.text, { maxLines: 1 });
   const description = body(ctx, content.headline, p, title.bottom + 54, textWidth, 24, surface.muted, { maxLines: 3 });
-  const site = websitePill(ctx, p, H - p - 44, 18, { fill: surface.primary, text: on });
-  const repo = githubChip(ctx, p + site.width + 12, H - p - 44, 18, {
-    fill: surface.background,
-    text: surface.text,
-    stroke: surface.border,
-  });
+  // The links end before the slanted block, which leans further left towards the bottom.
+  const links = linkRow(
+    ctx,
+    p,
+    H - p - 44,
+    18,
+    textWidth,
+    { fill: surface.primary, text: on },
+    { fill: surface.background, text: surface.text, stroke: surface.border },
+  );
   const markSize = 300;
   const markX = edge + (W - edge - markSize) / 2 + slant / 3;
   return {
@@ -29,7 +33,6 @@ export const githubSplit = githubBanner("Split", "Content left, a large logo rig
       ${text(p, p + 20, "OPEN SOURCE PROJECT", { size: 15, fill: surface.primaryText, font: "bb", spacing: 4 })}
       ${title.markup}
       ${description.markup}
-      ${site.markup}
-      ${repo.markup}`,
+      ${links.markup}`,
   };
 });

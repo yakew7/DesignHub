@@ -1,4 +1,4 @@
-import { logo, mockupDoc, onPrimaryLarge, text, wrap } from "@/lib/mockups/kit";
+import { logo, mockupDoc, onPrimaryLarge, text, truncate, wrap } from "@/lib/mockups/kit";
 import { backdrop, glowBackdrop, heading } from "@/lib/social/templates/shared";
 import type { SocialTemplate } from "@/lib/social/types";
 
@@ -30,8 +30,7 @@ export const youtubeBanner: SocialTemplate = {
     const name = heading(ctx, content.name, x, cy - 24, maxWidth, 100, on, { maxLines: 1 });
     const tagline = wrap(ctx, content.headline, maxWidth, 38, "b", 1)[0] ?? "";
     const links = [content.website, content.handle].filter((item) => item.trim()).join("  ·  ");
-    // Measured in the regular weight, so leave room for the bold one.
-    const footer = wrap(ctx, links, maxWidth * 0.92, 30, "b", 1)[0] ?? "";
+    const footer = truncate(ctx, links, maxWidth, 30, "bb");
     const body = `${backdrop(ctx, W, H, () => glowBackdrop(ctx, W, H, 80))}
       <rect x="${tileX}" y="${tileY}" width="${tile}" height="${tile}" rx="${radius}" fill="${onColor ? on : surface.primary}" fill-opacity="${onColor ? 0.14 : 1}"/>
       ${logo(ctx, { x: tileX + 48, y: tileY + 48, width: tile - 96, height: tile - 96 }, onColor ? on : onPrimaryLarge(ctx), "yt-banner-mark")}

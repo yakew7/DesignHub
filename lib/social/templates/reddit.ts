@@ -1,4 +1,4 @@
-import { logo, mockupDoc, onPrimaryLarge, text, wrap } from "@/lib/mockups/kit";
+import { logo, mockupDoc, onPrimaryLarge, text, truncate, wrap } from "@/lib/mockups/kit";
 import { backdrop, gradientBackdrop, heading } from "@/lib/social/templates/shared";
 import type { SocialTemplate } from "@/lib/social/types";
 
@@ -27,8 +27,7 @@ export const redditBanner: SocialTemplate = {
     const name = heading(ctx, content.name, x, 168, maxWidth, 72, on, { maxLines: 1 });
     const tagline = wrap(ctx, content.headline, maxWidth, 28, "b", 1)[0] ?? "";
     const links = [content.website, content.handle].filter((item) => item.trim()).join("  ·  ");
-    // Measured in the regular weight, so leave room for the bold one.
-    const footer = wrap(ctx, links, maxWidth * 0.92, 22, "b", 1)[0] ?? "";
+    const footer = truncate(ctx, links, maxWidth, 22, "bb");
     const body = `${backdrop(ctx, W, H, () => gradientBackdrop(ctx, W, H))}
       ${name.markup}
       ${text(x, 222, tagline, { size: 28, fill: on, opacity: 0.85 })}

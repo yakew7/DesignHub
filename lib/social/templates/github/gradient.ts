@@ -1,4 +1,4 @@
-import { logo, onPrimaryLarge, text } from "@/lib/mockups/kit";
+import { logo, onPrimaryLarge, text, truncate } from "@/lib/mockups/kit";
 import { body, githubBanner, H, W } from "@/lib/social/templates/github/kit";
 import { backdrop, heading, meshBackdrop } from "@/lib/social/templates/shared";
 
@@ -16,10 +16,10 @@ export const githubGradient = githubBanner("Gradient", "Bold colorful mesh for s
     body: `${backdrop(ctx, W, H, () => meshBackdrop(ctx, W, H, "#0b0b16"))}
       <rect width="${W}" height="${H}" filter="url(#grad-noise)"/>
       ${logo(ctx, { x: p, y: p, width: 56, height: 56 }, on, "grad-mark")}
-      ${text(W - p, p + 36, `github.com/${content.github}`, { size: 20, fill: on, font: "bb", anchor: "end", opacity: 0.9 })}
+      ${text(W - p, p + 36, truncate(ctx, `github.com/${content.github}`, W - p * 2 - 96, 20, "bb"), { size: 20, fill: on, font: "bb", anchor: "end", opacity: 0.9 })}
       ${title.markup}
       ${description.markup}
       <rect x="${p}" y="${H - p - 4}" width="64" height="4" rx="2" fill="${on}"/>
-      ${text(p + 84, H - p + 3, content.website, { size: 22, fill: on, font: "bb" })}`,
+      ${text(p + 84, H - p + 3, truncate(ctx, content.website, W - p * 2 - 84, 22, "bb"), { size: 22, fill: on, font: "bb" })}`,
   };
 });

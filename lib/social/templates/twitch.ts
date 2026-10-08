@@ -1,4 +1,4 @@
-import { logo, mockupDoc, onPrimaryLarge, text, wrap } from "@/lib/mockups/kit";
+import { logo, mockupDoc, onPrimaryLarge, text, truncate, wrap } from "@/lib/mockups/kit";
 import { backdrop, glowBackdrop, heading } from "@/lib/social/templates/shared";
 import type { SocialTemplate } from "@/lib/social/types";
 
@@ -21,7 +21,8 @@ export const twitchBanner: SocialTemplate = {
     const tagline = wrap(ctx, content.headline, 840, 28, "b", 2);
     const taglineY = name.bottom + 56;
     const footerY = taglineY + (tagline.length - 1) * 38 + 64;
-    const footer = [content.website, content.handle].filter((item) => item.trim()).join("  ·  ");
+    const links = [content.website, content.handle].filter((item) => item.trim()).join("  ·  ");
+    const footer = truncate(ctx, links, 840, 22, "bb");
     const body = `${backdrop(ctx, W, H, () => glowBackdrop(ctx, W, H, 40))}
       ${logo(ctx, { x: W / 2 - 50, y: 80, width: 100, height: 100 }, onColor ? on : undefined, "twitch-mark")}
       ${name.markup}

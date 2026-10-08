@@ -73,6 +73,123 @@ describe.each(socialTemplates.map((template) => [template.id, template] as const
   });
 });
 
+type TextBox = { value: string; start: number; end: number; baseline: number };
+
+/**
+ * The horizontal extent of every top-level `<text>` in a drawing, measured the way the
+ * templates measure (ctx.measure, plus letter-spacing). Follows `translate()` groups and
+ * skips nested `<svg>` documents such as the logo.
+ */
+function textBoxes(ctx: SocialContext, svg: string): TextBox[] {
+  const unescape = (value: string) =>
+    value
+      .replace(/&lt;/g, "<")
+      .replace(/&gt;/g, ">")
+      .replace(/&quot;/g, '"')
+      .replace(/&amp;/g, "&");
+  const attr = (attrs: string, name: string) => attrs.match(new RegExp(`\\s${name}="([^"]*)"`))?.[1];
+  const boxes: TextBox[] = [];
+  // Each open element pushes its x offset, or null inside a nested document.
+  const stack: (number | null)[] = [];
+  const tag = /<(\/?)([A-Za-z][\w:-]*)([^>]*?)(\/?)>/g;
+  for (let match = tag.exec(svg); match; match = tag.exec(svg)) {
+    const [, closing, name, attrs = "", selfClosing] = match;
+    if (closing) {
+      stack.pop();
+      continue;
+    }
+    const parent = stack.length ? stack[stack.length - 1]! : 0;
+    const nested = parent === null || (name === "svg" && stack.length > 0);
+    const translate = attr(attrs, "transform")?.match(/^translate\(([-\d.]+)/);
+    const offset = nested ? null : (parent ?? 0) + (translate ? Number(translate[1]) : 0);
+    if (name === "text" && offset !== null) {
+      const close = svg.indexOf("</text>", tag.lastIndex);
+      const value = unescape(svg.slice(tag.lastIndex, close));
+      const size = Number(attr(attrs, "font-size"));
+      const font = attr(attrs, "class");
+      const { heading, headingWeight, body } = ctx.brand.typography;
+      const family = font === "h" ? heading : font ? body : (attr(attrs, "font-family") ?? body);
+      const weight = font === "h" ? headingWeight : font === "bb" ? 600 : Number(attr(attrs, "font-weight") ?? 400);
+      const width =
+        ctx.measure(value, family, weight, size) + Number(attr(attrs, "letter-spacing") ?? 0) * value.length;
+      const x = offset + Number(attr(attrs, "x"));
+      const anchor = attr(attrs, "text-anchor") ?? "start";
+      const start = anchor === "middle" ? x - width / 2 : anchor === "end" ? x - width : x;
+      boxes.push({ value, start, end: start + width, baseline: Number(attr(attrs, "y")) });
+      tag.lastIndex = close + "</text>".length;
+      continue;
+    }
+    if (!selfClosing) stack.push(offset);
+  }
+  return boxes;
+}
+
+describe("long single-word links", () => {
+  const word = "northwindanalyticscooperativeforsustainabledatasystems";
+  const long = {
+    name: "Northwind Analytics Cooperative for Sustainable Data Systems",
+    website: `${word}.co.uk`,
+    handle: `@${word}teams`,
+    github: `${word}studio`,
+  };
+
+  function longContext(mode: BrandMode): SocialContext {
+    const ctx = socialContext(mode, long.name);
+    return { ...ctx, content: { ...ctx.content, ...long } };
+  }
+
+  test("the sample values are 60 characters", () => {
+    for (const value of Object.values(long)) expect(value).toHaveLength(60);
+  });
+
+  test.each(socialTemplates.map((template) => [template.id, template] as const))(
+    "%s keeps the website and handle inside the safe area",
+    (_id, template) => {
+      for (const mode of modes) {
+        const ctx = longContext(mode);
+        const boxes = textBoxes(ctx, template.render(ctx));
+        // Any text that shows part of a link, even shortened with an ellipsis.
+        const links = boxes.filter((box) =>
+          [long.website, long.handle, long.github].some((value) => box.value.includes(value.slice(0, 12))),
+        );
+        for (const box of links) {
+          expect(box.start, box.value).toBeGreaterThanOrEqual(template.safe.x - 0.5);
+          expect(box.end, box.value).toBeLessThanOrEqual(template.safe.x + template.safe.width + 0.5);
+        }
+      }
+    },
+  );
+
+  test.each(socialTemplates.map((template) => [template.id, template] as const))(
+    "%s keeps text off the covered zones",
+    (_id, template) => {
+      for (const mode of modes) {
+        const ctx = longContext(mode);
+        for (const box of textBoxes(ctx, template.render(ctx))) {
+          for (const zone of template.covered ?? []) {
+            const inside = box.baseline > zone.y && box.baseline < zone.y + zone.height;
+            const overlaps = box.end > zone.x && box.start < zone.x + zone.width;
+            expect(inside && overlaps, box.value).toBe(false);
+          }
+        }
+      }
+    },
+  );
+
+  test.each(socialTemplates.map((template) => [template.id, template] as const))(
+    "%s draws short links in full",
+    (_id, template) => {
+      const ctx = socialContext("light");
+      const svg = template.render(ctx);
+      for (const value of [ctx.content.website, ctx.content.handle]) {
+        const shown = textBoxes(ctx, svg).some((box) => box.value.includes(value));
+        // Not every template shows both, but none shortens a short one.
+        if (svg.includes(value.slice(0, 6))) expect(shown, value).toBe(true);
+      }
+    },
+  );
+});
+
 describe.each(mockupTemplates.map((template) => [template.id, template] as const))("mockup %s", (_id, template) => {
   test.each(modes)("renders well-formed XML with a matching size and viewBox (%s)", (mode) => {
     const svg = template.render(mockupContext(mode));

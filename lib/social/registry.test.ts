@@ -32,6 +32,8 @@ test.each([
   ["tumblr-header", 3000, 1055],
   ["dribbble-shot", 1600, 1200],
   ["behance-cover", 808, 632],
+  ["patreon-cover", 1600, 400],
+  ["kick-banner", 1920, 480],
 ])("%s is registered at %ix%i and included in the full pack", (id, width, height) => {
   const template = getSocialTemplate(id);
   expect(template).toMatchObject({ width, height });

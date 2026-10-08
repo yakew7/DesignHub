@@ -1,4 +1,4 @@
-import { logo, mockupDoc, onPrimaryLarge, text, wrap } from "@/lib/mockups/kit";
+import { logo, mockupDoc, onPrimaryLarge, text, truncate, wrap } from "@/lib/mockups/kit";
 import { backdrop, heading, meshBackdrop } from "@/lib/social/templates/shared";
 import type { SocialTemplate } from "@/lib/social/types";
 
@@ -26,8 +26,7 @@ export const tumblrHeader: SocialTemplate = {
     const name = heading(ctx, content.name, cx, 500, maxWidth, 140, on, { maxLines: 1, anchor: "middle" });
     const tagline = wrap(ctx, content.headline, maxWidth, 52, "b", 1)[0] ?? "";
     const links = [content.website, content.handle].filter((item) => item.trim()).join("  ·  ");
-    // Measured in the regular weight, so leave room for the bold one.
-    const footer = wrap(ctx, links, maxWidth * 0.92, 38, "b", 1)[0] ?? "";
+    const footer = truncate(ctx, links, maxWidth, 38, "bb");
     const body = `${backdrop(ctx, W, H, () => meshBackdrop(ctx, W, H, surface.primary))}
       ${logo(ctx, { x: cx - mark / 2, y: 180, width: mark, height: mark }, onColor ? on : undefined, "tumblr-mark")}
       ${name.markup}

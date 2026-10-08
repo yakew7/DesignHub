@@ -1,6 +1,18 @@
-import { logo, mockupDoc, onPrimaryLarge, text, wrap } from "@/lib/mockups/kit";
-import { backdrop, glowBackdrop, gradientBackdrop, heading, lockup, pill } from "@/lib/social/templates/shared";
+import { logo, mockupDoc, onPrimaryLarge, text, textWidth, truncate, wrap } from "@/lib/mockups/kit";
+import { backdrop, glowBackdrop, gradientBackdrop, heading, lockup, pill, share } from "@/lib/social/templates/shared";
+import type { SocialContext } from "@/lib/social/types";
 import type { SocialTemplate } from "@/lib/social/types";
+
+/** The handle (left) and website (right) along the bottom, sharing the width between them. */
+function linkFooter(ctx: SocialContext, width: number): { handle: string; website: string } {
+  const { handle, website } = ctx.content;
+  const [handleMax, websiteMax] = share(
+    textWidth(ctx, handle, 32, "bb"),
+    textWidth(ctx, website, 32, "bb"),
+    width - 48,
+  );
+  return { handle: truncate(ctx, handle, handleMax, 32, "bb"), website: truncate(ctx, website, websiteMax, 32, "bb") };
+}
 
 export const instagramSquare: SocialTemplate = {
   id: "instagram-square",
@@ -15,13 +27,14 @@ export const instagramSquare: SocialTemplate = {
     const W = 1080;
     const pad = 110;
     const title = heading(ctx, content.headline, pad, 470, W - pad * 2, 96, surface.text, { maxLines: 4 });
+    const footer = linkFooter(ctx, W - pad * 2);
     const body = `${glowBackdrop(ctx, W, W, 54)}
-      ${lockup(ctx, pad, 170, 56, undefined, "ig-lockup")}
+      ${lockup(ctx, pad, 170, 56, undefined, "ig-lockup", W - pad * 2)}
       ${title.markup}
       <rect x="${pad}" y="${title.bottom + 60}" width="120" height="10" rx="5" fill="${surface.primary}"/>
       ${text(pad, title.bottom + 136, content.subtitle, { size: 34, fill: surface.muted })}
-      ${text(pad, W - pad, content.handle, { size: 32, fill: surface.text, font: "bb" })}
-      ${text(W - pad, W - pad, content.website, { size: 32, fill: surface.primary, font: "bb", anchor: "end" })}`;
+      ${text(pad, W - pad, footer.handle, { size: 32, fill: surface.text, font: "bb" })}
+      ${text(W - pad, W - pad, footer.website, { size: 32, fill: surface.primary, font: "bb", anchor: "end" })}`;
     return mockupDoc(ctx, W, W, body);
   },
 };
@@ -50,8 +63,9 @@ export const instagramPortrait: SocialTemplate = {
     const top = 260 + (H - pad - 80 - 260 - blockHeight) / 2 + size * 0.75;
     const title = heading(ctx, content.headline, pad, top, W - pad * 2, size, on, { maxLines: 4 });
     const subtitleY = title.bottom + 140;
+    const footer = linkFooter(ctx, W - pad * 2);
     const body = `${backdrop(ctx, W, H, () => glowBackdrop(ctx, W, H, 54))}
-      ${lockup(ctx, pad, 190, 60, onColor ? on : undefined, "igp-lockup")}
+      ${lockup(ctx, pad, 190, 60, onColor ? on : undefined, "igp-lockup", W - pad * 2)}
       ${title.markup}
       <rect x="${pad}" y="${title.bottom + 64}" width="120" height="10" rx="5" fill="${accent}"/>
       ${subtitle
@@ -63,8 +77,8 @@ export const instagramPortrait: SocialTemplate = {
           }),
         )
         .join("")}
-      ${text(pad, H - pad, content.handle, { size: 32, fill: on, font: "bb" })}
-      ${text(W - pad, H - pad, content.website, { size: 32, fill: accent, font: "bb", anchor: "end" })}`;
+      ${text(pad, H - pad, footer.handle, { size: 32, fill: on, font: "bb" })}
+      ${text(W - pad, H - pad, footer.website, { size: 32, fill: accent, font: "bb", anchor: "end" })}`;
     return mockupDoc(ctx, W, H, body);
   },
 };
@@ -92,11 +106,11 @@ export const instagramStory: SocialTemplate = {
     const ctaY = 1360;
     const body = `${gradientBackdrop(ctx, W, H)}
       ${logo(ctx, { x: W / 2 - 110, y: 380, width: 220, height: 220 }, on, "story-mark")}
-      ${text(W / 2, 700, ctx.brand.name.toUpperCase(), { size: 36, fill: on, font: "bb", anchor: "middle", spacing: 10, opacity: 0.85 })}
+      ${text(W / 2, 700, truncate(ctx, ctx.brand.name.toUpperCase(), W - 200, 36, "bb", 10), { size: 36, fill: on, font: "bb", anchor: "middle", spacing: 10, opacity: 0.85 })}
       ${title.markup}
       ${text(W / 2, title.bottom + 110, content.subtitle, { size: 40, fill: on, anchor: "middle", opacity: 0.85 })}
       ${cta ? pill(ctx, W / 2 - ctaWidth / 2, ctaY, cta, 40, { fill: on, text: surface.primary }).markup : ""}
-      ${text(W / 2, 1540, content.handle, { size: 34, fill: on, font: "bb", anchor: "middle", opacity: 0.9 })}`;
+      ${text(W / 2, 1540, truncate(ctx, content.handle, W - 200, 34, "bb"), { size: 34, fill: on, font: "bb", anchor: "middle", opacity: 0.9 })}`;
     return mockupDoc(ctx, W, H, body);
   },
 };

@@ -1,4 +1,4 @@
-import { logo, mockupDoc, onPrimaryLarge, text } from "@/lib/mockups/kit";
+import { logo, mockupDoc, onPrimaryLarge, text, truncate } from "@/lib/mockups/kit";
 import { backdrop, heading, meshBackdrop } from "@/lib/social/templates/shared";
 import type { SocialTemplate } from "@/lib/social/types";
 
@@ -21,10 +21,10 @@ export const discordBanner: SocialTemplate = {
     const title = heading(ctx, content.headline, 64, 230, W - 128, 52, on, { maxLines: 2 });
     const body = `${backdrop(ctx, W, H, () => meshBackdrop(ctx, W, H, "#0b0b16"))}
       ${logo(ctx, { x: 64, y: 64, width: 64, height: 64 }, on, "discord-mark")}
-      ${text(148, 108, content.name, { size: 30, fill: on, font: "h" })}
+      ${text(148, 108, truncate(ctx, content.name, W - 64 - 148, 30, "h"), { size: 30, fill: on, font: "h" })}
       ${title.markup}
       ${text(64, title.bottom + 50, content.subtitle, { size: 22, fill: on, opacity: 0.85 })}
-      ${text(64, 410, `${content.website}  ·  ${content.handle}`, { size: 20, fill: on, font: "bb", opacity: 0.9 })}`;
+      ${text(64, 410, truncate(ctx, `${content.website}  ·  ${content.handle}`, W - 128, 20, "bb"), { size: 20, fill: on, font: "bb", opacity: 0.9 })}`;
     return mockupDoc(ctx, W, H, body);
   },
 };

@@ -1,5 +1,5 @@
-import { logo, mockupDoc, onPrimaryLarge, text } from "@/lib/mockups/kit";
-import { backdrop, glowBackdrop, heading, pill } from "@/lib/social/templates/shared";
+import { logo, mockupDoc, onPrimaryLarge, text, textWidth, truncate } from "@/lib/mockups/kit";
+import { backdrop, glowBackdrop, heading, pill, share } from "@/lib/social/templates/shared";
 import type { SocialTemplate } from "@/lib/social/types";
 
 const W = 1500;
@@ -17,17 +17,23 @@ export const blueskyBanner: SocialTemplate = {
   render(ctx) {
     const { surface, content } = ctx;
     const x = 440;
-    const title = heading(ctx, content.headline, x, 200, W - x - 380, 56, surface.text, { maxLines: 2 });
-    const site = pill(ctx, x, title.bottom + 70, content.website, 20, {
-      fill: surface.primary,
-      text: onPrimaryLarge(ctx),
-    });
+    const maxWidth = W - x - 380;
+    const title = heading(ctx, content.headline, x, 200, maxWidth, 56, surface.text, { maxLines: 2 });
+    const colors = { fill: surface.primary, text: onPrimaryLarge(ctx) };
+    // The website pill and the handle share one row, clear of the mark.
+    const [siteMax, handleMax] = share(
+      pill(ctx, x, 0, content.website, 20, colors).width,
+      textWidth(ctx, content.handle, 22, "bb"),
+      maxWidth - 20,
+    );
+    const site = pill(ctx, x, title.bottom + 70, content.website, 20, colors, siteMax);
+    const handle = truncate(ctx, content.handle, Math.min(handleMax, maxWidth - 20 - site.width), 22, "bb");
     const body = `${backdrop(ctx, W, H, () => glowBackdrop(ctx, W, H, 50))}
-      ${text(x, 120, content.name.toUpperCase(), { size: 18, fill: surface.primaryText, font: "bb", spacing: 5 })}
+      ${text(x, 120, truncate(ctx, content.name.toUpperCase(), W - x - 80, 18, "bb", 5), { size: 18, fill: surface.primaryText, font: "bb", spacing: 5 })}
       ${title.markup}
       ${text(x, title.bottom + 46, content.subtitle, { size: 24, fill: surface.muted })}
       ${site.markup}
-      ${text(x + site.width + 20, title.bottom + 102, content.handle, { size: 22, fill: surface.muted, font: "bb" })}
+      ${text(x + site.width + 20, title.bottom + 102, handle, { size: 22, fill: surface.muted, font: "bb" })}
       ${logo(ctx, { x: W - 300, y: H / 2 - 110, width: 220, height: 220 }, undefined, "bsky-mark")}`;
     return mockupDoc(ctx, W, H, body);
   },

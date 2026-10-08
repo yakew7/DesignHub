@@ -1,4 +1,4 @@
-import { logo, onPrimaryLarge, text, wrap } from "@/lib/mockups/kit";
+import { logo, onPrimaryLarge, text, truncate, wrap } from "@/lib/mockups/kit";
 import type { DrawContext } from "@/lib/mockups/types";
 
 /** Brand surface with a faint grid and two soft glows in the primary and secondary colors. */
@@ -30,11 +30,20 @@ export function gradientBackdrop(ctx: DrawContext, width: number, height: number
     <circle cx="0" cy="${height}" r="${r * 0.22}" fill="${on}" fill-opacity=".07"/>`;
 }
 
-/** Logo plus brand name, vertically centred on `cy`. */
-export function lockup(ctx: DrawContext, x: number, cy: number, size: number, color?: string, id = "lockup"): string {
+/** Logo plus brand name, vertically centred on `cy`. A name wider than `maxWidth` (the whole lockup) is shortened. */
+export function lockup(
+  ctx: DrawContext,
+  x: number,
+  cy: number,
+  size: number,
+  color?: string,
+  id = "lockup",
+  maxWidth = Infinity,
+): string {
   const fill = color ?? ctx.surface.text;
+  const name = truncate(ctx, ctx.brand.name, maxWidth - size * 1.3, size * 0.8, "h");
   return `${logo(ctx, { x, y: cy - size / 2, width: size, height: size }, color, id)}
-    ${text(x + size * 1.3, cy + size * 0.3, ctx.brand.name, { size: size * 0.8, fill, font: "h" })}`;
+    ${text(x + size * 1.3, cy + size * 0.3, name, { size: size * 0.8, fill, font: "h" })}`;
 }
 
 /** Wrapped heading lines. Returns the markup and the baseline of the last line. */
@@ -56,15 +65,17 @@ export function heading(
   return { markup, bottom: y + (rows.length - 1) * size * leading, lines: rows.length };
 }
 
-/** A rounded pill with centred label. */
+/** A rounded pill with centred label. A label wider than `maxWidth` (the whole pill) is shortened. */
 export function pill(
   ctx: DrawContext,
   x: number,
   y: number,
-  label: string,
+  value: string,
   size: number,
   colors: { fill: string; text: string; stroke?: string },
+  maxWidth = Infinity,
 ): { markup: string; width: number } {
+  const label = truncate(ctx, value, maxWidth - size * 2.2, size, "bb");
   const width = ctx.measure(label, ctx.brand.typography.body, 600, size) + size * 2.2;
   const height = size * 2.4;
   const markup = `<rect x="${x}" y="${y}" width="${width}" height="${height}" rx="${height / 2}" fill="${colors.fill}"${colors.stroke ? ` stroke="${colors.stroke}" stroke-width="${Math.max(1.5, size / 10)}"` : ""}/>
@@ -115,4 +126,17 @@ export function backdrop(
     default:
       return own();
   }
+}
+
+/**
+ * Splits `total` px between two one-line items drawn side by side (gaps already removed).
+ * Both keep their natural width when they fit; otherwise the shorter keeps its width, up to
+ * half, and the longer gets the rest. Returns the maximum width of each.
+ */
+export function share(first: number, second: number, total: number): [number, number] {
+  if (first + second <= total) return [first, second];
+  const half = total / 2;
+  if (first <= half) return [first, total - first];
+  if (second <= half) return [total - second, second];
+  return [half, half];
 }
