@@ -1,5 +1,6 @@
 "use client";
 
+import { useI18n } from "@/components/layout/locale-provider";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Kbd } from "@/components/ui/kbd";
 import { useHotkey } from "@/hooks/use-hotkeys";
@@ -19,14 +20,15 @@ const scopes: ShortcutDefinition["scope"][] = [
 export function ShortcutsDialog() {
   const open = useUiStore((state) => state.shortcutsOpen);
   const setOpen = useUiStore((state) => state.setShortcutsOpen);
+  const { t } = useI18n();
   useHotkey("shift+?", () => setOpen(!open));
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogContent className="max-w-md">
         <DialogHeader>
-          <DialogTitle>Keyboard shortcuts</DialogTitle>
-          <DialogDescription>DesignHub is built to be driven from the keyboard.</DialogDescription>
+          <DialogTitle>{t("command.shortcuts")}</DialogTitle>
+          <DialogDescription>{t("shortcuts.description")}</DialogDescription>
         </DialogHeader>
         <div className="flex max-h-[60vh] flex-col gap-4 overflow-y-auto scrollbar-thin">
           {scopes.map((scope) => {

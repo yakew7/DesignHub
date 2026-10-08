@@ -1,3 +1,4 @@
+import { LocalizedError } from "@/lib/i18n/errors";
 import { defaultSnapshot, type BrandSnapshot } from "@/lib/projects/snapshot";
 import { normalizeTags } from "@/lib/projects/tags";
 import { projectName, type BrandProject } from "@/lib/projects/types";
@@ -78,14 +79,14 @@ function normalizeMission(value: unknown, fallback: Mission): Mission {
  * older or hand-edited file still opens. The logo is re-sanitized: files are untrusted.
  */
 function normalizeSnapshot(value: unknown): BrandSnapshot {
-  if (!isObject(value)) throw new Error("The file has no brand data.");
+  if (!isObject(value)) throw new LocalizedError("error.file.noBrand");
   const base = defaultSnapshot();
   const brand = isObject(value.brand) && isObject(value.brand.profile) ? value.brand.profile : null;
-  if (!brand || typeof brand.name !== "string") throw new Error("The brand name is missing.");
+  if (!brand || typeof brand.name !== "string") throw new LocalizedError("error.file.noName");
   const colors = isObject(value.colors) ? value.colors : {};
   const swatches = Array.isArray(colors.swatches) ? colors.swatches : null;
   if (!swatches || swatches.length < 2 || swatches.length > 10 || !swatches.every(isSwatch)) {
-    throw new Error("The palette in this file isn't valid.");
+    throw new LocalizedError("error.file.palette");
   }
   const slice = <K extends keyof BrandSnapshot>(key: K): BrandSnapshot[K] =>
     (isObject(value[key]) ? { ...(base[key] as object), ...(value[key] as object) } : base[key]) as BrandSnapshot[K];
@@ -123,7 +124,7 @@ function normalizeSnapshot(value: unknown): BrandSnapshot {
     social: socialSlice(),
   };
   if (typeof snapshot.typography.headingFont !== "string" || typeof snapshot.typography.bodyFont !== "string") {
-    throw new Error("The fonts in this file aren't valid.");
+    throw new LocalizedError("error.file.fonts");
   }
   return snapshot;
 }
@@ -134,9 +135,9 @@ export function parseProjectsFile(text: string): ProjectEntry[] {
   try {
     data = JSON.parse(text);
   } catch {
-    throw new Error("That file isn't valid JSON.");
+    throw new LocalizedError("error.file.json");
   }
-  if (!isObject(data)) throw new Error("That file isn't a DesignHub project.");
+  if (!isObject(data)) throw new LocalizedError("error.file.notProject");
   if (data.format === PROJECT_FORMAT) {
     return [
       { favorite: data.favorite === true, tags: normalizeTags(data.tags), snapshot: normalizeSnapshot(data.snapshot) },
@@ -144,7 +145,7 @@ export function parseProjectsFile(text: string): ProjectEntry[] {
   }
   if (data.format === PROJECTS_FORMAT && Array.isArray(data.projects)) {
     return data.projects.map((entry) => {
-      if (!isObject(entry)) throw new Error("A project in this file is damaged.");
+      if (!isObject(entry)) throw new LocalizedError("error.file.damaged");
       // Files from before tags have none; tags are untrusted, so they are trimmed and capped.
       return {
         favorite: entry.favorite === true,
@@ -154,7 +155,7 @@ export function parseProjectsFile(text: string): ProjectEntry[] {
     });
   }
   if (data.format === "designhub.brand") {
-    throw new Error("That is a Brand JSON export (tokens only). Import a project file instead.");
+    throw new LocalizedError("error.file.brandJson");
   }
-  throw new Error("That file isn't a DesignHub project.");
+  throw new LocalizedError("error.file.notProject");
 }

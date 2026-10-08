@@ -3,11 +3,13 @@
 import { Check, Pencil, Star, Trash2, X } from "lucide-react";
 import { useMemo, useState, type ReactNode } from "react";
 
+import { useI18n } from "@/components/layout/locale-provider";
 import { ProjectTags } from "@/components/projects/project-tags";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { svgToDataUrl } from "@/lib/icons/svg";
+import type { Translate } from "@/lib/i18n/translate";
 import { snapshotTokens } from "@/lib/projects/preview";
 import { projectName, type BrandProject } from "@/lib/projects/types";
 import { cn } from "@/lib/utils";
@@ -25,10 +27,9 @@ type Props = {
   actions?: ReactNode;
 };
 
-const relative = new Intl.RelativeTimeFormat("en", { numeric: "auto" });
-
-function ago(time: number): string {
-  if (!time) return "never";
+function ago(time: number, locale: string, t: Translate): string {
+  if (!time) return t("projects.card.never");
+  const relative = new Intl.RelativeTimeFormat(locale, { numeric: "auto" });
   const seconds = Math.round((time - Date.now()) / 1000);
   const units: [Intl.RelativeTimeFormatUnit, number][] = [
     ["day", 86400],
@@ -38,7 +39,7 @@ function ago(time: number): string {
   for (const [unit, size] of units) {
     if (Math.abs(seconds) >= size) return relative.format(Math.round(seconds / size), unit);
   }
-  return "just now";
+  return t("projects.card.justNow");
 }
 
 export function ProjectCard({
@@ -52,6 +53,7 @@ export function ProjectCard({
   onDelete,
   actions,
 }: Props) {
+  const { locale, t } = useI18n();
   const tokens = useMemo(() => snapshotTokens(project.snapshot), [project.snapshot]);
   const name = projectName(project);
   const [editing, setEditing] = useState(false);
@@ -73,7 +75,7 @@ export function ProjectCard({
         type="button"
         onClick={onOpen}
         className="group relative flex h-36 items-center justify-center bg-surface-raised outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-inset"
-        aria-label={active ? `${name} (open)` : `Open ${name}`}
+        aria-label={t(active ? "projects.card.isOpen" : "projects.card.openNamed", { name })}
       >
         {/* eslint-disable-next-line @next/next/no-img-element -- sanitized SVG data URL */}
         <img
@@ -101,7 +103,7 @@ export function ProjectCard({
                 value={draft}
                 autoFocus
                 maxLength={60}
-                aria-label="Project name"
+                aria-label={t("projects.card.name")}
                 onChange={(event) => setDraft(event.target.value)}
                 onKeyDown={(event) => {
                   if (event.key === "Escape") {
@@ -111,7 +113,13 @@ export function ProjectCard({
                 }}
                 className="h-7 text-sm"
               />
-              <Button type="submit" variant="ghost" size="icon" className="size-7" aria-label="Save name">
+              <Button
+                type="submit"
+                variant="ghost"
+                size="icon"
+                className="size-7"
+                aria-label={t("projects.card.saveName")}
+              >
                 <Check />
               </Button>
               <Button
@@ -119,7 +127,7 @@ export function ProjectCard({
                 variant="ghost"
                 size="icon"
                 className="size-7"
-                aria-label="Cancel rename"
+                aria-label={t("projects.card.cancelRename")}
                 onClick={() => {
                   setDraft(name);
                   setEditing(false);
@@ -131,12 +139,12 @@ export function ProjectCard({
           ) : (
             <>
               <h2 className="min-w-0 flex-1 truncate text-sm font-medium">{name}</h2>
-              {active ? <Badge variant="brand">Open</Badge> : null}
+              {active ? <Badge variant="brand">{t("projects.card.openBadge")}</Badge> : null}
               <Button
                 variant="ghost"
                 size="icon"
                 className="size-7"
-                aria-label={project.favorite ? `Remove ${name} from favorites` : `Add ${name} to favorites`}
+                aria-label={t(project.favorite ? "projects.card.unfavorite" : "projects.card.favorite", { name })}
                 aria-pressed={project.favorite}
                 onClick={onFavorite}
               >
@@ -146,19 +154,22 @@ export function ProjectCard({
           )}
         </div>
         <p className="text-xs text-muted-foreground">
-          Edited {ago(project.updatedAt)} · Opened {ago(project.lastOpenedAt)}
+          {t("projects.card.meta", {
+            edited: ago(project.updatedAt, locale, t),
+            opened: ago(project.lastOpenedAt, locale, t),
+          })}
         </p>
         <ProjectTags name={name} tags={project.tags} onAdd={onAddTag} onRemove={onRemoveTag} />
         <div className="mt-auto flex items-center gap-1 pt-1">
           <Button size="sm" variant={active ? "outline" : "default"} onClick={onOpen} disabled={active}>
-            {active ? "Current" : "Open"}
+            {t(active ? "projects.card.current" : "common.open")}
           </Button>
           <span className="flex-1" />
           <Button
             variant="ghost"
             size="icon"
             className="size-8"
-            aria-label={`Rename ${name}`}
+            aria-label={t("projects.card.rename", { name })}
             onClick={() => {
               setDraft(name);
               setEditing(true);
@@ -167,7 +178,13 @@ export function ProjectCard({
             <Pencil />
           </Button>
           {actions}
-          <Button variant="ghost" size="icon" className="size-8" aria-label={`Delete ${name}`} onClick={onDelete}>
+          <Button
+            variant="ghost"
+            size="icon"
+            className="size-8"
+            aria-label={t("projects.card.delete", { name })}
+            onClick={onDelete}
+          >
             <Trash2 />
           </Button>
         </div>

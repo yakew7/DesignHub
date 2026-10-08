@@ -2,12 +2,14 @@
 
 import { Search } from "lucide-react";
 
+import { useI18n } from "@/components/layout/locale-provider";
 import { Kbd } from "@/components/ui/kbd";
 import { cn } from "@/lib/utils";
 import { useUiStore } from "@/store/ui-store";
 
 export function SearchTrigger({ className }: { className?: string }) {
   const openCommand = useUiStore((state) => state.openCommand);
+  const { t } = useI18n();
 
   return (
     <button
@@ -19,8 +21,8 @@ export function SearchTrigger({ className }: { className?: string }) {
       )}
     >
       <Search className="size-3.5" aria-hidden />
-      <span className="hidden sm:inline">Search…</span>
-      <span className="sr-only sm:hidden">Open search</span>
+      <span className="hidden sm:inline">{t("search.button")}</span>
+      <span className="sr-only sm:hidden">{t("search.open")}</span>
       <Kbd className="ml-4 hidden sm:inline-flex">⌘K</Kbd>
     </button>
   );

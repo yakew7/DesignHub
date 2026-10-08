@@ -207,6 +207,27 @@ Background generators live in `lib/background/generators/` and are pure function
 3. Add a controls component in `components/effects/` and register it in `components/effects/controls-map.tsx`.
 4. Every effect automatically gets CSS, Tailwind classes, `@utility`, SCSS and React output, so keep declarations framework-neutral and respect `prefers-reduced-motion` for anything animated.
 
+## Translating the interface
+
+UI text lives in typed message catalogs in `lib/i18n/messages/`. English (`en.ts`) is the source of truth; every other locale is a partial copy, and any key it leaves out shows in English. URLs never change with the language: the server renders English, and the browser switches to the viewer's choice (saved in `localStorage` as `designhub:locale`) or, when there is none, the first browser language with a translation.
+
+So far the app shell (navigation, header, command palette, theme and language controls) and Brand Projects are translated. Generated assets (exports, templates, the brand book) stay in English.
+
+### Using messages in a component
+
+- In a Client Component, `const { t, plural } = useI18n()` from `components/layout/locale-provider.tsx`. `t("projects.card.rename", { name })` fills `{name}` placeholders; `plural("projects.toast.exported", count)` picks `<key>.one` or `<key>.other` and fills `{count}`.
+- In a Server Component, render `<Message id="nav.home" />` (`components/layout/message.tsx`) for messages without placeholders.
+- Keys and placeholders are type-checked: an unknown key or a missing placeholder is a compile error.
+- To translate an error thrown in `lib/`, throw `new LocalizedError("error.…")` (`lib/i18n/errors.ts`) and show it with `errorMessage(error, t, fallbackKey)`. Its `message` stays English.
+- New text goes into `en.ts` first (sentence case, no em dashes), then into the other catalogs when you can.
+
+### Adding a locale
+
+1. Create `lib/i18n/messages/<code>.ts` exporting `{ ... } satisfies Catalog`, using a two-letter language code such as `fr`. Copy keys from `en.ts` and translate them; keep every `{placeholder}` and skip any key you are unsure of.
+2. Register it in `lib/i18n/locales.ts`: add the code to `locales`, the catalog to `catalogs` and its name, written in that language, to `localeNames`.
+3. Run `pnpm test`: `lib/i18n/messages.test.ts` checks that every key exists in English, that placeholders match and that no message contains an em dash.
+4. Pick the language in the header switcher and check the shell and Brand Projects at a mobile width, where longer words can wrap.
+
 ## Component guidelines
 
 - Start from the primitives in `components/ui` (Button, Input, Panel, Select, Switch, ToggleGroup, Dialog). Add a primitive there only when two studios need it.

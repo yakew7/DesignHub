@@ -2,6 +2,7 @@
 
 import type { RefObject } from "react";
 
+import { useI18n } from "@/components/layout/locale-provider";
 import { SidebarNav } from "@/components/layout/sidebar-nav";
 import { Sheet, SheetContent, SheetDescription, SheetTitle } from "@/components/ui/sheet";
 
@@ -14,6 +15,7 @@ type MobileNavSheetProps = {
 
 /** The navigation sheet behind the mobile menu button, loaded the first time it opens. */
 export function MobileNavSheet({ open, onOpenChange, triggerRef }: MobileNavSheetProps) {
+  const { t } = useI18n();
   return (
     <Sheet open={open} onOpenChange={onOpenChange}>
       <SheetContent
@@ -25,8 +27,8 @@ export function MobileNavSheet({ open, onOpenChange, triggerRef }: MobileNavShee
           triggerRef.current?.focus();
         }}
       >
-        <SheetTitle className="sr-only">Navigation</SheetTitle>
-        <SheetDescription className="sr-only">Jump to a DesignHub studio.</SheetDescription>
+        <SheetTitle className="sr-only">{t("nav.sheetTitle")}</SheetTitle>
+        <SheetDescription className="sr-only">{t("nav.sheetDescription")}</SheetDescription>
         <SidebarNav onNavigate={() => onOpenChange(false)} />
       </SheetContent>
     </Sheet>

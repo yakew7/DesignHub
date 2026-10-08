@@ -1,3 +1,4 @@
+import { LocalizedError } from "@/lib/i18n/errors";
 import type { BrandSnapshot } from "@/lib/projects/snapshot";
 import { parseProjectsFile, PROJECT_FORMAT } from "@/lib/projects/transfer";
 import { crc32 } from "@/lib/zip";
@@ -86,31 +87,29 @@ export function shareToken(hash: string): string | null {
   return value.startsWith(KEY) ? value.slice(KEY.length) : null;
 }
 
-const damaged = "This share link is damaged or incomplete. Ask for a new one.";
-
 /** Decodes and validates a share token. Throws a readable error for anything that isn't a brand. */
 export async function readShareToken(token: string): Promise<SharedBrand> {
   const match = /^(\d+)\.([0-9a-f]{8})\.([A-Za-z0-9_-]+)$/.exec(token.trim());
-  if (!match || token.length > MAX_TOKEN_LENGTH) throw new Error(damaged);
+  if (!match || token.length > MAX_TOKEN_LENGTH) throw new LocalizedError("error.share.damaged");
   const [, version, sum, data] = match;
-  if (version !== VERSION) throw new Error("This share link comes from a newer version of DesignHub.");
+  if (version !== VERSION) throw new LocalizedError("error.share.newer");
   let bytes: Uint8Array;
   try {
     bytes = await pipe(fromBase64Url(data!), new DecompressionStream("deflate-raw"), MAX_JSON_BYTES);
   } catch {
-    throw new Error(damaged);
+    throw new LocalizedError("error.share.damaged");
   }
-  if (checksum(bytes) !== sum) throw new Error(damaged);
+  if (checksum(bytes) !== sum) throw new LocalizedError("error.share.damaged");
   let text: string;
   try {
     text = new TextDecoder("utf-8", { fatal: true }).decode(bytes);
   } catch {
-    throw new Error(damaged);
+    throw new LocalizedError("error.share.damaged");
   }
   // Same checks as an imported project file, including re-sanitizing any logo.
   const entries = parseProjectsFile(text);
   const entry = entries[0];
-  if (entries.length !== 1 || !entry) throw new Error("A share link holds exactly one brand.");
+  if (entries.length !== 1 || !entry) throw new LocalizedError("error.share.oneBrand");
   const logoOmitted = (JSON.parse(text) as { logoOmitted?: unknown }).logoOmitted === true;
   return { snapshot: entry.snapshot, logoOmitted };
 }

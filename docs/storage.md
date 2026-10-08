@@ -11,6 +11,7 @@ DesignHub has no accounts and no server. Everything you make is saved in your ow
 | IndexedDB     | `designhub` database, `projects` table      | Your brand projects: one full snapshot of the brand per project.                                                                       |
 | IndexedDB     | `designhub` database, `versions` table      | Version history: up to 20 earlier snapshots per project, deleted with the project.                                                     |
 | localStorage  | `theme`                                     | Your light or dark theme choice (written by `next-themes`).                                                                            |
+| localStorage  | `designhub:locale`                          | The interface language you picked (`en` or `es`). Without it, DesignHub follows your browser language.                                 |
 | localStorage  | `designhub:panes:<studio>`                  | How wide you dragged each studio pane. Double-click a divider to reset it.                                                             |
 | Cache Storage | `designhub-static-*`, `designhub-runtime-*` | On the hosted site only: the offline app shell and cached Google Fonts and Iconify responses, so DesignHub opens without a connection. |
 

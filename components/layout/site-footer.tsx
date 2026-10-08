@@ -1,15 +1,17 @@
 import Link from "next/link";
 
 import { Logo } from "@/components/layout/logo";
+import { Message } from "@/components/layout/message";
 import { studios } from "@/lib/navigation";
+import type { PlainMessageKey } from "@/lib/i18n/translate";
 import { siteConfig } from "@/lib/site";
 
-const projectLinks = [
-  { label: "GitHub", href: siteConfig.github },
-  { label: "Roadmap", href: `${siteConfig.github}/blob/main/ROADMAP.md` },
-  { label: "Changelog", href: `${siteConfig.github}/blob/main/CHANGELOG.md` },
-  { label: "Contributing", href: `${siteConfig.github}/blob/main/CONTRIBUTING.md` },
-  { label: "Security", href: `${siteConfig.github}/blob/main/SECURITY.md` },
+const projectLinks: { label: PlainMessageKey; href: string }[] = [
+  { label: "nav.github", href: siteConfig.github },
+  { label: "nav.roadmap", href: `${siteConfig.github}/blob/main/ROADMAP.md` },
+  { label: "nav.changelog", href: `${siteConfig.github}/blob/main/CHANGELOG.md` },
+  { label: "nav.contributing", href: `${siteConfig.github}/blob/main/CONTRIBUTING.md` },
+  { label: "nav.security", href: `${siteConfig.github}/blob/main/SECURITY.md` },
 ];
 
 export function SiteFooter() {
@@ -20,16 +22,20 @@ export function SiteFooter() {
           <Logo />
           <p className="max-w-xs text-sm text-muted-foreground">{siteConfig.tagline}</p>
         </div>
-        <nav aria-label="Studios" className="flex flex-col gap-2 text-sm">
-          <h2 className="font-sans text-xs font-medium text-subtle-foreground">Studios</h2>
+        <nav aria-labelledby="footer-studios" className="flex flex-col gap-2 text-sm">
+          <h2 id="footer-studios" className="font-sans text-xs font-medium text-subtle-foreground">
+            <Message id="nav.studios" />
+          </h2>
           {studios.map((studio) => (
             <Link key={studio.id} href={studio.href} className="w-fit text-muted-foreground hover:text-foreground">
-              {studio.title}
+              <Message id={`studio.${studio.id}.title`} />
             </Link>
           ))}
         </nav>
-        <nav aria-label="Project" className="flex flex-col gap-2 text-sm">
-          <h2 className="font-sans text-xs font-medium text-subtle-foreground">Project</h2>
+        <nav aria-labelledby="footer-project" className="flex flex-col gap-2 text-sm">
+          <h2 id="footer-project" className="font-sans text-xs font-medium text-subtle-foreground">
+            <Message id="nav.project" />
+          </h2>
           {projectLinks.map((link) => (
             <a
               key={link.label}
@@ -38,7 +44,7 @@ export function SiteFooter() {
               rel="noreferrer"
               className="w-fit text-muted-foreground hover:text-foreground"
             >
-              {link.label}
+              <Message id={link.label} />
             </a>
           ))}
         </nav>

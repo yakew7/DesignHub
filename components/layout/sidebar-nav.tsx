@@ -5,6 +5,7 @@ import { usePathname } from "next/navigation";
 import { BookOpen, Home } from "lucide-react";
 
 import { GithubIcon } from "@/components/layout/github-icon";
+import { useI18n } from "@/components/layout/locale-provider";
 
 import { Kbd } from "@/components/ui/kbd";
 import { isActivePath, studioGroups, studios } from "@/lib/navigation";
@@ -20,9 +21,10 @@ const itemClass =
 
 export function SidebarNav({ onNavigate }: SidebarNavProps) {
   const pathname = usePathname();
+  const { t } = useI18n();
 
   return (
-    <nav aria-label="Studios" className="flex h-full flex-col gap-5 overflow-y-auto p-3 scrollbar-thin">
+    <nav aria-label={t("nav.studios")} className="flex h-full flex-col gap-5 overflow-y-auto p-3 scrollbar-thin">
       <div className="flex flex-col gap-0.5">
         <Link
           href="/"
@@ -31,14 +33,14 @@ export function SidebarNav({ onNavigate }: SidebarNavProps) {
           className={cn(itemClass, pathname === "/" && "bg-accent text-foreground")}
         >
           <Home className="size-4" aria-hidden />
-          Home
+          {t("nav.home")}
         </Link>
       </div>
 
       {studioGroups.map((group) => (
         <div key={group} className="flex flex-col gap-0.5">
           <p className="px-2 pb-1 text-[11px] font-medium uppercase tracking-[0.12em] text-subtle-foreground">
-            {group}
+            {t(`nav.group.${group}`)}
           </p>
           {studios
             .filter((studio) => studio.group === group)
@@ -54,7 +56,7 @@ export function SidebarNav({ onNavigate }: SidebarNavProps) {
                   className={cn(itemClass, active && "bg-accent text-foreground")}
                 >
                   <Icon className={cn("size-4", active && "text-brand")} aria-hidden />
-                  <span className="flex-1 truncate">{studio.title.replace(" Studio", "")}</span>
+                  <span className="flex-1 truncate">{t(`studio.${studio.id}.short`)}</span>
                   <span className="hidden items-center gap-0.5 opacity-0 transition-opacity duration-150 group-hover:opacity-100 lg:flex">
                     <Kbd>G</Kbd>
                     <Kbd>{studio.shortcut.toUpperCase()}</Kbd>
@@ -67,7 +69,7 @@ export function SidebarNav({ onNavigate }: SidebarNavProps) {
 
       <div className="mt-auto flex flex-col gap-0.5">
         <p className="px-2 pb-1 text-[11px] font-medium uppercase tracking-[0.12em] text-subtle-foreground">
-          Resources
+          {t("nav.resources")}
         </p>
         <a href={siteConfig.github} target="_blank" rel="noreferrer" className={itemClass}>
           <GithubIcon />
@@ -75,7 +77,7 @@ export function SidebarNav({ onNavigate }: SidebarNavProps) {
         </a>
         <a href={`${siteConfig.github}/blob/main/ROADMAP.md`} target="_blank" rel="noreferrer" className={itemClass}>
           <BookOpen className="size-4" aria-hidden />
-          Roadmap
+          {t("nav.roadmap")}
         </a>
         <p className="px-2 pt-3 text-[11px] text-subtle-foreground">v{siteConfig.version} · MIT</p>
       </div>

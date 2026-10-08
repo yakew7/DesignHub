@@ -4,6 +4,7 @@ import { useRouter } from "next/navigation";
 import { Type } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
 
+import { useI18n } from "@/components/layout/locale-provider";
 import { CommandGroup, CommandItem } from "@/components/ui/command";
 import { useSelectFont } from "@/hooks/use-select-font";
 import { fontCategoryLabels, loadFontCatalog } from "@/lib/typography/catalog";
@@ -16,6 +17,7 @@ const MAX_RESULTS = 6;
 /** Font results inside the command palette. The catalog loads on first open. */
 export function FontCommands({ query, onDone }: { query: string; onDone: () => void }) {
   const router = useRouter();
+  const { t } = useI18n();
   const selectFont = useSelectFont();
   const setTab = useTypographyStore((state) => state.setTab);
   const [fonts, setFonts] = useState<FontFamily[]>([]);
@@ -33,7 +35,7 @@ export function FontCommands({ query, onDone }: { query: string; onDone: () => v
   if (results.length === 0) return null;
 
   return (
-    <CommandGroup heading="Fonts">
+    <CommandGroup heading={t("command.group.fonts")}>
       {results.map((font) => (
         <CommandItem
           key={font.family}

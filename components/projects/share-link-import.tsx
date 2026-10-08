@@ -1,11 +1,13 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { toast } from "sonner";
 
+import { useI18n } from "@/components/layout/locale-provider";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { toHex } from "@/lib/color/color";
+import { errorMessage } from "@/lib/i18n/errors";
 import { importSharedProject } from "@/lib/projects/actions";
 import { readShareToken, shareToken, type SharedBrand } from "@/lib/projects/share";
 
@@ -19,8 +21,14 @@ function clearHash() {
  * project. A bad link changes nothing, and the open project is never overwritten.
  */
 export function ShareLinkImport() {
+  const { t, plural } = useI18n();
   const [shared, setShared] = useState<SharedBrand | null>(null);
   const [busy, setBusy] = useState(false);
+  // Read through a ref so a language change doesn't check the link again.
+  const tRef = useRef(t);
+  useEffect(() => {
+    tRef.current = t;
+  }, [t]);
 
   useEffect(() => {
     let active = true;
@@ -34,8 +42,8 @@ export function ShareLinkImport() {
         if (!active) return;
         clearHash();
         // Longer than usual: it shows as the page loads, before anyone is looking for it.
-        toast.error(error instanceof Error ? error.message : "That share link doesn't work.", {
-          description: "Nothing was changed.",
+        toast.error(errorMessage(error, tRef.current, "share.import.broken"), {
+          description: tRef.current("share.import.nothingChanged"),
           duration: 10000,
         });
       }
@@ -59,27 +67,24 @@ export function ShareLinkImport() {
     setBusy(true);
     try {
       const project = await importSharedProject(shared.snapshot);
-      toast.success(`Imported ${project.snapshot.brand.profile.name}`, {
-        description: "Added as a new project and opened. Your other projects are unchanged.",
+      toast.success(t("share.import.done", { name: project.snapshot.brand.profile.name }), {
+        description: t("share.import.doneDescription"),
       });
       close();
     } catch {
-      toast.error("Could not import that brand.", { description: "Nothing was changed." });
+      toast.error(t("share.import.failed"), { description: t("share.import.nothingChanged") });
     } finally {
       setBusy(false);
     }
   }
 
-  const name = shared?.snapshot.brand.profile.name.trim() || "this brand";
+  const name = shared?.snapshot.brand.profile.name.trim() || t("share.import.fallbackName");
   return (
     <Dialog open={shared !== null} onOpenChange={(open) => !open && !busy && close()}>
       <DialogContent>
         <DialogHeader>
-          <DialogTitle>Import {name}?</DialogTitle>
-          <DialogDescription>
-            Someone shared a brand with you. It is added as a new project and opened. Your current project is saved
-            first and stays as it is.
-          </DialogDescription>
+          <DialogTitle>{t("share.import.title", { name })}</DialogTitle>
+          <DialogDescription>{t("share.import.description")}</DialogDescription>
         </DialogHeader>
         {shared ? (
           <div className="flex flex-col gap-3">
@@ -89,18 +94,20 @@ export function ShareLinkImport() {
               ))}
             </div>
             <p className="text-sm text-muted-foreground">
-              {shared.snapshot.typography.headingFont} and {shared.snapshot.typography.bodyFont},{" "}
-              {shared.snapshot.colors.swatches.length} colors.
-              {shared.logoOmitted ? " The uploaded logo was left out of the link, so it uses a generated mark." : ""}
+              {plural("share.import.summary", shared.snapshot.colors.swatches.length, {
+                heading: shared.snapshot.typography.headingFont,
+                body: shared.snapshot.typography.bodyFont,
+              })}
+              {shared.logoOmitted ? ` ${t("share.import.logoOmitted")}` : ""}
             </p>
           </div>
         ) : null}
         <div className="flex justify-end gap-2">
           <Button variant="outline" onClick={close} disabled={busy}>
-            Cancel
+            {t("common.cancel")}
           </Button>
           <Button onClick={() => void confirm()} disabled={busy}>
-            Import as new project
+            {t("share.import.submit")}
           </Button>
         </div>
       </DialogContent>

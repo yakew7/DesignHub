@@ -1,6 +1,7 @@
 import type { ReactNode } from "react";
 
 import { GlobalShortcuts } from "@/components/layout/global-shortcuts";
+import { LanguageSwitcher } from "@/components/layout/language-switcher";
 import { MainNav } from "@/components/layout/main-nav";
 import { MobileNav } from "@/components/layout/mobile-nav";
 import { SearchTrigger } from "@/components/layout/search-trigger";
@@ -29,6 +30,7 @@ export function AppShell({ withSidebar = false, headerActions, children }: AppSh
         {withSidebar ? null : <MainNav className="mr-2" />}
         <SearchTrigger />
         {headerActions}
+        <LanguageSwitcher />
         <ThemeToggle />
       </SiteHeader>
       <div className="flex flex-1">

@@ -3,6 +3,7 @@
 import { Plus, X } from "lucide-react";
 import { useRef, useState } from "react";
 
+import { useI18n } from "@/components/layout/locale-provider";
 import { Input } from "@/components/ui/input";
 import { MAX_PROJECT_TAGS, MAX_TAG_LENGTH, normalizeTag } from "@/lib/projects/tags";
 
@@ -15,6 +16,7 @@ type Props = {
 
 /** A project's tags as removable chips, plus an inline field to add one (five at most). */
 export function ProjectTags({ name, tags, onAdd, onRemove }: Props) {
+  const { t } = useI18n();
   const [adding, setAdding] = useState(false);
   const [draft, setDraft] = useState("");
   // Closing the field (Enter or Escape) unmounts it, which can still fire blur; this stops a second save.
@@ -31,7 +33,7 @@ export function ProjectTags({ name, tags, onAdd, onRemove }: Props) {
   };
 
   return (
-    <ul className="flex min-h-6 flex-wrap items-center gap-1" aria-label={`Tags for ${name}`}>
+    <ul className="flex min-h-6 flex-wrap items-center gap-1" aria-label={t("projects.tags.list", { name })}>
       {tags.map((tag) => (
         <li
           key={tag}
@@ -41,7 +43,7 @@ export function ProjectTags({ name, tags, onAdd, onRemove }: Props) {
           <button
             type="button"
             className="flex size-5 items-center justify-center rounded-full hover:bg-accent hover:text-foreground"
-            aria-label={`Remove tag ${tag} from ${name}`}
+            aria-label={t("projects.tags.remove", { tag, name })}
             onClick={() => onRemove(tag)}
           >
             <X className="size-3" aria-hidden />
@@ -61,8 +63,8 @@ export function ProjectTags({ name, tags, onAdd, onRemove }: Props) {
                 value={draft}
                 autoFocus
                 maxLength={MAX_TAG_LENGTH}
-                aria-label={`New tag for ${name}`}
-                placeholder="client"
+                aria-label={t("projects.tags.new", { name })}
+                placeholder={t("projects.tags.placeholder")}
                 onChange={(event) => setDraft(event.target.value)}
                 onBlur={commit}
                 onKeyDown={(event) => {
@@ -79,14 +81,14 @@ export function ProjectTags({ name, tags, onAdd, onRemove }: Props) {
             <button
               type="button"
               className="flex h-6 items-center gap-1 rounded-full border border-dashed px-2 text-xs text-muted-foreground hover:border-border-strong hover:text-foreground"
-              aria-label={`Add a tag to ${name}`}
-              title={`Up to ${MAX_PROJECT_TAGS} tags`}
+              aria-label={t("projects.tags.add", { name })}
+              title={t("projects.tags.limit", { max: MAX_PROJECT_TAGS })}
               onClick={() => {
                 closed.current = false;
                 setAdding(true);
               }}
             >
-              <Plus className="size-3" aria-hidden /> Tag
+              <Plus className="size-3" aria-hidden /> {t("projects.tags.button")}
             </button>
           )}
         </li>

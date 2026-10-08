@@ -8,6 +8,7 @@ import { useRef, type ReactNode } from "react";
 import { FontCommands } from "@/components/layout/font-commands";
 import { IconCommands } from "@/components/layout/icon-commands";
 import { GithubIcon } from "@/components/layout/github-icon";
+import { useI18n } from "@/components/layout/locale-provider";
 import { useThemeToggle } from "@/components/layout/theme-toggle";
 import {
   Command,
@@ -39,6 +40,7 @@ export function CommandPalette({ children }: { children?: ReactNode }) {
   const setQuery = useUiStore((state) => state.setCommandQuery);
   const setShortcutsOpen = useUiStore((state) => state.setShortcutsOpen);
   const { isDark, toggle } = useThemeToggle();
+  const { t } = useI18n();
   const inputRef = useRef<HTMLInputElement>(null);
 
   useHotkey("mod+k", () => setOpen(!open), { allowInInputs: true });
@@ -63,24 +65,19 @@ export function CommandPalette({ children }: { children?: ReactNode }) {
           input.setSelectionRange(input.value.length, input.value.length);
         }}
       >
-        <DialogTitle className="sr-only">Command palette</DialogTitle>
-        <DialogDescription className="sr-only">Search tools, fonts, colors and actions.</DialogDescription>
+        <DialogTitle className="sr-only">{t("command.title")}</DialogTitle>
+        <DialogDescription className="sr-only">{t("command.description")}</DialogDescription>
         <Command loop>
-          <CommandInput
-            ref={inputRef}
-            value={query}
-            onValueChange={setQuery}
-            placeholder="Search fonts, colors, icons..."
-          />
+          <CommandInput ref={inputRef} value={query} onValueChange={setQuery} placeholder={t("command.placeholder")} />
           <CommandList>
-            <CommandEmpty>No results for “{query}”.</CommandEmpty>
+            <CommandEmpty>{t("command.empty", { query })}</CommandEmpty>
             {children}
             {open ? <FontCommands query={query} onDone={() => setOpen(false)} /> : null}
             {open ? <BrandCommands onDone={() => setOpen(false)} /> : null}
-            <CommandGroup heading="Studios">
-              <CommandItem value="home start" onSelect={() => run(() => router.push("/"))}>
+            <CommandGroup heading={t("command.group.studios")}>
+              <CommandItem value={`home start ${t("nav.home")}`} onSelect={() => run(() => router.push("/"))}>
                 <Home />
-                Home
+                {t("nav.home")}
                 <CommandShortcut>
                   <Kbd>G</Kbd>
                   <Kbd>H</Kbd>
@@ -91,11 +88,11 @@ export function CommandPalette({ children }: { children?: ReactNode }) {
                 return (
                   <CommandItem
                     key={studio.id}
-                    value={`${studio.title} ${studio.description}`}
+                    value={`${studio.title} ${t(`studio.${studio.id}.title`)} ${studio.description}`}
                     onSelect={() => run(() => router.push(studio.href))}
                   >
                     <Icon />
-                    {studio.title}
+                    {t(`studio.${studio.id}.title`)}
                     <CommandShortcut>
                       <Kbd>G</Kbd>
                       <Kbd>{studio.shortcut.toUpperCase()}</Kbd>
@@ -105,35 +102,38 @@ export function CommandPalette({ children }: { children?: ReactNode }) {
               })}
             </CommandGroup>
             <CommandSeparator />
-            <CommandGroup heading="Actions">
-              <CommandItem value="toggle theme dark light mode" onSelect={() => run(toggle)}>
+            <CommandGroup heading={t("command.group.actions")}>
+              <CommandItem value={`toggle theme dark light mode ${t("theme.toggle")}`} onSelect={() => run(toggle)}>
                 {isDark ? <Sun /> : <Moon />}
-                Switch to {isDark ? "light" : "dark"} theme
+                {t(isDark ? "theme.toLight" : "theme.toDark")}
                 <CommandShortcut>
                   <Kbd>⌥</Kbd>
                   <Kbd>T</Kbd>
                 </CommandShortcut>
               </CommandItem>
-              <CommandItem value="keyboard shortcuts help" onSelect={() => run(() => setShortcutsOpen(true))}>
+              <CommandItem
+                value={`keyboard shortcuts help ${t("command.shortcuts")}`}
+                onSelect={() => run(() => setShortcutsOpen(true))}
+              >
                 <Keyboard />
-                Keyboard shortcuts
+                {t("command.shortcuts")}
                 <CommandShortcut>
                   <Kbd>?</Kbd>
                 </CommandShortcut>
               </CommandItem>
               <CommandItem
-                value="github source code star"
+                value={`github source code star ${t("command.github")}`}
                 onSelect={() => run(() => window.open(siteConfig.github, "_blank"))}
               >
                 <GithubIcon />
-                View source on GitHub
+                {t("command.github")}
               </CommandItem>
               <CommandItem
-                value="roadmap future plans"
+                value={`roadmap future plans ${t("nav.roadmap")}`}
                 onSelect={() => run(() => window.open(`${siteConfig.github}/blob/main/ROADMAP.md`, "_blank"))}
               >
                 <BookOpen />
-                Roadmap
+                {t("nav.roadmap")}
               </CommandItem>
             </CommandGroup>
             {/* Last on purpose: its value always contains the whole query, and cmdk keeps groups in
@@ -143,13 +143,13 @@ export function CommandPalette({ children }: { children?: ReactNode }) {
           <footer className="flex h-10 items-center gap-4 border-t px-4 text-[11px] text-subtle-foreground">
             <span className="flex items-center gap-1">
               <Kbd>↑</Kbd>
-              <Kbd>↓</Kbd> navigate
+              <Kbd>↓</Kbd> {t("command.hint.navigate")}
             </span>
             <span className="flex items-center gap-1">
-              <Kbd>↵</Kbd> select
+              <Kbd>↵</Kbd> {t("command.hint.select")}
             </span>
             <span className="flex items-center gap-1">
-              <Kbd>esc</Kbd> close
+              <Kbd>esc</Kbd> {t("command.hint.close")}
             </span>
           </footer>
         </Command>

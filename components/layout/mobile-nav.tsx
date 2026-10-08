@@ -4,6 +4,7 @@ import dynamic from "next/dynamic";
 import { useRef, useState } from "react";
 import { Menu } from "lucide-react";
 
+import { useI18n } from "@/components/layout/locale-provider";
 import { Button } from "@/components/ui/button";
 
 const loadSheet = () => import("@/components/layout/mobile-nav-sheet").then((m) => m.MobileNavSheet);
@@ -16,6 +17,7 @@ export function MobileNav() {
   const [open, setOpen] = useState(false);
   const [mounted, setMounted] = useState(false);
   const triggerRef = useRef<HTMLButtonElement>(null);
+  const { t } = useI18n();
 
   return (
     <>
@@ -24,7 +26,7 @@ export function MobileNav() {
         variant="ghost"
         size="icon"
         className="-ml-2 lg:hidden"
-        aria-label="Open navigation"
+        aria-label={t("nav.openMenu")}
         aria-haspopup="dialog"
         aria-expanded={open}
         aria-controls={open ? "mobile-nav" : undefined}

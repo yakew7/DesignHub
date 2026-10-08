@@ -3,9 +3,9 @@ import * as React from "react";
 import { cn } from "@/lib/utils";
 
 type PageHeaderProps = {
-  eyebrow?: string;
-  title: string;
-  description?: string;
+  eyebrow?: React.ReactNode;
+  title: React.ReactNode;
+  description?: React.ReactNode;
   actions?: React.ReactNode;
   className?: string;
 };

@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
 
+import { useI18n } from "@/components/layout/locale-provider";
 import { CommandGroup, CommandItem } from "@/components/ui/command";
 import { useGuidelineBase } from "@/hooks/use-guideline-context";
 import { useVariantContext } from "@/hooks/use-variant-context";
@@ -25,6 +26,7 @@ import { useUiStore } from "@/store/ui-store";
  */
 export function BrandCommands({ onDone }: { onDone: () => void }) {
   const router = useRouter();
+  const { t } = useI18n();
   const activeId = useProjectStore((state) => state.activeId);
   const requestNewProject = useUiStore((state) => state.requestNewProject);
   const guidelineBase = useGuidelineBase();
@@ -45,7 +47,7 @@ export function BrandCommands({ onDone }: { onDone: () => void }) {
   const base = slugify(guidelineBase.brand.name);
 
   async function download(kind: "book" | "logo") {
-    const id = toast.loading(kind === "book" ? "Building the brand book..." : "Building the logo pack...");
+    const id = toast.loading(t(kind === "book" ? "command.buildingBook" : "command.buildingLogo"));
     try {
       if (kind === "book") {
         const { buildBrandBookFrom } = await import("@/lib/guidelines/book");
@@ -56,14 +58,14 @@ export function BrandCommands({ onDone }: { onDone: () => void }) {
         const zip = await buildLogoPack(variantCtx, clearSpace);
         downloadBlob(new Blob([zip.slice().buffer], { type: "application/zip" }), `${base}-logo-pack.zip`);
       }
-      toast.success("Download ready", { id });
+      toast.success(t("command.downloadReady"), { id });
     } catch {
-      toast.error("Export failed in this browser.", { id });
+      toast.error(t("command.exportFailed"), { id });
     }
   }
 
   return (
-    <CommandGroup heading="Brand">
+    <CommandGroup heading={t("command.group.brand")}>
       <CommandItem
         value="new brand project create"
         onSelect={() => {
@@ -73,7 +75,7 @@ export function BrandCommands({ onDone }: { onDone: () => void }) {
         }}
       >
         <Plus />
-        New brand project...
+        {t("command.newProject")}
       </CommandItem>
       {projects
         .filter((project) => project.id !== activeId)
@@ -83,11 +85,13 @@ export function BrandCommands({ onDone }: { onDone: () => void }) {
             value={`open project ${projectName(project)} switch`}
             onSelect={() => {
               onDone();
-              void openProject(project.id).then(() => toast.success(`Opened ${projectName(project)}`));
+              void openProject(project.id).then(() =>
+                toast.success(t("projects.toast.opened", { name: projectName(project) })),
+              );
             }}
           >
             <FolderOpen />
-            Open project: {projectName(project)}
+            {t("command.openProject", { name: projectName(project) })}
           </CommandItem>
         ))}
       <CommandItem
@@ -98,7 +102,7 @@ export function BrandCommands({ onDone }: { onDone: () => void }) {
         }}
       >
         <FileText />
-        Download brand book (PDF)
+        {t("command.downloadBook")}
       </CommandItem>
       <CommandItem
         value="download logo pack zip svg png"
@@ -108,7 +112,7 @@ export function BrandCommands({ onDone }: { onDone: () => void }) {
         }}
       >
         <FileArchive />
-        Download logo pack (ZIP)
+        {t("command.downloadLogo")}
       </CommandItem>
     </CommandGroup>
   );

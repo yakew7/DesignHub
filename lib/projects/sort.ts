@@ -2,12 +2,8 @@ import { projectName, type BrandProject } from "@/lib/projects/types";
 
 export type ProjectSort = "opened" | "edited" | "name" | "newest";
 
-export const projectSorts: { value: ProjectSort; label: string }[] = [
-  { value: "opened", label: "Recently opened" },
-  { value: "edited", label: "Recently edited" },
-  { value: "name", label: "Name (A to Z)" },
-  { value: "newest", label: "Newest" },
-];
+/** In menu order. Labels are the `projects.sort.<value>` messages. */
+export const projectSorts: readonly ProjectSort[] = ["opened", "edited", "name", "newest"];
 
 const compare: Record<ProjectSort, (a: BrandProject, b: BrandProject) => number> = {
   opened: (a, b) => b.lastOpenedAt - a.lastOpenedAt || b.updatedAt - a.updatedAt,

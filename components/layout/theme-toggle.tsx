@@ -3,6 +3,7 @@
 import { Moon, Sun } from "lucide-react";
 import { useTheme } from "next-themes";
 
+import { useI18n } from "@/components/layout/locale-provider";
 import { Button } from "@/components/ui/button";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 import { useHotkey } from "@/hooks/use-hotkeys";
@@ -17,9 +18,10 @@ export function useThemeToggle() {
 export function ThemeToggle() {
   const mounted = useMounted();
   const { isDark, toggle } = useThemeToggle();
+  const { t } = useI18n();
   useHotkey("alt+t", toggle);
 
-  const label = mounted ? `Switch to ${isDark ? "light" : "dark"} theme` : "Toggle theme";
+  const label = mounted ? t(isDark ? "theme.toLight" : "theme.toDark") : t("theme.toggle");
 
   return (
     <Tooltip>
