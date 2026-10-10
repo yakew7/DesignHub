@@ -100,7 +100,7 @@ export function ProjectCompare({ open, onOpenChange, projects, initialId }: Prop
             Colors, fonts, radius, spacing and shadow side by side. Neither project is opened or changed.
           </DialogDescription>
         </DialogHeader>
-        <div className="flex flex-col items-stretch gap-2 sm:flex-row sm:items-end">
+        <div className="flex min-w-0 flex-col items-stretch gap-2 sm:flex-row sm:items-end">
           <ProjectPicker id="compare-a" label="First" value={leftId} projects={projects} onChange={setLeftId} />
           <Button
             variant="ghost"

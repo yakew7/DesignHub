@@ -107,6 +107,7 @@ A typical design session bounces between a font site, a palette generator, a con
 - **Share a brand as a link**: the brand is compressed into the link itself (no server); opening it asks before adding it as a new project
 - The open project **autosaves** while you work anywhere in the app
 - **Import and export JSON**, one project or all of them, validated and sanitized on import
+- Compare project values in a desktop table or stacked property cards on phones, with highlighted differences and readable status labels
 
 ### Typography Studio
 
