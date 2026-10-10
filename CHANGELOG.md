@@ -11,6 +11,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - A seeded squiggle pattern generator for the Background Studio, with SVG, PNG and CSS exports.
 
+### Fixed
+
+- Project comparisons stack each property and both project values on phones, keeping difference labels and the desktop table.
+
 ## v1.0.0
 
 Released 2026-09-23. The first public release: a complete, local-first design and brand identity toolkit with seventeen studios.
