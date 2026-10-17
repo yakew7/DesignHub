@@ -11,6 +11,7 @@ import { astroComponent } from "@/lib/svg/astro";
 import { componentNameFromFile, reactComponent, toJsx, withCurrentColor } from "@/lib/svg/jsx";
 import { svgBackgroundCss } from "@/lib/svg/data-uri";
 import { litComponent } from "@/lib/svg/lit";
+import { preactComponent } from "@/lib/svg/preact";
 import { qwikComponent } from "@/lib/svg/qwik";
 import { reactNativeComponent } from "@/lib/svg/react-native";
 import { minify, prettyPrint } from "@/lib/svg/serialize";
@@ -84,6 +85,13 @@ export function SvgOutput({ root }: { root: SvgNode | null }) {
         filename: `${componentNameFromFile(name)}.tsx`,
         language: "tsx",
         code: solidComponent(codeTree, name),
+      },
+      {
+        id: "preact",
+        label: "Preact",
+        filename: `${componentNameFromFile(name)}.tsx`,
+        language: "tsx",
+        code: preactComponent(codeTree, name),
       },
       {
         id: "qwik",
