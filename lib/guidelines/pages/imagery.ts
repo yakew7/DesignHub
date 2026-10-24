@@ -57,6 +57,7 @@ function tile(
 
 export const imageryPage: GuidelinePage = {
   id: "imagery",
+  section: "Imagery",
   title: "Imagery",
   description: "Photography and illustration style, with do and don't examples.",
   render(ctx, number) {
@@ -163,6 +164,7 @@ const SOCIAL_SAMPLES = [
 
 export const socialMediaPage: GuidelinePage = {
   id: "social-media",
+  section: "Voice",
   title: "Social Media",
   description: "The brand's social assets at their platform sizes.",
   render(ctx, number) {

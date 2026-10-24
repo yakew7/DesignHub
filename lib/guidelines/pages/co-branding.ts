@@ -125,6 +125,7 @@ function verdictTile(ctx: GuidelineContext, rect: Rect, fill: string, ok: boolea
 
 export const coBrandingPage: GuidelinePage = {
   id: "co-branding",
+  section: "Logo",
   title: "Co-branding",
   description: "How the logo sits next to a partner's logo.",
   render(ctx, number) {

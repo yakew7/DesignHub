@@ -96,6 +96,7 @@ const coverLayouts: Record<CoverStyle, (ctx: GuidelineContext) => string> = {
 
 export const coverPage: GuidelinePage = {
   id: "cover",
+  section: "Foundation",
   title: "Cover",
   description: "Logo, name and edition.",
   render(ctx) {
@@ -123,6 +124,7 @@ export function contentsRows(contents: GuidelineContext["contents"]) {
 
 export const introductionPage: GuidelinePage = {
   id: "introduction",
+  section: "Foundation",
   title: "Introduction",
   description: "Who the brand is, its personality and what this book covers.",
   render(ctx, number) {
@@ -173,6 +175,7 @@ export const introductionPage: GuidelinePage = {
 
 export const voicePage: GuidelinePage = {
   id: "voice",
+  section: "Voice",
   title: "Voice & Tone",
   description: "Personality, do and don't, and a sample of the voice.",
   render(ctx, number) {

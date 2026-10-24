@@ -60,6 +60,7 @@ function tokenColumns(ctx: GuidelineContext, list: (FlatToken & { swatch?: strin
 
 export const colorTokensPage: GuidelinePage = {
   id: "tokens-color",
+  section: "Tokens",
   title: "Tokens: Color",
   description: "Appendix: every color token with its CSS variable.",
   render(ctx, number) {
@@ -86,6 +87,7 @@ export const colorTokensPage: GuidelinePage = {
 
 export const scaleTokensPage: GuidelinePage = {
   id: "tokens-scale",
+  section: "Tokens",
   title: "Tokens: Type & Scale",
   description: "Appendix: fonts, type scale, spacing, radius and effects.",
   render(ctx, number) {

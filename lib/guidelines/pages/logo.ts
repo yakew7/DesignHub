@@ -34,6 +34,7 @@ function variantTile(ctx: GuidelineContext, id: LogoVariantId, rect: Rect, label
 
 export const logoUsagePage: GuidelinePage = {
   id: "logo-usage",
+  section: "Logo",
   title: "Logo Usage",
   description: "The primary logo and its approved lockups.",
   render(ctx, number) {
@@ -68,6 +69,7 @@ export const logoUsagePage: GuidelinePage = {
 
 export const clearSpacePage: GuidelinePage = {
   id: "clear-space",
+  section: "Logo",
   title: "Clear Space",
   description: "Minimum empty space around the logo.",
   render(ctx, number) {
@@ -115,6 +117,7 @@ export const clearSpacePage: GuidelinePage = {
 
 export const minimumSizePage: GuidelinePage = {
   id: "minimum-size",
+  section: "Logo",
   title: "Minimum Size",
   description: "The smallest sizes the logo stays legible at.",
   render(ctx, number) {
@@ -190,6 +193,7 @@ export const minimumSizePage: GuidelinePage = {
 
 export const incorrectUsagePage: GuidelinePage = {
   id: "incorrect-usage",
+  section: "Logo",
   title: "Incorrect Usage",
   description: "Common mistakes to avoid.",
   render(ctx, number) {

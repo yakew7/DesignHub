@@ -12,6 +12,7 @@ This guide explains how a page is built, how it gets its number, and what to cha
 | `lib/guidelines/pages/*.ts`      | One file per page, or a few related pages. Each exports `GuidelinePage` objects.                     |
 | `lib/guidelines/kit.ts`          | Shared helpers: `guidelinePage`, `caption`, `card`, `paragraph` and the layout constants.            |
 | `lib/guidelines/registry.ts`     | `guidelinePages`, the list of every page in book order.                                              |
+| `lib/guidelines/sections.ts`     | Groups the pages into sections for the page list, and switches a whole section on or off.            |
 | `lib/guidelines/book.ts`         | Renders the pages into a PDF.                                                                        |
 | `lib/guidelines/outline.ts`      | Adds PDF bookmarks and makes the contents rows on the Introduction page clickable.                   |
 | `lib/guidelines/site.ts`         | Builds the website export (a ZIP of static HTML, the page art as SVG, logo files and token formats). |
@@ -25,6 +26,7 @@ A page is a `GuidelinePage` (see `lib/guidelines/types.ts`):
 ```ts
 export type GuidelinePage = {
   id: string; // stable, kebab-case; used in file names, URLs and the switched-off list
+  section: GuidelineSection; // the group in the page list: Foundation, Logo, Color, Type, Imagery, UI, Voice or Tokens
   title: string; // shown in the contents, the PDF bookmarks and the website navigation
   description: string; // a tooltip in the page list; the website's meta description
   render: (ctx: GuidelineContext, number: number) => string; // returns an SVG document
@@ -115,13 +117,15 @@ return guidelinePage(
 );
 ```
 
-`section` is the label in the running header. Reuse an existing section name when the new page belongs with it (for example `Color` or `Typography`).
+This `section` is the label in the running header, and it can be any short word. It is not the page's `section` field, which puts the page in a group of the page list (see below). Reuse an existing header label when the new page belongs with it (for example `Color` or `Typography`).
 
-**6. Register it.** In `lib/guidelines/registry.ts`, import the page and put it in the `guidelinePages` array. Its position in the array is its position in the book. Spacing & Layout sits after `illustrationPage` (which follows `imageryPage`), followed by `motionPage` and then `componentsPage`.
+**6. Give it a section.** Set `section` on the `GuidelinePage` to one of the groups in `guidelineSections` (`lib/guidelines/types.ts`). The page list shows a foldable group per section, each with a switch that turns all of its pages on or off, and a count of the pages that are on. Pick the group the page sits in, and register it next to that group's other pages: the list reads in book order, so a section's pages should be one run in `guidelinePages` (a test checks it).
+
+**7. Register it.** In `lib/guidelines/registry.ts`, import the page and put it in the `guidelinePages` array. Its position in the array is its position in the book. Spacing & Layout sits after `illustrationPage` (which follows `imageryPage`), followed by `motionPage` and then `componentsPage`.
 
 ## Adding a page: checklist
 
-1. Create `lib/guidelines/pages/<name>.ts` and export a `GuidelinePage`. Use `guidelinePage` for the frame, and read colors and values from `ctx`.
+1. Create `lib/guidelines/pages/<name>.ts` and export a `GuidelinePage` with a `section`. Use `guidelinePage` for the frame, and read colors and values from `ctx`.
 2. Import it in `lib/guidelines/registry.ts` and add it to `guidelinePages` where you want it in the book.
 3. Add tests (see the next section).
 4. Run the app with `pnpm dev`, open Brand Guidelines, and check the page in both light and dark mode. Switch the page off and on, and check that the page numbers and the contents list update.
@@ -131,7 +135,7 @@ return guidelinePage(
 
 ## Tests to update
 
-Two test files cover pages, and both need a change when you add one.
+Two test files cover pages, and both need a change when you add one. A third, `lib/guidelines/sections.test.ts`, checks the sections for every registered page (each page has a section, and a section's pages are one run in book order), so it fails on its own if a new page has no section or lands in the middle of another group. It also turns each section off and checks the PDF bookmarks, the website and the Markdown export leave its pages out.
 
 **`lib/guidelines/site.test.ts`** builds the default brand (`guidelineContext`) and the website (`site()`). Add a `describe` block for your page, like the one for "spacing and layout page", that checks:
 

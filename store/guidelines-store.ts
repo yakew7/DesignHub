@@ -2,6 +2,7 @@ import { create } from "zustand";
 import { createJSONStorage, persist } from "zustand/middleware";
 
 import { indexedDbStorage } from "@/lib/db";
+import { setPagesIncluded } from "@/lib/guidelines/sections";
 import type { CoverStyle } from "@/lib/guidelines/types";
 import type { BrandMode } from "@/types/brand";
 
@@ -13,6 +14,8 @@ type GuidelinesState = {
   coverStyle: CoverStyle;
   select: (id: string) => void;
   toggle: (id: string) => void;
+  /** Switches several pages on or off at once (a whole section). */
+  setIncluded: (ids: string[], included: boolean) => void;
   setMode: (mode: BrandMode) => void;
   setCoverStyle: (coverStyle: CoverStyle) => void;
 };
@@ -31,6 +34,7 @@ export const useGuidelinesStore = create<GuidelinesState>()(
             ? state.excluded.filter((item) => item !== id)
             : [...state.excluded, id],
         })),
+      setIncluded: (ids, included) => set((state) => ({ excluded: setPagesIncluded(state.excluded, ids, included) })),
       setMode: (mode) => set({ mode }),
       setCoverStyle: (coverStyle) => set({ coverStyle }),
     }),

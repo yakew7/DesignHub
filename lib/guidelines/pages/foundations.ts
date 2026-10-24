@@ -23,6 +23,7 @@ const ratio = (a: string, b: string) => {
 
 export const colorPalettePage: GuidelinePage = {
   id: "color-palette",
+  section: "Color",
   title: "Color Palette",
   description: "Brand colors with roles, values and shades.",
   render(ctx, number) {
@@ -80,6 +81,7 @@ export const colorPalettePage: GuidelinePage = {
 
 export const typographyPage: GuidelinePage = {
   id: "typography",
+  section: "Type",
   title: "Typography",
   description: "Typefaces, weights and the type scale.",
   render(ctx, number) {
@@ -145,6 +147,7 @@ function icon(name: string, x: number, y: number, size: number, color: string, s
 
 export const iconographyPage: GuidelinePage = {
   id: "iconography",
+  section: "Imagery",
   title: "Iconography",
   description: "Icon style, sizes and colors.",
   render(ctx, number) {
@@ -203,6 +206,7 @@ export const iconographyPage: GuidelinePage = {
 
 export const componentsPage: GuidelinePage = {
   id: "ui-components",
+  section: "UI",
   title: "UI Components",
   description: "Buttons, inputs, badges and cards built from the tokens.",
   render(ctx, number) {
@@ -282,6 +286,7 @@ function level(value: number): { label: string; ok: boolean } {
 
 export const accessibilityPage: GuidelinePage = {
   id: "accessibility",
+  section: "UI",
   title: "Accessibility",
   description: "Contrast checks for the brand's key color pairs.",
   render(ctx: GuidelineContext, number: number) {

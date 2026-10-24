@@ -3,6 +3,7 @@ import { describe, expect, test } from "vitest";
 
 import { addBookNavigation } from "@/lib/guidelines/outline";
 import { guidelinePages } from "@/lib/guidelines/registry";
+import { groupPagesBySection, setPagesIncluded, switchableIds } from "@/lib/guidelines/sections";
 
 /** A book with blank pages for the given page ids, saved and parsed back like a reader would. */
 async function book(excluded: string[] = []) {
@@ -47,6 +48,16 @@ describe("brand book navigation", () => {
     expect(titles).toHaveLength(guidelinePages.length - 3);
     expect(titles).not.toContain("Mission & Values");
     expect(titles).not.toContain("Imagery");
+  });
+
+  test("skips every page of a section that is switched off and keeps the rest in order", async () => {
+    const logo = groupPagesBySection(guidelinePages).find((group) => group.section === "Logo")!;
+    const { contents, pdf } = await book(setPagesIncluded([], switchableIds(logo.pages), false));
+    const titles = outlineItems(pdf).map((item) => item.lookup(PDFName.of("Title"), PDFHexString).decodeText());
+    expect(titles).toHaveLength(guidelinePages.length - logo.pages.length);
+    for (const page of logo.pages) expect(titles).not.toContain(page.title);
+    expect(titles).toEqual(contents.map((entry) => entry.title));
+    expect(contents.map((entry) => entry.number)).toEqual(contents.map((_, i) => i + 1));
   });
 
   test("bookmarks the Color Usage page after the palette unless it is switched off", async () => {

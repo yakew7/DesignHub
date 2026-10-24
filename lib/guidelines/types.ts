@@ -29,8 +29,15 @@ export type GuidelineContext = DrawContext & {
 
 export type GuidelineBase = Omit<GuidelineContext, "contents">;
 
+/** The groups of the page list, in book order. A page's `section` is one of these. */
+export const guidelineSections = ["Foundation", "Logo", "Color", "Type", "Imagery", "UI", "Voice", "Tokens"] as const;
+
+export type GuidelineSection = (typeof guidelineSections)[number];
+
 export type GuidelinePage = {
   id: string;
+  /** The group the page belongs to in the page list. Not the label in the page's running header. */
+  section: GuidelineSection;
   title: string;
   description: string;
   render: (ctx: GuidelineContext, number: number) => string;

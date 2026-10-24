@@ -26,6 +26,7 @@ const px = (value: number) => `${Math.round(value * 100) / 100}px`;
 
 export const spacingLayoutPage: GuidelinePage = {
   id: "spacing-layout",
+  section: "UI",
   title: "Spacing & Layout",
   description: "The spacing scale, the radius scale and a 12-column grid, from the brand tokens.",
   render(ctx, number) {

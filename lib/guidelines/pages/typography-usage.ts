@@ -78,6 +78,7 @@ const px = (value: number) => `${Math.round(value)}px`;
 
 export const typographyUsagePage: GuidelinePage = {
   id: "typography-usage",
+  section: "Type",
   title: "Typography Usage",
   description: "Heading and body hierarchy, line length, line height and what to avoid.",
   render(ctx, number) {

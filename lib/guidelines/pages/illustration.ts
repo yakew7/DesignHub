@@ -88,6 +88,7 @@ export const PALETTE_SHARES = [
 
 export const illustrationPage: GuidelinePage = {
   id: "illustration",
+  section: "Imagery",
   title: "Illustration",
   description: "Line weight, corner style, palette use and do and don't examples for illustrations.",
   render(ctx, number) {

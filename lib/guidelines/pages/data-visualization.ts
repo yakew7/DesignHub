@@ -111,6 +111,7 @@ const SAMPLE = [0.82, 0.64, 0.9, 0.48, 0.7, 0.36];
 
 export const dataVisualizationPage: GuidelinePage = {
   id: "data-visualization",
+  section: "Color",
   title: "Data Visualization",
   description: "Chart colors: a categorical palette checked for color blindness, and sequential and diverging ramps.",
   render(ctx, number) {

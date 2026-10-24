@@ -73,6 +73,7 @@ const REDUCED =
 
 export const motionPage: GuidelinePage = {
   id: "motion",
+  section: "UI",
   title: "Motion",
   description: "Durations, easing curves, do's and don'ts for animation, and how to respect reduced motion.",
   render(ctx, number) {

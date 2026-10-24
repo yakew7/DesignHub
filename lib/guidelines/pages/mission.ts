@@ -20,6 +20,7 @@ function fitTitle(ctx: GuidelineContext, value: string, width: number, size: num
 
 export const missionPage: GuidelinePage = {
   id: "mission",
+  section: "Foundation",
   title: "Mission & Values",
   description: "Why the brand exists and the values behind every decision.",
   render(ctx, number) {

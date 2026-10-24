@@ -173,6 +173,7 @@ function dontTile(ctx: GuidelineContext, x: number, y: number, w: number, h: num
 
 export const colorUsagePage: GuidelinePage = {
   id: "color-usage",
+  section: "Color",
   title: "Color Usage",
   description: "Color proportions, approved text-on-color combinations and what to avoid.",
   render(ctx, number) {
