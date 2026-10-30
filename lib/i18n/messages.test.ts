@@ -65,6 +65,21 @@ describe("translate", () => {
     expect(t("projects.card.openNamed", { name: "Acme" })).toBe("Open Acme");
   });
 
+  it("translates the font result count in every locale", () => {
+    const cases = [
+      [catalogs.en, "en", "1 font", "2 fonts"],
+      [catalogs.es, "es", "1 fuente", "2 fuentes"],
+      [catalogs.fr, "fr", "1 police", "2 polices"],
+      [catalogs.hi, "hi", "1 फ़ॉन्ट", "2 फ़ॉन्ट"],
+    ] as const;
+
+    for (const [catalog, locale, one, other] of cases) {
+      const { plural } = createTranslator(catalog, locale);
+      expect(plural("typography.fonts.count", 1)).toBe(one);
+      expect(plural("typography.fonts.count", 2)).toBe(other);
+    }
+  });
+
   it("picks plural forms by count", () => {
     const { plural } = createTranslator(catalogs.es, "es");
     expect(plural("projects.toast.exported", 1)).toBe("Se exportó 1 proyecto");

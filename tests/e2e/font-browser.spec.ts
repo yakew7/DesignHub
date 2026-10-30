@@ -36,3 +36,14 @@ test("the whole catalog is listed, but only the rows near the view are in the pa
   // The target is 50 ms; the bound leaves room for a busy CI machine.
   await expectUnder(testInfo, "longest-task", longest, 300);
 });
+
+test("announces the filtered font count after search input settles", async ({ page }) => {
+  await page.goto("/typography");
+  const search = page.getByRole("searchbox", { name: "Search fonts" });
+  const announcement = page.locator('[aria-live="polite"][aria-atomic="true"]');
+  await expect(announcement).toHaveText(/\d+ fonts?/);
+
+  await search.fill("open sans");
+  await expect(page.getByRole("option")).toHaveCount(1);
+  await expect(announcement).toHaveText("1 font");
+});

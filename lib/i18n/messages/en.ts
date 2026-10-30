@@ -92,6 +92,8 @@ export const en = {
   "nav.skip": "Skip to content",
   "nav.skipPreview": "Skip to preview",
   "nav.skipOutput": "Skip to code and exports",
+  "typography.fonts.count.one": "{count} font",
+  "typography.fonts.count.other": "{count} fonts",
   "typography.pair.layout": "Layout",
   "typography.pair.layout.article": "Blog article",
   "typography.pair.layout.pricing": "Pricing card",

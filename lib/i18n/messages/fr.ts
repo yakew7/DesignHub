@@ -90,6 +90,8 @@ export const fr = {
   "nav.skip": "Aller au contenu",
   "nav.skipPreview": "Aller à l'aperçu",
   "nav.skipOutput": "Aller au code et aux exports",
+  "typography.fonts.count.one": "{count} police",
+  "typography.fonts.count.other": "{count} polices",
   "typography.pair.layout": "Mise en page",
   "typography.pair.layout.article": "Article de blog",
   "typography.pair.layout.pricing": "Carte tarifaire",
