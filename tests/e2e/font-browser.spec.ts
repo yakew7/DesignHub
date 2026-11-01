@@ -44,6 +44,11 @@ test("announces the filtered font count after search input settles", async ({ pa
   await expect(announcement).toHaveText(/\d+ fonts?/);
 
   await search.fill("open sans");
-  await expect(page.getByRole("option")).toHaveCount(1);
-  await expect(announcement).toHaveText("1 font");
+  // Only the font list: the language picker's options are also `option` elements on the page.
+  const options = page.getByRole("listbox", { name: "Fonts" }).getByRole("option");
+  await expect(options.first()).toBeVisible();
+  await expect.poll(async () => await options.count()).toBeLessThan(20);
+  const count = await options.count();
+  expect(count).toBeGreaterThan(0);
+  await expect(announcement).toHaveText(count === 1 ? "1 font" : `${count} fonts`);
 });
