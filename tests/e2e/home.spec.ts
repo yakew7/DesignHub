@@ -45,3 +45,35 @@ test("only the active language's messages are downloaded", async ({ page }) => {
   await expect.poll(() => bodies.some((body) => body.includes(SPANISH))).toBe(true);
   expect(bodies.some((body) => body.includes(FRENCH))).toBe(false);
 });
+
+test("the studio chooser is one tab stop and the arrow keys move across it", async ({ page }) => {
+  await page.goto("/");
+  await expect(page.locator("h1").first()).toBeVisible();
+  const goals = page.locator("a[data-goal]");
+  const count = await goals.count();
+  expect(count).toBeGreaterThan(3);
+  expect(await page.locator('a[data-goal][tabindex="0"]').count()).toBe(1);
+
+  const focusedGoal = () => page.evaluate(() => document.activeElement?.getAttribute("data-goal") ?? "");
+  await goals.first().focus();
+  const first = await focusedGoal();
+  await page.keyboard.press("ArrowRight");
+  const second = await focusedGoal();
+  expect(second).not.toBe(first);
+  await page.keyboard.press("ArrowLeft");
+  expect(await focusedGoal()).toBe(first);
+  await page.keyboard.press("End");
+  expect(await focusedGoal()).toBe(await goals.last().getAttribute("data-goal"));
+  await page.keyboard.press("Home");
+  expect(await focusedGoal()).toBe(first);
+  // A move past the start stays put, and Enter opens the goal like any link.
+  await page.keyboard.press("ArrowLeft");
+  expect(await focusedGoal()).toBe(first);
+  await page.keyboard.press("ArrowDown");
+  const below = await focusedGoal();
+  expect(below).not.toBe(first);
+  await page.keyboard.press("ArrowUp");
+  expect(await focusedGoal()).toBe(first);
+  await page.keyboard.press("Enter");
+  await expect(page).not.toHaveURL(/\/$/, { timeout: 20_000 });
+});
