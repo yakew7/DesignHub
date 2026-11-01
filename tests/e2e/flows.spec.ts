@@ -175,7 +175,8 @@ test("offline: the sidebar marks the studios kept for offline use, and says so f
   await expect.poll(() => page.evaluate(() => Boolean(navigator.serviceWorker.controller))).toBe(true);
 
   const nav = page.getByRole("navigation", { name: "Studios" });
-  const kept = (name: string | RegExp) => nav.getByRole("link", { name }).getByRole("img", { name: "Available offline" });
+  const kept = (name: string | RegExp) =>
+    nav.getByRole("link", { name }).getByRole("img", { name: "Available offline" });
   // The studio that is open is kept (the page tells the worker which studio it shows), and another is not.
   await expect(kept(/^Color/)).toBeVisible({ timeout: 20_000 });
   await expect(kept("Typography")).toHaveCount(0);

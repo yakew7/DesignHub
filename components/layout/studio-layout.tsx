@@ -1,12 +1,13 @@
 "use client";
 
 import { Layers, SlidersHorizontal, SquareCode } from "lucide-react";
-import { useCallback, useEffect, useLayoutEffect, useState, type ReactNode } from "react";
+import { useCallback, useEffect, useLayoutEffect, useRef, useState, type ReactNode, type TouchEvent } from "react";
 import { useGroupRef, type Layout, type LayoutChangedMeta } from "react-resizable-panels";
 
 import { useI18n } from "@/components/layout/locale-provider";
 import { ResizableGroup, ResizableHandle, ResizablePanel } from "@/components/ui/resizable";
 import { usePaneStore } from "@/store/pane-store";
+import { NO_SWIPE, paneAfterSwipe, type Point } from "@/lib/swipe";
 import { STUDIO_OUTPUT_ID, STUDIO_PANE_EVENT, STUDIO_PREVIEW_ID, type StudioPane } from "@/lib/studio-panes";
 import { paneRestoreScript, paneRestoreStyleId, readPaneLayout, writePaneLayout } from "@/lib/pane-layout";
 import { cn } from "@/lib/utils";
@@ -97,8 +98,26 @@ export function StudioLayout({ id, controls, preview, output, className }: Studi
     });
   }, [id, groupRef]);
 
+  // A swipe sideways on a phone moves to the pane next to this one, as a shortcut for the bar below.
+  const swipeStart = useRef<Point | null>(null);
+  const paneOrder: StudioPane[] = output ? ["controls", "preview", "output"] : ["controls", "preview"];
+  const onTouchStart = (event: TouchEvent) => {
+    const touch = event.touches[0];
+    const blocked = event.target instanceof Element && event.target.closest(NO_SWIPE);
+    swipeStart.current =
+      event.touches.length === 1 && touch && !blocked ? { x: touch.clientX, y: touch.clientY } : null;
+  };
+  const onTouchEnd = (event: TouchEvent) => {
+    const start = swipeStart.current;
+    const touch = event.changedTouches[0];
+    swipeStart.current = null;
+    if (!start || !touch || !window.matchMedia("(max-width: 63.99rem)").matches) return;
+    const next = paneAfterSwipe(paneOrder, open, start, { x: touch.clientX, y: touch.clientY });
+    if (next !== open) setOpen(next);
+  };
+
   return (
-    <>
+    <div className="contents" onTouchStart={onTouchStart} onTouchEnd={onTouchEnd}>
       <script
         // Runs during HTML parsing only; React never executes it on client renders, which is fine
         // because the layout effect above restores the sizes before paint there.
@@ -189,6 +208,6 @@ export function StudioLayout({ id, controls, preview, output, className }: Studi
             </button>
           ))}
       </nav>
-    </>
+    </div>
   );
 }

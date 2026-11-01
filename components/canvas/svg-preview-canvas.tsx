@@ -113,6 +113,8 @@ export const SvgPreviewCanvas = memo(function SvgPreviewCanvas({
       <div
         ref={ref}
         tabIndex={0}
+        // Panning and zooming here use sideways touch moves, so a studio on a phone does not read them as a swipe.
+        data-no-swipe
         role={comparisonSvg ? "region" : "img"}
         aria-label={`${label}. Use + and - to zoom, 0 to fit, 1 for 100%.`}
         onKeyDown={onKeyDown}
