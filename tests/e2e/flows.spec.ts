@@ -161,3 +161,28 @@ test("offline: a studio never opened online says so instead of failing blank", a
   await page.goto("/effects");
   await expect(page.getByRole("heading", { name: "This page is not on this device yet" })).toBeVisible();
 });
+
+test("offline: the sidebar marks the studios kept for offline use, and says so for one that is not", async ({
+  page,
+  context,
+}) => {
+  await page.goto("/colors");
+  await ready(page);
+  await page.evaluate(async () => {
+    await navigator.serviceWorker.ready;
+  });
+  await page.reload();
+  await expect.poll(() => page.evaluate(() => Boolean(navigator.serviceWorker.controller))).toBe(true);
+
+  const nav = page.getByRole("navigation", { name: "Studios" });
+  const kept = (name: string | RegExp) => nav.getByRole("link", { name }).getByRole("img", { name: "Available offline" });
+  // The studio that is open is kept (the page tells the worker which studio it shows), and another is not.
+  await expect(kept(/^Color/)).toBeVisible({ timeout: 20_000 });
+  await expect(kept("Typography")).toHaveCount(0);
+
+  // Offline, a link to a studio that is not kept explains itself instead of opening an error page.
+  await context.setOffline(true);
+  await nav.getByRole("link", { name: "Typography" }).click();
+  await expect(page.getByText("This studio has not been opened on this device yet.")).toBeVisible();
+  await expect(page).toHaveURL(/\/colors$/);
+});

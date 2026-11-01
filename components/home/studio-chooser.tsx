@@ -4,7 +4,9 @@ import { StudioLink as Link } from "@/components/layout/studio-link";
 import { ArrowUpRight } from "lucide-react";
 import { useRef, useState, type KeyboardEvent } from "react";
 
+import { useI18n } from "@/components/layout/locale-provider";
 import { Message } from "@/components/layout/message";
+import { useKeptStudios } from "@/hooks/use-kept-studios";
 import { homeGoals } from "@/lib/home-goals";
 import { getStudio } from "@/lib/navigation";
 
@@ -12,6 +14,8 @@ import { getStudio } from "@/lib/navigation";
 export function StudioChooser() {
   // One tab stop for the whole grid; the arrow keys, Home and End move between the goals.
   const [stop, setStop] = useState(0);
+  const { t } = useI18n();
+  const { kept } = useKeptStudios();
   const list = useRef<HTMLUListElement>(null);
 
   const move = (event: KeyboardEvent<HTMLUListElement>) => {
@@ -62,6 +66,15 @@ export function StudioChooser() {
               >
                 <span className="flex items-center justify-between gap-3">
                   <Icon className="size-5 text-brand" aria-hidden />
+                  {kept.has(studio.href) ? (
+                    <span
+                      role="img"
+                      aria-label={t("nav.kept")}
+                      title={t("nav.kept")}
+                      data-kept
+                      className="ml-auto mr-2 size-1.5 rounded-full bg-success"
+                    />
+                  ) : null}
                   <ArrowUpRight
                     className="size-4 text-subtle-foreground transition-transform duration-150 group-hover:-translate-y-0.5 group-hover:translate-x-0.5 group-hover:text-foreground"
                     aria-hidden

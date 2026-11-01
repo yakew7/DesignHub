@@ -70,6 +70,9 @@ export const fr = {
 
   "nav.collapse": "Réduire la barre latérale",
   "nav.expand": "Développer la barre latérale",
+  "nav.kept": "Disponible hors ligne",
+  "nav.notKept":
+    "Cet atelier n'a pas encore été ouvert sur cet appareil. Reconnectez-vous et ouvrez-le une fois pour l'utiliser hors ligne.",
   "nav.home": "Accueil",
   "nav.group.Brand": "Marque",
   "nav.group.Design": "Design",

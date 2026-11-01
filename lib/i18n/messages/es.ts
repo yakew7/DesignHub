@@ -69,6 +69,9 @@ export const es = {
 
   "nav.collapse": "Contraer la barra lateral",
   "nav.expand": "Expandir la barra lateral",
+  "nav.kept": "Disponible sin conexión",
+  "nav.notKept":
+    "Este estudio aún no se ha abierto en este dispositivo. Vuelve a conectarte y ábrelo una vez para usarlo sin conexión.",
   "nav.home": "Inicio",
   "nav.group.Brand": "Marca",
   "nav.group.Design": "Diseño",

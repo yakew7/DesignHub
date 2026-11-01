@@ -2,12 +2,14 @@
 
 import { StudioLink as Link } from "@/components/layout/studio-link";
 import { usePathname } from "next/navigation";
-import type { ReactNode } from "react";
+import type { MouseEvent, ReactNode } from "react";
+import { toast } from "sonner";
 import { BookOpen, ChevronDown, Home, PanelLeftClose, PanelLeftOpen } from "lucide-react";
 
 import { GithubIcon } from "@/components/layout/github-icon";
 import { useI18n } from "@/components/layout/locale-provider";
 
+import { useKeptStudios } from "@/hooks/use-kept-studios";
 import { Kbd } from "@/components/ui/kbd";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 import { isGroupOpen } from "@/lib/nav-groups";
@@ -25,7 +27,7 @@ type SidebarNavProps = {
 };
 
 const itemClass =
-  "group flex h-8 items-center gap-2.5 rounded-md px-2 text-sm text-muted-foreground transition-colors duration-150 hover:bg-accent hover:text-foreground";
+  "group relative flex h-8 items-center gap-2.5 rounded-md px-2 text-sm text-muted-foreground transition-colors duration-150 hover:bg-accent hover:text-foreground";
 
 const compactClass = "size-8 justify-center px-0";
 
@@ -45,6 +47,14 @@ export function SidebarNav({ onNavigate, compact = false, onToggleCollapsed }: S
   const { t } = useI18n();
   const folded = useNavStore((state) => state.folded);
   const toggle = useNavStore((state) => state.toggle);
+  const { kept, offline } = useKeptStudios();
+  // Offline, a studio that was never opened with a connection cannot open: say so instead of showing an error page.
+  const guard = (href: string) => (event: MouseEvent) => {
+    if (offline && !kept.has(href)) {
+      event.preventDefault();
+      toast(t("nav.notKept"));
+    }
+  };
 
   return (
     <nav
@@ -115,7 +125,10 @@ export function SidebarNav({ onNavigate, compact = false, onToggleCollapsed }: S
                     <RailTip key={studio.id} show={compact} text={`${name} (G ${studio.shortcut.toUpperCase()})`}>
                       <Link
                         href={studio.href}
-                        onClick={onNavigate}
+                        onClick={(event) => {
+                          guard(studio.href)(event);
+                          if (!event.defaultPrevented) onNavigate?.();
+                        }}
                         aria-current={active ? "page" : undefined}
                         aria-label={compact ? name : undefined}
                         className={cn(itemClass, compact && compactClass, active && "bg-accent text-foreground")}
@@ -130,6 +143,18 @@ export function SidebarNav({ onNavigate, compact = false, onToggleCollapsed }: S
                             </span>
                           </>
                         )}
+                        {kept.has(studio.href) ? (
+                          <span
+                            role="img"
+                            aria-label={t("nav.kept")}
+                            title={t("nav.kept")}
+                            data-kept
+                            className={cn(
+                              "size-1.5 shrink-0 rounded-full bg-success",
+                              compact && "absolute top-1 right-1",
+                            )}
+                          />
+                        ) : null}
                       </Link>
                     </RailTip>
                   );

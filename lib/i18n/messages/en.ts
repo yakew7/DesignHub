@@ -72,6 +72,8 @@ export const en = {
   // Navigation and header
   "nav.collapse": "Collapse sidebar",
   "nav.expand": "Expand sidebar",
+  "nav.kept": "Available offline",
+  "nav.notKept": "This studio has not been opened on this device yet. Reconnect and open it once to use it offline.",
   "nav.home": "Home",
   "nav.group.Brand": "Brand",
   "nav.group.Design": "Design",
