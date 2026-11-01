@@ -60,6 +60,10 @@ Manual test plan: build and start the app, install it from Chrome, export a proj
 
 **Brand Projects, Storage** shows what DesignHub keeps on this device: the number and size of projects, version history, the icon cache and the offline caches, and the share of the space this browser allows. Only counts and sizes are read; no project content is shown or sent. **Clear the offline cache** deletes the `designhub-static-*` and `designhub-runtime-*` caches and nothing else (projects, settings and the share cache stay), and the studios you opened are kept again the next time you open them with a connection.
 
+## Trimming old versions
+
+The Storage panel lists the projects that take the most room, with their history counted apart. **Delete versions older than** 30, 90 or 365 days shows how many versions that would remove, deletes them, and offers an Undo. The newest version of each project is always kept, and only the oldest part of a history is removed, so what is left is still a whole chain (see [Version history](#version-history)).
+
 ## Version history
 
 Each project keeps up to 20 versions in the `versions` table (added in database version 4; older databases upgrade in place and keep every project). A version is a brand snapshot with its project id, the time it was taken and why. The newest version of a project is stored whole, and each older one as the change that takes the next newer version back to it (`lib/projects/delta.ts` and `version-storage.ts`), so twenty versions cost about the size of their edits and not twenty copies of the brand. Reading rebuilds every version whole, so history, restore and compare work as before, and rows written before this stay valid with no database change:

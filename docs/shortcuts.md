@@ -93,3 +93,7 @@ A few rules apply everywhere:
 ## Adding a shortcut
 
 Bind the key with `useHotkey` from `hooks/use-hotkeys.ts` in the component that owns the action, then add a matching entry to `lib/shortcuts.ts` so it shows up in the dialog, and update this guide. `G` navigation shortcuts come from the `shortcut` field of each studio in `lib/navigation.ts`, so a new studio is listed automatically.
+
+## On a phone
+
+A studio shows one pane at a time with a bar at the bottom. A swipe sideways (at least 64 px, and twice as far across as up or down) moves to the next or previous pane. Sliders, tabs, fields, code blocks and the preview canvas keep their own touch gestures, and the command palette can show a pane by name ("Show the preview").

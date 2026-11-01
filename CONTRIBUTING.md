@@ -69,6 +69,10 @@ A test that fails and then passes on its retry (CI retries once) still passes th
 
 The config starts `pnpm start` on port 3100 (set `E2E_PORT` to change it) and reuses a server already running there. Failed runs keep a trace in `test-results/` (gitignored); open it with `pnpm exec playwright show-trace <trace.zip>`. Vitest only reads `lib/**/*.test.ts`, so the e2e specs never run under `pnpm test`.
 
+### Simple and Advanced mode
+
+Adding a studio to Simple and Advanced mode, or moving a control between the modes, means editing the table of controls in [docs/simple-and-advanced.md](docs/simple-and-advanced.md). `tests/e2e/modes-table.spec.ts` reads it, opens each page in both modes and fails, naming the row, when the page and the table disagree.
+
 ### Screenshots
 
 `tests/e2e/visual.spec.ts` takes screenshots of the home page, the Color Studio, the Effects Lab, the Background Studio, the Logo Studio and the Brand Studio at 375, 768 and 1280 px in light and dark, and of the phone pane bar with each pane of the Effects Lab open, and fails when one no longer matches, so a layout that looks wrong is caught even when every behaviour test passes. They run only in `visual.yml`, on its Linux image, because other machines draw text a little differently (the images are stored in `tests/e2e/__screenshots__`, not named by platform). After a layout change you meant to make, open **Actions, Visual, Run workflow** with "update" ticked: it makes the screenshots again and commits them, and you read the new images in that commit. Locally, `VISUAL=1 pnpm exec playwright test tests/e2e/visual.spec.ts` compares them, which only passes on the same image.
