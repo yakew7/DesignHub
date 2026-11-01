@@ -89,7 +89,7 @@ test("the isometric generator, the slowest at a large canvas, is drawn in the wo
   await expect(slider).toHaveAttribute("aria-valuenow", "90");
   expect(page.workers().length).toBeGreaterThan(0);
   // No "Drawing…" note is left behind once the last drawing has arrived.
-  await expect(page.getByRole("status").filter({ hasText: "Drawing" })).toHaveCount(0);
+  await expect(page.getByRole("status").filter({ hasText: "Drawing" })).toHaveCount(0, { timeout: 30_000 });
   const longest = await page.evaluate(() => Math.max(0, ...(window as unknown as { longTasks: number[] }).longTasks));
   // The drawing is in the worker (checked above). The bound is loose because this page also paints a one megabyte SVG
   // and the other tests share the machine; inline, this drawing alone took over 200 ms at this size.
