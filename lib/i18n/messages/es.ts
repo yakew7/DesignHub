@@ -89,6 +89,8 @@ export const es = {
   "nav.skip": "Saltar al contenido",
   "nav.skipPreview": "Saltar a la vista previa",
   "nav.skipOutput": "Saltar al código y las exportaciones",
+  "typography.fonts.count.one": "{count} fuente",
+  "typography.fonts.count.other": "{count} fuentes",
   "typography.pair.layout": "Diseño",
   "typography.pair.layout.article": "Artículo de blog",
   "typography.pair.layout.pricing": "Tarjeta de precios",

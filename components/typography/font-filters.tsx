@@ -1,7 +1,9 @@
 "use client";
 
 import { Heart, Search, X } from "lucide-react";
-import { useRef } from "react";
+import { useEffect, useRef, useState } from "react";
+
+import { useI18n } from "@/components/layout/locale-provider";
 
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -31,7 +33,13 @@ const sorts: { value: FontSort; label: string }[] = [
 ];
 
 export function FontFilters({ resultCount }: { resultCount: number }) {
+  const { plural } = useI18n();
   const filters = useTypographyStore((state) => state.filters);
+  const [announcedCount, setAnnouncedCount] = useState(resultCount);
+  useEffect(() => {
+    const timeout = window.setTimeout(() => setAnnouncedCount(resultCount), 300);
+    return () => window.clearTimeout(timeout);
+  }, [resultCount]);
   const setFilters = useTypographyStore((state) => state.setFilters);
   const inputRef = useRef<HTMLInputElement>(null);
   useHotkey("f", () => inputRef.current?.focus());
@@ -118,8 +126,11 @@ export function FontFilters({ resultCount }: { resultCount: number }) {
             <Heart className="size-3" aria-hidden /> Favorites
           </Label>
         </div>
-        <p className="ml-auto text-xs text-subtle-foreground" aria-live="polite">
-          {resultCount} {resultCount === 1 ? "family" : "families"}
+        <p className="ml-auto text-xs text-subtle-foreground" aria-live="off">
+          {plural("typography.fonts.count", resultCount)}
+        </p>
+        <p className="sr-only" aria-live="polite" aria-atomic="true">
+          {plural("typography.fonts.count", announcedCount)}
         </p>
       </div>
     </div>

@@ -88,6 +88,8 @@ export const hi = {
   "nav.skip": "सामग्री पर जाएँ",
   "nav.skipPreview": "पूर्वावलोकन पर जाएँ",
   "nav.skipOutput": "कोड और एक्सपोर्ट पर जाएँ",
+  "typography.fonts.count.one": "{count} फ़ॉन्ट",
+  "typography.fonts.count.other": "{count} फ़ॉन्ट",
   "typography.pair.layout": "लेआउट",
   "typography.pair.layout.article": "ब्लॉग लेख",
   "typography.pair.layout.pricing": "प्राइसिंग कार्ड",
