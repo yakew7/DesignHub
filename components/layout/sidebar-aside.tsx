@@ -13,6 +13,7 @@ export function SidebarAside() {
 
   return (
     <aside
+      data-sidebar
       className={cn(
         "sticky top-14 hidden h-[calc(100dvh-3.5rem)] shrink-0 border-r transition-[width] duration-150 lg:block",
         collapsed ? "w-14" : "w-60",

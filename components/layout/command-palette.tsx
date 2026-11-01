@@ -2,7 +2,20 @@
 
 import dynamic from "next/dynamic";
 import { useRouter } from "next/navigation";
-import { BookOpen, Home, Keyboard, Moon, Plus, SlidersHorizontal, Sun, Trash2 } from "lucide-react";
+import {
+  BookOpen,
+  Home,
+  Keyboard,
+  Layers,
+  Moon,
+  PanelLeftClose,
+  PanelLeftOpen,
+  Plus,
+  SlidersHorizontal,
+  SquareCode,
+  Sun,
+  Trash2,
+} from "lucide-react";
 import { useRef, type ReactNode } from "react";
 
 import { FontCommands } from "@/components/layout/font-commands";
@@ -25,9 +38,11 @@ import { Dialog, DialogContent, DialogDescription, DialogTitle } from "@/compone
 import { Kbd } from "@/components/ui/kbd";
 import { useHotkey } from "@/hooks/use-hotkeys";
 import { studios } from "@/lib/navigation";
+import { STUDIO_PANE_EVENT, STUDIO_PREVIEW_ID, type StudioPane } from "@/lib/studio-panes";
 import { siteConfig } from "@/lib/site";
 import type { RecentCommandId } from "@/lib/command-recents";
 import { useModeStore } from "@/store/mode-store";
+import { useNavStore } from "@/store/nav-store";
 import { useCommandRecentsStore } from "@/store/command-recents-store";
 import { useUiStore } from "@/store/ui-store";
 
@@ -56,9 +71,19 @@ export function CommandPalette({ children }: { children?: ReactNode }) {
   const mode = useModeStore((state) => state.mode);
   const setMode = useModeStore((state) => state.setMode);
   const requestNewProject = useUiStore((state) => state.requestNewProject);
+  const collapsed = useNavStore((state) => state.collapsed);
+  const toggleCollapsed = useNavStore((state) => state.toggleCollapsed);
   // With nothing typed the palette is short: recent choices, the studios and three actions. The rest
   // (brand actions, languages, fonts, icons, links) appears as the person types.
   const typed = query.trim().length > 0;
+
+  // What is on this screen decides which of these apply: the sidebar exists only on a desktop studio page, and the
+  // panes only on a phone. Read when the palette is open, which re-renders it.
+  const onDesktop = open && typeof window !== "undefined" && window.matchMedia("(min-width: 64rem)").matches;
+  const hasSidebar = onDesktop && Boolean(document.querySelector("[data-sidebar]"));
+  const hasPanes =
+    open && typeof window !== "undefined" && !onDesktop && Boolean(document.getElementById(STUDIO_PREVIEW_ID));
+  const showPane = (pane: StudioPane) => window.dispatchEvent(new CustomEvent(STUDIO_PANE_EVENT, { detail: pane }));
 
   function run(action: () => void, id?: RecentCommandId) {
     setOpen(false);
@@ -178,6 +203,37 @@ export function CommandPalette({ children }: { children?: ReactNode }) {
                   <Kbd>T</Kbd>
                 </CommandShortcut>
               </CommandItem>
+              {hasSidebar ? (
+                <CommandItem
+                  value={`sidebar collapse expand rail ${t("nav.collapse")} ${t("nav.expand")}`}
+                  onSelect={() => run(toggleCollapsed)}
+                >
+                  {collapsed ? <PanelLeftOpen /> : <PanelLeftClose />}
+                  {t(collapsed ? "nav.expand" : "nav.collapse")}
+                  <CommandShortcut>
+                    <Kbd>⌘</Kbd>
+                    <Kbd>B</Kbd>
+                  </CommandShortcut>
+                </CommandItem>
+              ) : null}
+              {hasPanes
+                ? (
+                    [
+                      ["controls", "command.showControls", SlidersHorizontal],
+                      ["preview", "command.showPreview", Layers],
+                      ["output", "command.showOutput", SquareCode],
+                    ] as const
+                  ).map(([pane, key, Icon]) => (
+                    <CommandItem
+                      key={pane}
+                      value={`pane show ${pane} ${t(key)}`}
+                      onSelect={() => run(() => showPane(pane))}
+                    >
+                      <Icon />
+                      {t(key)}
+                    </CommandItem>
+                  ))
+                : null}
               <CommandItem
                 value={`simple advanced mode controls ${t("mode.simple")} ${t("mode.advanced")}`}
                 onSelect={() => run(() => setMode(mode === "advanced" ? "simple" : "advanced"))}

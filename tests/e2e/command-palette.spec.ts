@@ -36,3 +36,34 @@ test("the palette opens short, remembers a choice and shows the rest as you type
   await palette.getByRole("option", { name: "Clear recent choices" }).click();
   await expect(palette.getByText("Recent", { exact: true })).toHaveCount(0);
 });
+
+test("the palette collapses the sidebar on a desktop", async ({ page }) => {
+  await page.goto("/effects");
+  await expect(page.locator("h1").first()).toBeVisible();
+  const nav = page.getByRole("navigation", { name: "Studios" });
+  await page.keyboard.press("ControlOrMeta+k");
+  const palette = page.getByRole("dialog");
+  // The phone's pane actions do not apply here.
+  await expect(palette.getByRole("option", { name: "Show the preview" })).toHaveCount(0);
+  await palette.getByRole("option", { name: "Collapse sidebar" }).click();
+  await expect.poll(() => nav.evaluate((node) => node.getBoundingClientRect().width)).toBeLessThan(80);
+
+  await page.keyboard.press("ControlOrMeta+k");
+  await expect(palette.getByRole("option", { name: "Expand sidebar" })).toBeVisible();
+});
+
+test.describe("on a phone", () => {
+  test.use({ viewport: { width: 375, height: 812 } });
+
+  test("the palette shows a pane of the studio", async ({ page }) => {
+    await page.goto("/effects");
+    await expect(page.locator("h1").first()).toBeVisible();
+    await page.keyboard.press("ControlOrMeta+k");
+    const palette = page.getByRole("dialog");
+    // The sidebar does not exist on a phone.
+    await expect(palette.getByRole("option", { name: /sidebar/i })).toHaveCount(0);
+    await palette.getByRole("option", { name: "Show the output" }).click();
+    await expect(page.locator("#studio-output")).toBeVisible();
+    await expect(page.locator("#studio-preview")).toBeHidden();
+  });
+});

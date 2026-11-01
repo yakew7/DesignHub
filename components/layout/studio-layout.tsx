@@ -70,7 +70,10 @@ export function StudioLayout({ id, controls, preview, output, className }: Studi
   // The skip links ask for a pane that a phone may be hiding.
   useEffect(() => {
     const show = (event: Event) => {
-      if (event instanceof CustomEvent && (event.detail === "preview" || event.detail === "output")) {
+      if (
+        event instanceof CustomEvent &&
+        (event.detail === "controls" || event.detail === "preview" || event.detail === "output")
+      ) {
         setOpen(event.detail);
       }
     };
