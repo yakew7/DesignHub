@@ -250,6 +250,7 @@ export const fr = {
   "projects.bulk.restored.one": "{count} projet restauré",
   "projects.bulk.restored.other": "{count} projets restaurés",
   "projects.bulk.openKept": "Le projet ouvert a été conservé.",
+  "projects.bulk.byTag": "Sélectionner par étiquette",
   "projects.noMatch": "Aucun projet ne correspond.",
   "projects.empty": "Aucun projet pour l'instant.",
   "projects.list": "Projets de marque",

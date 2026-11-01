@@ -31,3 +31,34 @@ export function deletable(
   const ids = [...selection].filter((id) => id !== activeId);
   return { ids, keptOpen: activeId !== null && selection.has(activeId) };
 }
+
+/** The ids from `from` to `to` in the order shown, both ends included, whichever comes first. Empty when either is missing. */
+export function between(ordered: readonly string[], from: string, to: string): string[] {
+  const a = ordered.indexOf(from);
+  const b = ordered.indexOf(to);
+  if (a < 0 || b < 0) return [];
+  return ordered.slice(Math.min(a, b), Math.max(a, b) + 1);
+}
+
+/** The selection with the range from the last clicked project to this one added (Shift and click). */
+export function withRange(
+  selection: ReadonlySet<string>,
+  ordered: readonly string[],
+  from: string | null,
+  to: string,
+): Set<string> {
+  const next = new Set(selection);
+  for (const id of from === null ? [to] : between(ordered, from, to)) next.add(id);
+  return next;
+}
+
+/** The selection with every project that has `tag` added. */
+export function withTagged(
+  selection: ReadonlySet<string>,
+  projects: readonly { id: string; tags: readonly string[] }[],
+  tag: string,
+): Set<string> {
+  const next = new Set(selection);
+  for (const project of projects) if (project.tags.includes(tag)) next.add(project.id);
+  return next;
+}

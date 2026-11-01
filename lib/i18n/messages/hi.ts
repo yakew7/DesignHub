@@ -241,6 +241,7 @@ export const hi = {
   "projects.bulk.restored.one": "{count} प्रोजेक्ट वापस आया",
   "projects.bulk.restored.other": "{count} प्रोजेक्ट वापस आए",
   "projects.bulk.openKept": "खुला प्रोजेक्ट रखा गया।",
+  "projects.bulk.byTag": "टैग से चुनें",
   "projects.noMatch": "कोई प्रोजेक्ट मेल नहीं खाता।",
   "projects.empty": "अभी कोई प्रोजेक्ट नहीं है।",
   "projects.list": "ब्रांड प्रोजेक्ट",

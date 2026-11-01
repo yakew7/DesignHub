@@ -1,3 +1,7 @@
+import { readFileSync, writeFileSync } from "node:fs";
+import { tmpdir } from "node:os";
+import { join } from "node:path";
+
 import { expect, test, type Page } from "@playwright/test";
 
 async function create(page: Page, name: string) {
@@ -62,4 +66,40 @@ test("select several projects, tag them, export them, and delete them with one u
 
   await bar.getByRole("button", { name: "Done" }).click();
   await expect(page.getByRole("checkbox")).toHaveCount(0);
+});
+
+test("Shift and click selects a range, and Select tagged adds every project with a tag", async ({ page }) => {
+  const fixture = JSON.parse(readFileSync(join(__dirname, "../../lib/projects/__fixtures__/v1/projects.json"), "utf8"));
+  const template = fixture.projects[0];
+  fixture.projects = Array.from({ length: 12 }, (_, index) => {
+    const copy = structuredClone(template);
+    copy.favorite = false;
+    copy.tags = [index % 4 === 0 ? "archived" : "active"];
+    copy.snapshot.brand.profile.name = `Brand ${String(index).padStart(2, "0")}`;
+    return copy;
+  });
+  const file = join(tmpdir(), "designhub-select-range.json");
+  writeFileSync(file, JSON.stringify(fixture));
+
+  await page.goto("/projects");
+  await expect(page.locator("h1").first()).toBeVisible();
+  await page.locator('input[type="file"]').first().setInputFiles(file);
+  await expect(page.getByRole("button", { name: "Open Brand 11" })).toBeVisible();
+
+  await page.getByRole("button", { name: "Select", exact: true }).click();
+  const bar = page.getByRole("region", { name: "Actions for the selected projects" });
+  // Newest first: 11, 10, 09, 08. A click, then Shift and click four below it, selects all four.
+  await page.getByRole("checkbox", { name: "Select Brand 11" }).click();
+  await page.getByRole("checkbox", { name: "Select Brand 08" }).click({ modifiers: ["Shift"] });
+  await expect(bar).toContainText("4 projects selected");
+  for (const name of ["Brand 11", "Brand 10", "Brand 09", "Brand 08"]) {
+    await expect(page.getByRole("checkbox", { name: `Select ${name}` })).toBeChecked();
+  }
+  await expect(page.getByRole("checkbox", { name: "Select Brand 07" })).not.toBeChecked();
+
+  // Select tagged adds the archived ones (00, 04 and 08, of which 08 is already in).
+  await bar.getByRole("combobox", { name: "Select tagged" }).click();
+  await page.getByRole("option", { name: "archived" }).click();
+  await expect(bar).toContainText("6 projects selected");
+  await expect(page.getByRole("checkbox", { name: "Select Brand 04" })).toBeChecked();
 });

@@ -57,7 +57,7 @@ import { listVersions } from "@/lib/projects/versions";
 import { projectSorts, sortProjects, type ProjectSort } from "@/lib/projects/sort";
 import { matchesProject, PROJECT_PAGE } from "@/lib/projects/search";
 import { projectTags } from "@/lib/projects/tags";
-import { deletable, pruned, toggled, toggledAll } from "@/lib/projects/selection";
+import { deletable, pruned, toggled, toggledAll, withRange, withTagged } from "@/lib/projects/selection";
 import { projectsToJson, projectToJson } from "@/lib/projects/transfer";
 import { projectsZip } from "@/lib/projects/zip";
 import { projectName, type BrandProject } from "@/lib/projects/types";
@@ -83,6 +83,7 @@ export function ProjectManager() {
   const [selecting, setSelecting] = useState(false);
   const [chosen, setChosen] = useState<Set<string>>(new Set());
   const [bulkTag, setBulkTag] = useState("");
+  const lastClicked = useRef<string | null>(null);
   const fileRef = useRef<HTMLInputElement>(null);
   const newProjectRequested = useUiStore((state) => state.newProjectRequested);
   const clearNewProjectRequest = useUiStore((state) => state.clearNewProjectRequest);
@@ -170,6 +171,7 @@ export function ProjectManager() {
   }, [projects]);
 
   function leaveSelecting() {
+    lastClicked.current = null;
     setSelecting(false);
     setChosen(new Set());
     setBulkTag("");
@@ -429,6 +431,20 @@ export function ProjectManager() {
           >
             {t("projects.bulk.all")}
           </Button>
+          {tags.length > 0 ? (
+            <Select value="" onValueChange={(tag) => setChosen(withTagged(chosen, projects ?? [], tag))}>
+              <SelectTrigger size="sm" className="w-auto min-w-36" aria-label={t("projects.bulk.byTag")}>
+                <SelectValue placeholder={t("projects.bulk.byTag")} />
+              </SelectTrigger>
+              <SelectContent>
+                {tags.map((tag) => (
+                  <SelectItem key={tag} value={tag}>
+                    {tag}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          ) : null}
           <form
             className="flex items-center gap-1"
             onSubmit={(event) => {
@@ -479,7 +495,19 @@ export function ProjectManager() {
               project={project}
               select={
                 selecting
-                  ? { checked: chosen.has(project.id), onToggle: () => setChosen(toggled(chosen, project.id)) }
+                  ? {
+                      checked: chosen.has(project.id),
+                      onToggle: (shift) => {
+                        // Shift and click adds everything from the last click to this one, in the order shown.
+                        const shown = visible.slice(0, count).map((item) => item.id);
+                        setChosen(
+                          shift && lastClicked.current
+                            ? withRange(chosen, shown, lastClicked.current, project.id)
+                            : toggled(chosen, project.id),
+                        );
+                        lastClicked.current = project.id;
+                      },
+                    }
                   : undefined
               }
               active={project.id === activeId}

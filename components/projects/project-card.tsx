@@ -26,7 +26,7 @@ type Props = {
   /** Extra actions (duplicate, export). */
   actions?: ReactNode;
   /** Present in select mode: a checkbox over the card. */
-  select?: { checked: boolean; onToggle: () => void };
+  select?: { checked: boolean; onToggle: (shift: boolean) => void };
 };
 
 function ago(time: number, locale: string, t: Translate): string {
@@ -79,7 +79,9 @@ export function ProjectCard({
         <input
           type="checkbox"
           checked={select.checked}
-          onChange={select.onToggle}
+          // The click carries the Shift key, which a change event does not: Shift and click selects a range.
+          onChange={() => undefined}
+          onClick={(event) => select.onToggle(event.shiftKey)}
           aria-label={t("projects.selectNamed", { name })}
           className="absolute top-2 left-2 z-10 size-5 cursor-pointer accent-[var(--brand)]"
         />
