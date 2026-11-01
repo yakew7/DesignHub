@@ -93,3 +93,40 @@ export async function checkpoint(reason: VersionReason, snapshot?: BrandSnapshot
   if (!activeId || !snapshotStoresHydrated() || !useProjectStore.persist.hasHydrated()) return;
   await recordVersion(activeId, snapshot ?? captureSnapshot(), reason);
 }
+
+/** Every version of every project, whole again, for the Storage panel. */
+export async function listAllVersions(): Promise<ProjectVersion[]> {
+  const stored = await safeDb((db) => db.versions.toArray(), null);
+  if (!stored) return [...memory.values()].flat().map(upgradeStored);
+  const byProject = new Map<string, typeof stored>();
+  for (const row of stored) byProject.set(row.projectId, [...(byProject.get(row.projectId) ?? []), row]);
+  return [...byProject.values()].flatMap((rows) => expandVersions(rows, upgradeStored));
+}
+
+/**
+ * Deletes versions. Only the oldest part of a history may go this way (see `versionsToTrim`): the versions after it
+ * are changes from the ones newer than them, so they stay whole.
+ */
+export async function removeVersions(versions: ProjectVersion[]): Promise<void> {
+  const ids = new Set(versions.map((version) => version.id));
+  for (const [projectId, list] of memory)
+    memory.set(
+      projectId,
+      list.filter((version) => !ids.has(version.id)),
+    );
+  await safeDb((db) => db.versions.bulkDelete([...ids]), undefined);
+}
+
+/** Puts versions back after `removeVersions`, grouped by project. */
+export async function restoreVersions(versions: ProjectVersion[]): Promise<void> {
+  const byProject = new Map<string, ProjectVersion[]>();
+  for (const version of versions)
+    byProject.set(version.projectId, [...(byProject.get(version.projectId) ?? []), version]);
+  for (const [projectId, list] of byProject) {
+    const kept = await listVersions(projectId);
+    const merged = sortVersions([...kept, ...list]);
+    // Re-compact the whole history: the restored ones are older than every kept one.
+    memory.set(projectId, merged);
+    await safeDb((db) => db.versions.bulkPut(compactVersions(merged)), undefined);
+  }
+}
