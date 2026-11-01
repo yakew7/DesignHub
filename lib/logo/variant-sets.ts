@@ -1,6 +1,9 @@
 import type { LogoVariantId } from "@/lib/logo/variants";
 
-export type LogoVariantSet = { id: string; label: string; variants: LogoVariantId[] };
+export type LogoVariantSetId = "colors" | "lockups" | "marks" | "sharing";
+
+/** The label is the English name; the studio shows the translated one, `logo.set.<id>`. */
+export type LogoVariantSet = { id: LogoVariantSetId; label: string; variants: LogoVariantId[] };
 
 /**
  * The variants in sets, in the order the Variants view shows them. Every variant belongs to exactly one

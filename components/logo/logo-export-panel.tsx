@@ -5,6 +5,7 @@ import { useMemo, useState } from "react";
 import { toast } from "sonner";
 
 import { CodeBlock } from "@/components/export/code-block";
+import { useI18n } from "@/components/layout/locale-provider";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
@@ -20,6 +21,7 @@ import { useLogoStore } from "@/store/logo-store";
 type Job = "png" | "webp" | "pdf" | "zip" | "favicon";
 
 export function LogoExportPanel() {
+  const { t } = useI18n();
   const ctx = useVariantContext();
   const variantId = useLogoStore((state) => state.variant);
   const clearSpace = useLogoStore((state) => state.clearSpace);
@@ -56,9 +58,9 @@ export function LogoExportPanel() {
         const zip = await buildFaviconZip(ctx);
         downloadBlob(new Blob([zip.slice().buffer], { type: "application/zip" }), `${slugify(ctx.name)}-favicon.zip`);
       }
-      toast.success("Download ready");
+      toast.success(t("logo.export.ready"));
     } catch (error) {
-      toast.error(error instanceof Error && error.message ? error.message : "Export failed in this browser.");
+      toast.error(error instanceof Error && error.message ? error.message : t("logo.export.failed"));
     } finally {
       setBusy(null);
     }
@@ -70,8 +72,10 @@ export function LogoExportPanel() {
   return (
     <>
       <div className="flex flex-col gap-1">
-        <h2 className="text-sm font-medium">Export · {variant.label}</h2>
-        <p className="text-xs text-muted-foreground">Pick a variant in the Variants tab.</p>
+        <h2 className="text-sm font-medium">
+          {t("logo.export.title", { name: t(`logo.variant.${variant.id}.label`) })}
+        </h2>
+        <p className="text-xs text-muted-foreground">{t("logo.export.pick")}</p>
       </div>
       <div className="grid grid-cols-2 gap-2 sm:grid-cols-4">
         <Button variant="outline" size="sm" onClick={() => downloadText(svg, `${file}.svg`)}>
@@ -96,22 +100,20 @@ export function LogoExportPanel() {
               <img
                 key={replay}
                 src={svgDataUri(animated)}
-                alt={`${variant.label} drawing itself`}
+                alt={t("logo.export.animatedAlt", { name: t(`logo.variant.${variant.id}.label`) })}
                 className="max-h-full max-w-full object-contain"
               />
             </span>
           ) : null}
           <div className="flex min-w-0 flex-1 flex-col gap-0.5">
-            <span className="text-sm font-medium">Animated SVG</span>
-            <span className="text-xs text-muted-foreground">
-              Outlines draw in, then fills fade in. Shows the finished logo when motion is reduced.
-            </span>
+            <span className="text-sm font-medium">{t("logo.export.animated")}</span>
+            <span className="text-xs text-muted-foreground">{t("logo.export.animatedNote")}</span>
           </div>
           <Button
             variant="ghost"
             size="icon"
             className="size-8"
-            aria-label="Replay animation"
+            aria-label={t("logo.export.replay")}
             onClick={() => setReplay((value) => value + 1)}
             disabled={!animated}
           >
@@ -122,7 +124,7 @@ export function LogoExportPanel() {
           <div className="flex items-center gap-2">
             <Switch id="logo-animated-loop" checked={loop} onCheckedChange={setLoop} />
             <Label htmlFor="logo-animated-loop" className="text-xs font-normal">
-              Loop
+              {t("logo.export.loop")}
             </Label>
           </div>
           <Button
@@ -131,15 +133,15 @@ export function LogoExportPanel() {
             disabled={!animated}
             onClick={() => animated && downloadText(animated, `${file}-animated.svg`)}
           >
-            <PenTool /> Animated SVG
+            <PenTool /> {t("logo.export.animated")}
           </Button>
         </div>
       </div>
       <Button onClick={() => run("zip")} disabled={busy !== null}>
-        {icon("zip", <FileArchive />)} Logo pack (.zip)
+        {icon("zip", <FileArchive />)} {t("logo.export.pack")}
       </Button>
       <Button variant="outline" onClick={() => run("favicon")} disabled={busy !== null}>
-        {icon("favicon", <Globe />)} Favicon package (.zip)
+        {icon("favicon", <Globe />)} {t("logo.export.favicon")}
       </Button>
       <CodeBlock code={svg} filename={`${file}.svg`} maxHeight="20rem" />
     </>

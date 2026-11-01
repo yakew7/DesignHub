@@ -3,6 +3,7 @@
 import { ChevronDown, Search } from "lucide-react";
 import { useMemo, useState } from "react";
 
+import { useI18n } from "@/components/layout/locale-provider";
 import { BrandLogo } from "@/components/brand/brand-logo";
 import { FaviconTabs } from "@/components/logo/favicon-tabs";
 import { PrintCheck } from "@/components/logo/print-check";
@@ -29,6 +30,7 @@ function VariantCard({
   selected: boolean;
   onSelect: () => void;
 }) {
+  const { t } = useI18n();
   return (
     <li>
       <button
@@ -47,8 +49,8 @@ function VariantCard({
           <BrandLogo svg={svg} className="max-h-full max-w-full" />
         </span>
         <span className="flex flex-col gap-0.5 border-t bg-card p-3">
-          <span className="text-sm font-medium">{variant.label}</span>
-          <span className="text-xs text-muted-foreground">{variant.description}</span>
+          <span className="text-sm font-medium">{t(`logo.variant.${variant.id}.label`)}</span>
+          <span className="text-xs text-muted-foreground">{t(`logo.variant.${variant.id}.description`)}</span>
         </span>
       </button>
     </li>
@@ -56,6 +58,7 @@ function VariantCard({
 }
 
 export function LogoVariants() {
+  const { t } = useI18n();
   const ctx = useVariantContext();
   const selected = useLogoStore((state) => state.variant);
   const setVariant = useLogoStore((state) => state.setVariant);
@@ -73,11 +76,24 @@ export function LogoVariants() {
           ...set,
           shown: set.variants.flatMap((id) => {
             const entry = rendered.get(id);
-            return entry && matchesQuery(entry.variant, query, set.label) ? [entry] : [];
+            return entry &&
+              matchesQuery(
+                {
+                  id: entry.variant.id,
+                  // Found by the name in the language shown, and by the English name too.
+                  label: t(`logo.variant.${entry.variant.id}.label`),
+                  description: t(`logo.variant.${entry.variant.id}.description`),
+                  keywords: `${entry.variant.label} ${entry.variant.description}`,
+                },
+                query,
+                t(`logo.set.${set.id}`),
+              )
+              ? [entry]
+              : [];
           }),
         }))
         .filter((set) => set.shown.length > 0),
-    [rendered, query],
+    [rendered, query, t],
   );
   const horizontal = useMemo(() => renderVariant("horizontal", ctx), [ctx]);
   const mark = useMemo(() => renderVariant("color", ctx), [ctx]);
@@ -85,7 +101,7 @@ export function LogoVariants() {
 
   return (
     <div className="flex flex-col gap-6">
-      <div className="flex flex-col gap-3" role="group" aria-label="Logo variants">
+      <div className="flex flex-col gap-3" role="group" aria-label={t("logo.variants.group")}>
         <div className="relative">
           <Search
             className="pointer-events-none absolute top-1/2 left-2.5 size-4 -translate-y-1/2 text-subtle-foreground"
@@ -95,8 +111,8 @@ export function LogoVariants() {
             type="search"
             value={query}
             onChange={(event) => setQuery(event.target.value)}
-            aria-label="Find a variant"
-            placeholder="Find a variant"
+            aria-label={t("logo.variants.search")}
+            placeholder={t("logo.variants.search")}
             className="pl-8"
           />
         </div>
@@ -117,7 +133,7 @@ export function LogoVariants() {
                   className={cn("size-3.5 transition-transform duration-150", !expanded && "-rotate-90")}
                   aria-hidden
                 />
-                {set.label} <span className="font-normal">({set.shown.length})</span>
+                {t(`logo.set.${set.id}`)} <span className="font-normal">({set.shown.length})</span>
               </button>
               {expanded ? (
                 <ul id={listId} className="grid gap-3 sm:grid-cols-2">
@@ -136,11 +152,11 @@ export function LogoVariants() {
             </section>
           );
         })}
-        {sets.length === 0 ? <p className="text-xs text-muted-foreground">No variant matches that search.</p> : null}
+        {sets.length === 0 ? <p className="text-xs text-muted-foreground">{t("logo.variants.noMatch")}</p> : null}
       </div>
 
-      <section aria-label="Minimum size" className="flex flex-col gap-2">
-        <h3 className="text-sm font-medium">Minimum size</h3>
+      <section aria-label={t("logo.minSize.title")} className="flex flex-col gap-2">
+        <h3 className="text-sm font-medium">{t("logo.minSize.title")}</h3>
         <div className="flex flex-wrap items-end gap-5 rounded-lg border p-4" style={{ background: ctx.light }}>
           {MIN_SIZES.map((size) => (
             <figure key={size} className="flex flex-col items-center gap-1.5">
@@ -153,18 +169,15 @@ export function LogoVariants() {
             </figure>
           ))}
         </div>
-        <p className="text-xs text-muted-foreground">
-          Keep the mark at 24px or larger on screen, and the horizontal lockup at 96px wide or larger. Below that, use
-          the mark alone.
-        </p>
+        <p className="text-xs text-muted-foreground">{t("logo.minSize.note")}</p>
       </section>
 
       <PrintCheck logo={ctx.logo} />
 
       <FaviconTabs ctx={ctx} />
 
-      <section aria-label="Backgrounds" className="flex flex-col gap-2">
-        <h3 className="text-sm font-medium">On different backgrounds</h3>
+      <section aria-label={t("logo.backgrounds.title")} className="flex flex-col gap-2">
+        <h3 className="text-sm font-medium">{t("logo.backgrounds.title")}</h3>
         <div className="grid gap-2 sm:grid-cols-2">
           {[ctx.light, ctx.dark, ctx.primary, "linear-gradient(135deg,#1e1b4b,#6366f1 60%,#f472b6)"].map(
             (background, index) => (
