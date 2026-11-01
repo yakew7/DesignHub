@@ -2,12 +2,14 @@
 
 import { StudioLink as Link } from "@/components/layout/studio-link";
 import { usePathname } from "next/navigation";
+import type { ReactNode } from "react";
 import { BookOpen, ChevronDown, Home, PanelLeftClose, PanelLeftOpen } from "lucide-react";
 
 import { GithubIcon } from "@/components/layout/github-icon";
 import { useI18n } from "@/components/layout/locale-provider";
 
 import { Kbd } from "@/components/ui/kbd";
+import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 import { isGroupOpen } from "@/lib/nav-groups";
 import { isActivePath, studioGroups, studios } from "@/lib/navigation";
 import { siteConfig } from "@/lib/site";
@@ -26,6 +28,17 @@ const itemClass =
   "group flex h-8 items-center gap-2.5 rounded-md px-2 text-sm text-muted-foreground transition-colors duration-150 hover:bg-accent hover:text-foreground";
 
 const compactClass = "size-8 justify-center px-0";
+
+/** On the collapsed rail a name is a tooltip, shown on hover and on keyboard focus, which `title` is not. */
+function RailTip({ show, text, children }: { show: boolean; text: string; children: ReactNode }) {
+  if (!show) return children;
+  return (
+    <Tooltip>
+      <TooltipTrigger asChild>{children}</TooltipTrigger>
+      <TooltipContent side="right">{text}</TooltipContent>
+    </Tooltip>
+  );
+}
 
 export function SidebarNav({ onNavigate, compact = false, onToggleCollapsed }: SidebarNavProps) {
   const pathname = usePathname();
@@ -56,17 +69,18 @@ export function SidebarNav({ onNavigate, compact = false, onToggleCollapsed }: S
         </button>
       ) : null}
       <div className="flex flex-col gap-0.5">
-        <Link
-          href="/"
-          onClick={onNavigate}
-          aria-current={pathname === "/" ? "page" : undefined}
-          aria-label={compact ? t("nav.home") : undefined}
-          title={compact ? t("nav.home") : undefined}
-          className={cn(itemClass, compact && compactClass, pathname === "/" && "bg-accent text-foreground")}
-        >
-          <Home className="size-4" aria-hidden />
-          {compact ? null : t("nav.home")}
-        </Link>
+        <RailTip show={compact} text={t("nav.home")}>
+          <Link
+            href="/"
+            onClick={onNavigate}
+            aria-current={pathname === "/" ? "page" : undefined}
+            aria-label={compact ? t("nav.home") : undefined}
+            className={cn(itemClass, compact && compactClass, pathname === "/" && "bg-accent text-foreground")}
+          >
+            <Home className="size-4" aria-hidden />
+            {compact ? null : t("nav.home")}
+          </Link>
+        </RailTip>
       </div>
 
       {studioGroups.map((group) => {
@@ -98,26 +112,26 @@ export function SidebarNav({ onNavigate, compact = false, onToggleCollapsed }: S
                   const Icon = studio.icon;
                   const name = t(`studio.${studio.id}.short`);
                   return (
-                    <Link
-                      key={studio.id}
-                      href={studio.href}
-                      onClick={onNavigate}
-                      aria-current={active ? "page" : undefined}
-                      aria-label={compact ? name : undefined}
-                      title={compact ? name : undefined}
-                      className={cn(itemClass, compact && compactClass, active && "bg-accent text-foreground")}
-                    >
-                      <Icon className={cn("size-4", active && "text-brand")} aria-hidden />
-                      {compact ? null : (
-                        <>
-                          <span className="flex-1 truncate">{name}</span>
-                          <span className="hidden items-center gap-0.5 opacity-0 transition-opacity duration-150 group-hover:opacity-100 lg:flex">
-                            <Kbd>G</Kbd>
-                            <Kbd>{studio.shortcut.toUpperCase()}</Kbd>
-                          </span>
-                        </>
-                      )}
-                    </Link>
+                    <RailTip key={studio.id} show={compact} text={`${name} (G ${studio.shortcut.toUpperCase()})`}>
+                      <Link
+                        href={studio.href}
+                        onClick={onNavigate}
+                        aria-current={active ? "page" : undefined}
+                        aria-label={compact ? name : undefined}
+                        className={cn(itemClass, compact && compactClass, active && "bg-accent text-foreground")}
+                      >
+                        <Icon className={cn("size-4", active && "text-brand")} aria-hidden />
+                        {compact ? null : (
+                          <>
+                            <span className="flex-1 truncate">{name}</span>
+                            <span className="hidden items-center gap-0.5 opacity-0 transition-opacity duration-150 group-hover:opacity-100 lg:flex">
+                              <Kbd>G</Kbd>
+                              <Kbd>{studio.shortcut.toUpperCase()}</Kbd>
+                            </span>
+                          </>
+                        )}
+                      </Link>
+                    </RailTip>
                   );
                 })}
             </div>
@@ -131,28 +145,30 @@ export function SidebarNav({ onNavigate, compact = false, onToggleCollapsed }: S
             {t("nav.resources")}
           </p>
         )}
-        <a
-          href={siteConfig.github}
-          target="_blank"
-          rel="noreferrer"
-          aria-label={compact ? "GitHub" : undefined}
-          title={compact ? "GitHub" : undefined}
-          className={cn(itemClass, compact && compactClass)}
-        >
-          <GithubIcon />
-          {compact ? null : "GitHub"}
-        </a>
-        <a
-          href={`${siteConfig.github}/blob/main/ROADMAP.md`}
-          target="_blank"
-          rel="noreferrer"
-          aria-label={compact ? t("nav.roadmap") : undefined}
-          title={compact ? t("nav.roadmap") : undefined}
-          className={cn(itemClass, compact && compactClass)}
-        >
-          <BookOpen className="size-4" aria-hidden />
-          {compact ? null : t("nav.roadmap")}
-        </a>
+        <RailTip show={compact} text="GitHub">
+          <a
+            href={siteConfig.github}
+            target="_blank"
+            rel="noreferrer"
+            aria-label={compact ? "GitHub" : undefined}
+            className={cn(itemClass, compact && compactClass)}
+          >
+            <GithubIcon />
+            {compact ? null : "GitHub"}
+          </a>
+        </RailTip>
+        <RailTip show={compact} text={t("nav.roadmap")}>
+          <a
+            href={`${siteConfig.github}/blob/main/ROADMAP.md`}
+            target="_blank"
+            rel="noreferrer"
+            aria-label={compact ? t("nav.roadmap") : undefined}
+            className={cn(itemClass, compact && compactClass)}
+          >
+            <BookOpen className="size-4" aria-hidden />
+            {compact ? null : t("nav.roadmap")}
+          </a>
+        </RailTip>
         {compact ? null : <p className="px-2 pt-3 text-[11px] text-subtle-foreground">v{siteConfig.version} · MIT</p>}
       </div>
     </nav>

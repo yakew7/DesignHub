@@ -57,3 +57,23 @@ test("the sidebar collapses to icons, keeps every studio reachable by name, and 
   await expect(nav.getByRole("button", { name: "Collapse sidebar" })).toBeVisible();
   await expect.poll(width).toBeGreaterThan(200);
 });
+
+test("on the collapsed rail a keyboard user sees each studio's name and shortcut in a tooltip", async ({ page }) => {
+  await page.goto("/colors");
+  const nav = page.getByRole("navigation", { name: "Studios" });
+  await nav.getByRole("button", { name: "Collapse sidebar" }).click();
+  await expect(nav.getByRole("button", { name: "Expand sidebar" })).toBeVisible();
+
+  // Tab from the collapse button: home, then the first studio.
+  await nav.getByRole("button", { name: "Expand sidebar" }).focus();
+  await page.keyboard.press("Tab");
+  await page.keyboard.press("Tab");
+  const focused = page.locator(":focus");
+  const name = await focused.getAttribute("aria-label");
+  expect(name).toBeTruthy();
+  await expect(page.getByRole("tooltip").filter({ hasText: name! })).toBeVisible();
+
+  // A studio's tooltip carries its G shortcut.
+  await nav.getByRole("link", { name: "Typography" }).focus();
+  await expect(page.getByRole("tooltip").filter({ hasText: "Typography (G T)" })).toBeVisible();
+});
