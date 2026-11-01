@@ -937,6 +937,8 @@ export const hi = {
   "code.deprecated": "पुराना",
   "code.deprecatedNote": "यह फ़ॉर्मैट पुराना हो चुका है।",
   "code.clipped": "{total} में से पहले {shown} अक्षर दिख रहे हैं। कॉपी और डाउनलोड में सब कुछ शामिल है।",
+  "code.copyLink": "इस फ़ॉर्मैट का लिंक कॉपी करें",
+  "code.linkCopied": "लिंक कॉपी हुआ",
   "code.noMatch": "इस खोज से कोई फ़ॉर्मैट मेल नहीं खाता।",
   "error.file.newer":
     "यह फ़ाइल DesignHub के नए वर्शन ने सेव की है (फ़ाइल वर्शन {version})। ऐप अपडेट करें और फिर कोशिश करें।",

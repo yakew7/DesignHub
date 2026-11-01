@@ -122,6 +122,7 @@ export function TokenOutput({
         label="Token format"
         activeId={formats.some((format) => format.id === openFormat) ? openFormat : (formats[0]?.id ?? null)}
         onActiveChange={setOpenFormat}
+        linkPath={(id) => `/export?format=${encodeURIComponent(id)}`}
       />
     </section>
   );

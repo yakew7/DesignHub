@@ -947,6 +947,8 @@ export const en = {
   "code.deprecated": "Deprecated",
   "code.deprecatedNote": "This format is deprecated.",
   "code.clipped": "Showing the first {shown} of {total} characters. Copy and download include all of it.",
+  "code.copyLink": "Copy link to this format",
+  "code.linkCopied": "Link copied",
   "code.noMatch": "No format matches that search.",
   "error.file.newer":
     "This file was saved by a newer version of DesignHub (file version {version}). Update the app, then try again.",

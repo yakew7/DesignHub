@@ -1,10 +1,11 @@
 "use client";
 
 import { ChevronDown, Search } from "lucide-react";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 
 import { CodeBlock } from "@/components/export/code-block";
 import { useI18n } from "@/components/layout/locale-provider";
+import { CopyButton } from "@/components/ui/copy-button";
 import { Input } from "@/components/ui/input";
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
 import { exportTiers } from "@/lib/tokens/tiers";
@@ -22,6 +23,8 @@ type ExportPanelProps = {
   /** Controls which format is open. Without it the panel keeps its own choice. */
   activeId?: string | null;
   onActiveChange?: (id: string) => void;
+  /** The path that opens a format, such as `/export?format=css`. Adds a Copy link button for the open format. */
+  linkPath?: (id: string) => string;
 };
 
 /** The words a search matches on: what a person would type for a format. */
@@ -141,12 +144,15 @@ function TieredPicker({
 }
 
 /** Format switcher + code view with one-click copy and download. */
-export function ExportPanel({ formats, label, renderCode, activeId, onActiveChange }: ExportPanelProps) {
+export function ExportPanel({ formats, label, renderCode, activeId, onActiveChange, linkPath }: ExportPanelProps) {
   const { t } = useI18n();
   const [own, setOwn] = useState(formats[0]?.id ?? "");
   const active = (onActiveChange ? activeId : own) ?? "";
   const setActive = (id: string) => (onActiveChange ? onActiveChange(id) : setOwn(id));
   const format = formats.find((item) => item.id === active) ?? formats[0];
+  // The address is known only in the browser.
+  const [origin, setOrigin] = useState("");
+  useEffect(() => setOrigin(window.location.origin), []);
   const code = useMemo(() => format?.code ?? renderCode?.(format?.id ?? "") ?? "", [format, renderCode]);
   if (!format) return null;
   const groupLabel = label ?? t("code.format");
@@ -175,6 +181,17 @@ export function ExportPanel({ formats, label, renderCode, activeId, onActiveChan
         >
           {t("code.deprecatedNote")} {format.deprecated}
         </p>
+      ) : null}
+      {linkPath && origin ? (
+        <CopyButton
+          variant="outline"
+          size="sm"
+          className="self-start"
+          value={`${origin}${linkPath(format.id)}`}
+          toastMessage={t("code.linkCopied")}
+        >
+          {t("code.copyLink")}
+        </CopyButton>
       ) : null}
       <CodeBlock code={code} filename={format.filename} />
     </div>

@@ -49,3 +49,20 @@ test("a link opens a format, a reload keeps the one that was open, and an unknow
     "true",
   );
 });
+
+test("the copied link opens the format that was open", async ({ page, context }) => {
+  await context.grantPermissions(["clipboard-read", "clipboard-write"]);
+  await page.goto("/export");
+  await page.getByRole("radio", { name: "Tailwind v4" }).first().click();
+  await page.getByRole("button", { name: "Copy link to this format" }).click();
+  await expect(page.getByText("Link copied")).toBeVisible();
+  const link = await page.evaluate(() => navigator.clipboard.readText());
+  expect(new URL(link).pathname + new URL(link).search).toBe("/export?format=tailwind-v4");
+
+  // Another person opens it: a new page with nothing saved lands on the same format.
+  const other = await context.browser()!.newContext();
+  const page2 = await other.newPage();
+  await page2.goto(link);
+  await expect(page2.getByRole("radio", { name: "Tailwind v4" }).first()).toHaveAttribute("aria-checked", "true");
+  await other.close();
+});
