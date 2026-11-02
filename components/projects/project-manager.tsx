@@ -33,6 +33,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Switch } from "@/components/ui/switch";
+import { useDebouncedValue } from "@/hooks/use-debounced-value";
 import { useProjects } from "@/hooks/use-projects";
 import { downloadBlob, downloadText } from "@/lib/download";
 import { errorMessage } from "@/lib/i18n/errors";
@@ -86,6 +87,9 @@ export function ProjectManager() {
   const [chosen, setChosen] = useState<Set<string>>(new Set());
   const [bulkTag, setBulkTag] = useState("");
   const lastClicked = useRef<string | null>(null);
+  const selectButton = useRef<HTMLButtonElement>(null);
+  // Screen readers hear the count once it settles, not for every checkbox in a long Shift range.
+  const settledCount = useDebouncedValue(chosen.size, 600);
   const fileRef = useRef<HTMLInputElement>(null);
   const newProjectRequested = useUiStore((state) => state.newProjectRequested);
   const clearNewProjectRequest = useUiStore((state) => state.clearNewProjectRequest);
@@ -177,7 +181,23 @@ export function ProjectManager() {
     setSelecting(false);
     setChosen(new Set());
     setBulkTag("");
+    // The button that started select mode is where focus belongs when it ends.
+    selectButton.current?.focus();
   }
+
+  // Escape leaves select mode, unless a dialog, list or menu is open: Escape then closes that.
+  const leaveRef = useRef(leaveSelecting);
+  leaveRef.current = leaveSelecting;
+  useEffect(() => {
+    if (!selecting) return;
+    const onKey = (event: KeyboardEvent) => {
+      if (event.key !== "Escape" || event.defaultPrevented) return;
+      if (document.querySelector('[role="dialog"], [role="listbox"], [role="menu"]')) return;
+      leaveRef.current();
+    };
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, [selecting]);
 
   async function exportChosen() {
     await saveActiveProject();
@@ -335,6 +355,7 @@ export function ProjectManager() {
         </Select>
         <span className="flex-1" />
         <Button
+          ref={selectButton}
           variant="outline"
           size="sm"
           aria-pressed={selecting}
@@ -432,8 +453,9 @@ export function ProjectManager() {
           aria-label={t("projects.bulk.label")}
           className="sticky top-16 z-20 flex flex-wrap items-center gap-2 rounded-lg border bg-card/95 p-2.5 backdrop-blur"
         >
-          <span role="status" className="text-sm font-medium">
-            {plural("projects.bulk.count", chosen.size)}
+          <span className="text-sm font-medium">{plural("projects.bulk.count", chosen.size)}</span>
+          <span role="status" className="sr-only">
+            {plural("projects.bulk.count", settledCount)}
           </span>
           <Button
             variant="outline"

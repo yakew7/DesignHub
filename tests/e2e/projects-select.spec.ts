@@ -149,3 +149,52 @@ test("the favorites and tag filters are remembered, and a tag nobody has is igno
   await page.reload();
   await expect(page.getByRole("button", { name: "Clear filters" })).toHaveCount(0);
 });
+
+test("Escape leaves select mode and returns focus, and the count is announced once for a range", async ({ page }) => {
+  const fixture = JSON.parse(readFileSync(join(__dirname, "../../lib/projects/__fixtures__/v1/projects.json"), "utf8"));
+  const template = fixture.projects[0];
+  fixture.projects = Array.from({ length: 12 }, (_, index) => {
+    const copy = structuredClone(template);
+    copy.favorite = false;
+    copy.tags = [];
+    copy.snapshot.brand.profile.name = `Escape ${String(index).padStart(2, "0")}`;
+    return copy;
+  });
+  const file = join(tmpdir(), "designhub-escape.json");
+  writeFileSync(file, JSON.stringify(fixture));
+
+  await page.goto("/projects");
+  await expect(page.locator("h1").first()).toBeVisible();
+  await page.locator('input[type="file"]').first().setInputFiles(file);
+  await expect(page.getByRole("button", { name: /^Open Escape/ }).first()).toBeVisible();
+
+  const select = page.getByRole("button", { name: "Select", exact: true });
+  await select.click();
+  const bar = page.getByRole("region", { name: "Actions for the selected projects" });
+  const live = bar.getByRole("status");
+
+  // Count the live region's updates while a range of ten is selected with Shift and click.
+  await live.evaluate((node) => {
+    const updates: string[] = [];
+    Object.assign(window, { updates });
+    new MutationObserver(() => updates.push(node.textContent ?? "")).observe(node, {
+      childList: true,
+      characterData: true,
+      subtree: true,
+    });
+  });
+  const boxes = page.getByRole("checkbox");
+  await boxes.nth(0).click();
+  await boxes.nth(9).click({ modifiers: ["Shift"] });
+  await expect(bar).toContainText("10 projects selected");
+  await expect(live).toHaveText("10 projects selected");
+  const updates = await page.evaluate(() => (window as unknown as { updates: string[] }).updates);
+  expect(updates.at(-1)).toBe("10 projects selected");
+  // The count settles, so a screen reader is not told every step of the range.
+  expect(updates.length).toBeLessThanOrEqual(3);
+
+  await page.keyboard.press("Escape");
+  await expect(bar).toHaveCount(0);
+  await expect(select).toBeFocused();
+  await expect(page.getByRole("checkbox")).toHaveCount(0);
+});
