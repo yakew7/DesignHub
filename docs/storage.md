@@ -35,7 +35,7 @@ Each row in the `kv` table is one Zustand store, saved under the key shown here.
 | `designhub:mockups`         | Mockup template, theme, copy and export scale                                                                             | Yes (copy and theme)            |
 | `designhub:social`          | Social template, copy, design overrides, safe area, README credit, ZIP selection                                          | Yes (copy, theme, design)       |
 | `designhub:guidelines`      | Selected page, excluded pages, book theme, cover style                                                                    | No                              |
-| `designhub:project`         | Which project is open, and how the project list is sorted                                                                 | No                              |
+| `designhub:project`         | Which project is open, how the project list is sorted, and its favorites and tag filters                                  | No                              |
 | `designhub:brand-dna`       | Chosen Brand DNA provider and the "Ignore background" option                                                              | No                              |
 | `designhub:backgrounds`     | Background Studio settings                                                                                                | No                              |
 | `designhub:icons`           | Icon Studio search, selected icon, style, favorite icons                                                                  | No                              |
@@ -59,6 +59,10 @@ Manual test plan: build and start the app, install it from Chrome, export a proj
 ## The Storage panel
 
 **Brand Projects, Storage** shows what DesignHub keeps on this device: the number and size of projects, version history, the icon cache and the offline caches, and the share of the space this browser allows. Only counts and sizes are read; no project content is shown or sent. **Clear the offline cache** deletes the `designhub-static-*` and `designhub-runtime-*` caches and nothing else (projects, settings and the share cache stay), and the studios you opened are kept again the next time you open them with a connection.
+
+## Protecting the data and keeping studios offline
+
+The Storage panel also says whether the browser has promised to keep this site's data (`navigator.storage.persisted()`). When it has not, **Protect my data** asks (`navigator.storage.persist()`); the browser may say no, and the panel says what happened. It never asks until the button is pressed. **Keep studios for offline use** lists every studio with its state. Choose some and press Keep: the page asks the service worker for each one, the worker keeps its page and files and answers, and the panel reports how many were kept, the size added and any that could not be fetched. Nothing is downloaded until then.
 
 ## Trimming old versions
 
