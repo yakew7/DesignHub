@@ -30,7 +30,7 @@ test("the variants view and the export panel speak the chosen language, and sear
 }) => {
   await page.addInitScript(() => window.localStorage.setItem("designhub:locale", "es"));
   await page.goto("/logo");
-  await page.getByRole("tab", { name: "Variants" }).click();
+  await page.getByRole("tab", { name: "Variantes" }).click();
   const group = page.getByRole("group", { name: "Variantes del logotipo" });
   await expect(group).toBeVisible();
   await expect(group.getByRole("button", { name: /^Colores/ })).toBeVisible();
@@ -44,4 +44,25 @@ test("the variants view and the export panel speak the chosen language, and sear
   await expect(group.locator("li")).toHaveCount(1);
   await search.fill("zzzz");
   await expect(page.getByText("Ninguna variante coincide con la búsqueda.")).toBeVisible();
+});
+
+test("the guides, edit and print check panels speak the chosen language", async ({ page }) => {
+  await page.addInitScript(() => window.localStorage.setItem("designhub:locale", "fr"));
+  await page.goto("/logo");
+  await expect(page.locator("h1").first()).toBeVisible();
+  await page.getByRole("radio", { name: "Avancé" }).click();
+
+  await expect(page.getByRole("region", { name: "Repères" })).toBeVisible();
+  await expect(page.getByText("Grille de construction")).toBeVisible();
+  await expect(page.getByRole("region", { name: "Modifier" })).toBeVisible();
+  await expect(page.getByLabel("Code SVG")).toBeVisible();
+  await expect(page.getByRole("tab", { name: "Variantes" })).toBeVisible();
+
+  // The print check's verdict is built from its numbers, in French.
+  await page.getByRole("tab", { name: "Variantes" }).click();
+  const check = page.getByRole("region", { name: "Contrôle d'impression une couleur" });
+  await expect(check).toBeVisible();
+  const verdict = check.getByRole("status").filter({ hasText: "Marque monochrome" });
+  await expect(verdict).toContainText(/Conforme|Alerte/, { timeout: 20_000 });
+  await expect(verdict).toContainText(/Tous les traits et vides|trait le plus fin|vide le plus fin/);
 });

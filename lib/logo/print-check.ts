@@ -195,8 +195,8 @@ export type PrintCheckVerdict = {
   summary: string;
 };
 
-const mmText = (mm: number) => `${mm < 0.1 ? mm.toFixed(3) : mm.toFixed(2)} mm`;
-const ptText = (mm: number) => `${(mm / MM_PER_POINT).toFixed(2)} pt`;
+export const mmText = (mm: number) => `${mm < 0.1 ? mm.toFixed(3) : mm.toFixed(2)} mm`;
+export const ptText = (mm: number) => `${(mm / MM_PER_POINT).toFixed(2)} pt`;
 
 /**
  * Turns pixel measurements into a verdict. `pixelsPerMm` is the raster's scale at the chosen print

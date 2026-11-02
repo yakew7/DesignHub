@@ -3,6 +3,7 @@
 import { Check, Loader2, X } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
 
+import { useI18n } from "@/components/layout/locale-provider";
 import { Badge } from "@/components/ui/badge";
 import { SliderField } from "@/components/ui/field";
 import { Label } from "@/components/ui/label";
@@ -14,14 +15,41 @@ import {
   inkFromRgba,
   measurePrintCheck,
   MM_PER_POINT,
+  mmText,
+  ptText,
   printCheckRasterWidth,
   printCheckVerdict,
   type PrintCheckVerdict,
 } from "@/lib/logo/print-check";
+import type { Translate } from "@/lib/i18n/translate";
 import { monochromeSvg } from "@/lib/logo/recolor";
 
 /** Line weights a press commonly holds, in points. */
 const MINIMUMS = ["0.25", "0.5", "1"] as const;
+
+/** The verdict in the language shown, built from its numbers (`verdict.summary` is the English text for files and tests). */
+function verdictText(t: Translate, verdict: PrintCheckVerdict, minimumMm: number): string {
+  const min = ptText(minimumMm);
+  const thin = (value: number | null) => value !== null && value < minimumMm;
+  if (!verdict.pass) {
+    return [
+      thin(verdict.strokeMm)
+        ? t("logo.print.thinStroke", { mm: mmText(verdict.strokeMm!), pt: ptText(verdict.strokeMm!), min })
+        : "",
+      thin(verdict.gapMm)
+        ? t("logo.print.thinGap", { mm: mmText(verdict.gapMm!), pt: ptText(verdict.gapMm!), min })
+        : "",
+    ]
+      .filter(Boolean)
+      .join(" ");
+  }
+  if (verdict.strokeMm !== null && verdict.gapMm !== null) {
+    return t("logo.print.holdsBoth", { min, stroke: mmText(verdict.strokeMm), gap: mmText(verdict.gapMm) });
+  }
+  if (verdict.strokeMm !== null) return t("logo.print.holdsStroke", { min, mm: mmText(verdict.strokeMm) });
+  if (verdict.gapMm !== null) return t("logo.print.holdsGap", { min, mm: mmText(verdict.gapMm) });
+  return t("logo.print.holds", { min });
+}
 /** The raster never gets taller than this, whatever the logo's shape. */
 const MAX_HEIGHT = 1600;
 
@@ -50,6 +78,7 @@ async function rasterInk(logo: string, width: number, height: number) {
 
 /** Warns when the one-color logo has strokes or gaps thinner than the chosen print minimum. */
 export function PrintCheck({ logo }: { logo: string }) {
+  const { t } = useI18n();
   const [printWidth, setPrintWidth] = useState(40);
   const [minimumPoints, setMinimumPoints] = useState<(typeof MINIMUMS)[number]>("0.25");
   const settled = useDebouncedValue({ logo, printWidth, minimumPoints }, 300);
@@ -79,18 +108,21 @@ export function PrintCheck({ logo }: { logo: string }) {
   }, [settled]);
 
   const body = useMemo(() => {
-    if (failed)
-      return <p className="text-xs text-muted-foreground">This browser could not draw the logo to check it.</p>;
-    if (!verdict) return <p className="text-xs text-muted-foreground">Checking the logo...</p>;
-    return <p className="text-xs text-muted-foreground">{verdict.summary}</p>;
-  }, [failed, verdict]);
+    if (failed) return <p className="text-xs text-muted-foreground">{t("logo.print.failed")}</p>;
+    if (!verdict) return <p className="text-xs text-muted-foreground">{t("logo.print.checkingLogo")}</p>;
+    return (
+      <p className="text-xs text-muted-foreground">
+        {verdictText(t, verdict, Number(settled.minimumPoints) * MM_PER_POINT)}
+      </p>
+    );
+  }, [failed, verdict, settled.minimumPoints, t]);
 
   return (
-    <section aria-label="One-color print check" className="flex flex-col gap-3">
-      <h3 className="text-sm font-medium">One-color print check</h3>
+    <section aria-label={t("logo.print.title")} className="flex flex-col gap-3">
+      <h3 className="text-sm font-medium">{t("logo.print.title")}</h3>
       <div className="flex flex-col gap-4 rounded-lg border p-4">
         <SliderField
-          label="Printed width of the mark"
+          label={t("logo.print.width")}
           value={printWidth}
           min={10}
           max={120}
@@ -99,7 +131,7 @@ export function PrintCheck({ logo }: { logo: string }) {
           format={(value) => `${value} mm`}
         />
         <div className="flex flex-col gap-1.5">
-          <Label id="print-minimum-label">Thinnest line the press holds</Label>
+          <Label id="print-minimum-label">{t("logo.print.minimum")}</Label>
           <ToggleGroup
             type="single"
             value={minimumPoints}
@@ -115,26 +147,22 @@ export function PrintCheck({ logo }: { logo: string }) {
         </div>
         <div className="flex flex-col gap-2 rounded-md border p-3" role="status" aria-live="polite">
           <div className="flex items-center justify-between gap-2">
-            <span className="text-sm font-medium">Monochrome mark</span>
+            <span className="text-sm font-medium">{t("logo.print.mark")}</span>
             {pending || !verdict ? (
               <Badge variant="outline">
-                <Loader2 className="animate-spin" aria-hidden /> Checking
+                <Loader2 className="animate-spin" aria-hidden /> {t("logo.print.checking")}
               </Badge>
             ) : (
               <Badge variant={verdict.pass ? "success" : "destructive"}>
                 {verdict.pass ? <Check aria-hidden /> : <X aria-hidden />}
-                {verdict.pass ? "Pass" : "Warning"}
+                {t(verdict.pass ? "logo.print.pass" : "logo.print.warning")}
               </Badge>
             )}
           </div>
           {body}
         </div>
       </div>
-      <p className="text-xs text-muted-foreground">
-        The one-color mark is drawn at its printed size and measured: strokes thinner than the minimum can fill in on
-        embossing, foil and small print, and gaps thinner than it can close up. Use the heavier weight, or simplify the
-        mark, if it warns.
-      </p>
+      <p className="text-xs text-muted-foreground">{t("logo.print.note")}</p>
     </section>
   );
 }

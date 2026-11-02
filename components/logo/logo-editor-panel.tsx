@@ -3,6 +3,7 @@
 import { Paintbrush } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
 
+import { useI18n } from "@/components/layout/locale-provider";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { Panel } from "@/components/ui/panel";
@@ -14,6 +15,7 @@ import { useBrandStore } from "@/store/brand-store";
 
 /** Recolor and hand-edit the logo. Changes are written to the brand profile. */
 export function LogoEditorPanel() {
+  const { t } = useI18n();
   const brand = useBrandTokens();
   const updateProfile = useBrandStore((state) => state.updateProfile);
   const colors = useMemo(() => extractColors(brand.logo.svg), [brand.logo.svg]);
@@ -45,25 +47,23 @@ export function LogoEditorPanel() {
   }
 
   return (
-    <Panel advanced title="Edit" description="Recolor or edit the markup. Scripts are always stripped.">
+    <Panel advanced title={t("logo.edit.title")} description={t("logo.edit.description")}>
       <div className="flex flex-col gap-2">
         <div className="flex items-center justify-between">
-          <Label>Colors in this logo</Label>
+          <Label>{t("logo.edit.colors")}</Label>
           <Button variant="ghost" size="sm" className="h-7" onClick={applyBrandColors} disabled={colors.length === 0}>
-            <Paintbrush /> Use brand colors
+            <Paintbrush /> {t("logo.edit.useBrand")}
           </Button>
         </div>
-        {colors.length === 0 ? (
-          <p className="text-xs text-muted-foreground">No solid colors found (the logo may use currentColor).</p>
-        ) : null}
-        <ul className="flex flex-col gap-2" aria-label="Logo colors">
+        {colors.length === 0 ? <p className="text-xs text-muted-foreground">{t("logo.edit.noColors")}</p> : null}
+        <ul className="flex flex-col gap-2" aria-label={t("logo.edit.colorsLabel")}>
           {colors.map((color) => (
             <li key={color} className="flex flex-wrap items-center gap-1.5">
               <label className="relative size-8 cursor-pointer overflow-hidden rounded-md border">
                 <span className="absolute inset-0" style={{ background: color }} />
                 <input
                   type="color"
-                  aria-label={`Replace ${color}`}
+                  aria-label={t("logo.edit.replace", { color })}
                   value={color}
                   onChange={(event) => swap(color, event.target.value)}
                   className="absolute inset-0 cursor-pointer opacity-0"
@@ -75,7 +75,7 @@ export function LogoEditorPanel() {
                   key={target}
                   type="button"
                   onClick={() => swap(color, target)}
-                  aria-label={`Replace ${color} with ${target}`}
+                  aria-label={t("logo.edit.replaceWith", { color, target })}
                   className="size-5 rounded-sm border"
                   style={{ background: target }}
                 />
@@ -85,7 +85,7 @@ export function LogoEditorPanel() {
         </ul>
       </div>
       <div className="flex flex-col gap-1.5">
-        <Label htmlFor="logo-source">SVG source</Label>
+        <Label htmlFor="logo-source">{t("logo.edit.source")}</Label>
         <Textarea
           id="logo-source"
           value={draft}
@@ -99,7 +99,7 @@ export function LogoEditorPanel() {
           className="min-h-36 font-mono text-[11px] scrollbar-thin"
         />
         <p className="text-[11px] text-subtle-foreground">
-          {invalid ? "That isn't valid SVG; nothing was changed." : "Changes apply when the field loses focus."}
+          {invalid ? t("logo.edit.invalid") : t("logo.edit.applies")}
         </p>
       </div>
     </Panel>

@@ -4,6 +4,7 @@ import { useMemo } from "react";
 
 import { SvgPreviewCanvas } from "@/components/canvas/svg-preview-canvas";
 import { StudioLayout } from "@/components/layout/studio-layout";
+import { useI18n } from "@/components/layout/locale-provider";
 import { LogoDocumentPanel } from "@/components/logo/logo-document-panel";
 import { LogoExportPanel } from "@/components/logo/logo-export-panel";
 import { LogoEditorPanel } from "@/components/logo/logo-editor-panel";
@@ -16,6 +17,7 @@ import { composeLogoWithGuides } from "@/lib/logo/compose";
 import { useLogoStore } from "@/store/logo-store";
 
 export function LogoWorkspace() {
+  const { t } = useI18n();
   const brand = useBrandTokens();
   const guides = useLogoStore((state) => state.guides);
   const clearSpace = useLogoStore((state) => state.clearSpace);
@@ -45,9 +47,9 @@ export function LogoWorkspace() {
       }
       preview={
         <Tabs defaultValue="guides" className="min-h-0 flex-1 gap-4">
-          <TabsList aria-label="Logo views">
-            <TabsTrigger value="guides">Guides</TabsTrigger>
-            <TabsTrigger value="variants">Variants</TabsTrigger>
+          <TabsList aria-label={t("logo.views")}>
+            <TabsTrigger value="guides">{t("logo.tab.guides")}</TabsTrigger>
+            <TabsTrigger value="variants">{t("logo.tab.variants")}</TabsTrigger>
           </TabsList>
           <TabsContent value="guides" className="flex min-h-0 flex-col">
             <SvgPreviewCanvas svg={composed} label={`${brand.name} logo with guides`} />
