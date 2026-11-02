@@ -16,7 +16,7 @@ import {
   Sun,
   Trash2,
 } from "lucide-react";
-import { useRef, type ReactNode } from "react";
+import { useEffect, useRef, type ReactNode } from "react";
 
 import { FontCommands } from "@/components/layout/font-commands";
 import { IconCommands } from "@/components/layout/icon-commands";
@@ -61,6 +61,23 @@ export function CommandPalette({ children }: { children?: ReactNode }) {
   const { isDark, toggle } = useThemeToggle();
   const { t } = useI18n();
   const inputRef = useRef<HTMLInputElement>(null);
+
+  // Whenever the palette opens, the search field takes focus, whatever else the page did meanwhile.
+  useEffect(() => {
+    if (!open) return;
+    let frames = 0;
+    let frame = 0;
+    const take = () => {
+      const input = inputRef.current;
+      if (input && document.activeElement !== input) {
+        input.focus();
+        input.setSelectionRange(input.value.length, input.value.length);
+      }
+      if ((frames += 1) < 12) frame = requestAnimationFrame(take);
+    };
+    frame = requestAnimationFrame(take);
+    return () => cancelAnimationFrame(frame);
+  }, [open]);
 
   useHotkey("mod+k", () => setOpen(!open), { allowInInputs: true });
   useHotkey("/", () => setOpen(true));
@@ -120,10 +137,21 @@ export function CommandPalette({ children }: { children?: ReactNode }) {
         onOpenAutoFocus={(event) => {
           // Radix selects the input's text on focus, which would swallow a handed-off query.
           event.preventDefault();
-          const input = inputRef.current;
-          if (!input) return;
-          input.focus();
-          input.setSelectionRange(input.value.length, input.value.length);
+          const focusInput = () => {
+            const input = inputRef.current;
+            if (!input) return false;
+            input.focus();
+            input.setSelectionRange(input.value.length, input.value.length);
+            return true;
+          };
+          // The search field can mount a moment after the dialog does, and the dialog has then left focus nowhere:
+          // keys typed straight after Ctrl+K would go to the page. Try again on the next frames until it is there.
+          if (focusInput()) return;
+          let frames = 0;
+          const retry = () => {
+            if (!focusInput() && (frames += 1) < 10) requestAnimationFrame(retry);
+          };
+          requestAnimationFrame(retry);
         }}
       >
         <DialogTitle className="sr-only">{t("command.title")}</DialogTitle>

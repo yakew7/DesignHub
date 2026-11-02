@@ -54,6 +54,8 @@ test("projects: a project survives export, delete and import with its name and t
   const dialog = page.getByRole("dialog", { name: "New brand project" });
   await dialog.getByLabel("Brand name").fill(name);
   await dialog.getByRole("button", { name: "Create and open" }).click();
+  await expect(dialog).toBeHidden();
+  await expect(page.getByRole("heading", { name, level: 2 })).toBeVisible();
   await page.goto("/projects");
   // The open project's title button reads "<name> (open)", the others "Open <name>".
   const card = page.getByRole("button", { name: new RegExp(`^(Open )?${name}( \\(open\\))?$`) });

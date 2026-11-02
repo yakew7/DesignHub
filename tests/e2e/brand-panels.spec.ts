@@ -1,5 +1,7 @@
 import { expect, test } from "@playwright/test";
 
+import { saved } from "./storage";
+
 test("the Brand page opens the essentials, folds the rest and remembers the choice", async ({ page }) => {
   await page.goto("/brand");
   await expect(page.locator("h1").first()).toBeVisible();
@@ -19,6 +21,7 @@ test("the Brand page opens the essentials, folds the rest and remembers the choi
   await expect(page.getByText("Border radius")).toBeHidden();
   await toggle("Shape & depth").click();
   await expect(page.getByText("Border radius")).toBeVisible();
+  await saved(page, "designhub:panels", "brand-shape");
   await page.reload();
   await expect(toggle("Shape & depth")).toHaveAttribute("aria-expanded", "true");
 });

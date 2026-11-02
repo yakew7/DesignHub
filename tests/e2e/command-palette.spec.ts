@@ -21,11 +21,16 @@ test("the palette opens short, remembers a choice and shows the rest as you type
   await palette.getByRole("option", { name: /^Color Studio/ }).click();
   // A first visit to a studio fetches its code, which a loaded machine takes a while over.
   await expect(page).toHaveURL(/\/colors$/, { timeout: 20_000 });
+  // Let the studio finish loading before the palette is opened again: a palette opened while the page is still
+  // hydrating can have its focus taken back, and keys typed then go to the page.
+  await expect(page.locator("h1").first()).toBeVisible();
+  await page.waitForLoadState("networkidle");
   await page.keyboard.press("ControlOrMeta+k");
   await expect(palette.getByText("Recent", { exact: true })).toBeVisible();
   await expect(palette.getByRole("option").first()).toContainText("Color Studio");
 
-  // Typing brings back what was left out.
+  // Typing brings back what was left out. The search field must have focus first.
+  await expect(palette.getByRole("combobox")).toBeFocused();
   await page.keyboard.type("source");
   await expect(palette.getByText("View source on GitHub")).toBeVisible();
   await page.keyboard.press("ControlOrMeta+a");
