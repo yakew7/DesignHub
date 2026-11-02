@@ -173,3 +173,28 @@ describe("the service worker", () => {
     ]);
   });
 });
+
+describe("the service worker tells the page which studios it kept", () => {
+  test("a studio that is kept is answered with kept true, and one it does not know with kept false", async () => {
+    const worker = start(build);
+    const replies: unknown[] = [];
+    const source = { postMessage: (message: unknown) => replies.push(message) };
+    await worker.fire("message", { data: { type: "REMEMBER_ROUTE", pathname: "/colors" }, source });
+    await worker.fire("message", { data: { type: "REMEMBER_ROUTE", pathname: "/elsewhere" }, source });
+    expect(replies).toEqual([
+      { type: "ROUTE_REMEMBERED", pathname: "/colors", kept: true },
+      { type: "ROUTE_REMEMBERED", pathname: "/elsewhere", kept: false },
+    ]);
+  });
+
+  test("a studio whose page cannot be fetched is answered with kept false", async () => {
+    const worker = start(build);
+    worker.state.online = false;
+    const replies: unknown[] = [];
+    await worker.fire("message", {
+      data: { type: "REMEMBER_ROUTE", pathname: "/typography" },
+      source: { postMessage: (message: unknown) => replies.push(message) },
+    });
+    expect(replies).toEqual([{ type: "ROUTE_REMEMBERED", pathname: "/typography", kept: false }]);
+  });
+});

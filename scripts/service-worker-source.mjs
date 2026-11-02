@@ -82,9 +82,9 @@ async function navigate(request) {
 /** Keeps a studio for offline use: its files first, then its page, so a page is never kept without its files. */
 async function rememberRoute(pathname) {
   const files = ROUTE_FILES[pathname];
-  if (!files) return;
+  if (!files) return false;
   const cache = await caches.open(STATIC_CACHE);
-  if (await cache.match(pathname)) return;
+  if (await cache.match(pathname)) return true;
   const keep = async (url) => {
     if (await cache.match(url)) return;
     try {
@@ -94,6 +94,8 @@ async function rememberRoute(pathname) {
   };
   await Promise.all(files.map(keep));
   await keep(pathname);
+  // True when the page is kept now, so a caller can say which ones did not fit or could not be fetched.
+  return Boolean(await cache.match(pathname));
 }
 
 self.addEventListener("install", (event) => {
@@ -112,7 +114,11 @@ self.addEventListener("activate", (event) => {
 self.addEventListener("message", (event) => {
   if (event.data?.type === "SKIP_WAITING") self.skipWaiting();
   // The page says which studio it is showing, so a link followed inside the app keeps its studio too.
-  if (event.data?.type === "REMEMBER_ROUTE" && typeof event.data.pathname === "string") event.waitUntil(rememberRoute(event.data.pathname));
+  if (event.data?.type === "REMEMBER_ROUTE" && typeof event.data.pathname === "string") {
+    const pathname = event.data.pathname;
+    // The page that asked is told whether the studio is kept, so a button can show progress.
+    event.waitUntil(rememberRoute(pathname).then((kept) => event.source?.postMessage({ type: "ROUTE_REMEMBERED", pathname, kept })));
+  }
 });
 
 // A project file shared from another app arrives as a POST. Keep it on the device, in a cache,

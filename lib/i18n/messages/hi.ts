@@ -232,6 +232,16 @@ export const hi = {
   "projects.storage.protectedNow": "ब्राउज़र आपका डेटा रखेगा",
   "projects.storage.refused":
     "ब्राउज़र ने नहीं माना। कुछ ब्राउज़र साइट इंस्टॉल करने या बार-बार इस्तेमाल करने के बाद ही मानते हैं।",
+  "projects.storage.keep.title": "ऑफ़लाइन उपयोग के लिए स्टूडियो रखें",
+  "projects.storage.keep.hint":
+    "कनेक्शन के साथ खोलने पर स्टूडियो रख लिया जाता है। यात्रा या खराब कनेक्शन के लिए अभी डाउनलोड करने वाले स्टूडियो चुनें।",
+  "projects.storage.keep.button.one": "{count} स्टूडियो रखें",
+  "projects.storage.keep.button.other": "{count} स्टूडियो रखें",
+  "projects.storage.keep.progress": "{total} में से {done} रखे जा रहे हैं…",
+  "projects.storage.keep.kept.one": "{count} स्टूडियो रखा गया ({size} जुड़े)",
+  "projects.storage.keep.kept.other": "{count} स्टूडियो रखे गए ({size} जुड़े)",
+  "projects.storage.keep.failed.one": "{count} स्टूडियो नहीं रखा जा सका। कनेक्शन जाँचें और फिर कोशिश करें।",
+  "projects.storage.keep.failed.other": "{count} स्टूडियो नहीं रखे जा सके। कनेक्शन जाँचें और फिर कोशिश करें।",
   "projects.storage.title": "स्टोरेज",
   "projects.storage.description":
     "DesignHub इस डिवाइस पर क्या रखता है। केवल आकार और गिनती दिखती है; कुछ पढ़ा या भेजा नहीं जाता।",

@@ -240,6 +240,18 @@ export const fr = {
   "projects.storage.protectedNow": "Le navigateur conservera vos données",
   "projects.storage.refused":
     "Le navigateur a refusé. Certains n'acceptent qu'après l'installation du site ou une utilisation régulière.",
+  "projects.storage.keep.title": "Garder des ateliers pour une utilisation hors ligne",
+  "projects.storage.keep.hint":
+    "Un atelier est conservé quand vous l'ouvrez avec une connexion. Choisissez ceux à télécharger maintenant, pour un voyage ou une mauvaise connexion.",
+  "projects.storage.keep.button.one": "Garder {count} atelier",
+  "projects.storage.keep.button.other": "Garder {count} ateliers",
+  "projects.storage.keep.progress": "Enregistrement de {done} sur {total}…",
+  "projects.storage.keep.kept.one": "{count} atelier conservé ({size} ajoutés)",
+  "projects.storage.keep.kept.other": "{count} ateliers conservés ({size} ajoutés)",
+  "projects.storage.keep.failed.one":
+    "{count} atelier n'a pas pu être conservé. Vérifiez votre connexion et réessayez.",
+  "projects.storage.keep.failed.other":
+    "{count} ateliers n'ont pas pu être conservés. Vérifiez votre connexion et réessayez.",
   "projects.storage.title": "Stockage",
   "projects.storage.description":
     "Ce que DesignHub conserve sur cet appareil. Seuls les tailles et les nombres sont affichés ; rien n'est lu ni envoyé.",

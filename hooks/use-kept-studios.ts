@@ -10,10 +10,11 @@ import { studios } from "@/lib/navigation";
  * offline now. Looked up again when the page changes (the worker keeps a studio a moment after it is shown) and
  * when the connection comes or goes. Empty where there is no service worker or no Cache Storage.
  */
-export function useKeptStudios(): { kept: ReadonlySet<string>; offline: boolean } {
+export function useKeptStudios(): { kept: ReadonlySet<string>; offline: boolean; refresh: () => void } {
   const pathname = usePathname();
   const [kept, setKept] = useState<ReadonlySet<string>>(new Set());
   const [offline, setOffline] = useState(false);
+  const [tick, setTick] = useState(0);
 
   useEffect(() => {
     if (typeof caches === "undefined") return;
@@ -40,7 +41,7 @@ export function useKeptStudios(): { kept: ReadonlySet<string>; offline: boolean 
       window.removeEventListener("online", update);
       window.removeEventListener("offline", update);
     };
-  }, [pathname]);
+  }, [pathname, tick]);
 
-  return { kept, offline };
+  return { kept, offline, refresh: () => setTick((value) => value + 1) };
 }

@@ -237,6 +237,17 @@ export const es = {
   "projects.storage.protect": "Proteger mis datos",
   "projects.storage.protectedNow": "El navegador conservará tus datos",
   "projects.storage.refused": "El navegador no aceptó. Algunos solo lo hacen tras instalar el sitio o usarlo a menudo.",
+  "projects.storage.keep.title": "Guardar estudios para usarlos sin conexión",
+  "projects.storage.keep.hint":
+    "Un estudio se guarda al abrirlo con conexión. Elige los que quieras descargar ahora, para un viaje o una mala conexión.",
+  "projects.storage.keep.button.one": "Guardar {count} estudio",
+  "projects.storage.keep.button.other": "Guardar {count} estudios",
+  "projects.storage.keep.progress": "Guardando {done} de {total}…",
+  "projects.storage.keep.kept.one": "{count} estudio guardado ({size} añadidos)",
+  "projects.storage.keep.kept.other": "{count} estudios guardados ({size} añadidos)",
+  "projects.storage.keep.failed.one": "No se pudo guardar {count} estudio. Revisa tu conexión e inténtalo de nuevo.",
+  "projects.storage.keep.failed.other":
+    "No se pudieron guardar {count} estudios. Revisa tu conexión e inténtalo de nuevo.",
   "projects.storage.title": "Almacenamiento",
   "projects.storage.description":
     "Lo que DesignHub guarda en este dispositivo. Solo se muestran tamaños y recuentos; nada se lee ni se envía.",

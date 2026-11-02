@@ -1,6 +1,10 @@
 "use client";
 
 import { useState } from "react";
+
+import { useKeptStudios } from "@/hooks/use-kept-studios";
+import { keepStudios } from "@/lib/offline-keep";
+import { studios } from "@/lib/navigation";
 import { toast } from "sonner";
 
 import { useI18n } from "@/components/layout/locale-provider";
@@ -39,6 +43,9 @@ type Report = {
 /** Sizes and counts of what DesignHub keeps on this device. Nothing is read out of a project, only measured. */
 export function StoragePanel() {
   const { t, plural } = useI18n();
+  const { kept, refresh } = useKeptStudios();
+  const [wanted, setWanted] = useState<Set<string>>(new Set());
+  const [keeping, setKeeping] = useState<{ done: number; total: number } | null>(null);
   const [days, setDays] = useState<number>(trimDays[1]);
   const [report, setReport] = useState<Report | null>(null);
   const [busy, setBusy] = useState(false);
@@ -111,6 +118,23 @@ export function StoragePanel() {
     await check();
   }
 
+  async function keepNow() {
+    if (typeof navigator === "undefined" || !("serviceWorker" in navigator)) return;
+    const paths = [...wanted];
+    const before = typeof caches === "undefined" ? null : await measureOfflineCaches(caches).catch(() => null);
+    setKeeping({ done: 0, total: paths.length });
+    const result = await keepStudios(paths, navigator.serviceWorker, (done, total) => setKeeping({ done, total }));
+    setKeeping(null);
+    setWanted(new Set());
+    const after = typeof caches === "undefined" ? null : await measureOfflineCaches(caches).catch(() => null);
+    const added = before && after ? Math.max(0, after.bytes - before.bytes) : 0;
+    toast(plural("projects.storage.keep.kept", result.kept.length, { size: formatBytes(added) }), {
+      description: result.failed.length > 0 ? plural("projects.storage.keep.failed", result.failed.length) : undefined,
+    });
+    refresh();
+    await check();
+  }
+
   const share = report ? quotaShare(report.usage, report.quota) : null;
   const rows = report
     ? [
@@ -166,6 +190,47 @@ export function StoragePanel() {
           {report.offline && report.offline.files > 0 ? (
             <p className="text-xs text-muted-foreground">{t("projects.storage.clearHint")}</p>
           ) : null}
+          <fieldset className="flex flex-col gap-1.5 border-t pt-2">
+            <legend className="pb-1 text-xs font-medium">{t("projects.storage.keep.title")}</legend>
+            <p className="text-xs text-muted-foreground">{t("projects.storage.keep.hint")}</p>
+            <ul className="grid gap-x-4 gap-y-1 text-xs sm:grid-cols-2">
+              {studios.map((studio) => {
+                const isKept = kept.has(studio.href);
+                return (
+                  <li key={studio.id} className="flex items-center gap-2">
+                    <input
+                      type="checkbox"
+                      id={`keep-${studio.id}`}
+                      disabled={isKept || keeping !== null}
+                      checked={isKept || wanted.has(studio.href)}
+                      onChange={() =>
+                        setWanted((current) => {
+                          const next = new Set(current);
+                          if (!next.delete(studio.href)) next.add(studio.href);
+                          return next;
+                        })
+                      }
+                    />
+                    <label htmlFor={`keep-${studio.id}`}>
+                      {t(`studio.${studio.id}.short`)}
+                      {isKept ? <span className="text-muted-foreground"> · {t("nav.kept")}</span> : null}
+                    </label>
+                  </li>
+                );
+              })}
+            </ul>
+            <Button
+              variant="outline"
+              size="sm"
+              className="self-start"
+              disabled={wanted.size === 0 || keeping !== null}
+              onClick={() => void keepNow()}
+            >
+              {keeping
+                ? t("projects.storage.keep.progress", { done: keeping.done, total: keeping.total })
+                : plural("projects.storage.keep.button", wanted.size)}
+            </Button>
+          </fieldset>
           <p className="text-xs text-muted-foreground">{t(`projects.storage.protection.${report.protection}`)}</p>
           {report.protection === "not-protected" ? (
             <Button variant="outline" size="sm" className="self-start" onClick={() => void protect()}>

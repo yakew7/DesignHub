@@ -240,6 +240,16 @@ export const en = {
   "projects.storage.protect": "Protect my data",
   "projects.storage.protectedNow": "The browser will keep your data",
   "projects.storage.refused": "The browser did not agree. Some only do after the site is installed or used often.",
+  "projects.storage.keep.title": "Keep studios for offline use",
+  "projects.storage.keep.hint":
+    "A studio is kept when you open it with a connection. Choose studios to download now, for a trip or a bad connection.",
+  "projects.storage.keep.button.one": "Keep {count} studio",
+  "projects.storage.keep.button.other": "Keep {count} studios",
+  "projects.storage.keep.progress": "Keeping {done} of {total}…",
+  "projects.storage.keep.kept.one": "Kept {count} studio ({size} added)",
+  "projects.storage.keep.kept.other": "Kept {count} studios ({size} added)",
+  "projects.storage.keep.failed.one": "{count} studio could not be kept. Check your connection and try again.",
+  "projects.storage.keep.failed.other": "{count} studios could not be kept. Check your connection and try again.",
   "projects.storage.title": "Storage",
   "projects.storage.description":
     "What DesignHub keeps on this device. Only sizes and counts are shown; nothing is read out or sent.",

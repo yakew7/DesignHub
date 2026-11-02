@@ -110,3 +110,36 @@ test("the panel says whether the data is protected and asks the browser only whe
     await expect(page.getByText(/will keep your data|did not agree/)).toBeVisible();
   }
 });
+
+test("a studio that was never opened can be kept for offline use from the panel, and then opens offline", async ({
+  page,
+  context,
+}) => {
+  await page.goto("/projects");
+  await expect(page.locator("h1").first()).toBeVisible();
+  await page.evaluate(async () => {
+    await navigator.serviceWorker.ready;
+  });
+  await page.reload();
+  await expect.poll(() => page.evaluate(() => Boolean(navigator.serviceWorker.controller))).toBe(true);
+
+  await page.getByRole("button", { name: "Storage", exact: true }).click();
+  await page.getByRole("button", { name: "Check storage" }).click();
+  const group = page.getByRole("group", { name: "Keep studios for offline use" });
+  const effects = group.getByRole("checkbox", { name: /^Effects/ });
+  await expect(effects).not.toBeChecked();
+  expect(await page.evaluate(async () => Boolean(await caches.match("/effects", { ignoreSearch: true })))).toBe(false);
+
+  await effects.check();
+  await group.getByRole("button", { name: "Keep 1 studio" }).click();
+  await expect(page.getByText(/^Kept 1 studio \(/)).toBeVisible({ timeout: 30_000 });
+  await expect
+    .poll(() => page.evaluate(async () => Boolean(await caches.match("/effects", { ignoreSearch: true }))))
+    .toBe(true);
+  // The panel now shows it as kept, and it cannot be chosen again.
+  await expect(group.getByRole("checkbox", { name: /^Effects/ })).toBeDisabled();
+
+  await context.setOffline(true);
+  await page.goto("/effects");
+  await expect(page.locator("h1").first()).toBeVisible();
+});
