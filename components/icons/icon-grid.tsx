@@ -1,7 +1,7 @@
 "use client";
 
 import { AlertTriangle, RotateCw } from "lucide-react";
-import { memo, useMemo, useRef, useState, type KeyboardEvent } from "react";
+import { memo, useEffect, useMemo, useRef, useState, type KeyboardEvent } from "react";
 import { flushSync } from "react-dom";
 
 import { IconGlyph } from "@/components/icons/icon-image";
@@ -52,6 +52,8 @@ export function IconGrid({ ids, emptyMessage = "No icons found." }: IconGridProp
   const windowIds = useMemo(() => ids.slice(grid.start, grid.end), [ids, grid.start, grid.end]);
   const { icons, failed, loading, error, retry } = useIconData(windowIds);
   const listRef = useRef<HTMLUListElement>(null);
+  // A new list (another search or collection) has nothing focused yet.
+  useEffect(() => setFocused(null), [ids]);
 
   // Bodies already fetched stay known while the window moves, so scrolling back does not blink.
   const known = useRef(new Map<IconId, IconData>());

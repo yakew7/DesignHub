@@ -27,7 +27,8 @@ export function useWindowedGrid<T extends HTMLElement>({ count, minTile, gap, ov
 
   const measure = useCallback(() => {
     const node = ref.current;
-    if (!node) return;
+    // A grid that is hidden (display: none) has no width: keep the geometry it had, so it is right when shown again.
+    if (!node || node.clientWidth === 0) return;
     setGeometry((current) => {
       const next = gridGeometry(node.clientWidth, minTile, gap);
       return next.columns === current.columns && Math.abs(next.tile - current.tile) < 0.5 ? current : next;
