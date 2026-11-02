@@ -317,6 +317,8 @@ export const es = {
   "logo.export.favicon": "Paquete de favicon (.zip)",
   "logo.export.ready": "Descarga lista",
   "logo.export.failed": "La exportación falló en este navegador.",
+  "projects.filtered": "Filtros activos: se muestran {shown} de {total} proyectos.",
+  "projects.clearFilters": "Quitar los filtros",
   "projects.noMatch": "Ningún proyecto coincide.",
   "projects.empty": "Todavía no hay proyectos.",
   "projects.list": "Proyectos de marca",

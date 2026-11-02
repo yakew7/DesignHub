@@ -9,6 +9,9 @@ async function create(page: Page, name: string) {
   const dialog = page.getByRole("dialog", { name: "New brand project" });
   await dialog.getByLabel("Brand name").fill(name);
   await dialog.getByRole("button", { name: "Create and open" }).click();
+  await expect(dialog).toBeHidden();
+  // The new project is written to storage a moment after the dialog closes; leave the page only once it is listed.
+  await expect(page.getByRole("heading", { name, level: 2 })).toBeVisible();
   await page.goto("/projects");
   await expect(page.getByRole("heading", { name, level: 2 })).toBeVisible();
 }
@@ -88,18 +91,61 @@ test("Shift and click selects a range, and Select tagged adds every project with
 
   await page.getByRole("button", { name: "Select", exact: true }).click();
   const bar = page.getByRole("region", { name: "Actions for the selected projects" });
-  // Newest first: 11, 10, 09, 08. A click, then Shift and click four below it, selects all four.
-  await page.getByRole("checkbox", { name: "Select Brand 11" }).click();
-  await page.getByRole("checkbox", { name: "Select Brand 08" }).click({ modifiers: ["Shift"] });
+  // The cards are in the order shown (projects created in the same millisecond have no fixed order, so the test goes by
+  // position, not by name): a click on the first, then Shift and click on the fourth, selects the first four.
+  const boxes = page.getByRole("checkbox");
+  await boxes.nth(0).click();
+  await expect(bar).toContainText("1 project selected");
+  await boxes.nth(3).click({ modifiers: ["Shift"] });
   await expect(bar).toContainText("4 projects selected");
-  for (const name of ["Brand 11", "Brand 10", "Brand 09", "Brand 08"]) {
-    await expect(page.getByRole("checkbox", { name: `Select ${name}` })).toBeChecked();
-  }
-  await expect(page.getByRole("checkbox", { name: "Select Brand 07" })).not.toBeChecked();
+  for (const index of [0, 1, 2, 3]) await expect(boxes.nth(index)).toBeChecked();
+  await expect(boxes.nth(4)).not.toBeChecked();
 
-  // Select tagged adds the archived ones (00, 04 and 08, of which 08 is already in).
+  // Select tagged adds every archived project (00, 04 and 08), whichever of them were already in the range.
+  const before = await boxes.evaluateAll((all) => all.filter((box) => (box as HTMLInputElement).checked).length);
   await bar.getByRole("combobox", { name: "Select tagged" }).click();
   await page.getByRole("option", { name: "archived" }).click();
-  await expect(bar).toContainText("6 projects selected");
-  await expect(page.getByRole("checkbox", { name: "Select Brand 04" })).toBeChecked();
+  for (const name of ["Brand 00", "Brand 04", "Brand 08"]) {
+    await expect(page.getByRole("checkbox", { name: `Select ${name}` })).toBeChecked();
+  }
+  const after = await boxes.evaluateAll((all) => all.filter((box) => (box as HTMLInputElement).checked).length);
+  expect(after).toBeGreaterThanOrEqual(before);
+});
+
+test("the favorites and tag filters are remembered, and a tag nobody has is ignored", async ({ page }) => {
+  const fixture = JSON.parse(readFileSync(join(__dirname, "../../lib/projects/__fixtures__/v1/projects.json"), "utf8"));
+  const template = fixture.projects[0];
+  fixture.projects = ["alpha", "beta", "alpha"].map((tag, index) => {
+    const copy = structuredClone(template);
+    copy.favorite = false;
+    copy.tags = [tag];
+    copy.snapshot.brand.profile.name = `Filter ${index}`;
+    return copy;
+  });
+  const file = join(tmpdir(), "designhub-filters.json");
+  writeFileSync(file, JSON.stringify(fixture));
+
+  await page.goto("/projects");
+  await expect(page.locator("h1").first()).toBeVisible();
+  await page.locator('input[type="file"]').first().setInputFiles(file);
+  await expect(page.getByRole("button", { name: "Open Filter 2" })).toBeVisible();
+
+  await page.getByRole("combobox", { name: "Filter by tag" }).click();
+  await page.getByRole("option", { name: "beta" }).click();
+  await expect(page.getByRole("status").filter({ hasText: "Filters on: showing 1 of" })).toBeVisible();
+  await expect(page.getByRole("button", { name: "Open Filter 1" })).toBeVisible();
+  await expect(page.getByRole("button", { name: "Open Filter 0" })).toHaveCount(0);
+
+  // Written a moment later; wait for it before leaving the page.
+  await page.waitForTimeout(500);
+  await page.reload();
+  await expect(page.getByRole("status").filter({ hasText: "Filters on: showing 1 of" })).toBeVisible();
+  await expect(page.getByLabel("Search projects")).toHaveValue("");
+
+  // Clearing the filters brings every project back, and it is remembered too.
+  await page.getByRole("button", { name: "Clear filters" }).click();
+  await expect(page.getByRole("button", { name: "Open Filter 0" })).toBeVisible();
+  await page.waitForTimeout(500);
+  await page.reload();
+  await expect(page.getByRole("button", { name: "Clear filters" })).toHaveCount(0);
 });

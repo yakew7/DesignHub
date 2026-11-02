@@ -73,8 +73,10 @@ export function ProjectManager() {
   const { t, plural } = useI18n();
   const { projects, activeId, persistent, refresh, run } = useProjects();
   const [query, setQuery] = useState("");
-  const [favoritesOnly, setFavoritesOnly] = useState(false);
-  const [tagFilter, setTagFilter] = useState<string | null>(null);
+  const favoritesOnly = useProjectStore((state) => state.favoritesOnly);
+  const setFavoritesOnly = useProjectStore((state) => state.setFavoritesOnly);
+  const tagFilter = useProjectStore((state) => state.tagFilter);
+  const setTagFilter = useProjectStore((state) => state.setTagFilter);
   const [creating, setCreating] = useState(false);
   const [newName, setNewName] = useState("");
   const [deleting, setDeleting] = useState<BrandProject | null>(null);
@@ -289,7 +291,7 @@ export function ProjectManager() {
           variant="outline"
           size="sm"
           aria-pressed={favoritesOnly}
-          onClick={() => setFavoritesOnly((value) => !value)}
+          onClick={() => setFavoritesOnly(!favoritesOnly)}
           className={cn(favoritesOnly && "border-brand/60 text-foreground")}
         >
           <Star className={cn(favoritesOnly && "fill-warning text-warning")} /> {t("projects.favorites")}
@@ -401,6 +403,22 @@ export function ProjectManager() {
 
       <FolderAutosave />
       <StoragePanel />
+
+      {favoritesOnly || activeTag ? (
+        <p role="status" className="flex flex-wrap items-center gap-2 text-xs text-muted-foreground">
+          {t("projects.filtered", { shown: visible.length, total: projects?.length ?? 0 })}
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={() => {
+              setFavoritesOnly(false);
+              setTagFilter(null);
+            }}
+          >
+            {t("projects.clearFilters")}
+          </Button>
+        </p>
+      ) : null}
 
       {!persistent ? (
         <p role="status" className="rounded-lg border border-warning/40 bg-warning/10 p-3 text-sm">

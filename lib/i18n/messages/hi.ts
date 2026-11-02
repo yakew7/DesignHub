@@ -309,6 +309,8 @@ export const hi = {
   "logo.export.favicon": "फ़ेविकॉन पैकेज (.zip)",
   "logo.export.ready": "डाउनलोड तैयार",
   "logo.export.failed": "इस ब्राउज़र में निर्यात विफल रहा।",
+  "projects.filtered": "फ़िल्टर चालू: {total} में से {shown} प्रोजेक्ट दिख रहे हैं।",
+  "projects.clearFilters": "फ़िल्टर हटाएँ",
   "projects.noMatch": "कोई प्रोजेक्ट मेल नहीं खाता।",
   "projects.empty": "अभी कोई प्रोजेक्ट नहीं है।",
   "projects.list": "ब्रांड प्रोजेक्ट",
