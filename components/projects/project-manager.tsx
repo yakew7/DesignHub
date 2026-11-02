@@ -9,6 +9,7 @@ import {
   History,
   Link2,
   ListChecks,
+  MoreHorizontal,
   Plus,
   Search,
   Star,
@@ -31,6 +32,7 @@ import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Switch } from "@/components/ui/switch";
 import { useDebouncedValue } from "@/hooks/use-debounced-value";
@@ -91,6 +93,8 @@ export function ProjectManager() {
   // Screen readers hear the count once it settles, not for every checkbox in a long Shift range.
   const settledCount = useDebouncedValue(chosen.size, 600);
   const fileRef = useRef<HTMLInputElement>(null);
+  const moreRef = useRef<HTMLButtonElement>(null);
+  const [menuOpen, setMenuOpen] = useState(false);
   const newProjectRequested = useUiStore((state) => state.newProjectRequested);
   const clearNewProjectRequest = useUiStore((state) => state.clearNewProjectRequest);
   const sort = useProjectStore((state) => state.sort);
@@ -364,24 +368,64 @@ export function ProjectManager() {
         >
           <ListChecks /> {t("projects.select")}
         </Button>
-        <Button variant="outline" size="sm" onClick={() => setComparing(true)} disabled={(projects?.length ?? 0) < 2}>
-          <ArrowLeftRight /> {t("projects.compare")}
-        </Button>
-        <Button variant="outline" size="sm" onClick={() => fileRef.current?.click()}>
-          <Upload /> {t("projects.import")}
-        </Button>
-        <Button variant="outline" size="sm" onClick={() => void exportAll()} disabled={!projects?.length}>
-          <FileDown /> {t("projects.exportAll")}
-        </Button>
-        <Button
-          variant="outline"
-          size="sm"
-          onClick={() => void exportZip()}
-          disabled={!projects?.length}
-          title={t("projects.exportZipHint")}
-        >
-          <FileArchive /> {t("projects.exportZip")}
-        </Button>
+        <Popover open={menuOpen} onOpenChange={setMenuOpen}>
+          <PopoverTrigger asChild>
+            <Button ref={moreRef} variant="outline" size="sm">
+              <MoreHorizontal /> {t("projects.more")}
+            </Button>
+          </PopoverTrigger>
+          <PopoverContent align="end" className="flex w-56 flex-col gap-1 p-1.5">
+            <Button
+              variant="ghost"
+              size="sm"
+              className="justify-start"
+              aria-haspopup="dialog"
+              onClick={() => {
+                setMenuOpen(false);
+                setComparing(true);
+              }}
+              disabled={(projects?.length ?? 0) < 2}
+            >
+              <ArrowLeftRight /> {t("projects.compare")}
+            </Button>
+            <Button
+              variant="ghost"
+              size="sm"
+              className="justify-start"
+              onClick={() => {
+                setMenuOpen(false);
+                fileRef.current?.click();
+              }}
+            >
+              <Upload /> {t("projects.import")}
+            </Button>
+            <Button
+              variant="ghost"
+              size="sm"
+              className="justify-start"
+              onClick={() => {
+                setMenuOpen(false);
+                void exportAll();
+              }}
+              disabled={!projects?.length}
+            >
+              <FileDown /> {t("projects.exportAll")}
+            </Button>
+            <Button
+              variant="ghost"
+              size="sm"
+              className="justify-start"
+              onClick={() => {
+                setMenuOpen(false);
+                void exportZip();
+              }}
+              disabled={!projects?.length}
+              title={t("projects.exportZipHint")}
+            >
+              <FileArchive /> {t("projects.exportZip")}
+            </Button>
+          </PopoverContent>
+        </Popover>
         <input
           ref={fileRef}
           type="file"
@@ -615,7 +659,13 @@ export function ProjectManager() {
         </div>
       ) : null}
 
-      <ProjectCompare open={comparing} onOpenChange={setComparing} projects={projects ?? []} initialId={activeId} />
+      <ProjectCompare
+        open={comparing}
+        onOpenChange={setComparing}
+        projects={projects ?? []}
+        initialId={activeId}
+        triggerRef={moreRef}
+      />
       <ProjectHistory project={history} onClose={() => setHistory(null)} onChanged={() => void refresh()} />
 
       <Dialog open={creating} onOpenChange={setCreating}>

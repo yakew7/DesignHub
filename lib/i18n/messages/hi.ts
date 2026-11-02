@@ -191,6 +191,7 @@ export const hi = {
   "projects.exportZip": "ZIP के रूप में एक्सपोर्ट करें",
   "projects.exportZipHint": "हर प्रोजेक्ट की एक .designhub.json फ़ाइल, फ़ोल्डर ऑटोसेव जैसे नामों के साथ",
   "projects.file": "प्रोजेक्ट फ़ाइल",
+  "projects.more": "और",
   "projects.new": "नया प्रोजेक्ट",
   "projects.folder.title": "फ़ोल्डर में ऑटोसेव",
   "projects.folder.hint":

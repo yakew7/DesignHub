@@ -196,6 +196,7 @@ export const es = {
   "projects.includeHistoryHint":
     "Añade a las exportaciones las versiones guardadas de cada proyecto. Los enlaces para compartir nunca las incluyen.",
   "projects.file": "Archivo de proyecto",
+  "projects.more": "Más",
   "projects.new": "Nuevo proyecto",
   "projects.folder.title": "Autoguardado en una carpeta",
   "projects.folder.hint":

@@ -200,6 +200,7 @@ export const en = {
   "projects.includeHistory": "Include history",
   "projects.includeHistoryHint": "Adds each project's saved versions to exports. Share links never include them.",
   "projects.file": "Project file",
+  "projects.more": "More",
   "projects.new": "New project",
   "projects.folder.title": "Autosave to a folder",
   "projects.folder.hint":
