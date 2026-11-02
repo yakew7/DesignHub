@@ -16,7 +16,10 @@ import {
   clearOfflineCaches,
   measureOfflineCaches,
   measureRows,
+  protectionOf,
   quotaShare,
+  requestProtection,
+  type Protection,
   type CacheStore,
 } from "@/lib/storage-report";
 import { formatBytes } from "@/lib/svg-size";
@@ -27,6 +30,7 @@ type Report = {
   icons: { count: number; bytes: number };
   offline: { caches: number; files: number; bytes: number } | null;
   largest: ReturnType<typeof sizesByProject>;
+  protection: Protection;
   versionList: ProjectVersion[];
   usage?: number;
   quota?: number;
@@ -64,6 +68,7 @@ export function StoragePanel() {
         icons: measureRows(icons),
         offline,
         largest,
+        protection: await protectionOf(navigator.storage),
         versionList,
         usage: estimate?.usage,
         quota: estimate?.quota,
@@ -97,6 +102,12 @@ export function StoragePanel() {
             .then(() => toast.success(plural("projects.storage.trimRestored", removed.length))),
       },
     });
+    await check();
+  }
+
+  async function protect() {
+    const result = await requestProtection(navigator.storage);
+    toast(t(result === "protected" ? "projects.storage.protectedNow" : "projects.storage.refused"));
     await check();
   }
 
@@ -154,6 +165,12 @@ export function StoragePanel() {
           </p>
           {report.offline && report.offline.files > 0 ? (
             <p className="text-xs text-muted-foreground">{t("projects.storage.clearHint")}</p>
+          ) : null}
+          <p className="text-xs text-muted-foreground">{t(`projects.storage.protection.${report.protection}`)}</p>
+          {report.protection === "not-protected" ? (
+            <Button variant="outline" size="sm" className="self-start" onClick={() => void protect()}>
+              {t("projects.storage.protect")}
+            </Button>
           ) : null}
           {report.largest.length > 0 ? (
             <div className="flex flex-col gap-1">

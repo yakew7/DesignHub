@@ -232,6 +232,14 @@ export const fr = {
   "projects.storage.trimmed.other": "{count} versions supprimées",
   "projects.storage.trimRestored.one": "{count} version restaurée",
   "projects.storage.trimRestored.other": "{count} versions restaurées",
+  "projects.storage.protection.protected": "Protégé : le navigateur a promis de conserver ces données.",
+  "projects.storage.protection.not-protected":
+    "Non protégé : sous contrainte, le navigateur peut effacer ces données. Gardez une copie avec Tout exporter.",
+  "projects.storage.protection.unsupported": "Ce navigateur ne peut pas dire si les données sont protégées.",
+  "projects.storage.protect": "Protéger mes données",
+  "projects.storage.protectedNow": "Le navigateur conservera vos données",
+  "projects.storage.refused":
+    "Le navigateur a refusé. Certains n'acceptent qu'après l'installation du site ou une utilisation régulière.",
   "projects.storage.title": "Stockage",
   "projects.storage.description":
     "Ce que DesignHub conserve sur cet appareil. Seuls les tailles et les nombres sont affichés ; rien n'est lu ni envoyé.",

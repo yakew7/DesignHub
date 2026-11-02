@@ -1,6 +1,13 @@
 import { describe, expect, test } from "vitest";
 
-import { clearOfflineCaches, isOfflineCache, measureRows, quotaShare } from "@/lib/storage-report";
+import {
+  clearOfflineCaches,
+  isOfflineCache,
+  measureRows,
+  protectionOf,
+  quotaShare,
+  requestProtection,
+} from "@/lib/storage-report";
 
 describe("storage report", () => {
   test("only the static and runtime caches are offline caches", () => {
@@ -31,5 +38,44 @@ describe("storage report", () => {
     });
     expect(deleted).toBe(2);
     expect([...names].sort()).toEqual(["designhub-share", "unrelated"]);
+  });
+});
+
+describe("protection", () => {
+  const storage = (persisted: boolean, grants: boolean) => {
+    let state = persisted;
+    return {
+      persisted: async () => state,
+      persist: async () => {
+        if (grants) state = true;
+        return state;
+      },
+    };
+  };
+
+  test("says protected, not protected or unsupported", async () => {
+    expect(await protectionOf(storage(true, false))).toBe("protected");
+    expect(await protectionOf(storage(false, false))).toBe("not-protected");
+    expect(await protectionOf(undefined)).toBe("unsupported");
+    expect(await protectionOf({})).toBe("unsupported");
+  });
+
+  test("asking changes the state only when the browser agrees", async () => {
+    expect(await requestProtection(storage(false, true))).toBe("protected");
+    expect(await requestProtection(storage(false, false))).toBe("not-protected");
+    expect(await requestProtection({ persisted: async () => false })).toBe("unsupported");
+  });
+
+  test("an error from the browser is not a crash", async () => {
+    const broken = {
+      persisted: async () => {
+        throw new Error("blocked");
+      },
+      persist: async () => {
+        throw new Error("blocked");
+      },
+    };
+    expect(await protectionOf(broken)).toBe("unsupported");
+    expect(await requestProtection(broken)).toBe("unsupported");
   });
 });

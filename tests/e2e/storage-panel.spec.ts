@@ -81,3 +81,32 @@ test("the panel lists the largest projects and trims old versions with an undo, 
   await expect(page.getByText("Restored 2 versions")).toBeVisible();
   await expect(page.getByRole("button", { name: "Delete 2 versions" })).toBeVisible();
 });
+
+test("the panel says whether the data is protected and asks the browser only when the button is pressed", async ({
+  page,
+}) => {
+  await page.goto("/projects");
+  await expect(page.locator("h1").first()).toBeVisible();
+  let asked = false;
+  await page.exposeFunction("markAsked", () => (asked = true));
+  await page.evaluate(() => {
+    const original = navigator.storage.persist.bind(navigator.storage);
+    navigator.storage.persist = () => {
+      (window as unknown as { markAsked: () => void }).markAsked();
+      return original();
+    };
+  });
+  await page.getByRole("button", { name: "Storage", exact: true }).click();
+  await page.getByRole("button", { name: "Check storage" }).click();
+  const status = page.getByRole("status").filter({ hasText: "Largest projects" });
+  await expect(status).toContainText(/Protected:|Not protected:|cannot say/);
+  // Looking never asks.
+  expect(asked).toBe(false);
+
+  const protect = page.getByRole("button", { name: "Protect my data" });
+  if (await protect.count()) {
+    await protect.click();
+    await expect.poll(() => asked).toBe(true);
+    await expect(page.getByText(/will keep your data|did not agree/)).toBeVisible();
+  }
+});

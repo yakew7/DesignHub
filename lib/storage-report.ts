@@ -49,3 +49,29 @@ export async function measureOfflineCaches(
   }
   return { caches: names.length, files, bytes };
 }
+
+/** The part of `navigator.storage` the protection check uses, so a test can stand in for it. */
+export type PersistentStorage = { persisted?: () => Promise<boolean>; persist?: () => Promise<boolean> };
+
+export type Protection = "protected" | "not-protected" | "unsupported";
+
+/** Whether the browser has promised to keep this site's data, or cannot say. */
+export async function protectionOf(storage: PersistentStorage | undefined): Promise<Protection> {
+  if (!storage?.persisted) return "unsupported";
+  try {
+    return (await storage.persisted()) ? "protected" : "not-protected";
+  } catch {
+    return "unsupported";
+  }
+}
+
+/** Asks the browser to keep the data. Returns the state afterwards: a browser may say no, and then it stays not protected. */
+export async function requestProtection(storage: PersistentStorage | undefined): Promise<Protection> {
+  if (!storage?.persist) return "unsupported";
+  try {
+    await storage.persist();
+  } catch {
+    // A refusal and an error leave the data as it was; the state below says which.
+  }
+  return protectionOf(storage);
+}

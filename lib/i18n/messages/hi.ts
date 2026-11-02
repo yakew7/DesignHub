@@ -224,6 +224,14 @@ export const hi = {
   "projects.storage.trimmed.other": "{count} वर्शन हटाए गए",
   "projects.storage.trimRestored.one": "{count} वर्शन वापस आया",
   "projects.storage.trimRestored.other": "{count} वर्शन वापस आए",
+  "projects.storage.protection.protected": "सुरक्षित: ब्राउज़र ने इस डेटा को रखने का वादा किया है।",
+  "projects.storage.protection.not-protected":
+    "असुरक्षित: दबाव में ब्राउज़र यह डेटा साफ़ कर सकता है। सभी निर्यात करें से एक प्रति रखें।",
+  "projects.storage.protection.unsupported": "यह ब्राउज़र नहीं बता सकता कि डेटा सुरक्षित है या नहीं।",
+  "projects.storage.protect": "मेरा डेटा सुरक्षित करें",
+  "projects.storage.protectedNow": "ब्राउज़र आपका डेटा रखेगा",
+  "projects.storage.refused":
+    "ब्राउज़र ने नहीं माना। कुछ ब्राउज़र साइट इंस्टॉल करने या बार-बार इस्तेमाल करने के बाद ही मानते हैं।",
   "projects.storage.title": "स्टोरेज",
   "projects.storage.description":
     "DesignHub इस डिवाइस पर क्या रखता है। केवल आकार और गिनती दिखती है; कुछ पढ़ा या भेजा नहीं जाता।",

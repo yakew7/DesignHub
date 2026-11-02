@@ -233,6 +233,13 @@ export const en = {
   "projects.storage.trimmed.other": "Deleted {count} versions",
   "projects.storage.trimRestored.one": "Restored {count} version",
   "projects.storage.trimRestored.other": "Restored {count} versions",
+  "projects.storage.protection.protected": "Protected: the browser has promised to keep this data.",
+  "projects.storage.protection.not-protected":
+    "Not protected: under pressure the browser may clear this data. Keep a copy with Export all.",
+  "projects.storage.protection.unsupported": "This browser cannot say whether the data is protected.",
+  "projects.storage.protect": "Protect my data",
+  "projects.storage.protectedNow": "The browser will keep your data",
+  "projects.storage.refused": "The browser did not agree. Some only do after the site is installed or used often.",
   "projects.storage.title": "Storage",
   "projects.storage.description":
     "What DesignHub keeps on this device. Only sizes and counts are shown; nothing is read out or sent.",
