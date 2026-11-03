@@ -1,7 +1,7 @@
 "use client";
 
 import { ArrowLeftRight } from "lucide-react";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useState, type RefObject } from "react";
 
 import { useI18n } from "@/components/layout/locale-provider";
 import { BrandDiffTable } from "@/components/projects/brand-diff-table";
@@ -20,6 +20,8 @@ type Props = {
   projects: BrandProject[];
   /** Preselected on the left, usually the open project. */
   initialId: string | null;
+  /** Gets focus back on close when the opener (a menu item) is gone. */
+  triggerRef?: RefObject<HTMLButtonElement | null>;
 };
 
 function ProjectPicker({
@@ -59,7 +61,7 @@ function ProjectPicker({
  * Two projects side by side. Both are read from storage, so comparing never opens either one
  * or touches the live stores.
  */
-export function ProjectCompare({ open, onOpenChange, projects, initialId }: Props) {
+export function ProjectCompare({ open, onOpenChange, projects, initialId, triggerRef }: Props) {
   const { locale, t, plural } = useI18n();
   const [leftId, setLeftId] = useState("");
   const [rightId, setRightId] = useState("");
@@ -102,7 +104,14 @@ export function ProjectCompare({ open, onOpenChange, projects, initialId }: Prop
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-h-[90vh] max-w-3xl overflow-y-auto">
+      <DialogContent
+        className="max-h-[90vh] max-w-3xl overflow-y-auto"
+        onCloseAutoFocus={(event) => {
+          if (!triggerRef) return;
+          event.preventDefault();
+          triggerRef.current?.focus();
+        }}
+      >
         <DialogHeader>
           <DialogTitle>{t("compare.title")}</DialogTitle>
           <DialogDescription>{t("compare.description")}</DialogDescription>
