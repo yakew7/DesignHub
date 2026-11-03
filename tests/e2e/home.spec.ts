@@ -1,5 +1,22 @@
 import { expect, test } from "@playwright/test";
 
+import { saved } from "./storage";
+
+test("a first visit shows no continue link, but returning from a studio links back to it", async ({ page }) => {
+  await page.goto("/");
+  await expect(page.getByRole("heading", { name: "What do you want to make?" })).toBeVisible();
+  await expect(page.getByRole("link", { name: /Continue in/ })).toHaveCount(0);
+
+  await page.goto("/colors");
+  await saved(page, "designhub:nav", "colors");
+
+  await page.goto("/");
+  const continueLink = page.getByRole("link", { name: "Continue in the Color Studio" });
+  await expect(continueLink).toBeVisible();
+  await continueLink.click();
+  await expect(page).toHaveURL(/\/colors$/);
+});
+
 test("the home page asks what to make, links each goal, and keeps every studio one click away", async ({ page }) => {
   await page.goto("/");
   await expect(page.getByRole("heading", { name: "What do you want to make?" })).toBeVisible();

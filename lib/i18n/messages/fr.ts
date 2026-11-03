@@ -1152,5 +1152,6 @@ export const fr = {
   "home.goal.background.body": "Vagues, motifs et textures, exportés en SVG, PNG ou CSS.",
   "home.chooser.eyebrow": "Commencez ici",
   "home.chooser.title": "Que voulez-vous créer ?",
+  "home.continue": "Reprendre dans {studio}",
   "home.allStudios": "Les {count} studios",
 } satisfies Catalog;

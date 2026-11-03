@@ -203,3 +203,8 @@ export function getStudio(id: StudioId): StudioNavItem {
 export function isActivePath(pathname: string, href: string): boolean {
   return pathname === href || pathname.startsWith(`${href}/`);
 }
+
+/** The studio that `pathname` is in, or null on the home page and other routes. */
+export function studioOfPath(pathname: string): StudioNavItem | null {
+  return studios.find((studio) => isActivePath(pathname, studio.href)) ?? null;
+}

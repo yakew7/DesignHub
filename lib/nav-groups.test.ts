@@ -1,7 +1,18 @@
 import { describe, expect, test } from "vitest";
 
 import { cleanFolded, groupOfPath, isGroupOpen, toggleFolded } from "@/lib/nav-groups";
-import { studios } from "@/lib/navigation";
+import { studioOfPath, studios } from "@/lib/navigation";
+
+describe("studioOfPath", () => {
+  test("finds the studio of a route and its sub-paths, and none for the home page", () => {
+    for (const studio of studios) {
+      expect(studioOfPath(studio.href)?.id, studio.id).toBe(studio.id);
+      expect(studioOfPath(`${studio.href}/subpage`)?.id, studio.id).toBe(studio.id);
+    }
+    expect(studioOfPath("/")).toBeNull();
+    expect(studioOfPath("/nowhere")).toBeNull();
+  });
+});
 
 describe("sidebar groups", () => {
   test("finds the group of a route, and none for the home page", () => {
