@@ -8,7 +8,8 @@ import { useI18n } from "@/components/layout/locale-provider";
 import { Message } from "@/components/layout/message";
 import { useKeptStudios } from "@/hooks/use-kept-studios";
 import { homeGoals } from "@/lib/home-goals";
-import { getStudio } from "@/lib/navigation";
+import { getStudio, studios } from "@/lib/navigation";
+import { useNavStore } from "@/store/nav-store";
 
 /** A short "what do you want to make?" with one link per goal, in place of a card for every studio. */
 export function StudioChooser() {
@@ -16,6 +17,8 @@ export function StudioChooser() {
   const [stop, setStop] = useState(0);
   const { t } = useI18n();
   const { kept } = useKeptStudios();
+  const lastStudioId = useNavStore((state) => state.lastStudio);
+  const lastStudio = lastStudioId ? (studios.find((item) => item.id === lastStudioId) ?? null) : null;
   const list = useRef<HTMLUListElement>(null);
 
   const move = (event: KeyboardEvent<HTMLUListElement>) => {
@@ -43,7 +46,20 @@ export function StudioChooser() {
 
   return (
     <section aria-labelledby="chooser-title" className="mx-auto flex max-w-6xl flex-col gap-8 px-4 py-16 md:py-24">
-      <div className="flex flex-col gap-2">
+      <div className="flex flex-col items-start gap-2">
+        {lastStudio && lastStudio.href !== "/" ? (
+          <Link
+            href={lastStudio.href}
+            className="group mb-1 inline-flex items-center gap-1.5 rounded-full border border-border bg-card px-3 py-1 text-xs font-medium text-muted-foreground transition-colors hover:border-border-strong hover:bg-surface-raised hover:text-foreground"
+          >
+            <span className="size-1.5 rounded-full bg-brand" aria-hidden />
+            <span>{t("home.continue", { studio: t(`studio.${lastStudio.id}.title`) })}</span>
+            <ArrowUpRight
+              className="size-3 text-subtle-foreground transition-transform duration-150 group-hover:-translate-y-0.5 group-hover:translate-x-0.5 group-hover:text-foreground"
+              aria-hidden
+            />
+          </Link>
+        ) : null}
         <p className="text-xs font-medium uppercase tracking-[0.14em] text-subtle-foreground">
           <Message id="home.chooser.eyebrow" />
         </p>

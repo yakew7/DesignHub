@@ -1125,5 +1125,6 @@ export const en = {
   "home.goal.background.body": "Waves, patterns and textures, exported as SVG, PNG or CSS.",
   "home.chooser.eyebrow": "Start here",
   "home.chooser.title": "What do you want to make?",
+  "home.continue": "Continue in the {studio}",
   "home.allStudios": "All {count} studios",
 } as const;

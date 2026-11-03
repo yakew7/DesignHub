@@ -1117,5 +1117,6 @@ export const hi = {
   "home.goal.background.body": "लहरें, पैटर्न और टेक्सचर, SVG, PNG या CSS के रूप में एक्सपोर्ट।",
   "home.chooser.eyebrow": "यहाँ से शुरू करें",
   "home.chooser.title": "आप क्या बनाना चाहते हैं?",
+  "home.continue": "{studio} में जारी रखें",
   "home.allStudios": "सभी {count} स्टूडियो",
 } satisfies Catalog;

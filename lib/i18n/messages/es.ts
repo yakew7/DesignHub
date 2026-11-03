@@ -1138,5 +1138,6 @@ export const es = {
   "home.goal.background.body": "Ondas, patrones y texturas, exportados como SVG, PNG o CSS.",
   "home.chooser.eyebrow": "Empieza aquí",
   "home.chooser.title": "¿Qué quieres crear?",
+  "home.continue": "Continuar en {studio}",
   "home.allStudios": "Los {count} estudios",
 } satisfies Catalog;

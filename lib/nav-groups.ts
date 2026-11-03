@@ -1,8 +1,8 @@
-import { isActivePath, studioGroups, studios, type StudioGroup } from "@/lib/navigation";
+import { studioGroups, studioOfPath, type StudioGroup } from "@/lib/navigation";
 
 /** The group of the studio that `pathname` is in, or null on the home page and other routes. */
 export function groupOfPath(pathname: string): StudioGroup | null {
-  return studios.find((studio) => isActivePath(pathname, studio.href))?.group ?? null;
+  return studioOfPath(pathname)?.group ?? null;
 }
 
 /** A group is open unless it was folded, and the group that holds the current page is always open. */
