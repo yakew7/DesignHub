@@ -371,7 +371,7 @@ export function ProjectManager() {
         <Popover open={menuOpen} onOpenChange={setMenuOpen}>
           <PopoverTrigger asChild>
             <Button ref={moreRef} variant="outline" size="sm">
-              <MoreHorizontal /> {t("projects.more")}
+              <MoreHorizontal /> {t("colors.toolbar.more")}
             </Button>
           </PopoverTrigger>
           <PopoverContent align="end" className="flex w-56 flex-col gap-1 p-1.5">

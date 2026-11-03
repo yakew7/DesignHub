@@ -197,7 +197,6 @@ export const fr = {
   "projects.includeHistoryHint":
     "Ajoute aux exports les versions enregistrées de chaque projet. Les liens de partage ne les contiennent jamais.",
   "projects.file": "Fichier de projet",
-  "projects.more": "Plus",
   "projects.new": "Nouveau projet",
   "projects.folder.title": "Enregistrement automatique dans un dossier",
   "projects.folder.hint":
