@@ -21,10 +21,7 @@ test("the palette opens short, remembers a choice and shows the rest as you type
   await palette.getByRole("option", { name: /^Color Studio/ }).click();
   // A first visit to a studio fetches its code, which a loaded machine takes a while over.
   await expect(page).toHaveURL(/\/colors$/, { timeout: 20_000 });
-  // Let the studio finish loading before the palette is opened again: a palette opened while the page is still
-  // hydrating can have its focus taken back, and keys typed then go to the page.
   await expect(page.locator("h1").first()).toBeVisible();
-  await page.waitForLoadState("networkidle");
   await page.keyboard.press("ControlOrMeta+k");
   await expect(palette.getByText("Recent", { exact: true })).toBeVisible();
   await expect(palette.getByRole("option").first()).toContainText("Color Studio");
@@ -40,6 +37,19 @@ test("the palette opens short, remembers a choice and shows the rest as you type
   // Recents can be cleared from the palette.
   await palette.getByRole("option", { name: "Clear recent choices" }).click();
   await expect(palette.getByText("Recent", { exact: true })).toHaveCount(0);
+});
+
+test("the palette opened again straight after a choice keeps the search field focused", async ({ page }) => {
+  await page.goto("/");
+  await expect(page.locator("h1").first()).toBeVisible();
+  const palette = page.getByRole("dialog");
+  await page.keyboard.press("ControlOrMeta+k");
+  await palette.getByRole("option", { name: /^Color Studio/ }).click();
+  // Opened again at once, while the first palette is still handing focus back and the studio is still loading.
+  await page.keyboard.press("ControlOrMeta+k");
+  await expect(palette.getByRole("combobox")).toBeFocused();
+  await page.keyboard.type("source");
+  await expect(palette.getByRole("combobox")).toHaveValue("source");
 });
 
 test("the palette collapses the sidebar on a desktop", async ({ page }) => {
