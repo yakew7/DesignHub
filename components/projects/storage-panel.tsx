@@ -3,6 +3,7 @@
 import { useState } from "react";
 
 import { useKeptStudios } from "@/hooks/use-kept-studios";
+import { clearIconCache } from "@/lib/icons/iconify";
 import { keepStudios } from "@/lib/offline-keep";
 import { studios } from "@/lib/navigation";
 import { toast } from "sonner";
@@ -118,6 +119,12 @@ export function StoragePanel() {
     await check();
   }
 
+  async function clearIcons() {
+    await clearIconCache();
+    toast.success(t("projects.storage.iconsCleared"));
+    await check();
+  }
+
   async function keepNow() {
     if (typeof navigator === "undefined" || !("serviceWorker" in navigator)) return;
     const paths = [...wanted];
@@ -189,6 +196,19 @@ export function StoragePanel() {
           </p>
           {report.offline && report.offline.files > 0 ? (
             <p className="text-xs text-muted-foreground">{t("projects.storage.clearHint")}</p>
+          ) : null}
+          {report.icons.count > 0 ? (
+            <div className="flex flex-wrap items-center gap-2">
+              <Button variant="outline" size="sm" onClick={() => void clearIcons()}>
+                {t("projects.storage.clearIcons")}
+              </Button>
+              <p className="text-xs text-muted-foreground">
+                {t("projects.storage.iconsHint", {
+                  count: report.icons.count,
+                  size: formatBytes(report.icons.bytes),
+                })}
+              </p>
+            </div>
           ) : null}
           <fieldset className="flex flex-col gap-1.5 border-t pt-2">
             <legend className="pb-1 text-xs font-medium">{t("projects.storage.keep.title")}</legend>

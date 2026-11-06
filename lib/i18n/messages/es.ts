@@ -248,6 +248,10 @@ export const es = {
   "projects.storage.keep.failed.one": "No se pudo guardar {count} estudio. Revisa tu conexión e inténtalo de nuevo.",
   "projects.storage.keep.failed.other":
     "No se pudieron guardar {count} estudios. Revisa tu conexión e inténtalo de nuevo.",
+  "projects.storage.clearIcons": "Borrar la caché de iconos",
+  "projects.storage.iconsHint":
+    "Elimina {count} iconos en caché ({size}). Los proyectos, las versiones y los ajustes se conservan. Los iconos se vuelven a descargar cuando se usan.",
+  "projects.storage.iconsCleared": "Caché de iconos borrada",
   "projects.storage.title": "Almacenamiento",
   "projects.storage.description":
     "Lo que DesignHub guarda en este dispositivo. Solo se muestran tamaños y recuentos; nada se lee ni se envía.",

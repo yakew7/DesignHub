@@ -143,3 +143,40 @@ test("a studio that was never opened can be kept for offline use from the panel,
   await page.goto("/effects");
   await expect(page.locator("h1").first()).toBeVisible();
 });
+
+test("the icon cache can be cleared on its own, and the projects stay", async ({ page }) => {
+  await page.goto("/projects");
+  await expect(page.getByRole("heading", { name: "Acme", level: 2 })).toBeVisible();
+  // Two cached icons, written as the Icon Studio writes them.
+  await page.evaluate(
+    () =>
+      new Promise<void>((resolve, reject) => {
+        const open = indexedDB.open("designhub");
+        open.onerror = () => reject(open.error);
+        open.onsuccess = () => {
+          const write = open.result.transaction("icons", "readwrite");
+          for (const id of ["mdi:one", "mdi:two"]) {
+            write
+              .objectStore("icons")
+              .put({ id, body: "<path d='M0 0h24v24H0z'/>", width: 24, height: 24, cachedAt: Date.now() });
+          }
+          write.oncomplete = () => resolve();
+          write.onerror = () => reject(write.error);
+        };
+      }),
+  );
+  await page.reload();
+
+  await page.getByRole("button", { name: "Storage", exact: true }).click();
+  await page.getByRole("button", { name: "Check storage" }).click();
+  const status = page.getByRole("status").filter({ hasText: "Icon cache" });
+  await expect(status).toContainText(/Removes 2 cached icons/);
+  const projects = (await status.locator("dd").first().innerText()).split(" · ")[0];
+
+  await page.getByRole("button", { name: "Clear the icon cache" }).click();
+  await expect(page.getByText("Icon cache cleared")).toBeVisible();
+  await expect(page.getByRole("button", { name: "Clear the icon cache" })).toHaveCount(0);
+  // The projects are untouched.
+  expect((await status.locator("dd").first().innerText()).split(" · ")[0]).toBe(projects);
+  await expect(page.getByRole("heading", { name: "Acme", level: 2 })).toBeVisible();
+});
