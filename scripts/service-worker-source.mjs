@@ -6,7 +6,8 @@
  * - A studio is remembered the first time it is shown online (by address, or when the page reports it): its
  *   page and the files it was built from are downloaded then, and anything it loads later is cached as it is used.
  * - A studio never opened online is not promised offline; the page says so instead of failing blank.
- * - Caches are named by build, and an update deletes the ones from earlier builds.
+ * - Caches are named by build, and an update deletes the ones from earlier builds, after downloading again the
+ *   studios they had kept (a few, in the background, with a connection).
  *
  * @param {{ buildId: string, shell: string[], routeFiles: Record<string, string[]>, runtimeLimit?: number }} options
  */
@@ -107,8 +108,38 @@ self.addEventListener("install", (event) => {
   })());
 });
 
+/** The most studios an update downloads again, so it never turns into a large download. */
+const REKEEP_LIMIT = 8;
+
+/** The studios the earlier builds had kept, read before their caches go. */
+async function keptRoutes() {
+  const found = [];
+  for (const key of await caches.keys()) {
+    if (!key.startsWith("designhub-static-") || key === STATIC_CACHE) continue;
+    const cache = await caches.open(key);
+    for (const pathname of Object.keys(ROUTE_FILES)) {
+      if (!found.includes(pathname) && (await cache.match(pathname))) found.push(pathname);
+    }
+  }
+  return found.slice(0, REKEEP_LIMIT);
+}
+
+/** Keeps those studios again under this build, one after the other, only with a connection. A studio never kept is not downloaded. */
+async function rekeep(pathnames) {
+  if (self.navigator && self.navigator.onLine === false) return;
+  for (const pathname of pathnames) {
+    try { await rememberRoute(pathname); } catch {}
+  }
+}
+
 self.addEventListener("activate", (event) => {
-  event.waitUntil(caches.keys().then((keys) => Promise.all(keys.filter((key) => key.startsWith("designhub-") && key !== STATIC_CACHE && key !== RUNTIME_CACHE && key !== SHARE_CACHE).map((key) => caches.delete(key)))));
+  event.waitUntil((async () => {
+    const before = await keptRoutes().catch(() => []);
+    const keys = await caches.keys();
+    await Promise.all(keys.filter((key) => key.startsWith("designhub-") && key !== STATIC_CACHE && key !== RUNTIME_CACHE && key !== SHARE_CACHE).map((key) => caches.delete(key)));
+    // Not waited for: the update does not hold up while the studios download.
+    if (before.length > 0) void rekeep(before);
+  })());
 });
 
 self.addEventListener("message", (event) => {

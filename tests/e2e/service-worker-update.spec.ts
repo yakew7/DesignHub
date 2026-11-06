@@ -83,7 +83,15 @@ test("a new build replaces the old caches, asks for a reload, and a studio opene
     });
     await page.reload();
     await expect.poll(() => page.evaluate(() => Boolean(navigator.serviceWorker.controller))).toBe(true);
+    // A second studio, kept by asking the worker, is one the page never shows again after the update. A third is never kept.
+    await page.evaluate(async () => {
+      navigator.serviceWorker.controller?.postMessage({ type: "REMEMBER_ROUTE", pathname: "/typography" });
+    });
     await expect.poll(async () => await cacheNames(page)).toContain(`designhub-static-${oldId}`);
+
+    await expect
+      .poll(() => page.evaluate(async () => Boolean(await caches.match("/typography", { ignoreSearch: true }))))
+      .toBe(true);
 
     // The deploy: the same address now serves the next build.
     await stop(server);
@@ -109,8 +117,19 @@ test("a new build replaces the old caches, asks for a reload, and a studio opene
     await expect
       .poll(() => page.evaluate(async () => Boolean(await caches.match("/colors", { ignoreSearch: true }))))
       .toBe(true);
+    // The studio kept before the update is kept after it without being opened, and one never kept is not downloaded.
+    await expect
+      .poll(() => page.evaluate(async () => Boolean(await caches.match("/typography", { ignoreSearch: true }))), {
+        timeout: 30_000,
+      })
+      .toBe(true);
+    expect(await page.evaluate(async () => Boolean(await caches.match("/effects", { ignoreSearch: true })))).toBe(
+      false,
+    );
     await context.setOffline(true);
     await page.goto("/colors");
+    await expect(page.locator("h1").first()).toBeVisible();
+    await page.goto("/typography");
     await expect(page.locator("h1").first()).toBeVisible();
   } finally {
     await context.close();
