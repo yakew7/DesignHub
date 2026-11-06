@@ -58,11 +58,13 @@ Manual test plan: build and start the app, install it from Chrome, export a proj
 
 ## The Storage panel
 
-**Brand Projects, Storage** shows what DesignHub keeps on this device: the number and size of projects, version history, the icon cache and the offline caches, and the share of the space this browser allows. Only counts and sizes are read; no project content is shown or sent. **Clear the offline cache** deletes the `designhub-static-*` and `designhub-runtime-*` caches and nothing else (projects, settings and the share cache stay), and the studios you opened are kept again the next time you open them with a connection.
+**Brand Projects, Storage** shows what DesignHub keeps on this device: the number and size of projects, version history, the icon cache and the offline caches, and the share of the space this browser allows. The panel is folded into four sections (Overview, Offline use, Projects, Protection); Overview starts open, the others start folded, and the sections you open stay open on this device (kept as `storage-*` entries in `designhub:panels`). **Clear the icon cache** in Overview empties only the saved icon search results, so icons are fetched again when they are next needed; projects and the offline caches are untouched. Only counts and sizes are read; no project content is shown or sent. **Clear the offline cache** deletes the `designhub-static-*` and `designhub-runtime-*` caches and nothing else (projects, settings and the share cache stay), and the studios you opened are kept again the next time you open them with a connection.
 
 ## Protecting the data and keeping studios offline
 
 The Storage panel also says whether the browser has promised to keep this site's data (`navigator.storage.persisted()`). When it has not, **Protect my data** asks (`navigator.storage.persist()`); the browser may say no, and the panel says what happened. It never asks until the button is pressed. **Keep studios for offline use** lists every studio with its state. Choose some and press Keep: the page asks the service worker for each one, the worker keeps its page and files and answers, and the panel reports how many were kept, the size added and any that could not be fetched. Nothing is downloaded until then.
+
+When a new version of DesignHub is installed, the new worker reads which studios the old one had kept before it deletes the old caches, and downloads those again in the background (at most eight, only with a connection, never a studio you had not kept). The update does not wait for it.
 
 ## Trimming old versions
 

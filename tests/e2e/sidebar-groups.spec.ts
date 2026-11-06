@@ -1,4 +1,5 @@
 import { expect, test } from "@playwright/test";
+import { saved } from "./storage";
 
 test("sidebar groups fold with the keyboard, remember it, and the current studio's group stays open", async ({
   page,
@@ -17,6 +18,7 @@ test("sidebar groups fold with the keyboard, remember it, and the current studio
   await expect(nav.getByRole("link", { name: "Export Engine" })).toBeHidden();
 
   // It is remembered after a reload.
+  await saved(page, "designhub:nav", "Tools");
   await page.reload();
   await expect(nav.getByRole("button", { name: "Tools" })).toHaveAttribute("aria-expanded", "false");
 
@@ -51,6 +53,7 @@ test("the sidebar collapses to icons, keeps every studio reachable by name, and 
   await expect(page).toHaveURL(/\/typography$/);
 
   // It survives a reload, and the shortcut opens it again.
+  await saved(page, "designhub:nav", "true");
   await page.reload();
   await expect.poll(width).toBeLessThan(80);
   await page.keyboard.press("ControlOrMeta+b");

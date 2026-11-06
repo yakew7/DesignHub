@@ -1,4 +1,5 @@
 import { expect, test, type Page } from "@playwright/test";
+import { saved } from "./storage";
 
 test("skip links jump to the preview and the export pane", async ({ page }) => {
   await page.goto("/effects");
@@ -53,22 +54,7 @@ test.describe("on a phone, one pane shows at a time", () => {
     await expect(page.getByRole("status").filter({ hasText: "Output pane shown" })).toBeAttached();
     await expect(page.locator("#studio-output")).toBeVisible();
     // The choice is written to storage a moment later; reload only once it is there.
-    await expect
-      .poll(() =>
-        page.evaluate(
-          () =>
-            new Promise<boolean>((resolve) => {
-              const open = indexedDB.open("designhub");
-              open.onerror = () => resolve(false);
-              open.onsuccess = () => {
-                const request = open.result.transaction("kv").objectStore("kv").get("designhub:pane");
-                request.onsuccess = () => resolve(String(request.result?.value ?? "").includes('"output"'));
-                request.onerror = () => resolve(false);
-              };
-            }),
-        ),
-      )
-      .toBe(true);
+    await saved(page, "designhub:pane", '"output"');
 
     await page.reload();
     await expect(page.locator("#studio-output")).toBeVisible();

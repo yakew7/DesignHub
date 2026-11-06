@@ -62,21 +62,14 @@ export function CommandPalette({ children }: { children?: ReactNode }) {
   const { t } = useI18n();
   const inputRef = useRef<HTMLInputElement>(null);
 
-  // Whenever the palette opens, the search field takes focus, whatever else the page did meanwhile.
+  // Opened again while the last palette is still animating out, the dialog's content is reused and Radix does not
+  // run its open-focus step, which leaves focus on the results list. Focus the field once the open is committed.
   useEffect(() => {
-    if (!open) return;
-    let frames = 0;
-    let frame = 0;
-    const take = () => {
-      const input = inputRef.current;
-      if (input && document.activeElement !== input) {
-        input.focus();
-        input.setSelectionRange(input.value.length, input.value.length);
-      }
-      if ((frames += 1) < 12) frame = requestAnimationFrame(take);
-    };
-    frame = requestAnimationFrame(take);
-    return () => cancelAnimationFrame(frame);
+    const input = inputRef.current;
+    if (open && input && document.activeElement !== input) {
+      input.focus();
+      input.setSelectionRange(input.value.length, input.value.length);
+    }
   }, [open]);
 
   useHotkey("mod+k", () => setOpen(!open), { allowInInputs: true });
@@ -134,6 +127,11 @@ export function CommandPalette({ children }: { children?: ReactNode }) {
       <DialogContent
         showClose={false}
         className="top-[15vh] max-w-xl translate-y-0 gap-0 overflow-hidden p-0"
+        onCloseAutoFocus={(event) => {
+          // Radix hands focus back to the previous element a tick after a dialog unmounts. When the palette was
+          // opened again before that tick (Ctrl+K twice), the hand-back would take focus from the new search field.
+          if (useUiStore.getState().commandOpen) event.preventDefault();
+        }}
         onOpenAutoFocus={(event) => {
           // Radix selects the input's text on focus, which would swallow a handed-off query.
           event.preventDefault();

@@ -20,6 +20,13 @@ class IconifyError extends Error {
   }
 }
 
+/** Empties the icon cache (this tab's and the saved one) and nothing else. Icons are fetched again when they are used. */
+export async function clearIconCache(): Promise<void> {
+  memory.clear();
+  responses.clear();
+  await safeDb((db) => db.icons.clear(), undefined);
+}
+
 export function splitIconId(id: string): { prefix: string; name: string } {
   const index = id.indexOf(":");
   return { prefix: id.slice(0, index), name: id.slice(index + 1) };

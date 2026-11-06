@@ -242,6 +242,14 @@ export const hi = {
   "projects.storage.keep.kept.other": "{count} स्टूडियो रखे गए ({size} जुड़े)",
   "projects.storage.keep.failed.one": "{count} स्टूडियो नहीं रखा जा सका। कनेक्शन जाँचें और फिर कोशिश करें।",
   "projects.storage.keep.failed.other": "{count} स्टूडियो नहीं रखे जा सके। कनेक्शन जाँचें और फिर कोशिश करें।",
+  "projects.storage.clearIcons": "आइकन कैश साफ़ करें",
+  "projects.storage.iconsHint":
+    "{count} कैश किए आइकन ({size}) हटाता है। प्रोजेक्ट, वर्शन और सेटिंग रहती हैं। आइकन इस्तेमाल होने पर फिर से लाए जाते हैं।",
+  "projects.storage.iconsCleared": "आइकन कैश साफ़ हुआ",
+  "projects.storage.section.overview": "सारांश",
+  "projects.storage.section.offline": "ऑफ़लाइन उपयोग",
+  "projects.storage.section.projects": "प्रोजेक्ट",
+  "projects.storage.section.protection": "सुरक्षा",
   "projects.storage.title": "स्टोरेज",
   "projects.storage.description":
     "DesignHub इस डिवाइस पर क्या रखता है। केवल आकार और गिनती दिखती है; कुछ पढ़ा या भेजा नहीं जाता।",

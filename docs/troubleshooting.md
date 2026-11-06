@@ -84,6 +84,7 @@ Common problems, what causes them and how to fix them. DesignHub has no server a
 - Click **Reload** in the toast. If you dismissed it, reload the page or close all DesignHub tabs and open it again.
 - Still old? Open DevTools, **Application**, **Service Workers**, tick **Update on reload** or click **Unregister**, then reload. Under **Storage**, **Clear site data** also removes the old caches, but see [Reset everything](#how-do-i-reset-everything) first, because it removes saved work too. To clear only the caches, delete the `designhub-static-*` and `designhub-runtime-*` entries under **Cache Storage**.
 - Your saved work is not part of the cache, so an update never changes it.
+- Studios you had kept for offline use stay kept. When the new version takes over, it reads which studios the old one held before deleting its caches, then downloads those again in the background (at most eight, only with a connection, and never a studio you had not kept). The update does not wait for it. The **Storage** panel on the Projects page marks which studios are kept.
 
 ## The language does not switch
 
