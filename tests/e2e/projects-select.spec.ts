@@ -1,4 +1,5 @@
 import { readFileSync, writeFileSync } from "node:fs";
+import { saved } from "./storage";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 
@@ -137,7 +138,7 @@ test("the favorites and tag filters are remembered, and a tag nobody has is igno
   await expect(page.getByRole("button", { name: "Open Filter 0" })).toHaveCount(0);
 
   // Written a moment later; wait for it before leaving the page.
-  await page.waitForTimeout(500);
+  await saved(page, "designhub:project", '"tagFilter":"beta"');
   await page.reload();
   await expect(page.getByRole("status").filter({ hasText: "Filters on: showing 1 of" })).toBeVisible();
   await expect(page.getByLabel("Search projects")).toHaveValue("");
@@ -145,7 +146,7 @@ test("the favorites and tag filters are remembered, and a tag nobody has is igno
   // Clearing the filters brings every project back, and it is remembered too.
   await page.getByRole("button", { name: "Clear filters" }).click();
   await expect(page.getByRole("button", { name: "Open Filter 0" })).toBeVisible();
-  await page.waitForTimeout(500);
+  await saved(page, "designhub:project", '"tagFilter":null');
   await page.reload();
   await expect(page.getByRole("button", { name: "Clear filters" })).toHaveCount(0);
 });

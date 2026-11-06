@@ -69,6 +69,8 @@ A test that fails and then passes on its retry (CI retries once) still passes th
 
 The config starts `pnpm start` on port 3100 (set `E2E_PORT` to change it) and reuses a server already running there. Failed runs keep a trace in `test-results/` (gitignored); open it with `pnpm exec playwright show-trace <trace.zip>`. Vitest only reads `lib/**/*.test.ts`, so the e2e specs never run under `pnpm test`.
 
+A store is written to IndexedDB a moment after it changes, and the browser Playwright installs can be slower at it. A test that changes a store (a filter, a folded panel, a chosen format) and then reloads or leaves the page must wait for the write first, with `saved(page, key, text)` from `tests/e2e/storage.ts`: `await saved(page, "designhub:panels", "storage-projects")`. The key is the store's `name`, and `text` is something the saved value contains once the change is in. Do not use `waitForTimeout` for this, and do not copy the helper into a spec. A test that reloads a page it only read needs none of this.
+
 ### Simple and Advanced mode
 
 Adding a studio to Simple and Advanced mode, or moving a control between the modes, means editing the table of controls in [docs/simple-and-advanced.md](docs/simple-and-advanced.md). `tests/e2e/modes-table.spec.ts` reads it, opens each page in both modes and fails, naming the row, when the page and the table disagree.

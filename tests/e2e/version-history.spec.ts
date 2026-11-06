@@ -1,4 +1,5 @@
 import { expect, test } from "@playwright/test";
+import { saved } from "./storage";
 
 test("an older version is rebuilt from the stored changes and restores the brand as it was", async ({ page }) => {
   // A first visit to Brand Projects creates the project that versions belong to.
@@ -47,7 +48,7 @@ test("an older version is rebuilt from the stored changes and restores the brand
   await dialog.getByRole("button", { name: "Restore" }).click();
   await expect(page.getByText(/^Restored the version from/)).toBeVisible();
   // The restored brand is written a moment later; wait for it before leaving the page.
-  await page.waitForTimeout(1500);
+  await saved(page, "designhub:brand", "Alpha");
   await page.goto("/brand");
   await expect(page.getByLabel("Brand name")).toHaveValue("Alpha");
 });

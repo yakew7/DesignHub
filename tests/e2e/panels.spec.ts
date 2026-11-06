@@ -1,4 +1,5 @@
 import { expect, test } from "@playwright/test";
+import { saved } from "./storage";
 
 test("a panel folds with the keyboard, hides its controls, and stays folded after a reload", async ({ page }) => {
   await page.goto("/typography");
@@ -16,6 +17,7 @@ test("a panel folds with the keyboard, hides its controls, and stays folded afte
   await expect(page.getByRole("region", { name: "OpenType features" })).toBeVisible();
 
   // The choice is remembered.
+  await saved(page, "designhub:panels", "true");
   await page.reload();
   await expect(page.getByRole("button", { name: "OpenType features" })).toHaveAttribute("aria-expanded", "true");
 
