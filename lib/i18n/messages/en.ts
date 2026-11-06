@@ -254,6 +254,10 @@ export const en = {
   "projects.storage.iconsHint":
     "Removes {count} cached icons ({size}). Projects, versions and settings stay. Icons are fetched again when they are used.",
   "projects.storage.iconsCleared": "Icon cache cleared",
+  "projects.storage.section.overview": "Overview",
+  "projects.storage.section.offline": "Offline use",
+  "projects.storage.section.projects": "Projects",
+  "projects.storage.section.protection": "Protection",
   "projects.storage.title": "Storage",
   "projects.storage.description":
     "What DesignHub keeps on this device. Only sizes and counts are shown; nothing is read out or sent.",

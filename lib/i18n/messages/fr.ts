@@ -256,6 +256,10 @@ export const fr = {
   "projects.storage.iconsHint":
     "Supprime {count} icônes en cache ({size}). Les projets, les versions et les réglages restent. Les icônes sont téléchargées à nouveau quand on les utilise.",
   "projects.storage.iconsCleared": "Cache des icônes vidé",
+  "projects.storage.section.overview": "Aperçu",
+  "projects.storage.section.offline": "Utilisation hors ligne",
+  "projects.storage.section.projects": "Projets",
+  "projects.storage.section.protection": "Protection",
   "projects.storage.title": "Stockage",
   "projects.storage.description":
     "Ce que DesignHub conserve sur cet appareil. Seuls les tailles et les nombres sont affichés ; rien n'est lu ni envoyé.",

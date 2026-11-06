@@ -1,6 +1,7 @@
 "use client";
 
-import { useState } from "react";
+import { ChevronDown } from "lucide-react";
+import { useId, useState, type ReactNode } from "react";
 
 import { useKeptStudios } from "@/hooks/use-kept-studios";
 import { clearIconCache } from "@/lib/icons/iconify";
@@ -11,6 +12,9 @@ import { toast } from "sonner";
 import { useI18n } from "@/components/layout/locale-provider";
 import { Button } from "@/components/ui/button";
 import { Panel } from "@/components/ui/panel";
+import { isPanelOpen } from "@/lib/panel-state";
+import { cn } from "@/lib/utils";
+import { usePanelStore } from "@/store/panel-store";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { safeDb } from "@/lib/db";
 import type { ProjectVersion } from "@/lib/projects/history";
@@ -40,6 +44,46 @@ type Report = {
   usage?: number;
   quota?: number;
 };
+
+/** One fold of the panel. Its state is remembered like a panel's, so the sections a person opens stay open. */
+function Section({
+  id,
+  title,
+  defaultOpen = false,
+  children,
+}: {
+  id: string;
+  title: string;
+  defaultOpen?: boolean;
+  children: ReactNode;
+}) {
+  const bodyId = useId();
+  const chosen = usePanelStore((state) => state.open[id]);
+  const setOpen = usePanelStore((state) => state.setOpen);
+  const open = isPanelOpen(true, chosen, defaultOpen);
+  return (
+    <section className="flex flex-col gap-2 border-t pt-2 first:border-t-0 first:pt-0">
+      <h3 className="text-xs font-medium">
+        <button
+          type="button"
+          aria-expanded={open}
+          aria-controls={bodyId}
+          onClick={() => setOpen(id, !open)}
+          className="flex items-center gap-1.5 rounded-sm outline-none focus-visible:ring-2 focus-visible:ring-ring"
+        >
+          <ChevronDown
+            className={cn("size-3.5 transition-transform duration-150", !open && "-rotate-90")}
+            aria-hidden
+          />
+          {title}
+        </button>
+      </h3>
+      <div id={bodyId} hidden={!open} className="flex flex-col gap-2">
+        {children}
+      </div>
+    </section>
+  );
+}
 
 /** Sizes and counts of what DesignHub keeps on this device. Nothing is read out of a project, only measured. */
 export function StoragePanel() {
@@ -176,122 +220,130 @@ export function StoragePanel() {
         ) : null}
       </div>
       {report ? (
-        <div className="flex flex-col gap-2" role="status">
-          <dl className="grid grid-cols-[auto_1fr] gap-x-4 gap-y-1 text-sm">
-            {rows.map(([label, value]) => (
-              <div key={label} className="contents">
-                <dt className="text-muted-foreground">{label}</dt>
-                <dd className="font-mono text-xs">{value}</dd>
+        <div className="flex flex-col gap-3" role="status">
+          <Section id="storage-overview" title={t("projects.storage.section.overview")} defaultOpen>
+            <dl className="grid grid-cols-[auto_1fr] gap-x-4 gap-y-1 text-sm">
+              {rows.map(([label, value]) => (
+                <div key={label} className="contents">
+                  <dt className="text-muted-foreground">{label}</dt>
+                  <dd className="font-mono text-xs">{value}</dd>
+                </div>
+              ))}
+            </dl>
+            <p className="text-xs text-muted-foreground">
+              {share === null
+                ? t("projects.storage.quotaUnknown")
+                : t("projects.storage.quota", {
+                    percent: share,
+                    used: formatBytes(report.usage ?? 0),
+                    quota: formatBytes(report.quota ?? 0),
+                  })}
+            </p>
+            {report.icons.count > 0 ? (
+              <div className="flex flex-wrap items-center gap-2">
+                <Button variant="outline" size="sm" onClick={() => void clearIcons()}>
+                  {t("projects.storage.clearIcons")}
+                </Button>
+                <p className="text-xs text-muted-foreground">
+                  {t("projects.storage.iconsHint", {
+                    count: report.icons.count,
+                    size: formatBytes(report.icons.bytes),
+                  })}
+                </p>
               </div>
-            ))}
-          </dl>
-          <p className="text-xs text-muted-foreground">
-            {share === null
-              ? t("projects.storage.quotaUnknown")
-              : t("projects.storage.quota", {
-                  percent: share,
-                  used: formatBytes(report.usage ?? 0),
-                  quota: formatBytes(report.quota ?? 0),
+            ) : null}
+          </Section>
+          <Section id="storage-offline" title={t("projects.storage.section.offline")}>
+            {report.offline && report.offline.files > 0 ? (
+              <p className="text-xs text-muted-foreground">{t("projects.storage.clearHint")}</p>
+            ) : null}
+            <fieldset className="flex flex-col gap-1.5">
+              <legend className="pb-1 text-xs font-medium">{t("projects.storage.keep.title")}</legend>
+              <p className="text-xs text-muted-foreground">{t("projects.storage.keep.hint")}</p>
+              <ul className="grid gap-x-4 gap-y-1 text-xs sm:grid-cols-2">
+                {studios.map((studio) => {
+                  const isKept = kept.has(studio.href);
+                  return (
+                    <li key={studio.id} className="flex items-center gap-2">
+                      <input
+                        type="checkbox"
+                        id={`keep-${studio.id}`}
+                        disabled={isKept || keeping !== null}
+                        checked={isKept || wanted.has(studio.href)}
+                        onChange={() =>
+                          setWanted((current) => {
+                            const next = new Set(current);
+                            if (!next.delete(studio.href)) next.add(studio.href);
+                            return next;
+                          })
+                        }
+                      />
+                      <label htmlFor={`keep-${studio.id}`}>
+                        {t(`studio.${studio.id}.short`)}
+                        {isKept ? <span className="text-muted-foreground"> · {t("nav.kept")}</span> : null}
+                      </label>
+                    </li>
+                  );
                 })}
-          </p>
-          {report.offline && report.offline.files > 0 ? (
-            <p className="text-xs text-muted-foreground">{t("projects.storage.clearHint")}</p>
-          ) : null}
-          {report.icons.count > 0 ? (
-            <div className="flex flex-wrap items-center gap-2">
-              <Button variant="outline" size="sm" onClick={() => void clearIcons()}>
-                {t("projects.storage.clearIcons")}
-              </Button>
-              <p className="text-xs text-muted-foreground">
-                {t("projects.storage.iconsHint", {
-                  count: report.icons.count,
-                  size: formatBytes(report.icons.bytes),
-                })}
-              </p>
-            </div>
-          ) : null}
-          <fieldset className="flex flex-col gap-1.5 border-t pt-2">
-            <legend className="pb-1 text-xs font-medium">{t("projects.storage.keep.title")}</legend>
-            <p className="text-xs text-muted-foreground">{t("projects.storage.keep.hint")}</p>
-            <ul className="grid gap-x-4 gap-y-1 text-xs sm:grid-cols-2">
-              {studios.map((studio) => {
-                const isKept = kept.has(studio.href);
-                return (
-                  <li key={studio.id} className="flex items-center gap-2">
-                    <input
-                      type="checkbox"
-                      id={`keep-${studio.id}`}
-                      disabled={isKept || keeping !== null}
-                      checked={isKept || wanted.has(studio.href)}
-                      onChange={() =>
-                        setWanted((current) => {
-                          const next = new Set(current);
-                          if (!next.delete(studio.href)) next.add(studio.href);
-                          return next;
-                        })
-                      }
-                    />
-                    <label htmlFor={`keep-${studio.id}`}>
-                      {t(`studio.${studio.id}.short`)}
-                      {isKept ? <span className="text-muted-foreground"> · {t("nav.kept")}</span> : null}
-                    </label>
-                  </li>
-                );
-              })}
-            </ul>
-            <Button
-              variant="outline"
-              size="sm"
-              className="self-start"
-              disabled={wanted.size === 0 || keeping !== null}
-              onClick={() => void keepNow()}
-            >
-              {keeping
-                ? t("projects.storage.keep.progress", { done: keeping.done, total: keeping.total })
-                : plural("projects.storage.keep.button", wanted.size)}
-            </Button>
-          </fieldset>
-          <p className="text-xs text-muted-foreground">{t(`projects.storage.protection.${report.protection}`)}</p>
-          {report.protection === "not-protected" ? (
-            <Button variant="outline" size="sm" className="self-start" onClick={() => void protect()}>
-              {t("projects.storage.protect")}
-            </Button>
-          ) : null}
-          {report.largest.length > 0 ? (
-            <div className="flex flex-col gap-1">
-              <h3 className="text-xs font-medium">{t("projects.storage.largest")}</h3>
-              <ul className="flex flex-col gap-0.5 text-xs">
-                {report.largest.map((row) => (
-                  <li key={row.id} className="flex justify-between gap-3">
-                    <span className="truncate">{row.name}</span>
-                    <span className="shrink-0 font-mono text-muted-foreground">
-                      {formatBytes(row.project)} + {formatBytes(row.history)} {t("projects.storage.history")}
-                    </span>
-                  </li>
-                ))}
               </ul>
+              <Button
+                variant="outline"
+                size="sm"
+                className="self-start"
+                disabled={wanted.size === 0 || keeping !== null}
+                onClick={() => void keepNow()}
+              >
+                {keeping
+                  ? t("projects.storage.keep.progress", { done: keeping.done, total: keeping.total })
+                  : plural("projects.storage.keep.button", wanted.size)}
+              </Button>
+            </fieldset>
+          </Section>
+          <Section id="storage-projects" title={t("projects.storage.section.projects")}>
+            {report.largest.length > 0 ? (
+              <div className="flex flex-col gap-1">
+                <h4 className="text-xs font-medium">{t("projects.storage.largest")}</h4>
+                <ul className="flex flex-col gap-0.5 text-xs">
+                  {report.largest.map((row) => (
+                    <li key={row.id} className="flex justify-between gap-3">
+                      <span className="truncate">{row.name}</span>
+                      <span className="shrink-0 font-mono text-muted-foreground">
+                        {formatBytes(row.project)} + {formatBytes(row.history)} {t("projects.storage.history")}
+                      </span>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            ) : null}
+            <div className="flex flex-wrap items-center gap-2 border-t pt-2">
+              <span className="text-xs">{t("projects.storage.trimLabel")}</span>
+              <Select value={String(days)} onValueChange={(value) => setDays(Number(value))}>
+                <SelectTrigger size="sm" className="w-auto" aria-label={t("projects.storage.trimLabel")}>
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  {trimDays.map((item) => (
+                    <SelectItem key={item} value={String(item)}>
+                      {t("projects.storage.trimDays", { days: item })}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+              <Button variant="outline" size="sm" onClick={() => void trim()} disabled={trimming.length === 0}>
+                {trimming.length === 0
+                  ? t("projects.storage.trimNone")
+                  : plural("projects.storage.trimButton", trimming.length)}
+              </Button>
             </div>
-          ) : null}
-          <div className="flex flex-wrap items-center gap-2 border-t pt-2">
-            <span className="text-xs">{t("projects.storage.trimLabel")}</span>
-            <Select value={String(days)} onValueChange={(value) => setDays(Number(value))}>
-              <SelectTrigger size="sm" className="w-auto" aria-label={t("projects.storage.trimLabel")}>
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                {trimDays.map((item) => (
-                  <SelectItem key={item} value={String(item)}>
-                    {t("projects.storage.trimDays", { days: item })}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-            <Button variant="outline" size="sm" onClick={() => void trim()} disabled={trimming.length === 0}>
-              {trimming.length === 0
-                ? t("projects.storage.trimNone")
-                : plural("projects.storage.trimButton", trimming.length)}
-            </Button>
-          </div>
+          </Section>
+          <Section id="storage-protection" title={t("projects.storage.section.protection")}>
+            <p className="text-xs text-muted-foreground">{t(`projects.storage.protection.${report.protection}`)}</p>
+            {report.protection === "not-protected" ? (
+              <Button variant="outline" size="sm" className="self-start" onClick={() => void protect()}>
+                {t("projects.storage.protect")}
+              </Button>
+            ) : null}
+          </Section>
         </div>
       ) : null}
     </Panel>

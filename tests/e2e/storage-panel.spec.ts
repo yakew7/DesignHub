@@ -1,4 +1,5 @@
 import { expect, test } from "@playwright/test";
+import { saved } from "./storage";
 
 test("the storage panel shows sizes, and clearing the offline cache keeps the projects", async ({ page }) => {
   // Let the service worker install so there is an offline cache to clear.
@@ -67,6 +68,7 @@ test("the panel lists the largest projects and trims old versions with an undo, 
 
   await page.getByRole("button", { name: "Storage", exact: true }).click();
   await page.getByRole("button", { name: "Check storage" }).click();
+  await page.getByRole("button", { name: "Projects", exact: true }).click();
   const status = page.getByRole("status").filter({ hasText: "Largest projects" });
   await expect(status).toContainText("Acme");
 
@@ -98,6 +100,7 @@ test("the panel says whether the data is protected and asks the browser only whe
   });
   await page.getByRole("button", { name: "Storage", exact: true }).click();
   await page.getByRole("button", { name: "Check storage" }).click();
+  await page.getByRole("button", { name: "Protection", exact: true }).click();
   const status = page.getByRole("status").filter({ hasText: "Largest projects" });
   await expect(status).toContainText(/Protected:|Not protected:|cannot say/);
   // Looking never asks.
@@ -125,6 +128,7 @@ test("a studio that was never opened can be kept for offline use from the panel,
 
   await page.getByRole("button", { name: "Storage", exact: true }).click();
   await page.getByRole("button", { name: "Check storage" }).click();
+  await page.getByRole("button", { name: "Offline use", exact: true }).click();
   const group = page.getByRole("group", { name: "Keep studios for offline use" });
   const effects = group.getByRole("checkbox", { name: /^Effects/ });
   await expect(effects).not.toBeChecked();
@@ -179,4 +183,19 @@ test("the icon cache can be cleared on its own, and the projects stay", async ({
   // The projects are untouched.
   expect((await status.locator("dd").first().innerText()).split(" · ")[0]).toBe(projects);
   await expect(page.getByRole("heading", { name: "Acme", level: 2 })).toBeVisible();
+});
+
+test("the panel's sections start folded, and the ones opened stay open after a reload", async ({ page }) => {
+  await page.goto("/projects");
+  await page.getByRole("button", { name: "Storage", exact: true }).click();
+  await page.getByRole("button", { name: "Check storage" }).click();
+  const projects = page.getByRole("button", { name: "Projects", exact: true });
+  await expect(page.getByRole("button", { name: "Overview", exact: true })).toHaveAttribute("aria-expanded", "true");
+  await expect(projects).toHaveAttribute("aria-expanded", "false");
+  await projects.click();
+  await expect(projects).toHaveAttribute("aria-expanded", "true");
+  await saved(page, "designhub:panels", "storage-projects");
+  await page.reload();
+  await page.getByRole("button", { name: "Check storage" }).click();
+  await expect(page.getByRole("button", { name: "Projects", exact: true })).toHaveAttribute("aria-expanded", "true");
 });
