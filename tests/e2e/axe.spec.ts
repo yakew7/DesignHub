@@ -29,16 +29,29 @@ async function scan(page: Page, where: string): Promise<string[]> {
   // A lazily loaded tab shows a placeholder first; scan what the person ends up with, not the placeholder.
   await expect(page.locator('[aria-busy="true"]')).toHaveCount(0);
   const disabled = DISABLED_RULES.map((item) => item.rule);
-  // The page without the user-color regions, with every rule; then those regions without the contrast rule.
-  const outside = await new AxeBuilder({ page }).withTags(TAGS).disableRules(disabled).exclude(USER_COLORS).analyze();
-  const inside = (await page.locator(USER_COLORS).count())
-    ? await new AxeBuilder({ page })
-        .withTags(TAGS)
-        .disableRules([...disabled, "color-contrast"])
-        .include(USER_COLORS)
-        .analyze()
-    : { violations: [] };
-  const results = { violations: [...outside.violations, ...inside.violations] };
+  // One analysis of the whole page with every rule. A contrast failure inside a user-color region is the
+  // information being shown, so those are dropped afterwards (the other rules still apply there).
+  const analysis = await new AxeBuilder({ page })
+    .withTags(TAGS)
+    .disableRules(disabled)
+    .options({ resultTypes: ["violations"] })
+    .analyze();
+  const results = { violations: [] as typeof analysis.violations };
+  for (const violation of analysis.violations) {
+    if (violation.id !== "color-contrast") {
+      results.violations.push(violation);
+      continue;
+    }
+    const outside = [];
+    for (const node of violation.nodes) {
+      const inside = await page.evaluate(
+        ([selector, region]) => Boolean(document.querySelector(selector)?.closest(region)),
+        [node.target.join(" "), USER_COLORS],
+      );
+      if (!inside) outside.push(node);
+    }
+    if (outside.length > 0) results.violations.push({ ...violation, nodes: outside });
+  }
   return results.violations
     .filter((violation) => violation.impact === "serious" || violation.impact === "critical")
     .flatMap((violation) =>
@@ -66,7 +79,7 @@ for (const theme of THEMES) {
           if (!(await tab.isVisible()) || (await tab.getAttribute("aria-selected")) === "true") continue;
           const name = ((await tab.innerText()) || (await tab.getAttribute("aria-label")) || `tab ${index + 1}`).trim();
           await tab.click();
-          await page.waitForTimeout(250);
+          await expect(tab).toHaveAttribute("aria-selected", "true");
           problems.push(...(await scan(page, `${studio.title}, ${name} tab (${theme})`)));
         }
 
