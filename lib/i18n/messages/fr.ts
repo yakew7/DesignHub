@@ -1257,6 +1257,8 @@ export const fr = {
   "home.goal.icon.body": "Cherchez parmi 200 000 icônes, restylez-en une et exportez-la.",
   "home.goal.background.title": "Un arrière-plan",
   "home.goal.background.body": "Vagues, motifs et textures, exportés en SVG, PNG ou CSS.",
+  "home.chooser.fewer": "Afficher moins d'objectifs",
+  "home.chooser.more": "Afficher tous les objectifs",
   "home.chooser.eyebrow": "Commencez ici",
   "home.chooser.title": "Que voulez-vous créer ?",
   "home.continue": "Reprendre dans {studio}",

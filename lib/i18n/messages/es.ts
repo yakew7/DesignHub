@@ -1243,6 +1243,8 @@ export const es = {
   "home.goal.icon.body": "Busca entre 200 000 iconos, restiliza uno y expórtalo.",
   "home.goal.background.title": "Un fondo",
   "home.goal.background.body": "Ondas, patrones y texturas, exportados como SVG, PNG o CSS.",
+  "home.chooser.fewer": "Mostrar menos objetivos",
+  "home.chooser.more": "Mostrar todos los objetivos",
   "home.chooser.eyebrow": "Empieza aquí",
   "home.chooser.title": "¿Qué quieres crear?",
   "home.continue": "Continuar en {studio}",

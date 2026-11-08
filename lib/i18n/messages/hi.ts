@@ -1222,6 +1222,8 @@ export const hi = {
   "home.goal.icon.body": "2,00,000 आइकन में खोजें, एक को रीस्टाइल करें और एक्सपोर्ट करें।",
   "home.goal.background.title": "एक बैकग्राउंड",
   "home.goal.background.body": "लहरें, पैटर्न और टेक्सचर, SVG, PNG या CSS के रूप में एक्सपोर्ट।",
+  "home.chooser.fewer": "कम लक्ष्य दिखाएँ",
+  "home.chooser.more": "सभी लक्ष्य दिखाएँ",
   "home.chooser.eyebrow": "यहाँ से शुरू करें",
   "home.chooser.title": "आप क्या बनाना चाहते हैं?",
   "home.continue": "{studio} में जारी रखें",

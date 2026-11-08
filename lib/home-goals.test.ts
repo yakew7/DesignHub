@@ -1,6 +1,6 @@
 import { describe, expect, test } from "vitest";
 
-import { homeGoals } from "@/lib/home-goals";
+import { homeGoals, orderGoals } from "@/lib/home-goals";
 import { catalogs } from "@/lib/i18n/all-catalogs";
 import { locales } from "@/lib/i18n/locales";
 import { en } from "@/lib/i18n/messages/en";
@@ -30,5 +30,24 @@ describe("home goals", () => {
 
   test("the home page keeps the full list of studios reachable by a count in its label", () => {
     expect(en["home.allStudios"]).toContain("{count}");
+  });
+});
+
+describe("orderGoals", () => {
+  test("a first visit keeps the written order", () => {
+    expect(orderGoals(null, []).map((goal) => goal.id)).toEqual(homeGoals.map((goal) => goal.id));
+  });
+
+  test("the last studio comes first, then the palette's studios newest first, then the rest in order", () => {
+    const ids = orderGoals("typography", ["action:theme", "studio:icons", "studio:logo"]).map((goal) => goal.studio);
+    expect(ids.slice(0, 3)).toEqual(["typography", "icons", "logo"]);
+    expect(ids).toHaveLength(homeGoals.length);
+    expect(ids.slice(3)).toEqual(
+      homeGoals.map((goal) => goal.studio).filter((studio) => !ids.slice(0, 3).includes(studio)),
+    );
+  });
+
+  test("a studio with no goal changes nothing", () => {
+    expect(orderGoals("projects", []).map((goal) => goal.id)).toEqual(homeGoals.map((goal) => goal.id));
   });
 });

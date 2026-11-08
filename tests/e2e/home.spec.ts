@@ -17,6 +17,20 @@ test("a first visit shows no continue link, but returning from a studio links ba
   await expect(page).toHaveURL(/\/colors$/);
 });
 
+test("a returning person sees four goals, the ones they use first, and can show all", async ({ page }) => {
+  await page.goto("/typography");
+  await saved(page, "designhub:nav", "typography");
+  await page.goto("/");
+  const goals = page.locator("a[data-goal]");
+  await expect(goals).toHaveCount(4);
+  await expect(goals.first()).toHaveAttribute("data-goal", "fonts");
+  const more = page.getByRole("button", { name: "Show all goals" });
+  await expect(more).toHaveAttribute("aria-expanded", "false");
+  await more.click();
+  await expect(goals).toHaveCount(8);
+  await expect(page.getByRole("button", { name: "Show fewer goals" })).toHaveAttribute("aria-expanded", "true");
+});
+
 test("the home page asks what to make, links each goal, and keeps every studio one click away", async ({ page }) => {
   await page.goto("/");
   await expect(page.getByRole("heading", { name: "What do you want to make?" })).toBeVisible();

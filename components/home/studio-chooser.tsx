@@ -7,8 +7,9 @@ import { useRef, useState, type KeyboardEvent } from "react";
 import { useI18n } from "@/components/layout/locale-provider";
 import { Message } from "@/components/layout/message";
 import { useKeptStudios } from "@/hooks/use-kept-studios";
-import { homeGoals } from "@/lib/home-goals";
 import { getStudio, studios } from "@/lib/navigation";
+import { orderGoals, VISIBLE_GOALS } from "@/lib/home-goals";
+import { useCommandRecentsStore } from "@/store/command-recents-store";
 import { useNavStore } from "@/store/nav-store";
 
 /** A short "what do you want to make?" with one link per goal, in place of a card for every studio. */
@@ -19,6 +20,12 @@ export function StudioChooser() {
   const { kept } = useKeptStudios();
   const lastStudioId = useNavStore((state) => state.lastStudio);
   const lastStudio = lastStudioId ? (studios.find((item) => item.id === lastStudioId) ?? null) : null;
+  const recent = useCommandRecentsStore((state) => state.recent);
+  const [showAll, setShowAll] = useState(false);
+  // A returning person sees the goals of the studios they use first, and the rest behind a button.
+  const returning = Boolean(lastStudio) || recent.some((id) => id.startsWith("studio:"));
+  const ordered = orderGoals(lastStudioId, recent);
+  const goals = returning && !showAll ? ordered.slice(0, VISIBLE_GOALS) : ordered;
   const list = useRef<HTMLUListElement>(null);
 
   const move = (event: KeyboardEvent<HTMLUListElement>) => {
@@ -68,7 +75,7 @@ export function StudioChooser() {
         </h2>
       </div>
       <ul ref={list} onKeyDown={move} className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-4">
-        {homeGoals.map((goal, position) => {
+        {goals.map((goal, position) => {
           const studio = getStudio(goal.studio);
           const Icon = studio.icon;
           return (
@@ -107,6 +114,16 @@ export function StudioChooser() {
           );
         })}
       </ul>
+      {returning ? (
+        <button
+          type="button"
+          aria-expanded={showAll}
+          onClick={() => setShowAll((value) => !value)}
+          className="self-start rounded-sm text-sm text-muted-foreground underline-offset-4 outline-none hover:text-foreground hover:underline focus-visible:ring-2 focus-visible:ring-ring"
+        >
+          <Message id={showAll ? "home.chooser.fewer" : "home.chooser.more"} />
+        </button>
+      ) : null}
     </section>
   );
 }

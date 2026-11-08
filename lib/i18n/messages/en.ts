@@ -1229,6 +1229,8 @@ export const en = {
   "home.goal.icon.body": "Search 200,000 icons, restyle one and export it.",
   "home.goal.background.title": "A background",
   "home.goal.background.body": "Waves, patterns and textures, exported as SVG, PNG or CSS.",
+  "home.chooser.fewer": "Show fewer goals",
+  "home.chooser.more": "Show all goals",
   "home.chooser.eyebrow": "Start here",
   "home.chooser.title": "What do you want to make?",
   "home.continue": "Continue in the {studio}",
