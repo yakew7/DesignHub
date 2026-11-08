@@ -92,7 +92,6 @@ export function TokenOutput({
     }
   }
 
-  const json = tokenFormat(tokens, "json");
   const spinner = (action: Action) => (busy === action ? <Loader2 className="animate-spin" /> : null);
 
   return (
@@ -102,7 +101,7 @@ export function TokenOutput({
           Output
         </h2>
         <div className="flex flex-wrap gap-2">
-          <Button onClick={() => json && downloadText(json.code, `${name}.tokens.json`)}>
+          <Button onClick={() => downloadText(tokenFormat(tokens, "json")?.code ?? "", `${name}.tokens.json`)}>
             <FileJson /> Download JSON
           </Button>
           <Button variant="outline" onClick={() => run("zip")} disabled={busy !== null}>
