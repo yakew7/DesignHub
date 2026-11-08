@@ -9,6 +9,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- The Icon Studio, the SVG Playground, and the Mockup and Social studios are translated into Spanish, French and Hindi (about 360 messages each; platform names, sizes, format names and file names stay as they are), and `icons.`, `mockups.` and `social.` join the complete areas so a missing key fails the tests. Template and category names are found by their translated and English names. Template descriptions are still English.
+- Returning visitors see four home goals, the ones for the studios they use first, with a button for the rest.
+- The service worker caps the runtime cache at 50 MB as well as 300 files, and the Storage panel shows the runtime cache's files and size.
 - A repeated end-to-end run each night (`e2e-repeat.yml`) that names the tests that failed a run (`scripts/flaky-tests.mjs --repeat`).
 - A message when the worker has kept studios again after an update; the Storage panel updates its kept list.
 - `components/ui/section.tsx`, a folding section whose state is remembered, used by the Storage panel, the Export Engine's Include switches and the vision pairs of the Accessibility Lab.
@@ -61,6 +64,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
+- The axe scan analyses each page once and waits for each tab instead of a fixed pause.
+- The Export Engine writes the JSON download only when it is asked for.
 - The Storage panel's body loads only when the panel is first opened (3.6 kB smaller Projects route).
 - The isometric background timing test compares the longest task with the page's own speed instead of a fixed bound.
 - The Storage panel is folded into sections (Overview, Offline use, Projects, Protection) that remember what is open, so it reads short after a check.
