@@ -235,6 +235,8 @@ export const hi = {
   "projects.storage.keep.title": "ऑफ़लाइन उपयोग के लिए स्टूडियो रखें",
   "projects.storage.keep.hint":
     "कनेक्शन के साथ खोलने पर स्टूडियो रख लिया जाता है। यात्रा या खराब कनेक्शन के लिए अभी डाउनलोड करने वाले स्टूडियो चुनें।",
+  "pwa.rekept.one": "अपडेट के बाद {count} स्टूडियो फिर से ऑफ़लाइन उपयोग के लिए रखा गया",
+  "pwa.rekept.other": "अपडेट के बाद {count} स्टूडियो फिर से ऑफ़लाइन उपयोग के लिए रखे गए",
   "projects.storage.keep.button.one": "{count} स्टूडियो रखें",
   "projects.storage.keep.button.other": "{count} स्टूडियो रखें",
   "projects.storage.keep.progress": "{total} में से {done} रखे जा रहे हैं…",

@@ -16,6 +16,16 @@ export function useKeptStudios(): { kept: ReadonlySet<string>; offline: boolean;
   const [offline, setOffline] = useState(false);
   const [tick, setTick] = useState(0);
 
+  // The worker says when it has kept studios again after an update.
+  useEffect(() => {
+    if (typeof navigator === "undefined" || !("serviceWorker" in navigator)) return;
+    const onMessage = (event: MessageEvent) => {
+      if ((event.data as { type?: unknown } | null)?.type === "STUDIOS_REKEPT") setTick((value) => value + 1);
+    };
+    navigator.serviceWorker.addEventListener("message", onMessage);
+    return () => navigator.serviceWorker.removeEventListener("message", onMessage);
+  }, []);
+
   useEffect(() => {
     if (typeof caches === "undefined") return;
     let current = true;

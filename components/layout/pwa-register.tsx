@@ -4,11 +4,29 @@ import { usePathname } from "next/navigation";
 import { useEffect } from "react";
 import { toast } from "sonner";
 
+import { useI18n } from "@/components/layout/locale-provider";
+
 /** How long after the load event to wait before registering the service worker. */
 const REGISTER_DELAY = 3000;
 
 export function PwaRegister() {
   const pathname = usePathname();
+  const { plural } = useI18n();
+
+  // The new worker says when it has downloaded the studios that were kept before the update.
+  useEffect(() => {
+    if (process.env.NODE_ENV !== "production" || !("serviceWorker" in navigator)) return;
+    const onMessage = (event: MessageEvent) => {
+      const data: unknown = event.data;
+      if (typeof data !== "object" || data === null || (data as { type?: unknown }).type !== "STUDIOS_REKEPT") return;
+      const kept = (data as { kept?: unknown }).kept;
+      if (typeof kept === "number" && kept > 0) toast.success(plural("pwa.rekept", kept), { id: "studios-rekept" });
+    };
+    navigator.serviceWorker.addEventListener("message", onMessage);
+    // The worker may have finished before this page was listening, so ask once.
+    navigator.serviceWorker.controller?.postMessage({ type: "STUDIOS_REKEPT_QUERY" });
+    return () => navigator.serviceWorker.removeEventListener("message", onMessage);
+  }, [plural]);
 
   // Tells the worker which page is showing, so it can keep that studio for offline use. A link followed inside
   // the app makes no request for the page, so the worker could not know otherwise.

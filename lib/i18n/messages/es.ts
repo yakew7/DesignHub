@@ -240,6 +240,8 @@ export const es = {
   "projects.storage.keep.title": "Guardar estudios para usarlos sin conexión",
   "projects.storage.keep.hint":
     "Un estudio se guarda al abrirlo con conexión. Elige los que quieras descargar ahora, para un viaje o una mala conexión.",
+  "pwa.rekept.one": "{count} estudio guardado de nuevo para usar sin conexión tras la actualización",
+  "pwa.rekept.other": "{count} estudios guardados de nuevo para usar sin conexión tras la actualización",
   "projects.storage.keep.button.one": "Guardar {count} estudio",
   "projects.storage.keep.button.other": "Guardar {count} estudios",
   "projects.storage.keep.progress": "Guardando {done} de {total}…",

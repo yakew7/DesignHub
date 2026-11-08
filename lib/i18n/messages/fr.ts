@@ -243,6 +243,8 @@ export const fr = {
   "projects.storage.keep.title": "Garder des ateliers pour une utilisation hors ligne",
   "projects.storage.keep.hint":
     "Un atelier est conservé quand vous l'ouvrez avec une connexion. Choisissez ceux à télécharger maintenant, pour un voyage ou une mauvaise connexion.",
+  "pwa.rekept.one": "{count} studio de nouveau conservé hors ligne après la mise à jour",
+  "pwa.rekept.other": "{count} studios de nouveau conservés hors ligne après la mise à jour",
   "projects.storage.keep.button.one": "Garder {count} atelier",
   "projects.storage.keep.button.other": "Garder {count} ateliers",
   "projects.storage.keep.progress": "Enregistrement de {done} sur {total}…",

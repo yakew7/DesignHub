@@ -243,6 +243,8 @@ export const en = {
   "projects.storage.keep.title": "Keep studios for offline use",
   "projects.storage.keep.hint":
     "A studio is kept when you open it with a connection. Choose studios to download now, for a trip or a bad connection.",
+  "pwa.rekept.one": "{count} studio kept for offline use again after the update",
+  "pwa.rekept.other": "{count} studios kept for offline use again after the update",
   "projects.storage.keep.button.one": "Keep {count} studio",
   "projects.storage.keep.button.other": "Keep {count} studios",
   "projects.storage.keep.progress": "Keeping {done} of {total}…",

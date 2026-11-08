@@ -108,6 +108,9 @@ self.addEventListener("install", (event) => {
   })());
 });
 
+/** How many studios the last update downloaded again, for a page that asks after it loads. */
+let rekept = 0;
+
 /** The most studios an update downloads again, so it never turns into a large download. */
 const REKEEP_LIMIT = 8;
 
@@ -127,8 +130,16 @@ async function keptRoutes() {
 /** Keeps those studios again under this build, one after the other, only with a connection. A studio never kept is not downloaded. */
 async function rekeep(pathnames) {
   if (self.navigator && self.navigator.onLine === false) return;
+  let kept = 0;
   for (const pathname of pathnames) {
-    try { await rememberRoute(pathname); } catch {}
+    try { if (await rememberRoute(pathname)) kept += 1; } catch {}
+  }
+  // The pages are told, so one that shows the kept studios can look again and say it is done. A page that
+  // reloads for the update may not be listening yet, so it can ask again (STUDIOS_REKEPT_QUERY).
+  rekept = kept;
+  if (kept > 0) {
+    const pages = await self.clients.matchAll({ type: "window" });
+    for (const page of pages) page.postMessage({ type: "STUDIOS_REKEPT", kept });
   }
 }
 
@@ -144,6 +155,10 @@ self.addEventListener("activate", (event) => {
 
 self.addEventListener("message", (event) => {
   if (event.data?.type === "SKIP_WAITING") self.skipWaiting();
+  if (event.data?.type === "STUDIOS_REKEPT_QUERY" && rekept > 0) {
+    event.source?.postMessage({ type: "STUDIOS_REKEPT", kept: rekept });
+    rekept = 0;
+  }
   // The page says which studio it is showing, so a link followed inside the app keeps its studio too.
   if (event.data?.type === "REMEMBER_ROUTE" && typeof event.data.pathname === "string") {
     const pathname = event.data.pathname;

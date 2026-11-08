@@ -123,6 +123,7 @@ test("a new build replaces the old caches, asks for a reload, and a studio opene
         timeout: 30_000,
       })
       .toBe(true);
+    await expect(page.getByText(/studios? kept for offline use again after the update/)).toBeVisible();
     expect(await page.evaluate(async () => Boolean(await caches.match("/effects", { ignoreSearch: true })))).toBe(
       false,
     );
