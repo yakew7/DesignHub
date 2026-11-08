@@ -15,7 +15,7 @@ test("the Icon Studio panels speak the chosen language, and English names still 
 
   // The editor beside it.
   await expect(page.getByRole("button", { name: "Restablecer el estilo del icono" })).toBeVisible();
-  await expect(page.getByRole("slider", { name: "Relleno" })).toBeVisible();
+  await expect(page.getByRole("slider", { name: "Relleno" }).first()).toBeVisible();
   await expect(
     page.getByRole("group", { name: "Forma del fondo" }).or(page.getByRole("radiogroup", { name: "Forma del fondo" })),
   ).toBeVisible();

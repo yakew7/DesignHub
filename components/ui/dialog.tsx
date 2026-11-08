@@ -18,7 +18,8 @@ function DialogContent({
 }: React.ComponentProps<typeof DialogPrimitive.Content> & { showClose?: boolean }) {
   return (
     <DialogPrimitive.Portal>
-      <DialogPrimitive.Overlay className="fixed inset-0 z-50 bg-black/60 data-[state=open]:animate-in data-[state=open]:fade-in-0 data-[state=closed]:animate-out data-[state=closed]:fade-out-0" />
+      {/* One step under the content (z-50): opened again during its exit, the overlay can end up after the content in the page and would cover it. */}
+      <DialogPrimitive.Overlay className="fixed inset-0 z-[49] bg-black/60 data-[state=open]:animate-in data-[state=open]:fade-in-0 data-[state=closed]:animate-out data-[state=closed]:fade-out-0" />
       <DialogPrimitive.Content
         data-slot="dialog-content"
         className={cn(
