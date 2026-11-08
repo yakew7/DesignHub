@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 
+import { useI18n } from "@/components/layout/locale-provider";
 import { ElementInspector } from "@/components/svg/element-inspector";
 import { ElementTree } from "@/components/svg/element-tree";
 import { OptimizePanel } from "@/components/svg/optimize-panel";
@@ -15,6 +16,7 @@ import type { OptimizeResult } from "@/lib/svg/optimize";
 import type { SvgNode } from "@/types/svg";
 
 export function SvgControls({ root, optimized }: { root: SvgNode | null; optimized: OptimizeResult | null }) {
+  const { t } = useI18n();
   const advanced = useIsAdvanced();
   const [tab, setTab] = useState("document");
   // Layers and Sprite are Advanced tools: leaving Advanced while one is open returns to Document.
@@ -22,21 +24,21 @@ export function SvgControls({ root, optimized }: { root: SvgNode | null; optimiz
 
   return (
     <Tabs value={shown} onValueChange={setTab} className="gap-4">
-      <TabsList aria-label="SVG tools" className="w-full">
+      <TabsList aria-label={t("svg.tabs.label")} className="w-full">
         <TabsTrigger value="document" className="px-1.5 text-xs">
-          Document
+          {t("svg.tab.document")}
         </TabsTrigger>
         <Advanced>
           <TabsTrigger value="layers" className="px-1.5 text-xs" disabled={!root}>
-            Layers
+            {t("svg.tab.layers")}
           </TabsTrigger>
         </Advanced>
         <TabsTrigger value="optimize" className="px-1.5 text-xs" disabled={!root}>
-          Optimize
+          {t("svg.tab.optimize")}
         </TabsTrigger>
         <Advanced>
           <TabsTrigger value="sprite" className="px-1.5 text-xs">
-            Sprite
+            {t("svg.tab.sprite")}
           </TabsTrigger>
         </Advanced>
       </TabsList>
@@ -46,7 +48,7 @@ export function SvgControls({ root, optimized }: { root: SvgNode | null; optimiz
       </TabsContent>
       <TabsContent value="layers">
         {root ? (
-          <Panel title="Layers" description="Pick an element to inspect its paths, fill and stroke.">
+          <Panel title={t("svg.tab.layers")} description={t("svg.layers.description")}>
             <ElementTree root={root} />
             <ElementInspector root={root} />
           </Panel>

@@ -2,6 +2,7 @@
 
 import { useMemo, type KeyboardEvent } from "react";
 
+import { useI18n } from "@/components/layout/locale-provider";
 import { outline, type NodePath } from "@/lib/svg/tree";
 import { cn } from "@/lib/utils";
 import { useSvgStore } from "@/store/svg-store";
@@ -12,6 +13,7 @@ const samePath = (a: NodePath | null, b: NodePath) =>
 
 /** Keyboard-navigable outline of every element (↑/↓ to move, Home/End to jump). */
 export function ElementTree({ root }: { root: SvgNode }) {
+  const { t } = useI18n();
   const items = useMemo(() => outline(root), [root]);
   const selected = useSvgStore((state) => state.selected);
   const select = useSvgStore((state) => state.select);
@@ -40,7 +42,7 @@ export function ElementTree({ root }: { root: SvgNode }) {
   return (
     <ul
       role="listbox"
-      aria-label="Elements"
+      aria-label={t("svg.layers.elements")}
       onKeyDown={onKeyDown}
       className="flex max-h-72 flex-col overflow-y-auto rounded-md border bg-surface py-1 font-mono text-[11px] scrollbar-thin"
     >

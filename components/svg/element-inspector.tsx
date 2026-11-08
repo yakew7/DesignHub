@@ -2,6 +2,7 @@
 
 import { useMemo } from "react";
 
+import { useI18n } from "@/components/layout/locale-provider";
 import { PaintEditor } from "@/components/svg/paint-editor";
 import { inspectPath } from "@/lib/svg/inspect";
 import { prettyPrint } from "@/lib/svg/serialize";
@@ -10,6 +11,7 @@ import { useSvgStore } from "@/store/svg-store";
 import type { SvgNode } from "@/types/svg";
 
 export function ElementInspector({ root }: { root: SvgNode }) {
+  const { t } = useI18n();
   const selected = useSvgStore((state) => state.selected);
   const setSource = useSvgStore((state) => state.setSource);
   const node = selected ? getNode(root, selected) : null;
@@ -23,7 +25,7 @@ export function ElementInspector({ root }: { root: SvgNode }) {
   return (
     <div className="flex flex-col gap-4">
       {node && selected ? (
-        <section aria-label="Selected element" className="flex flex-col gap-3 rounded-md border p-3">
+        <section aria-label={t("svg.layers.selected")} className="flex flex-col gap-3 rounded-md border p-3">
           <h3 className="font-mono text-xs font-medium">&lt;{node.name}&gt;</h3>
           <PaintEditor
             idPrefix="el"
@@ -35,15 +37,15 @@ export function ElementInspector({ root }: { root: SvgNode }) {
               {report.error ? <p className="text-destructive">{report.error}</p> : null}
               <dl className="grid grid-cols-3 gap-1.5">
                 <div className="rounded-sm bg-muted px-2 py-1">
-                  <dt className="text-subtle-foreground">Commands</dt>
+                  <dt className="text-subtle-foreground">{t("svg.layers.commands")}</dt>
                   <dd className="font-mono">{report.commands.length}</dd>
                 </div>
                 <div className="rounded-sm bg-muted px-2 py-1">
-                  <dt className="text-subtle-foreground">Subpaths</dt>
+                  <dt className="text-subtle-foreground">{t("svg.layers.subpaths")}</dt>
                   <dd className="font-mono">{report.subpaths}</dd>
                 </div>
                 <div className="rounded-sm bg-muted px-2 py-1">
-                  <dt className="text-subtle-foreground">Bounds</dt>
+                  <dt className="text-subtle-foreground">{t("svg.layers.bounds")}</dt>
                   <dd className="truncate font-mono">
                     {report.bounds ? `${report.bounds.width}×${report.bounds.height}` : "-"}
                   </dd>
@@ -56,7 +58,7 @@ export function ElementInspector({ root }: { root: SvgNode }) {
               </p>
               <ol
                 className="max-h-40 overflow-y-auto rounded-sm border bg-surface p-2 font-mono text-[11px] scrollbar-thin"
-                aria-label="Path commands"
+                aria-label={t("svg.layers.pathCommands")}
               >
                 {report.commands.slice(0, 200).map((command, index) => (
                   <li key={index} className="flex gap-2">
@@ -69,7 +71,7 @@ export function ElementInspector({ root }: { root: SvgNode }) {
           ) : null}
           <details className="text-xs">
             <summary className="cursor-pointer text-muted-foreground">
-              All attributes ({Object.keys(node.attributes).length})
+              {t("svg.layers.allAttributes", { count: Object.keys(node.attributes).length })}
             </summary>
             <dl className="mt-2 flex flex-col gap-1 font-mono text-[11px]">
               {Object.entries(node.attributes).map(([name, value]) => (
@@ -82,10 +84,13 @@ export function ElementInspector({ root }: { root: SvgNode }) {
           </details>
         </section>
       ) : (
-        <p className="text-xs text-muted-foreground">Select an element to inspect and edit it.</p>
+        <p className="text-xs text-muted-foreground">{t("svg.layers.selectPrompt")}</p>
       )}
-      <section aria-label="Apply to all shapes" className="flex flex-col gap-3 rounded-md border border-dashed p-3">
-        <h3 className="text-xs font-medium">All shapes</h3>
+      <section
+        aria-label={t("svg.layers.applyAll")}
+        className="flex flex-col gap-3 rounded-md border border-dashed p-3"
+      >
+        <h3 className="text-xs font-medium">{t("svg.layers.allShapes")}</h3>
         <PaintEditor idPrefix="all" attributes={{}} onChange={(patch) => apply(updateAllShapes(root, patch))} />
       </section>
     </div>

@@ -4,6 +4,8 @@ import { Upload } from "lucide-react";
 import { useState, type DragEvent, type ReactNode } from "react";
 import { toast } from "sonner";
 
+import { useI18n } from "@/components/layout/locale-provider";
+import { errorMessage } from "@/lib/i18n/errors";
 import { readSvgFile } from "@/lib/svg/read-file";
 import { cn } from "@/lib/utils";
 
@@ -14,6 +16,7 @@ type SvgDropzoneProps = {
 
 /** Accepts SVG files dropped anywhere on the preview. */
 export function SvgDropzone({ onLoad, children }: SvgDropzoneProps) {
+  const { t } = useI18n();
   const [dragging, setDragging] = useState(false);
 
   async function onDrop(event: DragEvent<HTMLDivElement>) {
@@ -23,9 +26,9 @@ export function SvgDropzone({ onLoad, children }: SvgDropzoneProps) {
     if (!file) return;
     try {
       onLoad(file.name, await readSvgFile(file));
-      toast.success(`Loaded ${file.name}`);
+      toast.success(t("svg.file.loaded", { name: file.name }));
     } catch (error) {
-      toast.error(error instanceof Error ? error.message : "Could not read that file.");
+      toast.error(errorMessage(error, t, "svg.file.unreadable"));
     }
   }
 
@@ -50,7 +53,7 @@ export function SvgDropzone({ onLoad, children }: SvgDropzoneProps) {
         )}
       >
         <Upload className="size-6 text-brand" />
-        Drop an SVG to open it
+        {t("svg.dropzone.hint")}
       </div>
     </div>
   );

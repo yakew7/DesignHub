@@ -4,14 +4,17 @@ import { ClipboardPaste, FileCode2, RotateCcw, Upload } from "lucide-react";
 import { useRef } from "react";
 import { toast } from "sonner";
 
+import { useI18n } from "@/components/layout/locale-provider";
 import { Button } from "@/components/ui/button";
 import { Panel } from "@/components/ui/panel";
 import { Textarea } from "@/components/ui/textarea";
+import { errorMessage, LocalizedError } from "@/lib/i18n/errors";
 import { readSvgFile } from "@/lib/svg/read-file";
 import { byteLength, formatBytes } from "@/lib/svg-size";
 import { useSvgStore } from "@/store/svg-store";
 
 export function SvgDocumentPanel() {
+  const { t } = useI18n();
   const name = useSvgStore((state) => state.name);
   const source = useSvgStore((state) => state.source);
   const setDocument = useSvgStore((state) => state.setDocument);
@@ -23,27 +26,33 @@ export function SvgDocumentPanel() {
     if (!file) return;
     try {
       setDocument(file.name, await readSvgFile(file));
-      toast.success(`Loaded ${file.name}`);
+      toast.success(t("svg.file.loaded", { name: file.name }));
     } catch (error) {
-      toast.error(error instanceof Error ? error.message : "Could not read that file.");
+      toast.error(errorMessage(error, t, "svg.file.unreadable"));
     }
   }
 
   async function paste() {
     try {
       const text = await navigator.clipboard.readText();
-      if (!text.includes("<svg")) throw new Error("The clipboard doesn't contain SVG markup.");
+      if (!text.includes("<svg")) throw new LocalizedError("svg.clipboard.noSvg");
       setDocument("pasted.svg", text);
     } catch (error) {
-      toast.error(error instanceof Error ? error.message : "Clipboard unavailable.");
+      toast.error(errorMessage(error, t, "svg.clipboard.unavailable"));
     }
   }
 
   return (
     <Panel
-      title="Document"
+      title={t("svg.tab.document")}
       actions={
-        <Button variant="ghost" size="icon" aria-label="Load sample SVG" title="Load sample SVG" onClick={loadSample}>
+        <Button
+          variant="ghost"
+          size="icon"
+          aria-label={t("svg.document.loadSample")}
+          title={t("svg.document.loadSample")}
+          onClick={loadSample}
+        >
           <RotateCcw />
         </Button>
       }
@@ -55,10 +64,10 @@ export function SvgDocumentPanel() {
       </div>
       <div className="grid grid-cols-2 gap-2">
         <Button variant="outline" size="sm" onClick={() => inputRef.current?.click()}>
-          <Upload /> Upload
+          <Upload /> {t("svg.document.upload")}
         </Button>
         <Button variant="outline" size="sm" onClick={paste}>
-          <ClipboardPaste /> Paste
+          <ClipboardPaste /> {t("svg.document.paste")}
         </Button>
       </div>
       <input
@@ -67,14 +76,14 @@ export function SvgDocumentPanel() {
         accept=".svg,image/svg+xml"
         className="sr-only"
         tabIndex={-1}
-        aria-label="SVG file"
+        aria-label={t("svg.document.fileLabel")}
         onChange={(event) => {
           void upload(event.target.files?.[0]);
           event.target.value = "";
         }}
       />
       <label htmlFor="svg-source" className="text-xs font-medium text-muted-foreground">
-        Source
+        {t("svg.document.source")}
       </label>
       <Textarea
         id="svg-source"
@@ -83,7 +92,7 @@ export function SvgDocumentPanel() {
         spellCheck={false}
         className="min-h-48 font-mono text-[11px] leading-relaxed scrollbar-thin"
       />
-      <p className="text-[11px] text-subtle-foreground">Or drop an .svg file onto the preview.</p>
+      <p className="text-[11px] text-subtle-foreground">{t("svg.document.dropHint")}</p>
     </Panel>
   );
 }

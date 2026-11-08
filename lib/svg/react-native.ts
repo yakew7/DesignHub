@@ -1,3 +1,6 @@
+import { localized, type Localized } from "@/lib/i18n/errors";
+import { en } from "@/lib/i18n/messages/en";
+import { format } from "@/lib/i18n/translate";
 import { componentNameFromFile, toJsx } from "@/lib/svg/jsx";
 import type { SvgNode } from "@/types/svg";
 
@@ -30,13 +33,21 @@ const COMPONENTS: Record<string, string> = {
   desc: "",
 };
 
-export type NativeResult = { code: string; warnings: string[] };
+/** `warnings` are English (for code comments); `notes` are the same messages, for showing in any language. */
+export type NativeResult = { code: string; warnings: string[]; notes: Localized[] };
 
-function convert(node: SvgNode, used: Set<string>, warnings: Set<string>): SvgNode | null {
+/** The warnings found so far, once each, keyed by their English text. */
+type Warnings = Map<string, Localized>;
+
+function warn(warnings: Warnings, note: Localized) {
+  warnings.set(format(en[note.key], note.params), note);
+}
+
+function convert(node: SvgNode, used: Set<string>, warnings: Warnings): SvgNode | null {
   if (node.type === "text") return node;
   const component = COMPONENTS[node.name];
   if (component === undefined) {
-    warnings.add(`<${node.name}> isn't supported by react-native-svg and was removed.`);
+    warn(warnings, localized("svg.native.unsupported", { tag: node.name }));
     return null;
   }
   if (component === "") return null; // <title>/<desc>: use accessibilityLabel instead.
@@ -44,7 +55,7 @@ function convert(node: SvgNode, used: Set<string>, warnings: Set<string>): SvgNo
   const attributes: Record<string, string> = {};
   for (const [name, value] of Object.entries(node.attributes)) {
     if (name === "class") {
-      warnings.add("CSS classes don't apply in React Native; style them with props instead.");
+      warn(warnings, localized("svg.native.class"));
       continue;
     }
     if (name === "style") {
@@ -72,14 +83,13 @@ function convert(node: SvgNode, used: Set<string>, warnings: Set<string>): SvgNo
 
 export function reactNativeComponent(root: SvgNode, fileName: string): NativeResult {
   const used = new Set<string>();
-  const warnings = new Set<string>();
+  const warnings: Warnings = new Map();
   const hasStyleSheet = root.children.some((child) => child.name === "style");
-  if (hasStyleSheet)
-    warnings.add("<style> blocks aren't supported; their rules were dropped. Inline the colors first.");
+  if (hasStyleSheet) warn(warnings, localized("svg.native.style"));
 
   const withoutStyles = { ...root, children: root.children.filter((child) => child.name !== "style") };
   const tree = convert(withoutStyles, used, warnings);
-  if (!tree) return { code: "", warnings: [...warnings] };
+  if (!tree) return { code: "", warnings: [...warnings.keys()], notes: [...warnings.values()] };
 
   const width = root.attributes.width ?? "24";
   const height = root.attributes.height ?? "24";
@@ -107,5 +117,5 @@ export function ${name}(props: SvgProps) {
   );
 }
 `;
-  return { code, warnings: [...warnings] };
+  return { code, warnings: [...warnings.keys()], notes: [...warnings.values()] };
 }

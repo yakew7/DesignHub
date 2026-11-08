@@ -4,10 +4,12 @@ import { Download, Plus, Trash2, Upload } from "lucide-react";
 import { useId, useMemo, useRef, useState } from "react";
 import { toast } from "sonner";
 
+import { useI18n } from "@/components/layout/locale-provider";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Panel } from "@/components/ui/panel";
 import { downloadText } from "@/lib/download";
+import { errorMessage } from "@/lib/i18n/errors";
 import { svgToDataUrl } from "@/lib/icons/svg";
 import { readSvgFile } from "@/lib/svg/read-file";
 import { buildSprite, commitSymbolId, symbolIdClashes, type SpriteItem } from "@/lib/svg/sprite";
@@ -28,10 +30,13 @@ function SymbolIdInput({
   index: number;
   onCommit: (value: string) => void;
 }) {
+  const { t } = useI18n();
   const id = sprite[index]?.id ?? "";
   const [draft, setDraft] = useState<string | null>(null);
   const hintId = useId();
   const value = draft ?? id;
+  // The message holds the id where {id} stands; the id is shown as code, so the text is split around it.
+  const [before = "", after = ""] = t("svg.sprite.clash", { id: "\n" }).split("\n");
   const clash = draft !== null && symbolIdClashes(sprite, index, draft);
 
   function commit() {
@@ -49,15 +54,16 @@ function SymbolIdInput({
           if (event.key === "Enter") commit();
           if (event.key === "Escape") setDraft(null);
         }}
-        aria-label={`Symbol id ${index + 1}`}
+        aria-label={t("svg.sprite.symbolId", { number: index + 1 })}
         aria-invalid={clash || undefined}
         aria-describedby={clash ? hintId : undefined}
         className="h-8 min-w-0 font-mono text-xs"
       />
       {clash ? (
         <p id={hintId} role="status" className="text-xs text-muted-foreground">
-          Another symbol uses this id. It will be saved as{" "}
-          <code className="font-mono">{commitSymbolId(sprite, index, value)}</code>.
+          {before}
+          <code className="font-mono">{commitSymbolId(sprite, index, value)}</code>
+          {after}
         </p>
       ) : null}
     </div>
@@ -65,6 +71,7 @@ function SymbolIdInput({
 }
 
 export function SpritePanel() {
+  const { t, plural } = useI18n();
   const sprite = useSvgStore((state) => state.sprite);
   const name = useSvgStore((state) => state.name);
   const source = useSvgStore((state) => state.source);
@@ -83,14 +90,16 @@ export function SpritePanel() {
         addToSprite(file.name, await readSvgFile(file));
         added += 1;
       } catch (error) {
-        toast.error(`${file.name}: ${error instanceof Error ? error.message : "unreadable"}`);
+        toast.error(
+          t("svg.sprite.failed", { name: file.name, message: errorMessage(error, t, "svg.sprite.unreadable") }),
+        );
       }
     }
-    if (added) toast.success(`Added ${added} ${added === 1 ? "icon" : "icons"} to the sprite`);
+    if (added) toast.success(plural("svg.sprite.added", added));
   }
 
   return (
-    <Panel title="Sprite" description="Combine SVGs into one <symbol> sprite. Internal ids are namespaced per symbol.">
+    <Panel title={t("svg.tab.sprite")} description={t("svg.sprite.description")}>
       <div className="grid grid-cols-2 gap-2">
         <Button
           variant="outline"
@@ -98,7 +107,7 @@ export function SpritePanel() {
           onClick={() => addToSprite(name, source)}
           disabled={sprite.length >= MAX_ITEMS}
         >
-          <Plus /> Add current
+          <Plus /> {t("svg.sprite.addCurrent")}
         </Button>
         <Button
           variant="outline"
@@ -106,7 +115,7 @@ export function SpritePanel() {
           onClick={() => inputRef.current?.click()}
           disabled={sprite.length >= MAX_ITEMS}
         >
-          <Upload /> Add files
+          <Upload /> {t("svg.sprite.addFiles")}
         </Button>
       </div>
       <input
@@ -116,7 +125,7 @@ export function SpritePanel() {
         accept=".svg,image/svg+xml"
         className="sr-only"
         tabIndex={-1}
-        aria-label="SVG files for the sprite"
+        aria-label={t("svg.sprite.filesLabel")}
         onChange={(event) => {
           void upload(event.target.files);
           event.target.value = "";
@@ -124,7 +133,7 @@ export function SpritePanel() {
       />
       {sprite.length ? (
         <>
-          <ul className="flex flex-col gap-1.5" aria-label="Sprite symbols">
+          <ul className="flex flex-col gap-1.5" aria-label={t("svg.sprite.symbols")}>
             {sprite.map((item, index) => (
               // Keyed by position so committing a new id with Enter keeps focus in the field.
               <li key={index} className="flex items-start gap-2">
@@ -139,7 +148,7 @@ export function SpritePanel() {
                   variant="ghost"
                   size="icon"
                   className="size-8"
-                  aria-label={`Remove ${item.id}`}
+                  aria-label={t("svg.sprite.remove", { id: item.id })}
                   onClick={() => removeFromSprite(index)}
                 >
                   <Trash2 />
@@ -152,12 +161,12 @@ export function SpritePanel() {
               <Download /> sprite.svg
             </Button>
             <Button variant="ghost" size="sm" onClick={clearSprite}>
-              Clear
+              {t("svg.sprite.clear")}
             </Button>
           </div>
         </>
       ) : (
-        <p className="text-xs text-muted-foreground">No symbols yet. Add the current SVG or upload several files.</p>
+        <p className="text-xs text-muted-foreground">{t("svg.sprite.empty")}</p>
       )}
     </Panel>
   );

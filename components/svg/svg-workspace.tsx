@@ -11,6 +11,7 @@ import { SvgDropzone } from "@/components/svg/svg-dropzone";
 import { SvgOutput } from "@/components/svg/svg-output";
 import { useParsedSvg } from "@/hooks/use-parsed-svg";
 import { useOptimizedSvg } from "@/hooks/use-optimized-svg";
+import { translateLocalized } from "@/lib/i18n/errors";
 import { sanitizeSvg } from "@/lib/svg/sanitize";
 import { minify } from "@/lib/svg/serialize";
 import { withHighlight } from "@/lib/svg/tree";
@@ -40,14 +41,14 @@ export function SvgWorkspace() {
               <SvgPreviewCanvas
                 svg={original ?? previewSvg}
                 comparisonSvg={compare && original ? optimized?.svg : undefined}
-                label="SVG preview"
+                label={t("svg.preview")}
               />
             ) : (
               <div
                 role="alert"
                 className="flex min-h-80 flex-1 items-center justify-center rounded-lg border border-dashed p-6 text-sm text-muted-foreground"
               >
-                {parsed.ok ? null : parsed.error}
+                {parsed.ok ? null : translateLocalized(t, parsed.problem)}
               </div>
             )}
           </SvgDropzone>
