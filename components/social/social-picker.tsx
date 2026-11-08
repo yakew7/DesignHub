@@ -3,6 +3,7 @@
 import { ChevronDown, Search } from "lucide-react";
 import { useState, type Dispatch, type SetStateAction } from "react";
 
+import { useI18n } from "@/components/layout/locale-provider";
 import { Input } from "@/components/ui/input";
 import { useHotkey } from "@/hooks/use-hotkeys";
 import { useRovingRadio } from "@/hooks/use-roving-radio";
@@ -12,6 +13,7 @@ import {
   socialPlatformGroups,
   socialTemplates,
 } from "@/lib/social/registry";
+import { socialGroupName, socialShortName, socialTemplateName } from "@/lib/social/names";
 import type { SocialPlatform, SocialTemplateInfo } from "@/lib/social/types";
 import { cn } from "@/lib/utils";
 import { useSocialStore } from "@/store/social-store";
@@ -51,6 +53,7 @@ function PlatformSection({
   folded: Record<string, boolean>;
   setFolded: Dispatch<SetStateAction<Record<string, boolean>>>;
 }) {
+  const { t } = useI18n();
   const template = useSocialStore((state) => state.template);
   const setTemplate = useSocialStore((state) => state.setTemplate);
   return (
@@ -70,7 +73,7 @@ function PlatformSection({
                 onClick={() => setTemplate(item.id)}
                 className={cn(rowClass, item.id === template && "border-brand/60 bg-surface-raised text-foreground")}
               >
-                <span className="truncate">{item.label}</span>
+                <span className="truncate">{socialTemplateName(t, item)}</span>
                 <span className="shrink-0 font-mono text-[11px] text-subtle-foreground">
                   {item.width}×{item.height}
                 </span>
@@ -87,7 +90,7 @@ function PlatformSection({
                 type="button"
                 aria-expanded={open}
                 aria-controls={listId}
-                title={`${entry.styles.length} styles`}
+                title={t("social.picker.styles", { count: entry.styles.length })}
                 onClick={() => {
                   if (!active && first) setTemplate(first.id);
                   setFolded((state) => ({ ...state, [entry.name]: active ? open : false }));
@@ -99,13 +102,13 @@ function PlatformSection({
                     className={cn("size-3.5 shrink-0 transition-transform duration-150", !open && "-rotate-90")}
                     aria-hidden
                   />
-                  <span className="truncate">{entry.name}</span>
+                  <span className="truncate">{socialGroupName(t, entry.name)}</span>
                 </span>
                 <span className="shrink-0 font-mono text-[11px] text-subtle-foreground">
                   {open
                     ? entry.styles.length
                     : active
-                      ? entry.styles.find((item) => item.id === template)?.style
+                      ? socialShortName(t, entry.styles.find((item) => item.id === template) ?? entry.styles[0]!)
                       : `${first?.width}×${first?.height}`}
                 </span>
               </button>
@@ -113,7 +116,7 @@ function PlatformSection({
                 <div
                   id={listId}
                   role="radiogroup"
-                  aria-label={`${entry.name} styles`}
+                  aria-label={t("social.picker.stylesLabel", { name: socialGroupName(t, entry.name) })}
                   className="ml-3 flex flex-col gap-0.5 border-l pl-2"
                 >
                   {entry.styles.map((item) => (
@@ -136,7 +139,7 @@ function PlatformSection({
                           item.id === template && "bg-brand",
                         )}
                       />
-                      {item.style}
+                      {socialShortName(t, item)}
                     </button>
                   ))}
                 </div>
@@ -150,6 +153,7 @@ function PlatformSection({
 }
 
 export function SocialPicker() {
+  const { t } = useI18n();
   const radiosRef = useRovingRadio<HTMLDivElement>();
   const template = useSocialStore((state) => state.template);
   const setTemplate = useSocialStore((state) => state.setTemplate);
@@ -158,7 +162,7 @@ export function SocialPicker() {
   // Groups the user folded away. A group with the selected style is open unless folded.
   const [folded, setFolded] = useState<Record<string, boolean>>({});
   const [query, setQuery] = useState("");
-  const matches = matchingSocialTemplates(query);
+  const matches = matchingSocialTemplates(query, (item) => socialTemplateName(t, item));
   const platforms = orderedSocialPlatforms.filter((platform) =>
     socialTemplates.some((item) => item.platform === platform && (!matches || matches.has(item.id))),
   );
@@ -182,7 +186,9 @@ export function SocialPicker() {
   useHotkey("[", () => cycle(-1));
 
   if (socialTemplates.length === 0) {
-    return <p className="rounded-lg border border-dashed p-4 text-sm text-muted-foreground">No templates yet.</p>;
+    return (
+      <p className="rounded-lg border border-dashed p-4 text-sm text-muted-foreground">{t("social.picker.empty")}</p>
+    );
   }
 
   return (
@@ -196,13 +202,13 @@ export function SocialPicker() {
           type="search"
           value={query}
           onChange={(event) => setQuery(event.target.value)}
-          aria-label="Find a template"
-          placeholder="Find a template"
+          aria-label={t("social.picker.search")}
+          placeholder={t("social.picker.search")}
           className="pl-8"
         />
       </div>
       {matches && platforms.length === 0 ? (
-        <p className="text-xs text-muted-foreground">No template matches that search.</p>
+        <p className="text-xs text-muted-foreground">{t("social.picker.noMatch")}</p>
       ) : null}
       {core.map((platform) => (
         <PlatformSection key={platform} platform={platform} matches={matches} folded={folded} setFolded={setFolded} />
@@ -217,7 +223,7 @@ export function SocialPicker() {
             className="flex items-center justify-between gap-2 rounded-md border border-dashed px-2.5 py-2 text-left text-xs font-medium text-muted-foreground transition-colors duration-150 hover:border-border-strong hover:text-foreground"
           >
             <span>
-              More platforms <span className="font-normal">({more.length})</span>
+              {t("social.picker.more")} <span className="font-normal">({more.length})</span>
             </span>
             <ChevronDown
               className={cn("size-3.5 transition-transform duration-150", !showMore && "-rotate-90")}

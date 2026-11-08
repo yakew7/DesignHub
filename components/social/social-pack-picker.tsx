@@ -3,14 +3,17 @@
 import { ChevronDown } from "lucide-react";
 import { Fragment, useState } from "react";
 
+import { useI18n } from "@/components/layout/locale-provider";
 import { Button } from "@/components/ui/button";
 import { defaultPackTemplates } from "@/lib/social/pack";
+import { socialShortName } from "@/lib/social/names";
 import { orderedSocialPlatforms, socialPlatformGroups, socialTemplates } from "@/lib/social/registry";
 import { cn } from "@/lib/utils";
 import { useSocialStore } from "@/store/social-store";
 
 /** Checkboxes for the templates that go into the ZIP pack, grouped by platform. */
 export function SocialPackPicker() {
+  const { t } = useI18n();
   const selection = useSocialStore((state) => state.packSelection);
   const setSelection = useSocialStore((state) => state.setPackSelection);
   const [open, setOpen] = useState(false);
@@ -35,9 +38,9 @@ export function SocialPackPicker() {
         className="flex items-center justify-between gap-2 text-left text-xs font-medium"
       >
         <span>
-          Choose assets{" "}
+          {t("social.pack.choose")}{" "}
           <span className="font-normal text-muted-foreground">
-            ({chosen.size} of {socialTemplates.length})
+            {t("social.pack.count", { chosen: chosen.size, total: socialTemplates.length })}
           </span>
         </span>
         <ChevronDown className={cn("size-3.5 transition-transform duration-150", !open && "-rotate-90")} aria-hidden />
@@ -46,7 +49,7 @@ export function SocialPackPicker() {
         <div id="social-pack-list" className="flex flex-col gap-3">
           <div className="flex gap-1.5">
             <Button variant="outline" size="sm" className="h-7" onClick={() => setSelection(null)}>
-              Core platforms
+              {t("social.pack.core")}
             </Button>
             <Button
               variant="outline"
@@ -54,10 +57,10 @@ export function SocialPackPicker() {
               className="h-7"
               onClick={() => setSelection(socialTemplates.map((template) => template.id))}
             >
-              Select all
+              {t("social.pack.all")}
             </Button>
             <Button variant="outline" size="sm" className="h-7" onClick={() => setSelection([])}>
-              None
+              {t("social.pack.none")}
             </Button>
           </div>
           {orderedSocialPlatforms
@@ -73,7 +76,7 @@ export function SocialPackPicker() {
                 <Fragment key={platform}>
                   {firstOfMore ? (
                     <p className="border-t pt-2 text-[11px] font-medium text-muted-foreground">
-                      More platforms (not in the default pack)
+                      {t("social.pack.more")}
                     </p>
                   ) : null}
                   <fieldset className="flex flex-col gap-1">
@@ -99,7 +102,7 @@ export function SocialPackPicker() {
                             onChange={(event) => toggle([template.id], event.target.checked)}
                             className="size-3.5 shrink-0 accent-[var(--color-brand)]"
                           />
-                          <span className="truncate">{template.style ?? template.label}</span>
+                          <span className="truncate">{socialShortName(t, template)}</span>
                         </label>
                       ))}
                     </div>

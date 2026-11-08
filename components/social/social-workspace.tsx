@@ -2,6 +2,7 @@
 
 import { memo, useDeferredValue, useMemo } from "react";
 
+import { useI18n } from "@/components/layout/locale-provider";
 import { SvgPreviewCanvas } from "@/components/canvas/svg-preview-canvas";
 import { StudioLayout } from "@/components/layout/studio-layout";
 import { SocialContentPanel } from "@/components/social/social-content-panel";
@@ -10,6 +11,7 @@ import { SocialPicker } from "@/components/social/social-picker";
 import { Panel } from "@/components/ui/panel";
 import { useLoadedTemplate } from "@/hooks/use-loaded-template";
 import { useSocialContext } from "@/hooks/use-social-context";
+import { socialTemplateName } from "@/lib/social/names";
 import { withSafeArea } from "@/lib/social/overlay";
 import { getSocialTemplate, loadSocialTemplate, socialTemplates } from "@/lib/social/registry";
 import { useSocialStore } from "@/store/social-store";
@@ -19,6 +21,7 @@ const Templates = memo(SocialPicker);
 
 /** Templates on the left; preview, then content, then export on the right. */
 export function SocialWorkspace() {
+  const { t } = useI18n();
   const ctx = useSocialContext();
   const templateId = useSocialStore((state) => state.template);
   const safeArea = useSocialStore((state) => state.safeArea);
@@ -29,13 +32,13 @@ export function SocialWorkspace() {
   const drawn = useDeferredValue(ctx);
   const svg = useMemo(() => (template ? template.render(drawn) : ""), [template, drawn]);
   const preview = useMemo(() => (template && safeArea ? withSafeArea(svg, template) : svg), [svg, template, safeArea]);
-  const label = template ? `${template.platform} ${template.label}` : "Social asset";
+  const label = template ? `${template.platform} ${socialTemplateName(t, template)}` : t("social.preview.fallback");
 
   return (
     <StudioLayout
       id="social-v2"
       controls={
-        <Panel title="Template">
+        <Panel title={t("social.panel.template")}>
           <Templates />
         </Panel>
       }
@@ -49,7 +52,7 @@ export function SocialWorkspace() {
                 className="flex flex-1 items-center justify-center rounded-lg border border-dashed text-sm text-muted-foreground"
                 aria-busy={Boolean(wanted)}
               >
-                {wanted ? "Loading the template…" : "Pick a template."}
+                {wanted ? t("social.preview.loading") : t("social.preview.pick")}
               </div>
             )}
           </div>

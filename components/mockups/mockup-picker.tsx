@@ -2,14 +2,17 @@
 
 import { useState } from "react";
 
+import { useI18n } from "@/components/layout/locale-provider";
 import { GroupedPicker, type PickerGroup } from "@/components/ui/grouped-picker";
 import { useHotkey } from "@/hooks/use-hotkeys";
+import { mockupCategoryName, mockupName } from "@/lib/mockups/names";
 import { mockupTemplates } from "@/lib/mockups/registry";
 import { mockupCategories } from "@/lib/mockups/types";
 import { filterGroups } from "@/lib/picker-search";
 import { useMockupStore } from "@/store/mockup-store";
 
 export function MockupPicker() {
+  const { t } = useI18n();
   const template = useMockupStore((state) => state.template);
   const setTemplate = useMockupStore((state) => state.setTemplate);
   const [query, setQuery] = useState("");
@@ -17,10 +20,16 @@ export function MockupPicker() {
   const groups: PickerGroup[] = mockupCategories
     .map((category) => ({
       id: category,
-      label: category,
+      label: mockupCategoryName(t, category),
       items: mockupTemplates
         .filter((item) => item.category === category)
-        .map((item) => ({ id: item.id, label: item.label, description: item.description, keywords: item.category })),
+        .map((item) => ({
+          id: item.id,
+          label: mockupName(t, item),
+          description: item.description,
+          // The English names stay searchable in every language.
+          keywords: `${item.category} ${item.label}`,
+        })),
     }))
     .filter((group) => group.items.length > 0);
 
@@ -37,7 +46,9 @@ export function MockupPicker() {
   useHotkey("[", () => cycle(-1));
 
   if (mockupTemplates.length === 0) {
-    return <p className="rounded-lg border border-dashed p-4 text-sm text-muted-foreground">No templates yet.</p>;
+    return (
+      <p className="rounded-lg border border-dashed p-4 text-sm text-muted-foreground">{t("mockups.picker.empty")}</p>
+    );
   }
 
   return (
@@ -47,9 +58,9 @@ export function MockupPicker() {
       onChange={setTemplate}
       query={query}
       onQueryChange={setQuery}
-      label="Mockup template"
-      searchLabel="Find a mockup"
-      noMatch="No mockup matches that search."
+      label={t("mockups.picker.label")}
+      searchLabel={t("mockups.picker.search")}
+      noMatch={t("mockups.picker.noMatch")}
     />
   );
 }

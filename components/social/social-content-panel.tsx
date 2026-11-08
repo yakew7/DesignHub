@@ -4,6 +4,7 @@ import { Moon, RotateCcw, Sun, Upload } from "lucide-react";
 import { useRef } from "react";
 import { toast } from "sonner";
 
+import { useI18n } from "@/components/layout/locale-provider";
 import { Button } from "@/components/ui/button";
 import { SliderField } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
@@ -13,6 +14,7 @@ import { Panel } from "@/components/ui/panel";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Switch } from "@/components/ui/switch";
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
+import type { MessageKey } from "@/lib/i18n/translate";
 import { svgToDataUrl } from "@/lib/icons/svg";
 import type { SocialBackground, SocialContent, SocialContext } from "@/lib/social/types";
 import { readSvgFile } from "@/lib/svg/read-file";
@@ -20,26 +22,27 @@ import { sanitizeSvg } from "@/lib/svg/sanitize";
 import { useSocialStore } from "@/store/social-store";
 import type { BrandMode } from "@/types/brand";
 
-const textFields: { key: keyof SocialContent; label: string; derived?: boolean }[] = [
-  { key: "name", label: "Project name", derived: true },
-  { key: "headline", label: "Description", derived: true },
-  { key: "website", label: "Website", derived: true },
-  { key: "github", label: "GitHub username", derived: true },
-  { key: "subtitle", label: "Tagline" },
-  { key: "cta", label: "Call to action" },
-  { key: "handle", label: "Social handle", derived: true },
-];
+const textFields = [
+  { key: "name", label: "social.field.name", derived: true },
+  { key: "headline", label: "social.field.headline", derived: true },
+  { key: "website", label: "social.field.website", derived: true },
+  { key: "github", label: "social.field.github", derived: true },
+  { key: "subtitle", label: "social.field.subtitle" },
+  { key: "cta", label: "social.field.cta" },
+  { key: "handle", label: "social.field.handle", derived: true },
+] as const satisfies readonly { key: keyof SocialContent; label: MessageKey; derived?: boolean }[];
 
-const backgrounds: { value: SocialBackground; label: string }[] = [
-  { value: "auto", label: "Template default" },
-  { value: "solid", label: "Solid" },
-  { value: "gradient", label: "Gradient" },
-  { value: "glow", label: "Glow" },
-  { value: "mesh", label: "Mesh" },
-];
+const backgrounds = [
+  { value: "auto", label: "social.design.background.auto" },
+  { value: "solid", label: "social.design.background.solid" },
+  { value: "gradient", label: "social.design.background.gradient" },
+  { value: "glow", label: "social.design.background.glow" },
+  { value: "mesh", label: "social.design.background.mesh" },
+] as const satisfies readonly { value: SocialBackground; label: MessageKey }[];
 
 /** Copy and look for every social template. Empty fields and unset colors follow the brand. */
 export function SocialContentPanel({ ctx }: { ctx: SocialContext }) {
+  const { t } = useI18n();
   const mode = useSocialStore((state) => state.mode);
   const setMode = useSocialStore((state) => state.setMode);
   const content = useSocialStore((state) => state.content);
@@ -54,11 +57,11 @@ export function SocialContentPanel({ ctx }: { ctx: SocialContext }) {
     if (!file) return;
     try {
       const clean = sanitizeSvg(await readSvgFile(file));
-      if (!clean) throw new Error("That file isn't a valid SVG.");
+      if (!clean) throw new Error(t("social.logo.invalid"));
       setDesign({ logoSvg: clean });
-      toast.success("Logo updated for social assets");
+      toast.success(t("social.logo.updated"));
     } catch (error) {
-      toast.error(error instanceof Error ? error.message : "Could not read that file.");
+      toast.error(error instanceof Error ? error.message : t("social.logo.readFailed"));
     }
   }
 
@@ -79,46 +82,46 @@ export function SocialContentPanel({ ctx }: { ctx: SocialContext }) {
         <span className="min-w-0 flex-1 font-mono text-xs uppercase">{current.slice(0, 7)}</span>
         {design[key] ? (
           <Button variant="ghost" size="sm" onClick={() => setDesign({ [key]: null })}>
-            <RotateCcw /> Brand
+            <RotateCcw /> {t("social.design.brand")}
           </Button>
         ) : (
-          <span className="text-[11px] text-subtle-foreground">From brand</span>
+          <span className="text-[11px] text-subtle-foreground">{t("social.design.fromBrand")}</span>
         )}
       </div>
     </div>
   );
 
   return (
-    <Panel title="Content" description="Every template uses these. Empty fields follow your brand.">
+    <Panel title={t("social.content.title")} description={t("social.content.description")}>
       <div className="grid gap-4 sm:grid-cols-2">
         {textFields.map((field) => (
           <div key={field.key} className="flex flex-col gap-1.5">
-            <Label htmlFor={`social-${field.key}`}>{field.label}</Label>
+            <Label htmlFor={`social-${field.key}`}>{t(field.label)}</Label>
             <Input
               id={`social-${field.key}`}
               value={content[field.key]}
               maxLength={field.key === "headline" ? 140 : 90}
-              placeholder={field.derived ? String(ctx.content[field.key]) : undefined}
+              placeholder={"derived" in field ? String(ctx.content[field.key]) : undefined}
               onChange={(event) => setContent({ [field.key]: event.target.value })}
               className="h-8 text-sm"
             />
           </div>
         ))}
         <div className="flex flex-col gap-1.5">
-          <Label>Logo</Label>
+          <Label>{t("social.logo")}</Label>
           <div className="flex items-center gap-2">
             {/* eslint-disable-next-line @next/next/no-img-element -- sanitized SVG data URL */}
             <img
               src={svgToDataUrl(ctx.brand.logo.svg)}
-              alt="Current logo"
+              alt={t("social.logo.current")}
               className="bg-checker size-8 shrink-0 rounded-md border object-contain p-1"
             />
             <Button variant="outline" size="sm" onClick={() => fileRef.current?.click()}>
-              <Upload /> Upload SVG
+              <Upload /> {t("social.logo.upload")}
             </Button>
             {design.logoSvg ? (
               <Button variant="ghost" size="sm" onClick={() => setDesign({ logoSvg: null })}>
-                <RotateCcw /> Brand
+                <RotateCcw /> {t("social.design.brand")}
               </Button>
             ) : null}
           </div>
@@ -128,7 +131,7 @@ export function SocialContentPanel({ ctx }: { ctx: SocialContext }) {
             accept=".svg,image/svg+xml"
             className="sr-only"
             tabIndex={-1}
-            aria-label="Social logo SVG file"
+            aria-label={t("social.logo.fileLabel")}
             onChange={(event) => {
               void uploadLogo(event.target.files?.[0]);
               event.target.value = "";
@@ -139,21 +142,21 @@ export function SocialContentPanel({ ctx }: { ctx: SocialContext }) {
 
       <div className="grid gap-4 border-t pt-4 sm:grid-cols-2">
         <Advanced>
-          {colorField("primary", "Primary color", ctx.surface.primary)}
-          {colorField("secondary", "Secondary color", ctx.surface.secondary)}
+          {colorField("primary", t("social.design.primary"), ctx.surface.primary)}
+          {colorField("secondary", t("social.design.secondary"), ctx.surface.secondary)}
           <div className="flex flex-col gap-1.5">
-            <Label>Background style</Label>
+            <Label>{t("social.design.background")}</Label>
             <Select
               value={design.background}
               onValueChange={(value) => setDesign({ background: value as SocialBackground })}
             >
-              <SelectTrigger size="sm" aria-label="Background style">
+              <SelectTrigger size="sm" aria-label={t("social.design.background")}>
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
                 {backgrounds.map((item) => (
                   <SelectItem key={item.value} value={item.value}>
-                    {item.label}
+                    {t(item.label)}
                   </SelectItem>
                 ))}
               </SelectContent>
@@ -161,33 +164,33 @@ export function SocialContentPanel({ ctx }: { ctx: SocialContext }) {
           </div>
         </Advanced>
         <div className="flex flex-col gap-1.5">
-          <Label>Theme</Label>
+          <Label>{t("social.design.theme")}</Label>
           <ToggleGroup
             type="single"
             value={mode}
             onValueChange={(value) => value && setMode(value as BrandMode)}
-            aria-label="Asset theme"
+            aria-label={t("social.design.themeLabel")}
             className="w-full"
           >
             <ToggleGroupItem value="light" className="flex-1">
-              <Sun /> Light
+              <Sun /> {t("social.design.light")}
             </ToggleGroupItem>
             <ToggleGroupItem value="dark" className="flex-1">
-              <Moon /> Dark
+              <Moon /> {t("social.design.dark")}
             </ToggleGroupItem>
           </ToggleGroup>
         </div>
         <Advanced>
           <SliderField
-            label="Border radius"
+            label={t("social.design.radius")}
             value={ctx.brand.radius}
             min={0}
             max={40}
             onChange={(radius) => setDesign({ radius })}
-            format={(value) => `${value}px${design.radius === null ? " (brand)" : ""}`}
+            format={(value) => (design.radius === null ? t("social.design.radiusBrand", { value }) : `${value}px`)}
           />
           <SliderField
-            label="Padding"
+            label={t("social.design.padding")}
             value={design.padding}
             min={40}
             max={140}
@@ -196,7 +199,7 @@ export function SocialContentPanel({ ctx }: { ctx: SocialContext }) {
             format={(value) => `${value}px`}
           />
           <div className="flex items-center justify-between gap-3 sm:col-span-2">
-            <Label htmlFor="social-safe-area">Show safe area</Label>
+            <Label htmlFor="social-safe-area">{t("social.design.safeArea")}</Label>
             <Switch id="social-safe-area" checked={safeArea} onCheckedChange={setSafeArea} />
           </div>
         </Advanced>

@@ -4,6 +4,7 @@ import { ClipboardCopy, FileText, ImageDown, Loader2 } from "lucide-react";
 import { useState } from "react";
 import { toast } from "sonner";
 
+import { useI18n } from "@/components/layout/locale-provider";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
@@ -18,6 +19,7 @@ import { useMockupStore } from "@/store/mockup-store";
 type Props = { svg: string; name: string; label: string; signature?: string };
 
 export function MockupExportPanel({ svg, name, label, signature }: Props) {
+  const { t } = useI18n();
   const scale = useMockupStore((state) => state.scale);
   const setScale = useMockupStore((state) => state.setScale);
   const [busy, setBusy] = useState<"png" | "webp" | "pdf" | null>(null);
@@ -30,7 +32,7 @@ export function MockupExportPanel({ svg, name, label, signature }: Props) {
       if (kind === "webp") {
         const image = await rasterize(svg, scale, 8192, "webp");
         downloadBlob(new Blob([image.bytes.slice().buffer], { type: "image/webp" }), `${file}@${scale}x.webp`);
-        toast.success("Download ready");
+        toast.success(t("command.downloadReady"));
         return;
       }
       const image = await rasterize(svg, scale);
@@ -40,9 +42,9 @@ export function MockupExportPanel({ svg, name, label, signature }: Props) {
         const pdf = await imagesToPdf([{ image }], { title: `${name} ${label}`, scale });
         downloadBlob(new Blob([pdf.slice().buffer], { type: "application/pdf" }), `${file}.pdf`);
       }
-      toast.success("Download ready");
+      toast.success(t("command.downloadReady"));
     } catch (error) {
-      toast.error(error instanceof Error && error.message ? error.message : "Export failed in this browser.");
+      toast.error(error instanceof Error && error.message ? error.message : t("command.exportFailed"));
     } finally {
       setBusy(null);
     }
@@ -62,22 +64,22 @@ export function MockupExportPanel({ svg, name, label, signature }: Props) {
       } else {
         await navigator.clipboard.writeText(signature);
       }
-      toast.success("Signature copied", { description: "Paste it into your mail client's signature settings." });
+      toast.success(t("mockups.export.signatureCopied"), { description: t("mockups.export.signatureCopiedHint") });
     } catch {
-      toast.error("Couldn't copy in this browser.");
+      toast.error(t("mockups.export.copyFailed"));
     }
   }
 
   return (
     <>
-      <h2 className="text-sm font-medium">Export</h2>
+      <h2 className="text-sm font-medium">{t("mockups.export.title")}</h2>
       <div className="flex flex-col gap-2">
-        <Label>Resolution</Label>
+        <Label>{t("mockups.export.resolution")}</Label>
         <ToggleGroup
           type="single"
           value={String(scale)}
           onValueChange={(value) => value && setScale(Number(value))}
-          aria-label="Export resolution"
+          aria-label={t("mockups.export.resolutionLabel")}
           className="w-full"
         >
           {[1, 2, 3, 4].map((value) => (
@@ -103,14 +105,11 @@ export function MockupExportPanel({ svg, name, label, signature }: Props) {
       </div>
       {signature ? (
         <div className="flex flex-col gap-2 border-t pt-4">
-          <Label>HTML signature</Label>
+          <Label>{t("mockups.export.signature")}</Label>
           <Button variant="outline" onClick={copySignature}>
-            <ClipboardCopy /> Copy HTML signature
+            <ClipboardCopy /> {t("mockups.export.copySignature")}
           </Button>
-          <p className="text-[11px] text-subtle-foreground">
-            Uses your name, title, phone, website, email and address from Content. Paste it into Gmail (Settings,
-            Signature), Outlook or Apple Mail. Text only, so no client blocks it.
-          </p>
+          <p className="text-[11px] text-subtle-foreground">{t("mockups.export.signatureHelp")}</p>
         </div>
       ) : null}
     </>

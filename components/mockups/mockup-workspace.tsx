@@ -2,6 +2,7 @@
 
 import { memo, useDeferredValue, useMemo } from "react";
 
+import { useI18n } from "@/components/layout/locale-provider";
 import { SvgPreviewCanvas } from "@/components/canvas/svg-preview-canvas";
 import { StudioLayout } from "@/components/layout/studio-layout";
 import { MockupContentPanel } from "@/components/mockups/mockup-content-panel";
@@ -10,6 +11,7 @@ import { MockupPicker } from "@/components/mockups/mockup-picker";
 import { Panel } from "@/components/ui/panel";
 import { useLoadedTemplate } from "@/hooks/use-loaded-template";
 import { useMockupContext } from "@/hooks/use-mockup-context";
+import { mockupName } from "@/lib/mockups/names";
 import { getTemplate, loadMockupTemplate, mockupTemplates } from "@/lib/mockups/registry";
 import { signatureHtml } from "@/lib/mockups/signature";
 import { useMockupStore } from "@/store/mockup-store";
@@ -18,6 +20,7 @@ import { useMockupStore } from "@/store/mockup-store";
 const Template = memo(MockupPicker);
 
 export function MockupWorkspace() {
+  const { t } = useI18n();
   const ctx = useMockupContext();
   const templateId = useMockupStore((state) => state.template);
   const wanted = getTemplate(templateId) ?? mockupTemplates[0];
@@ -32,7 +35,7 @@ export function MockupWorkspace() {
       id="mockups"
       controls={
         <>
-          <Panel title="Template">
+          <Panel title={t("mockups.panel.template")}>
             <Template />
           </Panel>
           <MockupContentPanel />
@@ -40,13 +43,17 @@ export function MockupWorkspace() {
       }
       preview={
         svg ? (
-          <SvgPreviewCanvas svg={svg} label={`${template?.label} mockup`} defaultBackdrop="checker" />
+          <SvgPreviewCanvas
+            svg={svg}
+            label={t("mockups.preview.label", { name: template ? mockupName(t, template) : "" })}
+            defaultBackdrop="checker"
+          />
         ) : (
           <div
             className="flex min-h-80 flex-1 items-center justify-center rounded-lg border border-dashed text-sm text-muted-foreground"
             aria-busy={Boolean(wanted)}
           >
-            {wanted ? "Loading the template…" : "Pick a template."}
+            {wanted ? t("mockups.preview.loading") : t("mockups.preview.pick")}
           </div>
         )
       }
