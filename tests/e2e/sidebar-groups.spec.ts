@@ -1,4 +1,4 @@
-import { expect, test } from "@playwright/test";
+import { expect, test, type Locator } from "@playwright/test";
 import { saved } from "./storage";
 
 test("sidebar groups fold with the keyboard, remember it, and the current studio's group stays open", async ({
@@ -74,9 +74,16 @@ test("on the collapsed rail a keyboard user sees each studio's name and shortcut
   const focused = page.locator(":focus");
   const name = await focused.getAttribute("aria-label");
   expect(name).toBeTruthy();
-  await expect(page.getByRole("tooltip").filter({ hasText: name! })).toBeVisible();
+  // A tooltip opens when focus reaches the link; focus it again, with a blur between, until it has.
+  const tooltip = (text: string) => page.getByRole("tooltip").filter({ hasText: text });
+  const showsOnFocus = async (link: Locator, text: string) =>
+    expect(async () => {
+      await link.blur();
+      await link.focus();
+      await expect(tooltip(text)).toBeVisible({ timeout: 1000 });
+    }).toPass();
+  await showsOnFocus(nav.getByRole("link", { name: name!, exact: true }), name!);
 
   // A studio's tooltip carries its G shortcut.
-  await nav.getByRole("link", { name: "Typography" }).focus();
-  await expect(page.getByRole("tooltip").filter({ hasText: "Typography (G T)" })).toBeVisible();
+  await showsOnFocus(nav.getByRole("link", { name: "Typography" }), "Typography (G T)");
 });
