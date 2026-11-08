@@ -9,9 +9,15 @@
  * - Caches are named by build, and an update deletes the ones from earlier builds, after downloading again the
  *   studios they had kept (a few, in the background, with a connection).
  *
- * @param {{ buildId: string, shell: string[], routeFiles: Record<string, string[]>, runtimeLimit?: number }} options
+ * @param {{ buildId: string, shell: string[], routeFiles: Record<string, string[]>, runtimeLimit?: number, runtimeBytes?: number }} options
  */
-export function serviceWorkerSource({ buildId, shell, routeFiles, runtimeLimit = 300 }) {
+export function serviceWorkerSource({
+  buildId,
+  shell,
+  routeFiles,
+  runtimeLimit = 300,
+  runtimeBytes = 50 * 1024 * 1024,
+}) {
   return `const BUILD_ID = ${JSON.stringify(buildId)};
 const STATIC_CACHE = "designhub-static-" + BUILD_ID;
 const RUNTIME_CACHE = "designhub-runtime-" + BUILD_ID;
@@ -23,6 +29,8 @@ const SHELL = ${JSON.stringify(shell, null, 2)};
 const ROUTE_FILES = ${JSON.stringify(routeFiles, null, 2)};
 /** The most files the runtime cache keeps; the oldest go first. */
 const RUNTIME_LIMIT = ${runtimeLimit};
+/** The most bytes the runtime cache keeps; the oldest go first. Fonts and icons differ a lot in size, so the count alone is not enough. */
+const RUNTIME_BYTES = ${runtimeBytes};
 const OFFLINE_PAGE =
   "<!doctype html><meta charset=utf-8><meta name=viewport content='width=device-width,initial-scale=1'><title>Offline</title>" +
   "<body style='font:16px system-ui;max-width:32rem;margin:4rem auto;padding:0 1rem'>" +
@@ -32,9 +40,26 @@ const OFFLINE_PAGE =
 
 const isCacheable = (response) => response.ok || response.type === "opaque";
 
+/** The size of a stored response: its declared length, or its body when it declares none. An opaque one counts as nothing. */
+async function sizeOf(response) {
+  if (!response || response.type === "opaque") return 0;
+  const declared = Number(response.headers.get("content-length"));
+  if (declared > 0) return declared;
+  try { return (await response.clone().blob()).size; } catch { return 0; }
+}
+
 async function trim(cache) {
   const keys = await cache.keys();
-  await Promise.all(keys.slice(0, Math.max(0, keys.length - RUNTIME_LIMIT)).map((key) => cache.delete(key)));
+  const doomed = new Set(keys.slice(0, Math.max(0, keys.length - RUNTIME_LIMIT)));
+  // Then the oldest of what is left, until the cache is under its byte limit (the newest entry always stays).
+  const left = keys.filter((key) => !doomed.has(key));
+  const sizes = await Promise.all(left.map(async (key) => sizeOf(await cache.match(key))));
+  let total = sizes.reduce((sum, size) => sum + size, 0);
+  for (let index = 0; index < left.length - 1 && total > RUNTIME_BYTES; index += 1) {
+    doomed.add(left[index]);
+    total -= sizes[index];
+  }
+  await Promise.all([...doomed].map((key) => cache.delete(key)));
 }
 
 async function put(cacheName, request, response) {

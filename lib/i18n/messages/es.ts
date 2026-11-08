@@ -258,6 +258,8 @@ export const es = {
   "projects.storage.section.offline": "Uso sin conexión",
   "projects.storage.section.projects": "Proyectos",
   "projects.storage.section.protection": "Protección",
+  "projects.storage.runtime":
+    "Fuentes, iconos y archivos usados al navegar: {files} archivos, {size} (se mantienen bajo {limit}, se eliminan primero los más antiguos)",
   "projects.storage.title": "Almacenamiento",
   "projects.storage.description":
     "Lo que DesignHub guarda en este dispositivo. Solo se muestran tamaños y recuentos; nada se lee ni se envía.",

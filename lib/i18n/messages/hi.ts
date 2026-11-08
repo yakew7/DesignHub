@@ -252,6 +252,8 @@ export const hi = {
   "projects.storage.section.offline": "ऑफ़लाइन उपयोग",
   "projects.storage.section.projects": "प्रोजेक्ट",
   "projects.storage.section.protection": "सुरक्षा",
+  "projects.storage.runtime":
+    "ब्राउज़ करते समय उपयोग हुए फ़ॉन्ट, आइकन और फ़ाइलें: {files} फ़ाइलें, {size} ({limit} से कम रखी जाती हैं, सबसे पुरानी पहले हटती हैं)",
   "projects.storage.title": "स्टोरेज",
   "projects.storage.description":
     "DesignHub इस डिवाइस पर क्या रखता है। केवल आकार और गिनती दिखती है; कुछ पढ़ा या भेजा नहीं जाता।",

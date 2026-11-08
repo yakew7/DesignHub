@@ -260,6 +260,8 @@ export const en = {
   "projects.storage.section.offline": "Offline use",
   "projects.storage.section.projects": "Projects",
   "projects.storage.section.protection": "Protection",
+  "projects.storage.runtime":
+    "Fonts, icons and files used while browsing: {files} files, {size} (kept under {limit}, the oldest go first)",
   "projects.storage.title": "Storage",
   "projects.storage.description":
     "What DesignHub keeps on this device. Only sizes and counts are shown; nothing is read out or sent.",

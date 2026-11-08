@@ -262,6 +262,8 @@ export const fr = {
   "projects.storage.section.offline": "Utilisation hors ligne",
   "projects.storage.section.projects": "Projets",
   "projects.storage.section.protection": "Protection",
+  "projects.storage.runtime":
+    "Polices, icônes et fichiers utilisés en naviguant : {files} fichiers, {size} (limités à {limit}, les plus anciens partent d'abord)",
   "projects.storage.title": "Stockage",
   "projects.storage.description":
     "Ce que DesignHub conserve sur cet appareil. Seuls les tailles et les nombres sont affichés ; rien n'est lu ni envoyé.",

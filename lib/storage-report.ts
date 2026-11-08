@@ -33,21 +33,26 @@ export async function clearOfflineCaches(store: CacheStore): Promise<number> {
 /** Entries and bytes of the offline caches. A response from another origin has no readable size and counts as 0. */
 export async function measureOfflineCaches(
   store: CacheStorage,
-): Promise<{ caches: number; files: number; bytes: number }> {
+): Promise<{ caches: number; files: number; bytes: number; runtime: { files: number; bytes: number } }> {
   const names = (await store.keys()).filter(isOfflineCache);
   let files = 0;
   let bytes = 0;
+  const runtime = { files: 0, bytes: 0 };
   for (const name of names) {
     const cache = await store.open(name);
     const requests = await cache.keys();
     files += requests.length;
+    const isRuntime = name.startsWith("designhub-runtime-");
+    if (isRuntime) runtime.files += requests.length;
     for (const request of requests) {
       const response = await cache.match(request);
       if (!response || response.type === "opaque") continue;
-      bytes += (await response.clone().arrayBuffer()).byteLength;
+      const size = (await response.clone().arrayBuffer()).byteLength;
+      bytes += size;
+      if (isRuntime) runtime.bytes += size;
     }
   }
-  return { caches: names.length, files, bytes };
+  return { caches: names.length, files, bytes, runtime };
 }
 
 /** The part of `navigator.storage` the protection check uses, so a test can stand in for it. */

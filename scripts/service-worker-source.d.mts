@@ -3,4 +3,5 @@ export function serviceWorkerSource(options: {
   shell: string[];
   routeFiles: Record<string, string[]>;
   runtimeLimit?: number;
+  runtimeBytes?: number;
 }): string;

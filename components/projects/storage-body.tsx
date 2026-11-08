@@ -33,7 +33,7 @@ type Report = {
   projects: { count: number; bytes: number };
   versions: { count: number; bytes: number };
   icons: { count: number; bytes: number };
-  offline: { caches: number; files: number; bytes: number } | null;
+  offline: { caches: number; files: number; bytes: number; runtime: { files: number; bytes: number } } | null;
   largest: ReturnType<typeof sizesByProject>;
   protection: Protection;
   versionList: ProjectVersion[];
@@ -207,6 +207,15 @@ export function StorageBody() {
           <Section id="storage-offline" title={t("projects.storage.section.offline")}>
             {report.offline && report.offline.files > 0 ? (
               <p className="text-xs text-muted-foreground">{t("projects.storage.clearHint")}</p>
+            ) : null}
+            {report.offline && report.offline.runtime.files > 0 ? (
+              <p className="text-xs text-muted-foreground">
+                {t("projects.storage.runtime", {
+                  files: report.offline.runtime.files,
+                  size: formatBytes(report.offline.runtime.bytes),
+                  limit: formatBytes(50 * 1024 * 1024),
+                })}
+              </p>
             ) : null}
             <fieldset className="flex flex-col gap-1.5">
               <legend className="pb-1 text-xs font-medium">{t("projects.storage.keep.title")}</legend>

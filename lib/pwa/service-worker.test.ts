@@ -174,6 +174,27 @@ describe("the service worker", () => {
   });
 });
 
+describe("the runtime cache is also capped by size", () => {
+  test("it drops the oldest entries until it is under its byte limit, and keeps the newest", async () => {
+    const worker = start({ ...build, runtimeBytes: 120 });
+    // Each body is "body of https://designhub.test/_next/static/chunks/x.js", 55 bytes: two fit in 120, three do not.
+    for (const name of ["a", "b", "c", "d"]) await worker.open(`/_next/static/chunks/${name}.js`);
+    const runtime = await worker.caches.open("designhub-runtime-one");
+    expect([...runtime.entries.keys()].map((href) => new URL(href).pathname)).toEqual([
+      "/_next/static/chunks/c.js",
+      "/_next/static/chunks/d.js",
+    ]);
+  });
+
+  test("an entry bigger than the limit is still kept alone", async () => {
+    const worker = start({ ...build, runtimeBytes: 10 });
+    await worker.open("/_next/static/chunks/a.js");
+    await worker.open("/_next/static/chunks/b.js");
+    const runtime = await worker.caches.open("designhub-runtime-one");
+    expect([...runtime.entries.keys()].map((href) => new URL(href).pathname)).toEqual(["/_next/static/chunks/b.js"]);
+  });
+});
+
 describe("the service worker tells the page which studios it kept", () => {
   test("a studio that is kept is answered with kept true, and one it does not know with kept false", async () => {
     const worker = start(build);
