@@ -9,6 +9,7 @@ Before and after for UI changes, in dark and light themes.
 ## Checklist
 
 - [ ] `pnpm typecheck`, `pnpm test`, `pnpm lint`, `pnpm check:dashes` and `pnpm build` pass
+- [ ] First-load JS stays within `bundle-budget.json` (see the [bundle budget guide](docs/bundle-budget.md) if `pnpm bundle:size` fails)
 - [ ] Conventional commit messages (`feat:`, `fix:`, `docs:`, `chore:`)
 - [ ] Tested in dark and light themes and at mobile width (375 px)
 - [ ] Works with keyboard only

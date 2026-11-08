@@ -29,21 +29,21 @@ The app runs at [http://localhost:3000](http://localhost:3000). There is no back
 
 ### pnpm commands
 
-| Command              | What it does                                                                        |
-| -------------------- | ----------------------------------------------------------------------------------- |
-| `pnpm dev`           | Start the dev server with hot reload                                                |
-| `pnpm build`         | Production build (must pass before merging)                                         |
-| `pnpm start`         | Serve the production build locally                                                  |
-| `pnpm lint`          | ESLint (Next.js + TypeScript rules); any warning fails it, like an error            |
-| `pnpm typecheck`     | `tsc --noEmit` in strict mode                                                       |
-| `pnpm test`          | Unit tests with Vitest (`lib/**` and `packages/*/src/**`)                           |
-| `pnpm test:e2e`      | Playwright tests against the production build: routes, flows, axe (see below)       |
-| `pnpm format`        | Format all files with Prettier                                                      |
-| `pnpm format:check`  | Verify formatting without writing                                                   |
-| `pnpm fonts:catalog` | Regenerate the font catalog (`catalog-index.json` and `catalog/`) from Google Fonts |
-| `pnpm check:unused`  | Fail on unused files, exports and dependencies (knip, also in CI)                   |
-| `pnpm check:dashes`  | Fail if any file contains an em dash (also runs in CI)                              |
-| `pnpm bundle:size`   | Report each route's first-load JS after a build (see below)                         |
+| Command              | What it does                                                                                   |
+| -------------------- | ---------------------------------------------------------------------------------------------- |
+| `pnpm dev`           | Start the dev server with hot reload                                                           |
+| `pnpm build`         | Production build (must pass before merging)                                                    |
+| `pnpm start`         | Serve the production build locally                                                             |
+| `pnpm lint`          | ESLint (Next.js + TypeScript rules); any warning fails it, like an error                       |
+| `pnpm typecheck`     | `tsc --noEmit` in strict mode                                                                  |
+| `pnpm test`          | Unit tests with Vitest (`lib/**` and `packages/*/src/**`)                                      |
+| `pnpm test:e2e`      | Playwright tests against the production build: routes, flows, axe (see below)                  |
+| `pnpm format`        | Format all files with Prettier                                                                 |
+| `pnpm format:check`  | Verify formatting without writing                                                              |
+| `pnpm fonts:catalog` | Regenerate the font catalog (`catalog-index.json` and `catalog/`) from Google Fonts            |
+| `pnpm check:unused`  | Fail on unused files, exports and dependencies (knip, also in CI)                              |
+| `pnpm check:dashes`  | Fail if any file contains an em dash (also runs in CI)                                         |
+| `pnpm bundle:size`   | Report each route's first-load JS after a build ([bundle budget guide](docs/bundle-budget.md)) |
 
 Before pushing, run the same checks as CI:
 
@@ -109,7 +109,7 @@ git switch my-branch && pnpm build && pnpm bundle:size --base bundle-size-main.j
 
 `--threshold <percent>` changes the limit and `--dir <path>` measures another checkout's `.next` folder. `bundle-size*.json` files are gitignored.
 
-Every route also has an absolute budget in `bundle-budget.json` (gzipped kB, a little above the size on `main`), and `pnpm bundle:size` fails when a route is over it. Raise a limit only in a reviewed change, with the reason in the pull request. A change that makes a route smaller is a good time to lower its limit.
+Every route also has an absolute budget in `bundle-budget.json` (gzipped kB, a little above the size on `main`), and `pnpm bundle:size` fails when a route is over it. Before raising a limit, follow the [bundle budget guide](docs/bundle-budget.md): find the module that grew, load it on demand or replace it. Raise a limit only in a reviewed change, with the reason in the pull request. A change that makes a route smaller is a good time to lower its limit.
 
 ### Unused code
 
