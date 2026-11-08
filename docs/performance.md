@@ -26,6 +26,8 @@ git switch main && pnpm build && pnpm bundle:size --json bundle-size-main.json
 git switch my-branch && pnpm build && pnpm bundle:size --base bundle-size-main.json
 ```
 
+The isometric background test compares the longest task with `pageSpeed(page)` (`tests/e2e/timing.ts`), the time a fixed piece of work takes in the same page, and asserts a multiple of it, so a busy machine moves both sides and the test does not fail for load alone.
+
 **How to read it.** The first table lists each route's size. With `--base` it gains "Change vs base" and "Status" columns, and the command fails when a route grows by more than 10% gzipped (change the limit with `--threshold <percent>`). The "Budgets" table ends with "Every route is within its budget." when nothing is over. A route over its budget fails the command and the `bundle-size.yml` check. Look first at what the change imports on the client: a large library pulled into a page, or a component that could be loaded with `next/dynamic` only when it is opened. Raise a budget only in a reviewed change, with the reason in the pull request.
 
 ## Unused code

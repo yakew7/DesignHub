@@ -9,6 +9,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- A repeated end-to-end run each night (`e2e-repeat.yml`) that names the tests that failed a run (`scripts/flaky-tests.mjs --repeat`).
+- A message when the worker has kept studios again after an update; the Storage panel updates its kept list.
+- `components/ui/section.tsx`, a folding section whose state is remembered, used by the Storage panel, the Export Engine's Include switches and the vision pairs of the Accessibility Lab.
 - Clear the icon cache from the Storage panel (`clearIconCache()`), leaving projects and the offline caches alone.
 - Studios kept for offline use are kept again when a new build installs: the new worker reads what the old one held before its caches go, then downloads those studios again in the background (at most eight, with a connection, never one that was not kept). The update end-to-end test covers it.
 - Screenshot tests of the home page and two studios at three widths in light and dark (`tests/e2e/visual.spec.ts`, run by `visual.yml` on its Linux image; run the workflow by hand with "update" ticked to make the images).
@@ -58,6 +61,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
+- The Storage panel's body loads only when the panel is first opened (3.6 kB smaller Projects route).
+- The isometric background timing test compares the longest task with the page's own speed instead of a fixed bound.
 - The Storage panel is folded into sections (Overview, Offline use, Projects, Protection) that remember what is open, so it reads short after a check.
 - Round five of the 2.0.0 work. **Storage and offline:** the Storage panel says whether the browser has promised to keep the data and can ask it to (only when the button is pressed), and a Keep for offline list downloads chosen studios now, with progress, the size added and a note for any that could not be kept. **Brand Projects:** the favorites and tag filters are remembered (a line says when filters are on, with Clear filters), Escape leaves select mode and returns focus, and the selected count is announced once it settles. **Icon Studio:** the Library tab stays mounted while another tab shows, so its results are not fetched again and the icon that had focus is brought back into view and focused. **Translated:** the rest of the Logo Studio, including the print check's verdict, built from its numbers in the language shown (the `logo.` area is complete). **Tests:** a screenshot of each studio in each Simple and Advanced mode, read from the guide's table; two select-mode tests no longer depend on creation order.
 - Round four of the 2.0.0 work. **Easier to reach:** the collapsed sidebar shows each studio's name and shortcut in a tooltip on hover and keyboard focus; the command palette collapses the sidebar and shows a pane on a phone; the home chooser is one tab stop with arrow keys; a swipe sideways changes pane on a phone (sliders, tabs, fields, code and the canvas keep their gestures). **Easier to manage:** the Export Engine copies a link to the open format; Brand Projects selects a range with Shift and by tag; the Storage panel lists the largest projects and trims old versions with an undo; studios kept for offline use are marked (and an offline link to one that is not kept explains itself). **Translated:** the Logo Studio's variants view and export panel. **Tests:** a table in the Simple and Advanced guide is checked against the real pages in both modes; the font count announcement test counts only the font list. The CI failure on `main` (a test that counted the language picker's options as fonts) is fixed.
