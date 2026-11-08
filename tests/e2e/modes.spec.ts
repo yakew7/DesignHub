@@ -1,4 +1,5 @@
 import { expect, test, type Page } from "@playwright/test";
+import { saved } from "./storage";
 
 /** Controls that only Advanced mode shows, by studio: the panels and fields listed here are the whole split. */
 const advancedPanels = [
@@ -185,4 +186,25 @@ test("the Mockup and Social studios keep content in Simple and put contact detai
   await social.getByRole("radio", { name: "Advanced" }).click();
   await expect(page.getByLabel("Show safe area")).toBeVisible();
   await expect(page.getByRole("slider", { name: "Padding" })).toBeVisible();
+});
+
+test("the export settings fold the Include switches, and an opened fold stays open after a reload", async ({
+  page,
+}) => {
+  await page.goto("/export");
+  const advanced = modeGroup(page).getByRole("radio", { name: "Advanced" });
+  // A click before the page has hydrated does nothing, so press again until the mode has changed.
+  await expect(async () => {
+    await advanced.click();
+    await expect(advanced).toHaveAttribute("aria-checked", "true", { timeout: 1000 });
+  }).toPass();
+  const include = page.getByRole("button", { name: "Include", exact: true });
+  await expect(include).toHaveAttribute("aria-expanded", "false");
+  await expect(page.getByRole("group", { name: "Include" })).toBeHidden();
+  await include.click();
+  await expect(include).toHaveAttribute("aria-expanded", "true");
+  await expect(page.getByRole("group", { name: "Include" })).toBeVisible();
+  await saved(page, "designhub:panels", "export-settings-include");
+  await page.reload();
+  await expect(page.getByRole("button", { name: "Include", exact: true })).toHaveAttribute("aria-expanded", "true");
 });

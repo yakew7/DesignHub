@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button";
 import { SliderField } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { Section } from "@/components/ui/section";
 import { Panel } from "@/components/ui/panel";
 import { Switch } from "@/components/ui/switch";
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
@@ -89,20 +90,21 @@ export function TokenSettingsPanel() {
           onChange={(radiusBase) => update({ radiusBase })}
           format={(value) => `${value}px`}
         />
-        <fieldset className="flex flex-col gap-2 border-t pt-4">
-          <legend className="pb-2 text-xs font-medium text-muted-foreground">Include</legend>
-          {(Object.keys(sectionLabels) as (keyof TokenSections)[]).map((section) => (
-            <div key={section} className="flex items-center justify-between">
-              <Label htmlFor={`section-${section}`}>{sectionLabels[section]}</Label>
-              <Switch
-                id={`section-${section}`}
-                checked={settings.sections[section] ?? true}
-                onCheckedChange={() => toggleSection(section)}
-                disabled={section === "shades" && !settings.sections.colors}
-              />
-            </div>
-          ))}
-        </fieldset>
+        <Section id="export-settings-include" title="Include">
+          <fieldset aria-label="Include" className="flex flex-col gap-2">
+            {(Object.keys(sectionLabels) as (keyof TokenSections)[]).map((section) => (
+              <div key={section} className="flex items-center justify-between">
+                <Label htmlFor={`section-${section}`}>{sectionLabels[section]}</Label>
+                <Switch
+                  id={`section-${section}`}
+                  checked={settings.sections[section] ?? true}
+                  onCheckedChange={() => toggleSection(section)}
+                  disabled={section === "shades" && !settings.sections.colors}
+                />
+              </div>
+            ))}
+          </fieldset>
+        </Section>
       </Advanced>
     </Panel>
   );

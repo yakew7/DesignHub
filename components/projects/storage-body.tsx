@@ -1,7 +1,6 @@
 "use client";
 
-import { ChevronDown } from "lucide-react";
-import { useId, useState, type ReactNode } from "react";
+import { useState } from "react";
 
 import { useKeptStudios } from "@/hooks/use-kept-studios";
 import { clearIconCache } from "@/lib/icons/iconify";
@@ -11,9 +10,7 @@ import { toast } from "sonner";
 
 import { useI18n } from "@/components/layout/locale-provider";
 import { Button } from "@/components/ui/button";
-import { isPanelOpen } from "@/lib/panel-state";
-import { cn } from "@/lib/utils";
-import { usePanelStore } from "@/store/panel-store";
+import { Section } from "@/components/ui/section";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { safeDb } from "@/lib/db";
 import type { ProjectVersion } from "@/lib/projects/history";
@@ -43,46 +40,6 @@ type Report = {
   usage?: number;
   quota?: number;
 };
-
-/** One fold of the panel. Its state is remembered like a panel's, so the sections a person opens stay open. */
-function Section({
-  id,
-  title,
-  defaultOpen = false,
-  children,
-}: {
-  id: string;
-  title: string;
-  defaultOpen?: boolean;
-  children: ReactNode;
-}) {
-  const bodyId = useId();
-  const chosen = usePanelStore((state) => state.open[id]);
-  const setOpen = usePanelStore((state) => state.setOpen);
-  const open = isPanelOpen(true, chosen, defaultOpen);
-  return (
-    <section className="flex flex-col gap-2 border-t pt-2 first:border-t-0 first:pt-0">
-      <h3 className="text-xs font-medium">
-        <button
-          type="button"
-          aria-expanded={open}
-          aria-controls={bodyId}
-          onClick={() => setOpen(id, !open)}
-          className="flex items-center gap-1.5 rounded-sm outline-none focus-visible:ring-2 focus-visible:ring-ring"
-        >
-          <ChevronDown
-            className={cn("size-3.5 transition-transform duration-150", !open && "-rotate-90")}
-            aria-hidden
-          />
-          {title}
-        </button>
-      </h3>
-      <div id={bodyId} hidden={!open} className="flex flex-col gap-2">
-        {children}
-      </div>
-    </section>
-  );
-}
 
 /** Sizes and counts of what DesignHub keeps on this device. Nothing is read out of a project, only measured. */
 /** What the Storage panel holds. Loaded the first time the panel is opened, so the Projects route does not carry it. */

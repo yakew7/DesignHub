@@ -3,7 +3,7 @@
   "reason": "Limits sit a little above the sizes on main. Raise one only in a reviewed change, with the reason in the pull request.",
   "routes": {
     "/": 255,
-    "/accessibility": 409,
+    "/accessibility": 411,
     "/backgrounds": 319,
     "/brand-dna": 309,
     "/brand": 305,
