@@ -1,3 +1,4 @@
+import type { PlainMessageKey } from "@/lib/i18n/translate";
 import type { IconId } from "@/types/icons";
 
 export type IconTopic = { id: string; label: string; icons: IconId[] };
@@ -322,3 +323,21 @@ export const iconSearchSuggestions = [
   "sparkle",
   "rocket",
 ];
+
+const topicMessageKeys: Record<string, PlainMessageKey> = {
+  essentials: "icons.topic.essentials",
+  arrows: "icons.topic.arrows",
+  brands: "icons.topic.brands",
+  developer: "icons.topic.developer",
+  design: "icons.topic.design",
+  commerce: "icons.topic.commerce",
+  communication: "icons.topic.communication",
+  media: "icons.topic.media",
+  files: "icons.topic.files",
+  nature: "icons.topic.nature",
+};
+
+/** The message key of a topic's label. The English `label` stays for tests and data. */
+export function topicMessageKey(id: string): PlainMessageKey {
+  return topicMessageKeys[id] ?? "icons.library.featured";
+}

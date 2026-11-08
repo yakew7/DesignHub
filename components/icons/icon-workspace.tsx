@@ -4,6 +4,7 @@ import dynamic from "next/dynamic";
 import { Braces, Globe, LayoutGrid } from "lucide-react";
 import { useEffect, useLayoutEffect, useRef, useState } from "react";
 
+import { useI18n } from "@/components/layout/locale-provider";
 import { IconControls } from "@/components/icons/icon-controls";
 import { IconLibrary } from "@/components/icons/icon-library";
 import { IconPreview } from "@/components/icons/icon-preview";
@@ -23,6 +24,7 @@ const IconExport = dynamic(() => import("@/components/icons/icon-export").then((
 type IconTab = "library" | "favicon" | "export";
 
 export function IconWorkspace() {
+  const { t } = useI18n();
   const [tab, setTab] = useState<IconTab>("library");
   const libraryRef = useRef<HTMLDivElement>(null);
   const savedScroll = useRef(0);
@@ -67,15 +69,15 @@ export function IconWorkspace() {
   return (
     <div className="grid items-start gap-6 lg:grid-cols-[minmax(0,1fr)_340px]">
       <Tabs value={tab} onValueChange={(value) => changeTab(value as IconTab)} className="min-w-0 gap-6">
-        <TabsList aria-label="Icon tools" className="w-full overflow-x-auto sm:w-fit">
+        <TabsList aria-label={t("icons.tabs.label")} className="w-full overflow-x-auto sm:w-fit">
           <TabsTrigger value="library">
-            <LayoutGrid /> Library
+            <LayoutGrid /> {t("icons.tabs.library")}
           </TabsTrigger>
           <TabsTrigger value="favicon">
-            <Globe /> Favicon
+            <Globe /> {t("icons.tabs.favicon")}
           </TabsTrigger>
           <TabsTrigger value="export">
-            <Braces /> Export
+            <Braces /> {t("icons.tabs.export")}
           </TabsTrigger>
         </TabsList>
         {/* Kept mounted while another tab shows, so its results, scroll position and focused icon are still there. */}

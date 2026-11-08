@@ -2,6 +2,7 @@
 
 import { Download, Heart } from "lucide-react";
 
+import { useI18n } from "@/components/layout/locale-provider";
 import { IconGlyph } from "@/components/icons/icon-image";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -14,6 +15,7 @@ import { cn } from "@/lib/utils";
 import { useIconStore } from "@/store/icon-store";
 
 export function IconPreview() {
+  const { t } = useI18n();
   const selected = useIconStore((state) => state.selected);
   const style = useIconStore((state) => state.style);
   const favorite = useIconStore((state) => state.favorites.includes(state.selected));
@@ -25,7 +27,12 @@ export function IconPreview() {
     <div className="flex flex-col gap-4">
       <div className="bg-checker flex aspect-square items-center justify-center rounded-lg border">
         {icon ? (
-          <IconGlyph icon={icon} style={style} alt={`${name} icon preview`} className="size-1/2 text-foreground" />
+          <IconGlyph
+            icon={icon}
+            style={style}
+            alt={t("icons.preview.alt", { name })}
+            className="size-1/2 text-foreground"
+          />
         ) : (
           <span className="size-24 animate-pulse rounded-xl bg-muted" aria-hidden />
         )}
@@ -42,13 +49,13 @@ export function IconPreview() {
             <>
               <CopyButton
                 value={buildIconSvg(icon, style, { uniqueIds: true })}
-                label="Copy SVG"
-                toastMessage="SVG copied"
+                label={t("icons.preview.copy")}
+                toastMessage={t("icons.preview.copied")}
               />
               <Button
                 variant="ghost"
                 size="icon"
-                aria-label="Download SVG"
+                aria-label={t("icons.preview.download")}
                 onClick={() => downloadText(buildIconSvg(icon, style, { uniqueIds: true }), `${name}.svg`)}
               >
                 <Download />
@@ -59,7 +66,7 @@ export function IconPreview() {
             variant="ghost"
             size="icon"
             aria-pressed={favorite}
-            aria-label={favorite ? "Remove from favorites" : "Add to favorites"}
+            aria-label={favorite ? t("icons.preview.favorite.remove") : t("icons.preview.favorite.add")}
             onClick={() => toggleFavorite(selected)}
           >
             <Heart className={cn(favorite && "fill-current text-destructive")} />

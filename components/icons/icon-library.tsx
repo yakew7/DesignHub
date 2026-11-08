@@ -2,16 +2,18 @@
 
 import { useState } from "react";
 
+import { useI18n } from "@/components/layout/locale-provider";
 import { CollectionPicker } from "@/components/icons/collection-picker";
 import { IconGrid, IconsError } from "@/components/icons/icon-grid";
 import { IconSearch } from "@/components/icons/icon-search";
 import { useRovingRadio } from "@/hooks/use-roving-radio";
-import { iconSearchSuggestions, iconTopics } from "@/lib/icons/topics";
+import { iconSearchSuggestions, iconTopics, topicMessageKey } from "@/lib/icons/topics";
 import { cn } from "@/lib/utils";
 import { SEARCH_LIMIT, useIconResults } from "@/hooks/use-icon-results";
 import { useIconStore } from "@/store/icon-store";
 
 export function IconLibrary() {
+  const { t, plural } = useI18n();
   const radiosRef = useRovingRadio<HTMLDivElement>();
   const query = useIconStore((state) => state.query);
   const setQuery = useIconStore((state) => state.setQuery);
@@ -26,20 +28,30 @@ export function IconLibrary() {
 
   const heading =
     results.mode === "search"
-      ? `${results.total.toLocaleString()} results for “${query.trim()}”`
+      ? plural("icons.library.results", results.total, { query: query.trim() })
       : results.mode === "collection"
-        ? `${results.total.toLocaleString()} icons`
-        : (topic?.label ?? "Featured");
+        ? plural("icons.library.count", results.total)
+        : topic
+          ? t(topicMessageKey(topic.id))
+          : t("icons.library.featured");
 
   return (
-    <section aria-label="Icon library" className="flex min-w-0 flex-col gap-4">
+    <section aria-label={t("icons.library.label")} className="flex min-w-0 flex-col gap-4">
       <IconSearch />
       <CollectionPicker value={prefix} onChange={setPrefix} />
 
       {results.mode === "featured" ? (
         <div className="flex flex-col gap-2.5">
-          <div ref={radiosRef} role="radiogroup" aria-label="Browse by topic" className="flex flex-wrap gap-1.5">
-            {[{ id: null, label: "Featured" }, ...iconTopics].map((item) => (
+          <div
+            ref={radiosRef}
+            role="radiogroup"
+            aria-label={t("icons.library.topics")}
+            className="flex flex-wrap gap-1.5"
+          >
+            {[
+              { id: null, label: t("icons.library.featured") },
+              ...iconTopics.map((item) => ({ id: item.id, label: t(topicMessageKey(item.id)) })),
+            ].map((item) => (
               <button
                 key={item.id ?? "featured"}
                 type="button"
@@ -56,7 +68,7 @@ export function IconLibrary() {
             ))}
           </div>
           <p className="flex flex-wrap items-center gap-1 text-xs text-subtle-foreground">
-            Try
+            {t("icons.library.try")}
             {iconSearchSuggestions.map((term) => (
               <button
                 key={term}
@@ -73,25 +85,23 @@ export function IconLibrary() {
 
       {results.mode === "featured" && !topic && favorites.length ? (
         <div className="flex flex-col gap-3">
-          <h2 className="text-sm font-medium">Favorites</h2>
+          <h2 className="text-sm font-medium">{t("icons.library.favorites")}</h2>
           <IconGrid ids={favorites} />
         </div>
       ) : null}
 
       <div className="flex items-baseline justify-between gap-2">
         <h2 className="text-sm font-medium" aria-live="polite">
-          {results.loading ? "Searching…" : heading}
+          {results.loading ? t("icons.library.searching") : heading}
         </h2>
         {results.mode === "search" && results.total >= SEARCH_LIMIT ? (
-          <p className="text-xs text-subtle-foreground">
-            Showing the top {SEARCH_LIMIT}. Refine your search or pick a set.
-          </p>
+          <p className="text-xs text-subtle-foreground">{t("icons.library.limit", { count: SEARCH_LIMIT })}</p>
         ) : null}
       </div>
       {results.error ? (
         <IconsError onRetry={results.retry} />
       ) : (
-        <IconGrid ids={ids} emptyMessage="No icons match. Try a broader term or another set." />
+        <IconGrid ids={ids} emptyMessage={t("icons.library.empty")} />
       )}
     </section>
   );

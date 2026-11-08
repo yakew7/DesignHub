@@ -2,6 +2,7 @@
 
 import { FlipHorizontal2, FlipVertical2, RotateCcw, RotateCw } from "lucide-react";
 
+import { useI18n } from "@/components/layout/locale-provider";
 import { Button } from "@/components/ui/button";
 import { SliderField } from "@/components/ui/field";
 import { Label } from "@/components/ui/label";
@@ -26,6 +27,7 @@ function ColorChoices({
   onChange: (color: string) => void;
   allowCurrent?: boolean;
 }) {
+  const { t } = useI18n();
   const swatches = useColorStore((state) => state.swatches);
   const colors = [...new Set(swatches.map((swatch) => toHex({ ...swatch.color, alpha: 1 })))];
 
@@ -46,7 +48,7 @@ function ColorChoices({
           key={color}
           type="button"
           onClick={() => onChange(color)}
-          aria-label={`Use ${color}`}
+          aria-label={t("icons.edit.use", { color })}
           aria-pressed={value === color}
           className={cn(
             "size-7 rounded-md border ring-offset-2 ring-offset-card",
@@ -57,11 +59,11 @@ function ColorChoices({
       ))}
       <label
         className="relative size-7 cursor-pointer overflow-hidden rounded-md border bg-[conic-gradient(red,yellow,lime,aqua,blue,magenta,red)]"
-        title="Custom color"
+        title={t("icons.edit.custom")}
       >
         <input
           type="color"
-          aria-label="Custom color"
+          aria-label={t("icons.edit.custom")}
           value={value.startsWith("#") ? value.slice(0, 7) : "#6366f1"}
           onChange={(event) => onChange(event.target.value)}
           className="absolute inset-0 cursor-pointer opacity-0"
@@ -72,6 +74,7 @@ function ColorChoices({
 }
 
 export function IconControls() {
+  const { t } = useI18n();
   const selected = useIconStore((state) => state.selected);
   const style = useIconStore((state) => state.style);
   const updateStyle = useIconStore((state) => state.updateStyle);
@@ -92,60 +95,60 @@ export function IconControls() {
 
   return (
     <Panel
-      title="Edit"
+      title={t("icons.edit.title")}
       actions={
-        <Button variant="ghost" size="icon" aria-label="Reset icon styling" onClick={resetStyle}>
+        <Button variant="ghost" size="icon" aria-label={t("icons.edit.reset")} onClick={resetStyle}>
           <RotateCcw />
         </Button>
       }
     >
       <div className="flex flex-col gap-2">
-        <Label>Color</Label>
+        <Label>{t("icons.edit.color")}</Label>
         <ColorChoices value={style.color} onChange={(color) => updateStyle({ color })} allowCurrent />
       </div>
 
       <SliderField
-        label={stroked ? "Stroke width" : "Stroke width (fill icon)"}
+        label={stroked ? t("icons.edit.stroke") : t("icons.edit.strokeFill")}
         value={style.strokeWidth ?? 2}
         min={0.5}
         max={4}
         step={0.25}
         onChange={(strokeWidth) => stroked && updateStyle({ strokeWidth })}
-        format={(value) => (style.strokeWidth === null ? "original" : value.toFixed(2))}
+        format={(value) => (style.strokeWidth === null ? t("icons.edit.strokeOriginal") : value.toFixed(2))}
         className={cn(!stroked && "pointer-events-none opacity-50")}
       />
 
       <Advanced>
         <div className="flex flex-col gap-2">
-          <Label>Corners</Label>
+          <Label>{t("icons.edit.corners")}</Label>
           <ToggleGroup
             type="single"
             value={style.corners}
             onValueChange={(value) => value && updateStyle({ corners: value as IconCorners })}
-            aria-label="Stroke corners"
+            aria-label={t("icons.edit.cornersLabel")}
             className="w-full"
             disabled={!stroked}
           >
             <ToggleGroupItem value="default" className="flex-1">
-              Original
+              {t("icons.edit.corners.default")}
             </ToggleGroupItem>
             <ToggleGroupItem value="rounded" className="flex-1">
-              Rounded
+              {t("icons.edit.corners.rounded")}
             </ToggleGroupItem>
             <ToggleGroupItem value="sharp" className="flex-1">
-              Sharp
+              {t("icons.edit.corners.sharp")}
             </ToggleGroupItem>
           </ToggleGroup>
         </div>
 
         <div className="flex flex-col gap-2">
-          <Label>Transform</Label>
+          <Label>{t("icons.edit.transform")}</Label>
           <div className="grid grid-cols-4 gap-2">
             <Button
               variant="outline"
               size="sm"
-              aria-label="Rotate left"
-              title="Rotate left · ⇧R"
+              aria-label={t("icons.edit.rotateLeft")}
+              title={t("icons.edit.rotateLeftTitle")}
               onClick={() => rotateBy(-90)}
             >
               <RotateCcw />
@@ -153,8 +156,8 @@ export function IconControls() {
             <Button
               variant="outline"
               size="sm"
-              aria-label="Rotate right"
-              title="Rotate right · R"
+              aria-label={t("icons.edit.rotateRight")}
+              title={t("icons.edit.rotateRightTitle")}
               onClick={() => rotateBy(90)}
             >
               <RotateCw />
@@ -162,7 +165,7 @@ export function IconControls() {
             <Button
               variant="outline"
               size="sm"
-              aria-label="Flip horizontally"
+              aria-label={t("icons.edit.flipH")}
               aria-pressed={style.flipH}
               className={cn(style.flipH && "border-brand/60 text-brand")}
               onClick={() => updateStyle({ flipH: !style.flipH })}
@@ -172,7 +175,7 @@ export function IconControls() {
             <Button
               variant="outline"
               size="sm"
-              aria-label="Flip vertically"
+              aria-label={t("icons.edit.flipV")}
               aria-pressed={style.flipV}
               className={cn(style.flipV && "border-brand/60 text-brand")}
               onClick={() => updateStyle({ flipV: !style.flipV })}
@@ -181,7 +184,7 @@ export function IconControls() {
             </Button>
           </div>
           <SliderField
-            label="Rotation"
+            label={t("icons.edit.rotation")}
             value={style.rotate}
             min={0}
             max={359}
@@ -192,7 +195,7 @@ export function IconControls() {
       </Advanced>
 
       <SliderField
-        label="Padding"
+        label={t("icons.edit.padding")}
         value={style.padding}
         min={0}
         max={30}
@@ -201,17 +204,17 @@ export function IconControls() {
       />
 
       <div className="flex flex-col gap-2 border-t pt-4">
-        <Label>Background</Label>
+        <Label>{t("icons.edit.background")}</Label>
         <ToggleGroup
           type="single"
           value={style.background.shape}
           onValueChange={(value) => value && setBackground({ shape: value as IconBackground["shape"] })}
-          aria-label="Background shape"
+          aria-label={t("icons.edit.shapeLabel")}
           className="w-full"
         >
           {(["none", "circle", "rounded", "square"] as const).map((shape) => (
             <ToggleGroupItem key={shape} value={shape} className="flex-1 capitalize">
-              {shape}
+              {t(`icons.edit.shape.${shape}`)}
             </ToggleGroupItem>
           ))}
         </ToggleGroup>

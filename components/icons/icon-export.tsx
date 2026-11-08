@@ -4,6 +4,7 @@ import { Download, ImageDown } from "lucide-react";
 import { useMemo } from "react";
 import { toast } from "sonner";
 
+import { useI18n } from "@/components/layout/locale-provider";
 import { ExportPanel } from "@/components/export/export-panel";
 import { Button } from "@/components/ui/button";
 import { Panel } from "@/components/ui/panel";
@@ -20,6 +21,7 @@ import { useIconStore } from "@/store/icon-store";
 const PNG_SIZES = [16, 32, 64, 128, 256, 512, 1024];
 
 export function IconExport() {
+  const { t } = useI18n();
   const selected = useIconStore((state) => state.selected);
   const style = useIconStore((state) => state.style);
   const icon = useIcon(selected);
@@ -36,7 +38,7 @@ export function IconExport() {
       const blob = await svgToPngBlob(buildIconSvg(icon, { ...rasterStyle, size }), size);
       downloadBlob(blob, `${name}-${size}.png`);
     } catch {
-      toast.error("PNG export failed in this browser.");
+      toast.error(t("icons.export.pngFailed"));
     }
   }
 
@@ -50,7 +52,7 @@ export function IconExport() {
 
   return (
     <div className="flex flex-col gap-6">
-      <Panel title="Raster" description="PNG with transparency. currentColor is rendered with your theme's text color.">
+      <Panel title={t("icons.export.raster")} description={t("icons.export.rasterNote")}>
         <div className="flex flex-wrap gap-2">
           {PNG_SIZES.map((size) => (
             <Button key={size} variant="outline" size="sm" onClick={() => png(size)}>
@@ -62,7 +64,7 @@ export function IconExport() {
           </Button>
         </div>
       </Panel>
-      <ExportPanel formats={formats} label="Icon export format" />
+      <ExportPanel formats={formats} label={t("icons.export.label")} />
     </div>
   );
 }

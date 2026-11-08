@@ -4,6 +4,7 @@ import { Download, FileArchive, Loader2 } from "lucide-react";
 import { useState } from "react";
 import { toast } from "sonner";
 
+import { useI18n } from "@/components/layout/locale-provider";
 import { IconImage } from "@/components/icons/icon-image";
 import { CodeBlock } from "@/components/export/code-block";
 import { Button } from "@/components/ui/button";
@@ -35,6 +36,7 @@ function BrowserTab({ dark, title, children }: { dark: boolean; title: string; c
 }
 
 export function FaviconGenerator() {
+  const { t } = useI18n();
   const selected = useIconStore((state) => state.selected);
   const baseStyle = useIconStore((state) => state.style);
   const icon = useIcon(selected);
@@ -57,9 +59,9 @@ export function FaviconGenerator() {
         const ico = await buildIco(icon, style);
         downloadBlob(new Blob([ico.slice().buffer], { type: "image/x-icon" }), "favicon.ico");
       }
-      toast.success(kind === "zip" ? "Favicon package downloaded" : "favicon.ico downloaded");
+      toast.success(kind === "zip" ? t("icons.favicon.zipDone") : t("icons.favicon.icoDone", { file: "favicon.ico" }));
     } catch {
-      toast.error("Could not generate favicons in this browser.");
+      toast.error(t("icons.favicon.failed"));
     } finally {
       setBusy(null);
     }
@@ -71,8 +73,8 @@ export function FaviconGenerator() {
         collapsible
         id="icons-favicon"
         defaultOpen={false}
-        title="Preview"
-        description="Tip: give the icon a background shape in Edit for a favicon that works on any tab color."
+        title={t("icons.favicon.preview")}
+        description={t("icons.favicon.tip")}
       >
         {icon ? (
           <div className="flex flex-col gap-6">
@@ -99,10 +101,10 @@ export function FaviconGenerator() {
         )}
       </Panel>
 
-      <Panel title="Package">
+      <Panel title={t("icons.favicon.package")}>
         <div className="grid gap-4 sm:grid-cols-3">
           <div className="flex flex-col gap-2">
-            <Label htmlFor="favicon-name">App name</Label>
+            <Label htmlFor="favicon-name">{t("icons.favicon.appName")}</Label>
             <Input
               id="favicon-name"
               value={options.appName}
@@ -111,7 +113,9 @@ export function FaviconGenerator() {
           </div>
           {(["themeColor", "backgroundColor"] as const).map((key) => (
             <div key={key} className="flex flex-col gap-2">
-              <Label htmlFor={`favicon-${key}`}>{key === "themeColor" ? "Theme color" : "Background color"}</Label>
+              <Label htmlFor={`favicon-${key}`}>
+                {key === "themeColor" ? t("icons.favicon.themeColor") : t("icons.favicon.backgroundColor")}
+              </Label>
               <div className="flex items-center gap-2">
                 <input
                   id={`favicon-${key}`}
@@ -126,15 +130,17 @@ export function FaviconGenerator() {
           ))}
         </div>
         <p className="text-xs text-muted-foreground">
-          Includes favicon.ico (16/32/48), icon.svg, apple-touch-icon.png (180), icon-192.png, icon-512.png and
-          site.webmanifest.
+          {t("icons.favicon.includes", {
+            files: "favicon.ico (16/32/48), icon.svg, apple-touch-icon.png (180), icon-192.png, icon-512.png",
+          })}
         </p>
         <div className="flex flex-wrap gap-2">
           <Button onClick={() => run("zip")} disabled={!icon || busy !== null}>
-            {busy === "zip" ? <Loader2 className="animate-spin" /> : <FileArchive />} Download package (.zip)
+            {busy === "zip" ? <Loader2 className="animate-spin" /> : <FileArchive />} {t("icons.favicon.zip")}
           </Button>
           <Button variant="outline" onClick={() => run("ico")} disabled={!icon || busy !== null}>
-            {busy === "ico" ? <Loader2 className="animate-spin" /> : <Download />} favicon.ico only
+            {busy === "ico" ? <Loader2 className="animate-spin" /> : <Download />}{" "}
+            {t("icons.favicon.icoOnly", { file: "favicon.ico" })}
           </Button>
         </div>
         <CodeBlock code={`${faviconHtml(options)}\n`} filename="favicon.html" />

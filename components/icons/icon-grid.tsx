@@ -4,6 +4,7 @@ import { AlertTriangle, RotateCw } from "lucide-react";
 import { memo, useEffect, useMemo, useRef, useState, type KeyboardEvent } from "react";
 import { flushSync } from "react-dom";
 
+import { useI18n } from "@/components/layout/locale-provider";
 import { IconGlyph } from "@/components/icons/icon-image";
 import { Button } from "@/components/ui/button";
 import { useIconData } from "@/hooks/use-icon-data";
@@ -22,15 +23,13 @@ type IconGridProps = {
 const gridStyle = { ...defaultIconStyle, size: 32 };
 
 export function IconsError({ onRetry, message }: { onRetry: () => void; message?: string }) {
+  const { t } = useI18n();
   return (
     <div role="alert" className="flex flex-col items-center gap-3 rounded-lg border border-dashed p-8 text-center">
       <AlertTriangle className="size-5 text-warning" aria-hidden />
-      <p className="max-w-sm text-sm text-muted-foreground">
-        {message ??
-          "Couldn't reach Iconify or its mirrors. Check your connection. Icons you opened before still work offline."}
-      </p>
+      <p className="max-w-sm text-sm text-muted-foreground">{message ?? t("icons.error.message")}</p>
       <Button variant="outline" size="sm" onClick={onRetry}>
-        <RotateCw /> Try again
+        <RotateCw /> {t("icons.error.retry")}
       </Button>
     </div>
   );
@@ -44,7 +43,8 @@ const TILE_GAP = 8;
  * a collection of thousands costs as much as a screenful. The grid is one tab stop and the arrow keys, Page Up and
  * Page Down, Home and End move through the whole list: the target tile is drawn, then focused.
  */
-export function IconGrid({ ids, emptyMessage = "No icons found." }: IconGridProps) {
+export function IconGrid({ ids, emptyMessage }: IconGridProps) {
+  const { t, plural } = useI18n();
   const selected = useIconStore((state) => state.selected);
   const select = useIconStore((state) => state.select);
   const [focused, setFocused] = useState<number | null>(null);
@@ -62,7 +62,9 @@ export function IconGrid({ ids, emptyMessage = "No icons found." }: IconGridProp
   if (error) return <IconsError onRetry={retry} />;
   if (ids.length === 0) {
     return (
-      <p className="rounded-lg border border-dashed p-8 text-center text-sm text-muted-foreground">{emptyMessage}</p>
+      <p className="rounded-lg border border-dashed p-8 text-center text-sm text-muted-foreground">
+        {emptyMessage ?? t("icons.grid.empty")}
+      </p>
     );
   }
 
@@ -97,14 +99,16 @@ export function IconGrid({ ids, emptyMessage = "No icons found." }: IconGridProp
 
   return (
     <div className="flex flex-col gap-3">
-      <p className="sr-only" aria-live="polite">{`${ids.length} icons`}</p>
+      <p className="sr-only" aria-live="polite">
+        {plural("icons.library.count", ids.length)}
+      </p>
       <div ref={grid.ref} className="relative" style={{ height: grid.height }}>
         <ul
           ref={listRef}
           className="absolute inset-x-0 grid gap-2"
           style={{ top: grid.offset, gridTemplateColumns: `repeat(${grid.columns}, minmax(0, 1fr))` }}
           aria-busy={loading}
-          aria-label="Icons"
+          aria-label={t("icons.grid.label")}
           onKeyDown={onKeyDown}
         >
           {windowIds.map((id, offset) => {
@@ -128,7 +132,7 @@ export function IconGrid({ ids, emptyMessage = "No icons found." }: IconGridProp
       </div>
       {!loading && failed.size > 0 ? (
         <Button variant="outline" size="sm" className="self-center" onClick={retry}>
-          <RotateCw /> Retry {failed.size} icons that failed to load
+          <RotateCw /> {plural("icons.grid.retry", failed.size)}
         </Button>
       ) : null}
     </div>
@@ -159,6 +163,7 @@ const IconTile = memo(function IconTile({
   onSelect,
   onFocusTile,
 }: IconTileProps) {
+  const { t } = useI18n();
   const { name } = splitIconId(id);
   return (
     <li aria-setsize={total} aria-posinset={index + 1}>
@@ -170,7 +175,7 @@ const IconTile = memo(function IconTile({
         onClick={() => onSelect(id)}
         aria-pressed={active}
         aria-label={id}
-        title={failed ? `${id} (failed to load)` : id}
+        title={failed ? t("icons.grid.failed", { id }) : id}
         className={cn(
           "flex aspect-square w-full items-center justify-center rounded-lg border bg-card text-foreground transition-[border-color,background-color] duration-150 hover:border-border-strong hover:bg-surface-raised",
           active && "border-brand/60 bg-surface-raised",

@@ -3,6 +3,7 @@
 import { Check, ChevronsUpDown, Library } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
 
+import { useI18n } from "@/components/layout/locale-provider";
 import { Button } from "@/components/ui/button";
 import { Command, CommandEmpty, CommandInput, CommandItem, CommandList } from "@/components/ui/command";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
@@ -31,6 +32,7 @@ type CollectionPickerProps = {
 };
 
 export function CollectionPicker({ value, onChange }: CollectionPickerProps) {
+  const { t, plural } = useI18n();
   const [collections, setCollections] = useState<Record<string, IconCollection>>({});
   const [open, setOpen] = useState(false);
   const [query, setQuery] = useState("");
@@ -59,7 +61,7 @@ export function CollectionPicker({ value, onChange }: CollectionPickerProps) {
         aria-pressed={value === null}
         className="h-7 rounded-full border px-3 text-xs text-muted-foreground transition-colors duration-150 hover:text-foreground aria-pressed:border-brand/50 aria-pressed:text-foreground"
       >
-        All sets
+        {t("icons.sets.all")}
       </button>
       {popularCollections.map(({ prefix, label }) => (
         <button
@@ -80,18 +82,18 @@ export function CollectionPicker({ value, onChange }: CollectionPickerProps) {
             className="h-7 rounded-full"
             role="combobox"
             aria-expanded={open}
-            aria-label="Browse all icon sets"
+            aria-label={t("icons.sets.browse")}
           >
             <Library />
-            {current && !popularPrefixes.has(current.prefix) ? current.name : "More sets"}
+            {current && !popularPrefixes.has(current.prefix) ? current.name : t("icons.sets.more")}
             <ChevronsUpDown className="opacity-50" />
           </Button>
         </PopoverTrigger>
         <PopoverContent className="w-80 p-0" align="start">
           <Command shouldFilter={false}>
-            <CommandInput value={query} onValueChange={setQuery} placeholder="Search 200+ icon sets…" />
+            <CommandInput value={query} onValueChange={setQuery} placeholder={t("icons.sets.search")} />
             <CommandList className="max-h-80">
-              <CommandEmpty>No icon sets found.</CommandEmpty>
+              <CommandEmpty>{t("icons.sets.empty")}</CommandEmpty>
               {list.map((item) => (
                 <CommandItem
                   key={item.prefix}
@@ -105,7 +107,9 @@ export function CollectionPicker({ value, onChange }: CollectionPickerProps) {
                   <span className="flex min-w-0 flex-col">
                     <span className="truncate">{item.name}</span>
                     <span className="truncate text-[11px] text-subtle-foreground">
-                      {item.total.toLocaleString()} icons · {item.license?.spdx ?? item.license?.title ?? "-"}
+                      {plural("icons.sets.count", item.total, {
+                        license: item.license?.spdx ?? item.license?.title ?? "-",
+                      })}
                     </span>
                   </span>
                 </CommandItem>
