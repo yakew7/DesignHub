@@ -440,6 +440,7 @@ Uploaded logos and Brand DNA images are processed in the browser and never uploa
 ## Roadmap
 
 - **1.0.0** - the seventeen studios: Typography, Colors, Icons, Export, Background, Effects, SVG, Accessibility, Brand, Logo, Mockups, Social Media, Brand Guidelines, Brand Projects and Brand DNA ✅
+- **1.2.0** - the Icon, SVG, Mockup and Social studios in Spanish, French and Hindi, a folded and lazy Storage panel, studios kept for offline use across updates, a size cap on the runtime cache, and a faster, steadier test suite ✅
 - **2.0.0 (next)** - quality and consolidation: fewer, better and fully tested studios, a versioned project file with migrations, every language complete, and no AI unless you bring your own key
 - **After 2.0** - Plugin marketplace, desktop app, team collaboration
 

@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## Unreleased
 
+## v1.2.0 - 2026-11-08
+
 ### Added
 
 - The Icon Studio, the SVG Playground, and the Mockup and Social studios are translated into Spanish, French and Hindi (about 360 messages each; platform names, sizes, format names and file names stay as they are), and `icons.`, `mockups.` and `social.` join the complete areas so a missing key fails the tests. Template and category names are found by their translated and English names. Template descriptions are still English.
@@ -91,6 +93,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+- A dialog or sheet opened again during its exit no longer leaves its dim overlay over the content (the command palette's items could not be clicked): the overlay sits one step under the content.
 - The command palette opened again while the last one was still closing kept focus on the results list, so keys went to the page. Focus now goes to the search field on open, and the twelve-frame refocus loop is gone.
 - End-to-end tests that reload after a store changes wait for the write with `saved()` (`tests/e2e/storage.ts`) instead of fixed waits or inline copies; CONTRIBUTING says when a test needs it.
 
