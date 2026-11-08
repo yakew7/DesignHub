@@ -1,0 +1,45 @@
+name: E2E repeated
+
+# Runs the end-to-end suite several times with no retries, so a flaky test is found and named before it blocks a
+# pull request. It is not required and does not run on pull requests. Start it by hand from the Actions tab too.
+on:
+  schedule:
+    - cron: "17 3 * * *"
+  workflow_dispatch:
+    inputs:
+      repeat:
+        description: Runs of each test
+        default: "5"
+
+permissions:
+  contents: read
+
+jobs:
+  repeat:
+    name: Playwright, repeated
+    runs-on: ubuntu-latest
+    timeout-minutes: 90
+    steps:
+      - uses: actions/checkout@v7
+      - uses: pnpm/action-setup@v6
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 22
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - name: Drop the Microsoft apt source
+        run: sudo rm -f /etc/apt/sources.list.d/microsoft-prod.list /etc/apt/sources.list.d/microsoft-prod.sources
+      - run: pnpm exec playwright install --with-deps chromium
+      - run: pnpm build
+      - name: Run every test several times
+        run: pnpm exec playwright test --repeat-each="${{ inputs.repeat || '5' }}" --retries=0
+      - name: Tests that failed a run
+        if: always()
+        run: |
+          if [ -f test-results/report.json ]; then node scripts/flaky-tests.mjs --repeat test-results/report.json >> "$GITHUB_STEP_SUMMARY"; fi
+      - uses: actions/upload-artifact@v7
+        if: failure()
+        with:
+          name: playwright-results
+          path: test-results/
+          retention-days: 7
