@@ -1,6 +1,6 @@
 import { expect, test } from "@playwright/test";
 
-import { expectUnder } from "./timing";
+import { expectUnder, pageSpeed } from "./timing";
 
 test("the generator picker is grouped, searchable, and finds a merged look by its old name", async ({ page }) => {
   await page.goto("/backgrounds");
@@ -73,6 +73,7 @@ test("the isometric generator, the slowest at a large canvas, is drawn in the wo
   await expect(slider).toBeVisible();
   await page.getByRole("combobox", { name: "Canvas size" }).click();
   await page.getByRole("option", { name: /Full HD/ }).click();
+  const speed = await pageSpeed(page);
   await page.evaluate(() => {
     const longTasks: number[] = [];
     Object.assign(window, { longTasks });
@@ -91,7 +92,8 @@ test("the isometric generator, the slowest at a large canvas, is drawn in the wo
   // No "Drawing…" note is left behind once the last drawing has arrived.
   await expect(page.getByRole("status").filter({ hasText: "Drawing" })).toHaveCount(0, { timeout: 30_000 });
   const longest = await page.evaluate(() => Math.max(0, ...(window as unknown as { longTasks: number[] }).longTasks));
-  // The drawing is in the worker (checked above). The bound is loose because this page also paints a one megabyte SVG
-  // and the other tests share the machine; inline, this drawing alone took over 200 ms at this size.
-  await expectUnder(testInfo, "longest-task", longest, 300);
+  // The drawing is in the worker (checked above). The longest task is compared with how long a fixed piece of work takes
+  // in this page, so a busy machine moves both. Inline, this drawing alone took several times that work.
+  await testInfo.attach("page-speed", { body: String(Math.round(speed)), contentType: "text/plain" });
+  await expectUnder(testInfo, "longest-task-vs-speed", longest / speed, 15);
 });
