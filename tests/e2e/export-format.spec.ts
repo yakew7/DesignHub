@@ -33,7 +33,10 @@ test("a link opens a format, a reload keeps the one that was open, and an unknow
 test("the copied link opens the format that was open", async ({ page, context }) => {
   await context.grantPermissions(["clipboard-read", "clipboard-write"]);
   await page.goto("/export");
-  await page.getByRole("radio", { name: "Tailwind v4" }).first().click();
+  await expect(page.getByRole("button", { name: "Copy link to this format" })).toBeVisible();
+  const tailwindRadio = page.getByRole("radio", { name: "Tailwind v4" }).first();
+  await tailwindRadio.click();
+  await expect(tailwindRadio).toHaveAttribute("aria-checked", "true");
   await page.getByRole("button", { name: "Copy link to this format" }).click();
   await expect(page.getByText("Link copied")).toBeVisible();
   const link = await page.evaluate(() => navigator.clipboard.readText());
