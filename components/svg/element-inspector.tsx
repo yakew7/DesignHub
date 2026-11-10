@@ -34,7 +34,9 @@ export function ElementInspector({ root }: { root: SvgNode }) {
           />
           {report ? (
             <div className="flex flex-col gap-2 text-xs">
-              {report.error ? <p className="text-destructive">{report.error}</p> : null}
+              {report.error ? (
+                <p className="text-destructive">{t("svg.error.path", { detail: report.error })}</p>
+              ) : null}
               <dl className="grid grid-cols-3 gap-1.5">
                 <div className="rounded-sm bg-muted px-2 py-1">
                   <dt className="text-subtle-foreground">{t("svg.layers.commands")}</dt>

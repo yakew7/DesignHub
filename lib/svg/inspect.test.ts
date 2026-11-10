@@ -1,6 +1,15 @@
 import { describe, expect, test } from "vitest";
 
-import { pathLength, shapeLength } from "@/lib/svg/inspect";
+import { catalogs } from "@/lib/i18n/all-catalogs";
+import { createTranslator } from "@/lib/i18n/translate";
+import { inspectPath, pathLength, shapeLength } from "@/lib/svg/inspect";
+
+test("invalid paths have a translated explanation and the parser detail", () => {
+  const report = inspectPath("M0 0 L");
+  expect(report.error).toBeTruthy();
+  const { t } = createTranslator(catalogs.es, "es");
+  expect(t("svg.error.path", { detail: report.error! })).toBe(`El trazado no es válido: ${report.error}`);
+});
 
 describe("pathLength", () => {
   test("straight segments, relative commands and closepath", () => {

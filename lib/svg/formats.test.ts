@@ -3,7 +3,9 @@ import { join } from "node:path";
 
 import { describe, expect, test } from "vitest";
 
-import { svgFormats } from "@/lib/svg/formats";
+import { catalogs } from "@/lib/i18n/all-catalogs";
+import { createTranslator } from "@/lib/i18n/translate";
+import { svgFormatName, svgFormats } from "@/lib/svg/formats";
 import { withCurrentColor } from "@/lib/svg/jsx";
 import { defaultOptimizeOptions, optimizeSvg, optimizeTree } from "@/lib/svg/optimize";
 import { parseSvg } from "@/lib/svg/parse";
@@ -77,4 +79,16 @@ describe("the snapshot folder", () => {
     const ids = build(true, [...sprite]).map((format) => format.id);
     expect(new Set(ids).size).toBe(ids.length);
   });
+});
+
+test("format names follow the selected language and retain other format names", () => {
+  const { t } = createTranslator(catalogs.es, "es");
+  const formats = build(false, []);
+  expect(formats.slice(0, 4).map((format) => svgFormatName(t, format))).toEqual([
+    "Optimizado",
+    "Con formato",
+    "Minificado",
+    "JSX",
+  ]);
+  expect(svgFormatName(t, { id: "react", label: "React" })).toBe("React");
 });
