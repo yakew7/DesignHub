@@ -10,7 +10,7 @@ import { translateLocalized } from "@/lib/i18n/errors";
 import { withCurrentColor } from "@/lib/svg/jsx";
 import type { OptimizeResult } from "@/lib/svg/optimize";
 import { reactNativeComponent } from "@/lib/svg/react-native";
-import { svgFormats } from "@/lib/svg/formats";
+import { svgFormatName, svgFormats } from "@/lib/svg/formats";
 import { useSvgStore } from "@/store/svg-store";
 import type { ExportFormat } from "@/types/export";
 import type { SvgNode } from "@/types/svg";
@@ -29,8 +29,12 @@ export function SvgOutput({ root, optimized }: { root: SvgNode | null; optimized
   }, [tree, currentColor, name]);
 
   const formats = useMemo<ExportFormat[]>(
-    () => svgFormats({ root, optimized, tree, native, currentColor, name, sprite }),
-    [root, optimized, tree, native, currentColor, name, sprite],
+    () =>
+      svgFormats({ root, optimized, tree, native, currentColor, name, sprite }).map((format) => ({
+        ...format,
+        label: svgFormatName(t, format),
+      })),
+    [root, optimized, tree, native, currentColor, name, sprite, t],
   );
 
   if (!root) return <p className="text-sm text-muted-foreground">{t("svg.output.fix")}</p>;

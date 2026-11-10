@@ -1,4 +1,6 @@
 import { componentNameFromFile, reactComponent, toJsx, withCurrentColor } from "@/lib/svg/jsx";
+import { translateName } from "@/lib/i18n/dynamic-key";
+import type { Translate } from "@/lib/i18n/translate";
 import { angularComponent } from "@/lib/svg/angular";
 import { frameworkFormat } from "@/lib/svg/converters";
 import { astroComponent } from "@/lib/svg/astro";
@@ -28,6 +30,10 @@ export type SvgFormatInput = {
   /** SVGs combined into a sprite, when there are any. */
   sprite: Parameters<typeof buildSprite>[0];
 };
+
+export function svgFormatName(t: Translate, format: { id: string; label: string }): string {
+  return translateName(t, `svg.format.${format.id}`, format.label);
+}
 
 /** Every output of the SVG Playground for the current SVG, in the order the picker shows them. */
 export function svgFormats({
