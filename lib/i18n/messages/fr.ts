@@ -167,6 +167,8 @@ export const fr = {
   "common.save": "Enregistrer",
 
   "copy.label": "Copier",
+  "ui.section.opened": "Section {name} ouverte",
+  "ui.section.closed": "Section {name} fermée",
   "copy.done": "Copié dans le presse-papiers",
   "copy.unavailable": "Presse-papiers indisponible",
   "copy.blocked": "Votre navigateur a bloqué l'accès au presse-papiers.",
