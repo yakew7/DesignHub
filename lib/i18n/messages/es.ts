@@ -166,6 +166,8 @@ export const es = {
   "common.save": "Guardar",
 
   "copy.label": "Copiar",
+  "ui.section.opened": "Sección {name} abierta",
+  "ui.section.closed": "Sección {name} cerrada",
   "copy.done": "Copiado al portapapeles",
   "copy.unavailable": "Portapapeles no disponible",
   "copy.blocked": "Tu navegador bloqueó el acceso al portapapeles.",

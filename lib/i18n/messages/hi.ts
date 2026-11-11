@@ -165,6 +165,8 @@ export const hi = {
   "common.save": "सेव करें",
 
   "copy.label": "कॉपी करें",
+  "ui.section.opened": "{name} अनुभाग खुला",
+  "ui.section.closed": "{name} अनुभाग बंद",
   "copy.done": "क्लिपबोर्ड पर कॉपी किया गया",
   "copy.unavailable": "क्लिपबोर्ड उपलब्ध नहीं है",
   "copy.blocked": "आपके ब्राउज़र ने क्लिपबोर्ड की अनुमति रोक दी।",

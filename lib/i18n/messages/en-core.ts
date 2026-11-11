@@ -167,6 +167,8 @@ export const enCore = {
 
   // Shared copy and code controls
   "copy.label": "Copy",
+  "ui.section.opened": "{name} section opened",
+  "ui.section.closed": "{name} section closed",
   "copy.done": "Copied to clipboard",
   "copy.unavailable": "Clipboard unavailable",
   "copy.blocked": "Your browser blocked clipboard access.",
