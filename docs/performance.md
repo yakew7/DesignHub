@@ -91,6 +91,18 @@ expect(longest).toBeLessThan(300);
 
 `Math.max(0, ...)` returns 0 when no task was long, which is the goal: no task over 50 ms means the page answered every key press in time. Set the bound well above what you measure on a quiet machine, so the test catches a real regression (a task that moved back onto the main thread) and not a busy runner. Put heavy work in a worker or split it so each task stays short.
 
+## Rasterizing in a worker
+
+Exports (the social ZIP, the logo pack, the brand book) turn an SVG into a PNG, WebP or JPEG on the page: the SVG is decoded with an `Image` and drawn on a canvas. Moving that into a worker would take the long task (about 125 ms per social template) off the page, but a worker has no `Image`, and the only other way in, `createImageBitmap` of an SVG blob, is not supported everywhere. Checked with a probe that decodes an 8 by 8 SVG with `createImageBitmap` inside a worker next to an `OffscreenCanvas`:
+
+| Browser (Playwright build) | SVG decoded in a worker                                                       |
+| -------------------------- | ----------------------------------------------------------------------------- |
+| Chromium 1254              | No (`InvalidStateError: The source image could not be decoded`)               |
+| WebKit 27.2                | No                                                                            |
+| Firefox                    | Not checked: the Playwright Firefox build would not start on the machine used |
+
+So there is no browser to use a worker path in today, and the exports keep drawing on the page. The social pack already draws each template at the size it is saved (scale 1), the logo pack at 4 times for print, and the brand book at 2 times as JPEG; none is drawn larger than it is saved. What the pack does for input is cancel between templates and yield to the page before each one. If a browser starts decoding SVG in workers, run the probe again (it is a few lines: a worker that calls `createImageBitmap(new Blob([svg], { type: "image/svg+xml" }))` and posts back whether it worked) and add the worker path behind it, with the page path as the fallback.
+
 ## Autosave counters
 
 **What it measures.** How often Brand Projects asks to save, and how many of those saves wrote the project, found nothing to write, or were folded into a save already running. The counts are `requested`, `written`, `skipped` and `coalesced` in `lib/projects/save-plan.ts`.
