@@ -11,11 +11,13 @@ import { Input } from "@/components/ui/input";
 import { svgToDataUrl } from "@/lib/icons/svg";
 import type { Translate } from "@/lib/i18n/translate";
 import { snapshotTokens } from "@/lib/projects/preview";
-import { projectName, type BrandProject } from "@/lib/projects/types";
+import type { BrandSnapshot } from "@/lib/projects/snapshot";
+import { getProject } from "@/lib/projects/repository";
+import { projectName, type ProjectListItem } from "@/lib/projects/types";
 import { cn } from "@/lib/utils";
 
 type Props = {
-  project: BrandProject;
+  project: ProjectListItem;
   active: boolean;
   onOpen: () => void;
   onRename: (name: string) => void;
@@ -45,12 +47,14 @@ function ago(time: number, locale: string, t: Translate): string {
 }
 
 /**
- * The card's picture and color strip. The brand is read out of the snapshot and drawn only once the card is
- * within a screen of the view, so a long list pays for the cards that are seen. It then stays drawn.
+ * The card's picture and color strip. The list item carries only a name and a few colors, so the strip of those
+ * colors shows at once, and the whole project is read (and the brand drawn from it) only once the card is within a
+ * screen of the view. It then stays drawn.
  */
-function CardPreview({ snapshot }: { snapshot: BrandProject["snapshot"] }) {
+function CardPreview({ project }: { project: ProjectListItem }) {
   const box = useRef<HTMLSpanElement>(null);
   const [near, setNear] = useState(false);
+  const [snapshot, setSnapshot] = useState<BrandSnapshot | null>(null);
   useEffect(() => {
     const element = box.current;
     if (!element || near) return;
@@ -64,7 +68,16 @@ function CardPreview({ snapshot }: { snapshot: BrandProject["snapshot"] }) {
     observer.observe(element);
     return () => observer.disconnect();
   }, [near]);
-  const tokens = useMemo(() => (near ? snapshotTokens(snapshot) : null), [near, snapshot]);
+  // Read again when the project is saved (its time changes), so an edited brand is drawn as it now is.
+  useEffect(() => {
+    if (!near) return;
+    let current = true;
+    void getProject(project.id).then((found) => current && found && setSnapshot(found.snapshot));
+    return () => {
+      current = false;
+    };
+  }, [near, project.id, project.updatedAt]);
+  const tokens = useMemo(() => (snapshot ? snapshotTokens(snapshot) : null), [snapshot]);
   return (
     <span
       ref={box}
@@ -85,7 +98,13 @@ function CardPreview({ snapshot }: { snapshot: BrandProject["snapshot"] }) {
             ))}
           </span>
         </>
-      ) : null}
+      ) : (
+        <span className="absolute inset-x-0 bottom-0 flex h-2" aria-hidden>
+          {project.colors.map((hex, index) => (
+            <span key={index} className="flex-1" style={{ background: hex }} />
+          ))}
+        </span>
+      )}
     </span>
   );
 }
@@ -137,7 +156,7 @@ export function ProjectCard({
         className="group relative flex h-36 items-center justify-center bg-surface-raised outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-inset"
         aria-label={t(active ? "projects.card.isOpen" : "projects.card.openNamed", { name })}
       >
-        <CardPreview snapshot={project.snapshot} />
+        <CardPreview project={project} />
       </button>
       <div className="flex flex-1 flex-col gap-2 p-3">
         <div className="flex min-w-0 items-center gap-2">

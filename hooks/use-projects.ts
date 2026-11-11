@@ -3,17 +3,17 @@
 import { useCallback, useEffect, useState } from "react";
 
 import { ensureInitialProject, saveActiveProject } from "@/lib/projects/actions";
-import { listProjects, projectsPersist } from "@/lib/projects/repository";
-import type { BrandProject } from "@/lib/projects/types";
+import { listProjectItems, projectsPersist } from "@/lib/projects/repository";
+import type { ProjectListItem } from "@/lib/projects/types";
 import { useProjectStore } from "@/store/project-store";
 
 export function useProjects() {
   const activeId = useProjectStore((state) => state.activeId);
-  const [projects, setProjects] = useState<BrandProject[] | null>(null);
+  const [projects, setProjects] = useState<ProjectListItem[] | null>(null);
   const [persistent, setPersistent] = useState(true);
 
   const refresh = useCallback(async () => {
-    setProjects(await listProjects());
+    setProjects(await listProjectItems());
     setPersistent(projectsPersist());
   }, []);
 

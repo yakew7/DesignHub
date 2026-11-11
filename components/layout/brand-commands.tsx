@@ -13,9 +13,9 @@ import { useVariantContext } from "@/hooks/use-variant-context";
 import { downloadBlob } from "@/lib/download";
 import { slugify } from "@/lib/logo/pack";
 import { openProject } from "@/lib/projects/actions";
-import { listProjects } from "@/lib/projects/repository";
+import { listProjectItems } from "@/lib/projects/repository";
 import { sortProjects } from "@/lib/projects/sort";
-import { projectName, type BrandProject } from "@/lib/projects/types";
+import { projectName, type ProjectListItem } from "@/lib/projects/types";
 import { useGuidelinesStore } from "@/store/guidelines-store";
 import { useLogoStore } from "@/store/logo-store";
 import { useProjectStore } from "@/store/project-store";
@@ -35,12 +35,12 @@ export function BrandCommands({ onDone }: { onDone: () => void }) {
   const variantCtx = useVariantContext();
   const clearSpace = useLogoStore((state) => state.clearSpace);
   const { canUndo, canRedo, undo, redo } = useBrandHistory();
-  const [projects, setProjects] = useState<BrandProject[]>([]);
+  const [projects, setProjects] = useState<ProjectListItem[]>([]);
 
   // Re-read on every open, so projects created in this session show up.
   useEffect(() => {
     let active = true;
-    void listProjects().then((list) => active && setProjects(sortProjects(list, "opened")));
+    void listProjectItems().then((list) => active && setProjects(sortProjects(list, "opened")));
     return () => {
       active = false;
     };

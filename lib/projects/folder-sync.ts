@@ -1,6 +1,6 @@
 import { getDatabase, type FolderRecord } from "@/lib/db";
 import { fileHoldsProject, folderFileName, isFileOfProject, isSafeFolderFileName } from "@/lib/projects/folder-names";
-import { getProject, listProjects, onProjectSaved } from "@/lib/projects/repository";
+import { getProject, listProjectItems, onProjectSaved } from "@/lib/projects/repository";
 import { projectToJson } from "@/lib/projects/transfer";
 import { createWriteQueue } from "@/lib/projects/write-queue";
 import { useFolderSyncStore, type FolderSyncError, type FolderSyncPatch } from "@/store/folder-sync-store";
@@ -155,7 +155,7 @@ async function saveRecord(next: FileSystemDirectoryHandle): Promise<void> {
 export async function saveAllToFolder(): Promise<void> {
   if (!handle) return;
   patchState({ status: "saving" });
-  for (const project of await listProjects()) queue.schedule(project.id);
+  for (const project of await listProjectItems()) queue.schedule(project.id);
   await queue.flush();
 }
 

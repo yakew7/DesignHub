@@ -1,4 +1,4 @@
-import type { BrandProject } from "@/lib/projects/types";
+import type { BrandProject, ProjectListItem } from "@/lib/projects/types";
 
 export const MAX_PROJECT_TAGS = 5;
 export const MAX_TAG_LENGTH = 24;
@@ -34,6 +34,6 @@ export function removeTag(tags: string[], tag: string): string[] {
 }
 
 /** Every tag in use, A to Z, for the filter. */
-export function projectTags(projects: BrandProject[]): string[] {
+export function projectTags(projects: (BrandProject | ProjectListItem)[]): string[] {
   return [...new Set(projects.flatMap((project) => project.tags))].sort((a, b) => a.localeCompare(b));
 }

@@ -32,6 +32,15 @@ test("a hundred and fifty projects draw thirty cards first, search by name and t
   // Newest first, so the last imported is on top; the first page is a screenful, not all hundred and fifty.
   await expect(page.getByRole("button", { name: "Open Brand 149" })).toBeVisible();
   expect(await cards.count()).toBeLessThanOrEqual(36);
+  // The list is drawn from the small summary rows: after a reload, only the open project and the cards near the view
+  // are read whole, not all hundred and fifty.
+  await page.reload();
+  await expect(page.getByRole("button", { name: /^Open Brand \d+$/ }).first()).toBeVisible();
+  await expect(page.locator('[data-preview="drawn"]').first()).toBeVisible();
+  const reads = await page.evaluate(() =>
+    (window as unknown as { __designhubProjectReads: () => number }).__designhubProjectReads(),
+  );
+  expect(reads, "whole projects read for the list").toBeLessThan(60);
   // Only the cards within a screen of the view draw their picture; the others wait until they come near.
   const drawn = page.locator('[data-preview="drawn"]');
   await expect(drawn.first()).toBeVisible();

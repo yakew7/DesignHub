@@ -66,6 +66,10 @@ The Storage panel also says whether the browser has promised to keep this site's
 
 When a new version of DesignHub is installed, the new worker reads which studios the old one had kept before it deletes the old caches, and downloads those again in the background (at most eight, only with a connection, never a studio you had not kept). The update does not wait for it, and a short message (also shown to a page that loads just after) says how many studios were kept again.
 
+## The project list
+
+The Brand Projects list is drawn from one small row per project in the `summaries` table (added in database version 6; older databases upgrade in place and keep every project): the name, up to six colors, the tags, favorite flag and the three times. It is written in the same transaction as the project, so it never disagrees. Opening the list reads these rows and no snapshot; a card reads its whole project only when it is within a screen of the view (to draw its picture), and exports, compare and history read the projects they need. A project with no row (saved before version 6) gets one the first time the list opens, and a row whose project is gone is dropped. The rows hold nothing that is not already in the project.
+
 ## Trimming old versions
 
 The Storage panel lists the projects that take the most room, with their history counted apart. **Delete versions older than** 30, 90 or 365 days shows how many versions that would remove, deletes them, and offers an Undo. The newest version of each project is always kept, and only the oldest part of a history is removed, so what is left is still a whole chain (see [Version history](#version-history)).

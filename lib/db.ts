@@ -2,7 +2,7 @@ import type { Dexie, EntityTable } from "dexie";
 import type { StateStorage } from "zustand/middleware";
 
 import type { StoredVersion } from "@/lib/projects/version-storage";
-import type { BrandProject } from "@/lib/projects/types";
+import type { BrandProject, ProjectListItem } from "@/lib/projects/types";
 
 type KeyValueRecord = {
   key: string;
@@ -32,6 +32,8 @@ type DesignHubDatabase = Dexie & {
   kv: EntityTable<KeyValueRecord, "key">;
   icons: EntityTable<CachedIconRecord, "id">;
   projects: EntityTable<BrandProject, "id">;
+  /** One small row per project (name, colors, times, tags), so the list does not read whole projects. */
+  summaries: EntityTable<ProjectListItem, "id">;
   versions: EntityTable<StoredVersion, "id">;
   handles: EntityTable<FolderRecord, "key">;
 };
@@ -59,6 +61,16 @@ async function createDatabase(): Promise<DesignHubDatabase> {
     projects: "id, updatedAt, lastOpenedAt",
     versions: "id, projectId, createdAt",
     handles: "key",
+  });
+  // v6: a summary row per project for the project list. Only a new table, so older databases keep every row; the
+  // rows are written when a project is saved and filled in for older projects the first time the list opens.
+  db.version(6).stores({
+    kv: "key, updatedAt",
+    icons: "id, cachedAt",
+    projects: "id, updatedAt, lastOpenedAt",
+    versions: "id, projectId, createdAt",
+    handles: "key",
+    summaries: "id",
   });
   // An older tab must let go, or this tab's upgrade would block forever.
   db.on("versionchange", () => {

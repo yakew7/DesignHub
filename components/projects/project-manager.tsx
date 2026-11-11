@@ -63,7 +63,7 @@ import { projectTags } from "@/lib/projects/tags";
 import { deletable, pruned, toggled, toggledAll, withRange, withTagged } from "@/lib/projects/selection";
 import { projectsToJson, projectToJson } from "@/lib/projects/transfer";
 import { projectsZip } from "@/lib/projects/zip";
-import { projectName, type BrandProject } from "@/lib/projects/types";
+import { projectName, type ProjectListItem } from "@/lib/projects/types";
 import { cn } from "@/lib/utils";
 import { useProjectStore } from "@/store/project-store";
 import { useUiStore } from "@/store/ui-store";
@@ -82,9 +82,9 @@ export function ProjectManager() {
   const setTagFilter = useProjectStore((state) => state.setTagFilter);
   const [creating, setCreating] = useState(false);
   const [newName, setNewName] = useState("");
-  const [deleting, setDeleting] = useState<BrandProject | null>(null);
+  const [deleting, setDeleting] = useState<ProjectListItem | null>(null);
   const [comparing, setComparing] = useState(false);
-  const [history, setHistory] = useState<BrandProject | null>(null);
+  const [history, setHistory] = useState<ProjectListItem | null>(null);
   const [selecting, setSelecting] = useState(false);
   const [chosen, setChosen] = useState<Set<string>>(new Set());
   const [bulkTag, setBulkTag] = useState("");
@@ -110,8 +110,9 @@ export function ProjectManager() {
     setCreating(true);
   }, [newProjectRequested, clearNewProjectRequest]);
 
-  async function exportOne(project: BrandProject) {
-    const latest = (await freshProject(project.id)) ?? project;
+  async function exportOne(project: ProjectListItem) {
+    const latest = await freshProject(project.id);
+    if (!latest) return;
     const history = exportHistory ? await listVersions(latest.id) : undefined;
     downloadText(projectToJson(latest, history), `${slugify(projectName(latest))}.designhub.json`);
   }
@@ -275,7 +276,7 @@ export function ProjectManager() {
     return () => observer.disconnect();
   }, [hasMore, count, filterKey]);
 
-  async function remove(target: BrandProject) {
+  async function remove(target: ProjectListItem) {
     const removed = await run(() => removeProject(target.id));
     if (!removed) return;
     const name = projectName(removed.project);
@@ -291,7 +292,7 @@ export function ProjectManager() {
     });
   }
 
-  async function open(project: BrandProject) {
+  async function open(project: ProjectListItem) {
     await run(() => openProject(project.id));
     toast.success(t("projects.toast.opened", { name: projectName(project) }), {
       action: { label: t("studio.brand.title"), onClick: () => router.push("/brand") },
@@ -631,7 +632,7 @@ export function ProjectManager() {
                     className="size-8"
                     aria-label={t("projects.copyLink", { name: projectName(project) })}
                     onClick={() =>
-                      void freshProject(project.id).then((latest) => copyShareLink((latest ?? project).snapshot, t))
+                      void freshProject(project.id).then((latest) => latest && copyShareLink(latest.snapshot, t))
                     }
                   >
                     <Link2 />

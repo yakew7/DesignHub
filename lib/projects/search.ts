@@ -1,7 +1,7 @@
-import { projectName, type BrandProject } from "@/lib/projects/types";
+import { projectName, type BrandProject, type ProjectListItem } from "@/lib/projects/types";
 
 /** True when every word of the search is in the project's name or one of its tags. Case does not matter. */
-export function matchesProject(project: BrandProject, search: string): boolean {
+export function matchesProject(project: BrandProject | ProjectListItem, search: string): boolean {
   const words = search.toLowerCase().split(/\s+/).filter(Boolean);
   if (words.length === 0) return true;
   const text = `${projectName(project)} ${project.tags.join(" ")}`.toLowerCase();

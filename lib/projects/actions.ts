@@ -10,7 +10,7 @@ import {
 import {
   deleteProject,
   getProject,
-  listProjects,
+  listProjectItems,
   newProjectId,
   saveProject,
   updateProject,
@@ -176,7 +176,7 @@ export async function removeProject(id: string): Promise<RemovedProject | null> 
   const { activeId, setActive } = useProjectStore.getState();
   const wasActive = activeId === id;
   if (!wasActive) return { project, wasActive, versions };
-  const rest = (await listProjects()).sort((a, b) => b.lastOpenedAt - a.lastOpenedAt);
+  const rest = (await listProjectItems()).sort((a, b) => b.lastOpenedAt - a.lastOpenedAt);
   setActive(null);
   if (rest[0]) await openProject(rest[0].id);
   return { project, wasActive, versions };
@@ -233,7 +233,7 @@ export function ensureInitialProject(): Promise<void> {
 
 async function createInitialProject(): Promise<void> {
   await ready();
-  const projects = await listProjects();
+  const projects = await listProjectItems();
   const { activeId, setActive } = useProjectStore.getState();
   if (activeId && projects.some((project) => project.id === activeId)) return;
   if (projects.length === 0) {
@@ -268,7 +268,7 @@ export async function createProjectFromVersion(
 ): Promise<BrandProject | undefined> {
   const source = await getProject(projectId);
   if (!source) return undefined;
-  const taken = new Set((await listProjects()).map(projectName));
+  const taken = new Set((await listProjectItems()).map(projectName));
   const snapshot = structuredClone(version.snapshot);
   snapshot.brand.profile.name = versionProjectName(projectName(source), label, taken);
   return createProject(snapshot, { tags: source.tags });
@@ -285,7 +285,7 @@ function uniqueName(snapshot: BrandSnapshot, existing: Set<string>): void {
 /** Adds every project in an exported file. Returns how many were imported. */
 export async function importProjects(text: string): Promise<number> {
   const entries = parseProjectsFile(text);
-  const existing = new Set((await listProjects()).map(projectName));
+  const existing = new Set((await listProjectItems()).map(projectName));
   for (const entry of entries) {
     uniqueName(entry.snapshot, existing);
     const project = await createProject(entry.snapshot, { tags: entry.tags });
@@ -307,7 +307,7 @@ export async function importSharedProject(snapshot: BrandSnapshot): Promise<Bran
   await ensureInitialProject();
   await checkpoint("share-import");
   const copy = structuredClone(snapshot);
-  uniqueName(copy, new Set((await listProjects()).map(projectName)));
+  uniqueName(copy, new Set((await listProjectItems()).map(projectName)));
   return createProject(copy, { open: true });
 }
 

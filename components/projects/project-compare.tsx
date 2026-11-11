@@ -12,12 +12,12 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { freshProject } from "@/lib/projects/actions";
 import { compareBrands, countDifferences } from "@/lib/projects/compare";
 import { snapshotTokens } from "@/lib/projects/preview";
-import { projectName, type BrandProject } from "@/lib/projects/types";
+import { projectName, type BrandProject, type ProjectListItem } from "@/lib/projects/types";
 
 type Props = {
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  projects: BrandProject[];
+  projects: ProjectListItem[];
   /** Preselected on the left, usually the open project. */
   initialId: string | null;
   /** Gets focus back on close when the opener (a menu item) is gone. */
@@ -34,7 +34,7 @@ function ProjectPicker({
   id: string;
   label: string;
   value: string;
-  projects: BrandProject[];
+  projects: ProjectListItem[];
   onChange: (id: string) => void;
 }) {
   const { t } = useI18n();

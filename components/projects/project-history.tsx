@@ -14,13 +14,13 @@ import { createProjectFromVersion, freshProject, restoreVersion, undoRestore } f
 import { compareBrands, countDifferences } from "@/lib/projects/compare";
 import { MAX_VERSIONS, type ProjectVersion, type VersionReason } from "@/lib/projects/history";
 import { snapshotTokens } from "@/lib/projects/preview";
-import { projectName, type BrandProject } from "@/lib/projects/types";
+import { projectName, type BrandProject, type ProjectListItem } from "@/lib/projects/types";
 import { listVersions } from "@/lib/projects/versions";
 import { cn } from "@/lib/utils";
 
 type Props = {
   /** The project whose history is shown; null closes the dialog. */
-  project: BrandProject | null;
+  project: ProjectListItem | null;
   onClose: () => void;
   /** Called after a restore or its undo, so the project list can refresh. */
   onChanged: () => void;
