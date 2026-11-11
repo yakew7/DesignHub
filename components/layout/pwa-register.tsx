@@ -1,7 +1,7 @@
 "use client";
 
 import { usePathname } from "next/navigation";
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
 import { toast } from "sonner";
 
 import { useI18n } from "@/components/layout/locale-provider";
@@ -14,7 +14,10 @@ const REGISTER_DELAY = 3000;
 
 export function PwaRegister() {
   const pathname = usePathname();
-  const { plural } = useI18n();
+  const { t, plural } = useI18n();
+  // The registration effect runs once; it reads the current translator through a ref.
+  const words = useRef({ t, plural });
+  words.current = { t, plural };
   const keepRecent = useNavStore((state) => state.keepRecent);
   const lastStudio = useNavStore((state) => state.lastStudio);
   const recent = useCommandRecentsStore((state) => state.recent);
@@ -59,15 +62,34 @@ export function PwaRegister() {
     let refreshing = false;
     let updateShown = false;
 
-    const showUpdate = (registration: ServiceWorkerRegistration) => {
+    /** How many studios the update will download again, asked of the waiting worker (0 when it does not answer). */
+    const keptCount = (worker: ServiceWorker) =>
+      new Promise<number>((resolve) => {
+        const timer = setTimeout(() => finish(0), 1500);
+        const finish = (count: number) => {
+          clearTimeout(timer);
+          navigator.serviceWorker.removeEventListener("message", listen);
+          resolve(count);
+        };
+        const listen = (event: MessageEvent) => {
+          const data: unknown = event.data;
+          if (typeof data === "object" && data !== null && (data as { type?: unknown }).type === "KEPT_COUNT")
+            finish(Number((data as { count?: unknown }).count) || 0);
+        };
+        navigator.serviceWorker.addEventListener("message", listen);
+        worker.postMessage({ type: "KEPT_COUNT_QUERY" });
+      });
+
+    const showUpdate = async (registration: ServiceWorkerRegistration) => {
       if (!registration.waiting || updateShown) return;
 
       updateShown = true;
-      toast("Update available", {
-        description: "Reload to use the latest version.",
+      const kept = await keptCount(registration.waiting);
+      toast(words.current.t("pwa.update.title"), {
+        description: kept > 0 ? words.current.plural("pwa.update.kept", kept) : words.current.t("pwa.update.body"),
         duration: Infinity,
         action: {
-          label: "Reload",
+          label: words.current.t("pwa.update.reload"),
           onClick: () => {
             const waiting = registration.waiting;
             if (!waiting) return;

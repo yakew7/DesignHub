@@ -103,6 +103,8 @@ test("a new build replaces the old caches, asks for a reload, and a studio opene
       await (await navigator.serviceWorker.getRegistration())?.update();
     });
     await expect(page.getByText("Update available")).toBeVisible({ timeout: 30_000 });
+    // The toast says how many kept studios the update will download again (/colors and /typography).
+    await expect(page.getByText(/The 2 studios you kept for offline use will be downloaded again/)).toBeVisible();
     expect(await cacheNames(page)).toContain(`designhub-static-${oldId}`);
 
     await page.getByRole("button", { name: "Reload" }).click();

@@ -333,6 +333,13 @@ export const es = {
   "svg.native.unsupported": "<{tag}> no es compatible con react-native-svg y se quitó.",
   "svg.native.class": "Las clases CSS no se aplican en React Native; dales estilo con props.",
   "svg.native.style": "Los bloques <style> no son compatibles; se descartaron sus reglas. Integra primero los colores.",
+  "pwa.update.body": "Recarga para usar la última versión.",
+  "pwa.update.kept.one":
+    "Recarga para usar la última versión. El estudio que guardaste para uso sin conexión ({count}) se descargará de nuevo.",
+  "pwa.update.kept.other":
+    "Recarga para usar la última versión. Los {count} estudios que guardaste para uso sin conexión se descargarán de nuevo.",
+  "pwa.update.reload": "Recargar",
+  "pwa.update.title": "Actualización disponible",
   "pwa.rekept.one": "{count} estudio guardado de nuevo para usar sin conexión tras la actualización",
   "pwa.rekept.other": "{count} estudios guardados de nuevo para usar sin conexión tras la actualización",
   "icons.tabs.label": "Herramientas de iconos",

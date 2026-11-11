@@ -335,6 +335,13 @@ export const en = {
   "svg.native.unsupported": "<{tag}> isn't supported by react-native-svg and was removed.",
   "svg.native.class": "CSS classes don't apply in React Native; style them with props instead.",
   "svg.native.style": "<style> blocks aren't supported; their rules were dropped. Inline the colors first.",
+  "pwa.update.body": "Reload to use the latest version.",
+  "pwa.update.kept.one":
+    "Reload to use the latest version. The {count} studio you kept for offline use will be downloaded again.",
+  "pwa.update.kept.other":
+    "Reload to use the latest version. The {count} studios you kept for offline use will be downloaded again.",
+  "pwa.update.reload": "Reload",
+  "pwa.update.title": "Update available",
   "pwa.rekept.one": "{count} studio kept for offline use again after the update",
   "pwa.rekept.other": "{count} studios kept for offline use again after the update",
   "icons.tabs.label": "Icon tools",

@@ -337,6 +337,13 @@ export const fr = {
   "svg.native.class": "Les classes CSS ne s'appliquent pas dans React Native ; stylez-les avec des props.",
   "svg.native.style":
     "Les blocs <style> ne sont pas pris en charge ; leurs règles ont été ignorées. Intégrez d'abord les couleurs.",
+  "pwa.update.body": "Rechargez pour utiliser la dernière version.",
+  "pwa.update.kept.one":
+    "Rechargez pour utiliser la dernière version. Le studio ({count}) conservé hors ligne sera téléchargé de nouveau.",
+  "pwa.update.kept.other":
+    "Rechargez pour utiliser la dernière version. Les {count} studios conservés hors ligne seront téléchargés de nouveau.",
+  "pwa.update.reload": "Recharger",
+  "pwa.update.title": "Mise à jour disponible",
   "pwa.rekept.one": "{count} studio de nouveau conservé hors ligne après la mise à jour",
   "pwa.rekept.other": "{count} studios de nouveau conservés hors ligne après la mise à jour",
   "icons.tabs.label": "Outils d’icônes",

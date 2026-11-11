@@ -174,6 +174,31 @@ describe("the service worker", () => {
   });
 });
 
+describe("a waiting worker counts the studios kept by the running build", () => {
+  test("it answers how many studios the earlier caches hold, and none when they hold none", async () => {
+    const caches = new FakeCaches();
+    const old = await caches.open("designhub-static-old");
+    await old.put("/colors", new Response("page"));
+    await old.put("/typography", new Response("page"));
+    await old.put("/not-a-studio", new Response("page"));
+    const worker = start({ ...build, buildId: "two" }, caches);
+    const replies: unknown[] = [];
+    await worker.fire("message", {
+      data: { type: "KEPT_COUNT_QUERY" },
+      source: { postMessage: (m: unknown) => replies.push(m) },
+    });
+    expect(replies).toEqual([{ type: "KEPT_COUNT", count: 2 }]);
+
+    const fresh = start({ ...build, buildId: "three" });
+    const none: unknown[] = [];
+    await fresh.fire("message", {
+      data: { type: "KEPT_COUNT_QUERY" },
+      source: { postMessage: (m: unknown) => none.push(m) },
+    });
+    expect(none).toEqual([{ type: "KEPT_COUNT", count: 0 }]);
+  });
+});
+
 describe("the runtime cache is also capped by size", () => {
   test("it drops the oldest entries until it is under its byte limit, and keeps the newest", async () => {
     const worker = start({ ...build, runtimeBytes: 120 });

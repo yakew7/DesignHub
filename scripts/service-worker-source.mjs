@@ -180,6 +180,11 @@ self.addEventListener("activate", (event) => {
 
 self.addEventListener("message", (event) => {
   if (event.data?.type === "SKIP_WAITING") self.skipWaiting();
+  // A waiting worker counts the studios the running build has kept, so the page can say how many the update
+  // will download again.
+  if (event.data?.type === "KEPT_COUNT_QUERY") {
+    event.waitUntil(keptRoutes().then((routes) => event.source?.postMessage({ type: "KEPT_COUNT", count: routes.length })));
+  }
   if (event.data?.type === "STUDIOS_REKEPT_QUERY" && rekept > 0) {
     event.source?.postMessage({ type: "STUDIOS_REKEPT", kept: rekept });
     rekept = 0;
