@@ -81,3 +81,7 @@ To capture an updated screenshot, run the application, select a language using t
 - [ ] `pnpm test` passes.
 - [ ] `pnpm check:dashes` passes.
 - [ ] Screenshots are included when appropriate.
+
+## 7. Unused messages
+
+The English catalog is loaded by every route, so a message nothing uses costs bytes everywhere. `pnpm check:messages` lists the English keys that no source file refers to (a key built from a template such as `studio.${id}.short` or a prefix counts as used if its shape matches). CI runs it as a warning. Remove a listed key from `en.ts`, `es.ts`, `fr.ts` and `hi.ts` together, and say in the pull request what you removed. Use `--strict` to make it fail.

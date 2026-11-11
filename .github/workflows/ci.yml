@@ -29,6 +29,10 @@ jobs:
       - run: pnpm format:check
       # Unused files, exports and dependencies (knip.json lists the few exceptions, each with a reason in the docs).
       - run: pnpm check:unused
+      # English messages nothing refers to (each costs bytes in every route). Lists them and does not fail the job.
+      - name: Unused English messages
+        run: pnpm check:messages
+        continue-on-error: true
       - run: pnpm build
       - run: pnpm --filter designhub build
       - name: Smoke test the built CLI
