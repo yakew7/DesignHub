@@ -7,6 +7,25 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## Unreleased
 
+### Added
+
+- Storage panel: a note from 80% of the quota with what to do and a button to the old versions; a **Keep my recent studios** switch (on by default) that keeps the last four studios used for offline use on each visit with a connection; the Update available toast says how many kept studios will be downloaded again (and is translated).
+- `pnpm check:messages` lists English messages no source file refers to (CI runs it as a warning); `tests/e2e/translations-fit.spec.ts` opens every studio at 320 px in Spanish, French and Hindi and fails on sideways scroll or cut-off control text.
+- The Mockup and Social template descriptions are translated, and the search finds a template by a word of its English or translated description.
+- Lighthouse performance floors for `/colors` (90) and `/projects` (70) next to the home page's.
+- A `summaries` table (database version 6): the Brand Projects list is drawn from one small row per project, written with the project and filled in for older projects on first open; a card reads its whole project only when it is near the view.
+- `lib/toast.ts`: toasts queue until the toaster is loaded, so none is lost.
+
+### Changed
+
+- The English catalog is split: `en-core.ts` loads with every route, and the Icon, Logo, Mockup, Social and SVG studios load their own messages with the studio (`EnglishAreas`). Every route's first load is smaller (the home page by about 8 kB gzipped) and the budgets are lowered to match.
+- The toaster loads when the first toast is raised (its code is fetched a moment after load, so toasts still work offline).
+- Brand Projects: a card draws its picture only when it is near the view.
+
+### Fixed
+
+- The header was 16 px too wide on a 320 px screen, and the Icon Studio's tab list pushed the page wider in Spanish.
+
 ## v1.2.0 - 2026-11-08
 
 ### Added
