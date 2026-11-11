@@ -18,6 +18,8 @@ DesignHub has no accounts and no server. Everything you make is saved in your ow
 | localStorage  | `designhub:panes:<studio>`                                                                            | How wide you dragged each studio pane. Double-click a divider to reset it.                                                                                                                                                                                                     |
 | Cache Storage | `designhub-static-*`, `designhub-runtime-*`                                                           | On the hosted site only: the app shell, each studio the first time you open it online, and cached Google Fonts and Iconify responses, so a studio you opened opens without a connection. The runtime cache keeps at most 300 files and at most 50 MB, and the oldest go first. |
 
+The runtime cache also holds its own list of the files it keeps and their sizes (`/__designhub-runtime-record`), so caching a new file does not reread the size of the others. It is rebuilt from the cache when it is missing or out of date, and the Storage panel does not count it as a file.
+
 The database and its tables are defined in [`lib/db.ts`](../lib/db.ts). Every read and write goes through `safeDb`, so blocked or broken storage never breaks a studio.
 
 ## The studio stores

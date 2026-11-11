@@ -4,6 +4,9 @@ import { byteLength } from "@/lib/svg-size";
 export const isOfflineCache = (name: string): boolean =>
   name.startsWith("designhub-static-") || name.startsWith("designhub-runtime-");
 
+/** The service worker's record of its runtime cache (see `scripts/service-worker-source.mjs`), not a cached file. */
+const RUNTIME_RECORD_PATH = "/__designhub-runtime-record";
+
 /** Counts and sizes of a list of stored rows, measured as the JSON they hold. Never reads a row's content out. */
 export function measureRows(rows: readonly unknown[]): { count: number; bytes: number } {
   let bytes = 0;
@@ -46,7 +49,7 @@ export async function measureOfflineCaches(
   const runtime = { files: 0, bytes: 0 };
   for (const name of names) {
     const cache = await store.open(name);
-    const requests = await cache.keys();
+    const requests = (await cache.keys()).filter((request) => new URL(request.url).pathname !== RUNTIME_RECORD_PATH);
     files += requests.length;
     const isRuntime = name.startsWith("designhub-runtime-");
     if (isRuntime) runtime.files += requests.length;

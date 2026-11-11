@@ -20,6 +20,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
+- The service worker keeps a record of the runtime cache (each file and its size, oldest first) in that cache, so a new file no longer rereads the size of every file there; a missing or stale record is rebuilt from the cache. The Storage panel does not count the record as a file.
 - The English catalog is split: `en-core.ts` loads with every route, and the Icon, Logo, Mockup, Social and SVG studios register their own messages from the studio's code (`lib/i18n/areas/<area>.ts`, imported by the studio's workspace). Every route's first load is smaller (the home page by about 8 kB gzipped) and the budgets are lowered to match.
 - The toaster loads when the first toast is raised (its code is fetched a moment after load, so toasts still work offline).
 - Brand Projects: a card draws its picture only when it is near the view.
