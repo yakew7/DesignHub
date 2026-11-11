@@ -448,6 +448,9 @@ export const en = {
   "projects.storage.section.protection": "Protection",
   "projects.storage.runtime":
     "Fonts, icons and files used while browsing: {files} files, {size} (kept under {limit}, the oldest go first)",
+  "projects.storage.nearlyFull":
+    "Storage is {percent}% full. To make room: delete old versions (Projects), clear the icon cache, or export a project and delete it.",
+  "projects.storage.showVersions": "Show old versions",
   "projects.storage.title": "Storage",
   "projects.storage.description":
     "What DesignHub keeps on this device. Only sizes and counts are shown; nothing is read out or sent.",

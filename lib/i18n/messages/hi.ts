@@ -442,6 +442,9 @@ export const hi = {
   "projects.storage.section.protection": "सुरक्षा",
   "projects.storage.runtime":
     "ब्राउज़ करते समय उपयोग हुए फ़ॉन्ट, आइकन और फ़ाइलें: {files} फ़ाइलें, {size} ({limit} से कम रखी जाती हैं, सबसे पुरानी पहले हटती हैं)",
+  "projects.storage.nearlyFull":
+    "स्टोरेज {percent}% भर चुका है। जगह बनाने के लिए: पुराने संस्करण हटाएँ (प्रोजेक्ट), आइकन कैश साफ़ करें, या किसी प्रोजेक्ट को निर्यात करके हटा दें।",
+  "projects.storage.showVersions": "पुराने संस्करण दिखाएँ",
   "projects.storage.title": "स्टोरेज",
   "projects.storage.description":
     "DesignHub इस डिवाइस पर क्या रखता है। केवल आकार और गिनती दिखती है; कुछ पढ़ा या भेजा नहीं जाता।",

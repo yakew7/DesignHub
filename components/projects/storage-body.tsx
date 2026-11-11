@@ -11,6 +11,7 @@ import { toast } from "sonner";
 import { useI18n } from "@/components/layout/locale-provider";
 import { Button } from "@/components/ui/button";
 import { Section } from "@/components/ui/section";
+import { usePanelStore } from "@/store/panel-store";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { safeDb } from "@/lib/db";
 import type { ProjectVersion } from "@/lib/projects/history";
@@ -22,6 +23,7 @@ import {
   measureOfflineCaches,
   measureRows,
   protectionOf,
+  quotaNearlyFull,
   quotaShare,
   requestProtection,
   type Protection,
@@ -143,6 +145,7 @@ export function StorageBody() {
     await check();
   }
 
+  const setSectionOpen = usePanelStore((state) => state.setOpen);
   const share = report ? quotaShare(report.usage, report.quota) : null;
   const rows = report
     ? [
@@ -190,6 +193,14 @@ export function StorageBody() {
                     quota: formatBytes(report.quota ?? 0),
                   })}
             </p>
+            {quotaNearlyFull(share) ? (
+              <div className="flex flex-wrap items-center gap-2 rounded-md border border-warning/40 p-2">
+                <p className="text-xs">{t("projects.storage.nearlyFull", { percent: share ?? 0 })}</p>
+                <Button variant="outline" size="sm" onClick={() => setSectionOpen("storage-projects", true)}>
+                  {t("projects.storage.showVersions")}
+                </Button>
+              </div>
+            ) : null}
             {report.icons.count > 0 ? (
               <div className="flex flex-wrap items-center gap-2">
                 <Button variant="outline" size="sm" onClick={() => void clearIcons()}>

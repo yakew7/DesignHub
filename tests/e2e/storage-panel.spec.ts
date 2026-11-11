@@ -199,3 +199,20 @@ test("the panel's sections start folded, and the ones opened stay open after a r
   await page.getByRole("button", { name: "Check storage" }).click();
   await expect(page.getByRole("button", { name: "Projects", exact: true })).toHaveAttribute("aria-expanded", "true");
 });
+
+test("the panel says so when the storage is nearly full, and its button opens the old versions", async ({ page }) => {
+  await page.addInitScript(() => {
+    Object.defineProperty(navigator.storage, "estimate", {
+      value: async () => ({ usage: 85_000_000, quota: 100_000_000 }),
+    });
+  });
+  await page.goto("/projects");
+  await expect(page.locator("h1").first()).toBeVisible();
+  await page.getByRole("button", { name: "Storage", exact: true }).click();
+  await page.getByRole("button", { name: "Check storage" }).click();
+  await expect(page.getByText(/Storage is 85% full/)).toBeVisible();
+  const projects = page.getByRole("button", { name: "Projects", exact: true });
+  await expect(projects).toHaveAttribute("aria-expanded", "false");
+  await page.getByRole("button", { name: "Show old versions" }).click();
+  await expect(projects).toHaveAttribute("aria-expanded", "true");
+});

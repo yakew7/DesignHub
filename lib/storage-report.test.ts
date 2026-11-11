@@ -5,6 +5,7 @@ import {
   isOfflineCache,
   measureRows,
   protectionOf,
+  quotaNearlyFull,
   quotaShare,
   requestProtection,
 } from "@/lib/storage-report";
@@ -20,6 +21,13 @@ describe("storage report", () => {
   test("rows are counted and measured as JSON", () => {
     expect(measureRows([])).toEqual({ count: 0, bytes: 0 });
     expect(measureRows([{ a: 1 }, { a: 22 }])).toEqual({ count: 2, bytes: `{"a":1}`.length + `{"a":22}`.length });
+  });
+
+  test("the room is nearly full from 80 percent, and never when the share is unknown", () => {
+    expect(quotaNearlyFull(79)).toBe(false);
+    expect(quotaNearlyFull(80)).toBe(true);
+    expect(quotaNearlyFull(100)).toBe(true);
+    expect(quotaNearlyFull(null)).toBe(false);
   });
 
   test("the quota share is a whole percent, and unknown when a number is missing", () => {

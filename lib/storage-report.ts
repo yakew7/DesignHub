@@ -17,6 +17,12 @@ export function quotaShare(usage: number | undefined, quota: number | undefined)
   return Math.min(100, Math.max(0, Math.round((usage / quota) * 100)));
 }
 
+/** The share of the quota from which the Storage panel says the room is running out. */
+export const QUOTA_WARNING = 80;
+
+/** True from `QUOTA_WARNING` percent up. An unknown share (null) never warns. */
+export const quotaNearlyFull = (share: number | null): boolean => share !== null && share >= QUOTA_WARNING;
+
 /** The part of `CacheStorage` this file uses, so a test can stand in for it. */
 export type CacheStore = {
   keys: () => Promise<string[]>;

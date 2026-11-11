@@ -453,6 +453,9 @@ export const fr = {
   "projects.storage.section.protection": "Protection",
   "projects.storage.runtime":
     "Polices, icônes et fichiers utilisés en naviguant : {files} fichiers, {size} (limités à {limit}, les plus anciens partent d'abord)",
+  "projects.storage.nearlyFull":
+    "Le stockage est plein à {percent} %. Pour libérer de la place : supprimez d'anciennes versions (Projets), videz le cache d'icônes, ou exportez un projet puis supprimez-le.",
+  "projects.storage.showVersions": "Afficher les anciennes versions",
   "projects.storage.title": "Stockage",
   "projects.storage.description":
     "Ce que DesignHub conserve sur cet appareil. Seuls les tailles et les nombres sont affichés ; rien n'est lu ni envoyé.",
