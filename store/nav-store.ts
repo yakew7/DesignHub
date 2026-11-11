@@ -19,6 +19,9 @@ type NavState = {
   /** The last studio opened on this device, or null on a first visit. */
   lastStudio: StudioId | null;
   rememberStudio: (id: StudioId) => void;
+  /** Keep the studios used last for offline use on the next visit online. On unless the person turns it off. */
+  keepRecent: boolean;
+  setKeepRecent: (on: boolean) => void;
 };
 
 export const useNavStore = create<NavState>()(
@@ -30,15 +33,18 @@ export const useNavStore = create<NavState>()(
       toggleCollapsed: () => set((state) => ({ collapsed: !state.collapsed })),
       toggle: (group) => set((state) => ({ folded: toggleFolded(state.folded, group) })),
       rememberStudio: (id) => set({ lastStudio: id }),
+      keepRecent: true,
+      setKeepRecent: (keepRecent) => set({ keepRecent }),
     }),
     {
       name: "designhub:nav",
       version: 1,
       storage: createJSONStorage(() => indexedDbStorage),
-      partialize: ({ folded, collapsed, lastStudio }) => ({
+      partialize: ({ folded, collapsed, lastStudio, keepRecent }) => ({
         folded,
         collapsed,
         lastStudio,
+        keepRecent,
       }),
       merge: (persisted, current) => {
         const saved = persisted as Partial<NavState> | undefined;
@@ -47,6 +53,7 @@ export const useNavStore = create<NavState>()(
           folded: cleanFolded(saved?.folded),
           collapsed: saved?.collapsed === true,
           lastStudio: cleanLastStudio(saved?.lastStudio),
+          keepRecent: saved?.keepRecent !== false,
         };
       },
     },

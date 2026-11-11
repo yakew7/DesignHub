@@ -10,7 +10,10 @@ import { toast } from "sonner";
 
 import { useI18n } from "@/components/layout/locale-provider";
 import { Button } from "@/components/ui/button";
+import { Label } from "@/components/ui/label";
 import { Section } from "@/components/ui/section";
+import { Switch } from "@/components/ui/switch";
+import { useNavStore } from "@/store/nav-store";
 import { usePanelStore } from "@/store/panel-store";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { safeDb } from "@/lib/db";
@@ -145,6 +148,8 @@ export function StorageBody() {
     await check();
   }
 
+  const keepRecent = useNavStore((state) => state.keepRecent);
+  const setKeepRecent = useNavStore((state) => state.setKeepRecent);
   const setSectionOpen = usePanelStore((state) => state.setOpen);
   const share = report ? quotaShare(report.usage, report.quota) : null;
   const rows = report
@@ -228,6 +233,15 @@ export function StorageBody() {
                 })}
               </p>
             ) : null}
+            <div className="flex items-center justify-between gap-3">
+              <div className="flex flex-col">
+                <Label htmlFor="keep-recent" className="text-xs">
+                  {t("projects.storage.keepRecent")}
+                </Label>
+                <p className="text-xs text-muted-foreground">{t("projects.storage.keepRecentHint")}</p>
+              </div>
+              <Switch id="keep-recent" checked={keepRecent} onCheckedChange={setKeepRecent} />
+            </div>
             <fieldset className="flex flex-col gap-1.5">
               <legend className="pb-1 text-xs font-medium">{t("projects.storage.keep.title")}</legend>
               <p className="text-xs text-muted-foreground">{t("projects.storage.keep.hint")}</p>

@@ -451,6 +451,9 @@ export const en = {
   "projects.storage.nearlyFull":
     "Storage is {percent}% full. To make room: delete old versions (Projects), clear the icon cache, or export a project and delete it.",
   "projects.storage.showVersions": "Show old versions",
+  "projects.storage.keepRecent": "Keep my recent studios",
+  "projects.storage.keepRecentHint":
+    "Keeps the last four studios you used for offline use, also after an update. Turn it off to keep only the ones you choose.",
   "projects.storage.title": "Storage",
   "projects.storage.description":
     "What DesignHub keeps on this device. Only sizes and counts are shown; nothing is read out or sent.",

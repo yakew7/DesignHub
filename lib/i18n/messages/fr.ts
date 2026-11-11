@@ -456,6 +456,9 @@ export const fr = {
   "projects.storage.nearlyFull":
     "Le stockage est plein à {percent} %. Pour libérer de la place : supprimez d'anciennes versions (Projets), videz le cache d'icônes, ou exportez un projet puis supprimez-le.",
   "projects.storage.showVersions": "Afficher les anciennes versions",
+  "projects.storage.keepRecent": "Conserver mes studios récents",
+  "projects.storage.keepRecentHint":
+    "Garde hors ligne les quatre derniers studios utilisés, y compris après une mise à jour. Désactivez pour ne garder que ceux que vous choisissez.",
   "projects.storage.title": "Stockage",
   "projects.storage.description":
     "Ce que DesignHub conserve sur cet appareil. Seuls les tailles et les nombres sont affichés ; rien n'est lu ni envoyé.",

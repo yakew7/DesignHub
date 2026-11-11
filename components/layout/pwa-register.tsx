@@ -5,6 +5,9 @@ import { useEffect } from "react";
 import { toast } from "sonner";
 
 import { useI18n } from "@/components/layout/locale-provider";
+import { recentStudioHrefs } from "@/lib/offline-recent";
+import { useCommandRecentsStore } from "@/store/command-recents-store";
+import { useNavStore } from "@/store/nav-store";
 
 /** How long after the load event to wait before registering the service worker. */
 const REGISTER_DELAY = 3000;
@@ -12,6 +15,21 @@ const REGISTER_DELAY = 3000;
 export function PwaRegister() {
   const pathname = usePathname();
   const { plural } = useI18n();
+  const keepRecent = useNavStore((state) => state.keepRecent);
+  const lastStudio = useNavStore((state) => state.lastStudio);
+  const recent = useCommandRecentsStore((state) => state.recent);
+
+  // The studios used last are kept for offline use on their own (a switch in the Storage panel turns it off). The
+  // worker only downloads one it has not kept, and only one that was used, so nothing new is fetched for a studio
+  // that was never opened.
+  useEffect(() => {
+    if (process.env.NODE_ENV !== "production" || !("serviceWorker" in navigator)) return;
+    if (!keepRecent || !navigator.onLine) return;
+    const controller = navigator.serviceWorker.controller;
+    if (!controller) return;
+    for (const pathname of recentStudioHrefs(lastStudio, recent))
+      controller.postMessage({ type: "REMEMBER_ROUTE", pathname });
+  }, [keepRecent, lastStudio, recent]);
 
   // The new worker says when it has downloaded the studios that were kept before the update.
   useEffect(() => {

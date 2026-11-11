@@ -445,6 +445,9 @@ export const hi = {
   "projects.storage.nearlyFull":
     "स्टोरेज {percent}% भर चुका है। जगह बनाने के लिए: पुराने संस्करण हटाएँ (प्रोजेक्ट), आइकन कैश साफ़ करें, या किसी प्रोजेक्ट को निर्यात करके हटा दें।",
   "projects.storage.showVersions": "पुराने संस्करण दिखाएँ",
+  "projects.storage.keepRecent": "मेरे हाल के स्टूडियो रखें",
+  "projects.storage.keepRecentHint":
+    "आपके उपयोग किए गए पिछले चार स्टूडियो अपडेट के बाद भी ऑफ़लाइन उपयोग के लिए रखे जाते हैं। बंद करें तो केवल वही रखे जाएँगे जो आप चुनें।",
   "projects.storage.title": "स्टोरेज",
   "projects.storage.description":
     "DesignHub इस डिवाइस पर क्या रखता है। केवल आकार और गिनती दिखती है; कुछ पढ़ा या भेजा नहीं जाता।",

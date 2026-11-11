@@ -216,3 +216,40 @@ test("the panel says so when the storage is nearly full, and its button opens th
   await page.getByRole("button", { name: "Show old versions" }).click();
   await expect(projects).toHaveAttribute("aria-expanded", "true");
 });
+
+test("the studios used last are kept again on their own, and the switch turns it off and is remembered", async ({
+  page,
+}) => {
+  await page.goto("/colors");
+  await expect(page.locator("h1").first()).toBeVisible();
+  await page.evaluate(async () => {
+    await navigator.serviceWorker.ready;
+  });
+  await page.reload();
+  await expect.poll(() => page.evaluate(() => Boolean(navigator.serviceWorker.controller))).toBe(true);
+  await saved(page, "designhub:nav", "colors");
+  const kept = () => page.evaluate(async () => Boolean(await caches.match("/colors", { ignoreSearch: true })));
+  await expect.poll(kept).toBe(true);
+
+  // The caches go (as an update would delete them); the next visit keeps the last studio again.
+  await page.evaluate(async () => {
+    for (const name of await caches.keys())
+      if (name.startsWith("designhub-static-") || name.startsWith("designhub-runtime-")) await caches.delete(name);
+  });
+  expect(await kept()).toBe(false);
+  await page.goto("/projects");
+  await expect.poll(kept, { timeout: 30_000 }).toBe(true);
+
+  // The switch is on by default, turns off, and stays off after a reload.
+  await page.getByRole("button", { name: "Storage", exact: true }).click();
+  await page.getByRole("button", { name: "Check storage" }).click();
+  await page.getByRole("button", { name: "Offline use", exact: true }).click();
+  const keep = page.getByRole("switch", { name: "Keep my recent studios" });
+  await expect(keep).toBeChecked();
+  await keep.click();
+  await expect(keep).not.toBeChecked();
+  await saved(page, "designhub:nav", '"keepRecent":false');
+  await page.reload();
+  await page.getByRole("button", { name: "Check storage" }).click();
+  await expect(page.getByRole("switch", { name: "Keep my recent studios" })).not.toBeChecked();
+});
