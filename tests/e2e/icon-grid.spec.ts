@@ -119,6 +119,8 @@ test("the Library tab keeps its results, scroll and focused icon while another t
   const scrolled = await page.evaluate(() => window.scrollY);
 
   // Look at another tab and come back: the same icon is focused, the page is where it was, and nothing was fetched again.
+  // Icons near the new position may still be loading; let those requests finish before counting.
+  await page.waitForLoadState("networkidle");
   const requests = bodyRequests;
   await page.getByRole("tab", { name: "Favicon" }).click();
   await expect(page.getByRole("tab", { name: "Favicon" })).toHaveAttribute("aria-selected", "true");
