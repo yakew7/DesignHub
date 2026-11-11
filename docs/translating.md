@@ -4,7 +4,7 @@ This guide explains how to add a new language or improve an existing translation
 
 ## 1. How translations work
 
-DesignHub stores its translations in `lib/i18n/messages/`. The English catalog, `en.ts`, is the source of truth. Other language catalogs can be incomplete, and missing translations fall back to English.
+DesignHub stores its translations in `lib/i18n/messages/`. The English catalog is the source of truth. It is in parts: `en-core.ts` (what every route needs) and one file per big studio (`en-icons.ts`, `en-logo.ts`, `en-mockups.ts`, `en-social.ts`, `en-svg.ts`), which load with their studio; `en.ts` joins them for types and tests. A new key goes in the part its prefix belongs to (`icons.` in `en-icons.ts`), or in `en-core.ts`. Other language catalogs can be incomplete, and missing translations fall back to English.
 
 Use the existing translation system instead of writing translated UI text directly in components.
 
@@ -13,7 +13,7 @@ Some areas must be complete in every language, and a test fails when a key is mi
 ## 2. Improve an existing translation
 
 1. Open `lib/i18n/messages/` and select the language file you want to improve, such as `es.ts`, `fr.ts`, or `hi.ts`.
-2. Find the translation key in `lib/i18n/messages/en.ts`.
+2. Find the translation key in `lib/i18n/messages/en-core.ts` or the `en-<area>.ts` that matches its prefix.
 3. Update the corresponding translated text while preserving the meaning of the English message.
 4. Keep all placeholders, such as `{name}` and `{count}`, unchanged.
 5. Use sentence case and avoid em dashes.
@@ -23,7 +23,7 @@ Some areas must be complete in every language, and a test fails when a key is mi
 
 1. Choose a two-letter language code.
 2. Create a file named `lib/i18n/messages/<code>.ts`.
-3. Copy the structure and keys from `lib/i18n/messages/en.ts`.
+3. Copy the structure and keys from the English parts (`en.ts` joins them).
 4. Translate the values while preserving every key and placeholder.
 5. Export the catalog using the existing TypeScript pattern, `satisfies Catalog`.
 6. Register the language in `lib/i18n/locales.ts`. Update `locales`, `localeNames` and the `loaders` table (the app downloads only the language in use, so a new language is one `import()` line there), following the existing examples. The tests read every language from `lib/i18n/all-catalogs.ts`, so add the new language there too.

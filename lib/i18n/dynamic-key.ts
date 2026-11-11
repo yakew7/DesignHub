@@ -1,5 +1,4 @@
-import { en } from "@/lib/i18n/messages/en";
-import type { PlainMessageKey, Translate } from "@/lib/i18n/translate";
+import { hasEnglish, type PlainMessageKey, type Translate } from "@/lib/i18n/translate";
 
 /** A key-safe form of a name from a data table: "Company page cover" becomes "company-page-cover". */
 export function keySlug(text: string): string {
@@ -14,5 +13,5 @@ export function keySlug(text: string): string {
  * A name with no message keeps its English text, so a new item shows up before it is translated.
  */
 export function translateName(t: Translate, key: string, fallback: string): string {
-  return Object.hasOwn(en, key) ? t(key as PlainMessageKey) : fallback;
+  return hasEnglish(key) ? t(key as PlainMessageKey) : fallback;
 }

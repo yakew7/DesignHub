@@ -13,7 +13,8 @@ import { readdir, readFile } from "node:fs/promises";
 import path from "node:path";
 
 const roots = ["app", "components", "hooks", "lib", "store", "types", "scripts"];
-const skip = (file) => /(^|\/)(node_modules|messages)\/|\.test\.tsx?$|check-messages\.mjs$/.test(file);
+const skip = (file) =>
+  /(^|\/)(node_modules|messages)\/|(^|\/)test-setup\.ts$|\.test\.tsx?$|check-messages\.mjs$/.test(file);
 
 async function* walk(dir) {
   for (const entry of await readdir(dir, { withFileTypes: true }).catch(() => [])) {
@@ -64,7 +65,10 @@ export function unusedKeys(keys, source, patterns) {
 }
 
 if (import.meta.url === `file://${process.argv[1]}`) {
-  const keys = catalogKeys(await readFile("lib/i18n/messages/en.ts", "utf8"));
+  // The English catalog is split into a core file and one file per studio area (en-*.ts).
+  const parts = (await readdir("lib/i18n/messages")).filter((name) => /^en-.+\.ts$/.test(name));
+  const keys = [];
+  for (const part of parts) keys.push(...catalogKeys(await readFile(path.join("lib/i18n/messages", part), "utf8")));
   let source = "";
   for (const root of roots) for await (const file of walk(root)) source += (await readFile(file, "utf8")) + "\n";
   const unused = unusedKeys(keys, source, builtPatterns(source));

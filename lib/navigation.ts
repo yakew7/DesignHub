@@ -17,7 +17,7 @@ import {
   type LucideIcon,
 } from "lucide-react";
 
-import { en } from "@/lib/i18n/messages/en";
+import { enCore as en } from "@/lib/i18n/messages/en-core";
 
 export const studioIds = [
   "brand",

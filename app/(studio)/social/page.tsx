@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 
+import { EnglishAreas } from "@/components/layout/english-areas";
 import { ModeSwitch } from "@/components/layout/mode-switch";
 import { Workspace } from "@/components/layout/workspace";
 import { SocialWorkspace } from "@/components/social/social-workspace";
@@ -14,7 +15,9 @@ export default function SocialPage() {
   return (
     <Workspace className="gap-6">
       <PageHeader eyebrow="Studio" title={studio.title} description={studio.description} actions={<ModeSwitch />} />
-      <SocialWorkspace />
+      <EnglishAreas areas={["social"]}>
+        <SocialWorkspace />
+      </EnglishAreas>
     </Workspace>
   );
 }

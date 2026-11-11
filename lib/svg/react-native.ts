@@ -1,6 +1,5 @@
 import { localized, type Localized } from "@/lib/i18n/errors";
-import { en } from "@/lib/i18n/messages/en";
-import { format } from "@/lib/i18n/translate";
+import { englishText, format } from "@/lib/i18n/translate";
 import { componentNameFromFile, toJsx } from "@/lib/svg/jsx";
 import type { SvgNode } from "@/types/svg";
 
@@ -40,7 +39,7 @@ export type NativeResult = { code: string; warnings: string[]; notes: Localized[
 type Warnings = Map<string, Localized>;
 
 function warn(warnings: Warnings, note: Localized) {
-  warnings.set(format(en[note.key], note.params), note);
+  warnings.set(format(englishText(note.key), note.params), note);
 }
 
 function convert(node: SvgNode, used: Set<string>, warnings: Warnings): SvgNode | null {

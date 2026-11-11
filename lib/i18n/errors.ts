@@ -1,5 +1,5 @@
-import { en } from "@/lib/i18n/messages/en";
 import {
+  englishText,
   format,
   type MessageKey,
   type PlainMessageKey,
@@ -36,7 +36,7 @@ export class LocalizedError extends Error {
   constructor(key: MessageKey, params: MessageParams);
   constructor(first: Localized | MessageKey, params?: MessageParams) {
     const text: Localized = typeof first === "string" ? { key: first, params } : first;
-    super(format(en[text.key], text.params));
+    super(format(englishText(text.key), text.params));
     this.name = "LocalizedError";
     this.key = text.key;
     this.params = text.params;

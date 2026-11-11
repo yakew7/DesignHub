@@ -259,7 +259,7 @@ A Brand Guidelines page is one function that returns an SVG, registered in `lib/
 
 ## Translating the interface
 
-DesignHub stores UI translations in `lib/i18n/messages/`. English (`en.ts`) is the source of truth; other locales may be incomplete, and missing keys fall back to English. Supported locales currently include English, Spanish (`es`), French (`fr`) and Hindi (`hi`).
+DesignHub stores UI translations in `lib/i18n/messages/`. English is the source of truth, in `en-core.ts` and the `en-<area>.ts` files of the bigger studios (joined by `en.ts` for types); other locales may be incomplete, and missing keys fall back to English. Supported locales currently include English, Spanish (`es`), French (`fr`) and Hindi (`hi`).
 
 To improve an existing translation or add a new language, follow the [Translation Guide](docs/translating.md). It explains how to edit catalogs, preserve keys and placeholders, register a locale, check fonts and text overflow, and test your changes.
 
@@ -273,11 +273,11 @@ Translation changes should preserve the existing message keys and placeholders. 
 - In a Server Component, render `<Message id="nav.home" />` (`components/layout/message.tsx`) for messages without placeholders.
 - Keys and placeholders are type-checked: an unknown key or a missing placeholder is a compile error.
 - To translate an error thrown in `lib/`, throw `new LocalizedError("error.…")` (`lib/i18n/errors.ts`) and show it with `errorMessage(error, t, fallbackKey)`. Its `message` stays English.
-- New text goes into `en.ts` first (sentence case, no em dashes), then into the other catalogs when you can.
+- New text goes into the English part its prefix belongs to (`en-core.ts`, or `en-icons.ts`, `en-logo.ts`, `en-mockups.ts`, `en-social.ts`, `en-svg.ts` for those studios) first (sentence case, no em dashes), then into the other catalogs when you can.
 
 ### Adding a locale
 
-1. Create `lib/i18n/messages/<code>.ts` exporting `{ ... } satisfies Catalog`, using a two-letter language code such as `fr`. Copy keys from `en.ts` and translate them; keep every `{placeholder}` and skip any key you are unsure of.
+1. Create `lib/i18n/messages/<code>.ts` exporting `{ ... } satisfies Catalog`, using a two-letter language code such as `fr`. Copy keys from the English parts and translate them; keep every `{placeholder}` and skip any key you are unsure of.
 2. Register it in `lib/i18n/locales.ts`: add the code to `locales`, the catalog to `catalogs` and its name, written in that language, to `localeNames`.
 3. Run `pnpm test`: `lib/i18n/messages.test.ts` checks that every key exists in English, that placeholders match and that no message contains an em dash.
 4. Pick the language in the header switcher and check the shell and Brand Projects at a mobile width, where longer words can wrap.

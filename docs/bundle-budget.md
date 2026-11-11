@@ -93,13 +93,13 @@ When every route passes, the section ends with `Every route is within its budget
 1. **Shared by every route**:
    - **The framework runtime**: `rootMainFiles` in `.next/build-manifest.json` (Next.js router, React DOM and webpack runtime chunks).
    - **Root providers (`components/layout/providers.tsx`)**: `ThemeProvider`, `LocaleProvider`, `TooltipProvider`, `LazyOverlays` (command palette and keyboard shortcuts modal shell), `PwaRegister` (service worker listener) and `Toaster`.
-   - **The English message catalog (`lib/i18n/messages/en.ts`)**: `LocaleProvider` imports `en` eagerly as the fallback catalog for every locale (while `es`, `fr` and `hi` load on demand). Adding new keys to `en.ts` therefore increases every route's gzipped size by the same amount.
+   - **The English message catalog**: English is the fallback for every locale (while `es`, `fr` and `hi` load on demand), so `lib/i18n/messages/en-core.ts` is in every route's first load. Adding keys to it increases every route's gzipped size by the same amount. The Icon, Logo, Mockup, Social and SVG studios keep their English in `en-<area>.ts`, loaded by that studio's route (`EnglishAreas`, `lib/i18n/areas.ts`), so keys for those studios cost only their own route.
    - **The application shell (`components/layout/app-shell.tsx` and `app/(studio)/layout.tsx`)**: header navigation (`SiteHeader`, `MobileNav`, `SearchTrigger`, `LanguageSwitcher`, `ThemeToggle`), `SkipLink`, `GlobalShortcuts`, shared stores (such as the project, navigation and panel stores) and on studio routes `SidebarAside`, `StudioTracker`, `LazyProjectAutosave`, `LazyShareLinkImport` and `LazyFileLaunchImport`.
 2. **Per studio (or route)**:
    - **The route's `entryJSFiles`**: read from `.next/server/app/**/page_client-reference-manifest.js` for that specific `page.tsx`.
    - **Studio controls, canvases and data**: the studio's own `"use client"` components, preview canvas, templates and any presets or libraries imported at the top of that studio's modules.
 
-If **every route** jumps by 1 to 3 kB at once, look at shared code (`lib/i18n/messages/en.ts`, `components/layout/**` or a shared store in `lib/stores/**`). If **only one route** grows, look at what that route's `app/**/page.tsx` and its components import.
+If **every route** jumps by 1 to 3 kB at once, look at shared code (`lib/i18n/messages/en-core.ts`, `components/layout/**` or a shared store in `lib/stores/**`). If **only one route** grows, look at what that route's `app/**/page.tsx` and its components import.
 
 ## Three steps before raising a limit
 
@@ -119,7 +119,7 @@ Code that is not visible on the first paint does not belong in the first-load bu
 
 - **Folded panels, dialogs and secondary tabs**: wrap the component with `next/dynamic` so its chunk is fetched only when the person opens it. For example, `/projects` loads the folded Storage panel on demand (`perf(projects): load the Storage panel only when it is opened`, which lowered `/projects` from 315 kB to 299 kB), and `components/projects/lazy-autosave.tsx` defers autosave and share-link import hooks until after mount.
 - **Export engines and heavy libraries**: load libraries used only when clicking a button (such as Paper.js boolean path operations, ZIP archiving or PDF/image export) inside the click handler with `await import("...")` instead of a top-level `import`.
-- **Non-English locales**: keep new translation dictionaries behind the dynamic loader in `LocaleProvider` so only `en.ts` is in the initial bundle.
+- **Non-English locales**: keep new translation dictionaries behind the dynamic loader in `LocaleProvider` so only `en-core.ts` is in the initial bundle.
 
 ### 3. Replace it
 

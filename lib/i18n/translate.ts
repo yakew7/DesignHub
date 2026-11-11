@@ -1,6 +1,28 @@
-import { en } from "@/lib/i18n/messages/en";
+import type { en } from "@/lib/i18n/messages/en";
+import { enCore } from "@/lib/i18n/messages/en-core";
 
 type Messages = typeof en;
+
+/**
+ * The English messages the page has loaded: the core ones, and each studio area once its route has loaded it
+ * (lib/i18n/areas.ts). English is the fallback for every language, so a key must be here before it is asked for.
+ */
+const english: Record<string, string> = { ...enCore };
+
+/** Adds the messages of a loaded area. */
+export function registerEnglish(part: Readonly<Record<string, string>>): void {
+  Object.assign(english, part);
+}
+
+/** True when an English message with this key has been loaded. */
+export function hasEnglish(key: string): boolean {
+  return Object.hasOwn(english, key);
+}
+
+/** The English text of a key (its key when its area is not loaded, which a studio's route prevents). */
+export function englishText(key: MessageKey): string {
+  return english[key] ?? key;
+}
 export type MessageKey = keyof Messages;
 
 /** A translation: any subset of the English keys. Missing keys fall back to English. */
@@ -37,7 +59,7 @@ export function format(template: string, params?: Record<string, string | number
 
 /** Looks a key up in a catalog, falling back to English when the catalog leaves it out. */
 function lookup(catalog: Catalog, key: MessageKey): string {
-  return catalog[key] ?? en[key];
+  return catalog[key] ?? english[key] ?? key;
 }
 
 export function createTranslator(catalog: Catalog, language: string): { t: Translate; plural: TranslatePlural } {

@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 
+import { EnglishAreas } from "@/components/layout/english-areas";
 import { ModeSwitch } from "@/components/layout/mode-switch";
 import { Workspace } from "@/components/layout/workspace";
 import { MockupWorkspace } from "@/components/mockups/mockup-workspace";
@@ -14,7 +15,9 @@ export default function MockupsPage() {
   return (
     <Workspace className="gap-6">
       <PageHeader eyebrow="Studio" title={studio.title} description={studio.description} actions={<ModeSwitch />} />
-      <MockupWorkspace />
+      <EnglishAreas areas={["mockups"]}>
+        <MockupWorkspace />
+      </EnglishAreas>
     </Workspace>
   );
 }

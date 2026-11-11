@@ -5,5 +5,6 @@ export default defineConfig({
   test: {
     include: ["lib/**/*.test.ts", "packages/*/src/**/*.test.ts"],
     environment: "node",
+    setupFiles: ["./lib/i18n/test-setup.ts"],
   },
 });
