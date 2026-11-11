@@ -1,6 +1,5 @@
 import { describe, expect, test } from "vitest";
 
-import { loadEnglishAreas } from "@/lib/i18n/areas";
 import { en } from "@/lib/i18n/messages/en";
 import { enCore } from "@/lib/i18n/messages/en-core";
 import { enIcons } from "@/lib/i18n/messages/en-icons";
@@ -8,7 +7,6 @@ import { enLogo } from "@/lib/i18n/messages/en-logo";
 import { enMockups } from "@/lib/i18n/messages/en-mockups";
 import { enSocial } from "@/lib/i18n/messages/en-social";
 import { enSvg } from "@/lib/i18n/messages/en-svg";
-import { englishText } from "@/lib/i18n/translate";
 
 const parts = { enCore, enIcons, enLogo, enMockups, enSocial, enSvg };
 
@@ -38,11 +36,5 @@ describe("the English catalog in parts", () => {
     // svg.compare.* is used by the comparison canvas in several studios, so it stays in the core.
     const inCore = Object.keys(enCore).filter((key) => /^(icons|logo|mockups|social|svg)\./.test(key));
     expect(inCore.every((key) => key.startsWith("svg.compare."))).toBe(true);
-  });
-
-  test("loading an area registers its messages, once", async () => {
-    await loadEnglishAreas(["icons", "svg"]);
-    expect(englishText("icons.tabs.library")).toBe(enIcons["icons.tabs.library"]);
-    expect(loadEnglishAreas(["svg", "icons"])).toBe(loadEnglishAreas(["icons", "svg"]));
   });
 });

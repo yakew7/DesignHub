@@ -1,5 +1,8 @@
 "use client";
 
+import "@/lib/i18n/areas/icons";
+import "@/lib/i18n/areas/svg";
+
 import dynamic from "next/dynamic";
 import { Braces, Globe, LayoutGrid } from "lucide-react";
 import { useEffect, useLayoutEffect, useRef, useState } from "react";

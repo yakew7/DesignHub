@@ -1,5 +1,7 @@
 "use client";
 
+import "@/lib/i18n/areas/svg";
+
 import { useMemo, useState } from "react";
 
 import { SvgPreviewCanvas } from "@/components/canvas/svg-preview-canvas";

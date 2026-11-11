@@ -1,4 +1,4 @@
-/** English messages every route needs: loaded with the page. The studio areas are in `en-<area>.ts` and load with their studio (see lib/i18n/areas.ts). */
+/** English messages every route needs: loaded with the page. The studio areas are in `en-<area>.ts` and load with their studio (see lib/i18n/areas/). */
 export const enCore = {
   // Studios (lib/navigation.ts reads its titles and descriptions from here)
   "studio.brand.title": "Brand Studio",

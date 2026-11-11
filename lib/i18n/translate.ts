@@ -5,7 +5,7 @@ type Messages = typeof en;
 
 /**
  * The English messages the page has loaded: the core ones, and each studio area once its route has loaded it
- * (lib/i18n/areas.ts). English is the fallback for every language, so a key must be here before it is asked for.
+ * (a studio imports lib/i18n/areas/<area>.ts). English is the fallback for every language, so a key must be here before it is asked for.
  */
 const english: Record<string, string> = { ...enCore };
 

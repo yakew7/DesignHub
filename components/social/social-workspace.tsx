@@ -1,5 +1,7 @@
 "use client";
 
+import "@/lib/i18n/areas/social";
+
 import { memo, useDeferredValue, useMemo } from "react";
 
 import { useI18n } from "@/components/layout/locale-provider";

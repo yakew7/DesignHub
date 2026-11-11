@@ -1,0 +1,6 @@
+import { enSocial } from "@/lib/i18n/messages/en-social";
+import { registerEnglish } from "@/lib/i18n/translate";
+
+// Importing this module makes the social studio's English messages available. Only that studio's code imports it, so
+// the messages are in that studio's chunks and in no other route's first load.
+registerEnglish(enSocial);
