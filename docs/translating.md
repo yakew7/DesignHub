@@ -45,7 +45,7 @@ DesignHub uses Inter and Space Grotesk for Latin-script text.
 
 If a language uses another writing system, check whether the current fonts support it. If necessary, add suitable system fonts to `--font-sans` and `--font-display` in `app/globals.css`, following the existing font configuration.
 
-Long translations may wrap differently from English. Test the interface at a narrow mobile width and check buttons, navigation, cards, and headings for clipping or overflow.
+`tests/e2e/translations-fit.spec.ts` opens every studio at 320 px in Spanish, French and Hindi and fails when the page scrolls sideways or a button, tab or radio cuts its text off (an ellipsis is allowed), naming the studio. Long translations may wrap differently from English. Test the interface at a narrow mobile width and check buttons, navigation, cards, and headings for clipping or overflow.
 
 ## 6. Test your translations
 

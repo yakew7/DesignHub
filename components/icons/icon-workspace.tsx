@@ -67,7 +67,7 @@ export function IconWorkspace() {
   };
 
   return (
-    <div className="grid items-start gap-6 lg:grid-cols-[minmax(0,1fr)_340px]">
+    <div className="grid grid-cols-[minmax(0,1fr)] items-start gap-6 lg:grid-cols-[minmax(0,1fr)_340px]">
       <Tabs value={tab} onValueChange={(value) => changeTab(value as IconTab)} className="min-w-0 gap-6">
         <TabsList aria-label={t("icons.tabs.label")} className="w-full overflow-x-auto sm:w-fit">
           <TabsTrigger value="library">
