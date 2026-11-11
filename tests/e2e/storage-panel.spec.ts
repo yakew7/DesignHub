@@ -22,6 +22,13 @@ test("the storage panel shows sizes, and clearing the offline cache keeps the pr
   await expect(status).not.toContainText("None yet");
   const projects = (await status.locator("dd").first().innerText()).split(" · ")[0];
 
+  // The studios used last are kept again on their own, which could land right after the clear; this test is
+  // about the clear, so that is switched off first (the next test covers the switch).
+  await page.getByRole("button", { name: "Offline use", exact: true }).click();
+  const keep = page.getByRole("switch", { name: "Keep my recent studios" });
+  await expect(keep).toBeChecked();
+  await keep.click();
+  await expect(keep).not.toBeChecked();
   await page.getByRole("button", { name: "Clear the offline cache" }).click();
   await expect(status).toContainText("None yet");
   // The share cache and the projects are untouched: the same number of projects is still counted.
@@ -228,6 +235,14 @@ test("the studios used last are kept again on their own, and the switch turns it
   await page.reload();
   await expect.poll(() => page.evaluate(() => Boolean(navigator.serviceWorker.controller))).toBe(true);
   await saved(page, "designhub:nav", "colors");
+  // Opening /projects below makes it the last studio, so Color Studio is also chosen in the palette: a recent
+  // choice stays saved however the next page loads.
+  await page.keyboard.press("ControlOrMeta+k");
+  await page
+    .getByRole("dialog")
+    .getByRole("option", { name: /^Color Studio/ })
+    .click();
+  await saved(page, "designhub:command-recents", "studio:colors");
   const kept = () => page.evaluate(async () => Boolean(await caches.match("/colors", { ignoreSearch: true })));
   await expect.poll(kept).toBe(true);
 
