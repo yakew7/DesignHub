@@ -44,7 +44,7 @@ pnpm check:unused
 
 ## Lighthouse
 
-**What it measures.** Lighthouse scores for performance, accessibility, best practices and SEO on the home page, `/brand`, `/colors`, `/typography` and `/social`, served from the production build. Each page is audited five times and the median run is checked against `lighthouserc.json`.
+**What it measures.** Lighthouse scores for performance, accessibility, best practices and SEO on the home page, `/brand`, `/colors`, `/projects`, `/typography` and `/social`, served from the production build. Each page is audited five times and the median run is checked against `lighthouserc.json`.
 
 **How to run it.** It needs Chrome installed (set `CHROME_PATH` if Lighthouse cannot find it):
 
@@ -52,7 +52,7 @@ pnpm check:unused
 pnpm build && pnpm dlx @lhci/cli autorun
 ```
 
-**How to read it.** The command starts `pnpm start -p 3000`, so stop any other server on that port first. It prints each assertion that failed or warned, with the median score it found and all five values, and writes the HTML reports to `.lighthouseci/`; open one to see the opportunities and diagnostics behind a score. Accessibility, best practices and SEO must be 100 on every page. Performance must be 90 on the home page (lower fails); on the studios a lower score is only a warning. Scores on a laptop or a busy machine are noisier than in CI, so compare runs of `main` and your branch on the same machine before chasing a few points.
+**How to read it.** The command starts `pnpm start -p 3000`, so stop any other server on that port first. It prints each assertion that failed or warned, with the median score it found and all five values, and writes the HTML reports to `.lighthouseci/`; open one to see the opportunities and diagnostics behind a score. Accessibility, best practices and SEO must be 100 on every page. Performance must be 90 on the home page and `/colors`, and 70 on `/projects` (a lower median fails); on the other studios a lower score is only a warning. The floors sit a few points under the scores on a laptop (about 100 for `/colors`, about 80 for `/projects`); raise one only with the score you measured, and lower one only with the reason in the pull request. Scores on a laptop or a busy machine are noisier than in CI, so compare runs of `main` and your branch on the same machine before chasing a few points.
 
 ## Long tasks in the end-to-end tests
 

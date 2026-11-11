@@ -25,10 +25,11 @@ jobs:
           cache: pnpm
       - run: pnpm install --frozen-lockfile
       - run: pnpm build
-      # Starts `pnpm start` (see lighthouserc.json), audits the home page and four studios five
+      # Starts `pnpm start` (see lighthouserc.json), audits the home page, the Color Studio, Brand Projects and three other studios five
       # times each, checks the thresholds on the median run and writes the reports to .lighthouseci/.
       # Accessibility, best practices and SEO must score 100 everywhere. Performance must score 90 on
-      # the home page (it fails below that); on the studios it is only a warning, because shared CI
+      # the home page, 90 on /colors and 70 on /projects (each fails below its floor); on the other studios it is only a
+      # warning, because shared CI
       # runners are noisy and a studio is a much larger page.
       - run: pnpm dlx @lhci/cli autorun
       - name: Scores in the job summary
