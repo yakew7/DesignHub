@@ -2,7 +2,7 @@
 
 import { Download, FileArchive, Loader2 } from "lucide-react";
 import { useState } from "react";
-import { toast } from "sonner";
+import { toast } from "@/lib/toast";
 
 import { useI18n } from "@/components/layout/locale-provider";
 import { IconImage } from "@/components/icons/icon-image";

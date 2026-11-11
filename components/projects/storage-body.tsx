@@ -6,7 +6,7 @@ import { useKeptStudios } from "@/hooks/use-kept-studios";
 import { clearIconCache } from "@/lib/icons/iconify";
 import { keepStudios } from "@/lib/offline-keep";
 import { studios } from "@/lib/navigation";
-import { toast } from "sonner";
+import { toast } from "@/lib/toast";
 
 import { useI18n } from "@/components/layout/locale-provider";
 import { Button } from "@/components/ui/button";

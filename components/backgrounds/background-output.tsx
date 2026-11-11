@@ -2,7 +2,7 @@
 
 import { Download, ImageDown } from "lucide-react";
 import { useMemo } from "react";
-import { toast } from "sonner";
+import { toast } from "@/lib/toast";
 
 import { ExportPanel } from "@/components/export/export-panel";
 import { Button } from "@/components/ui/button";

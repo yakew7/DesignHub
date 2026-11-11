@@ -12,7 +12,7 @@ import {
   SwatchBook,
 } from "lucide-react";
 import { useId, useMemo, useState } from "react";
-import { toast } from "sonner";
+import { toast } from "@/lib/toast";
 
 import { PalettePreview } from "@/components/colors/palette-preview";
 import { ExportPanel } from "@/components/export/export-panel";

@@ -1,4 +1,4 @@
-import { toast } from "sonner";
+import { toast } from "@/lib/toast";
 
 import type { Translate } from "@/lib/i18n/translate";
 import type { BrandSnapshot } from "@/lib/projects/snapshot";

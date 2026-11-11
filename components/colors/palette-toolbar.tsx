@@ -3,7 +3,7 @@
 import dynamic from "next/dynamic";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { Bookmark, Download, MoreHorizontal, Pipette, Plus, Redo2, Shuffle, Undo2 } from "lucide-react";
-import { toast } from "sonner";
+import { toast } from "@/lib/toast";
 
 import { useI18n } from "@/components/layout/locale-provider";
 import { Button } from "@/components/ui/button";

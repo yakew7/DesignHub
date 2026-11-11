@@ -2,7 +2,7 @@
 
 import { usePathname } from "next/navigation";
 import { useEffect, useRef } from "react";
-import { toast } from "sonner";
+import { toast } from "@/lib/toast";
 
 import { useI18n } from "@/components/layout/locale-provider";
 import { recentStudioHrefs } from "@/lib/offline-recent";

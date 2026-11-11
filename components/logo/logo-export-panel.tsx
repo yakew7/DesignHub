@@ -2,7 +2,7 @@
 
 import { Download, FileArchive, FileText, Globe, ImageDown, Loader2, PenTool, RotateCcw } from "lucide-react";
 import { useMemo, useState } from "react";
-import { toast } from "sonner";
+import { toast } from "@/lib/toast";
 
 import { CodeBlock } from "@/components/export/code-block";
 import { useI18n } from "@/components/layout/locale-provider";

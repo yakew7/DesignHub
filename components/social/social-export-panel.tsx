@@ -2,7 +2,7 @@
 
 import { ClipboardCopy, FileArchive, FileCode, ImageDown, Loader2 } from "lucide-react";
 import { useRef, useState, type ReactNode } from "react";
-import { toast } from "sonner";
+import { toast } from "@/lib/toast";
 
 import { useI18n } from "@/components/layout/locale-provider";
 import { Advanced } from "@/components/ui/advanced";

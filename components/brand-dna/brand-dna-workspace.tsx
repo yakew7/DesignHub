@@ -2,7 +2,7 @@
 
 import { Check, ImageUp, Loader2, RotateCcw, Sparkles, TriangleAlert, X } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
-import { toast } from "sonner";
+import { toast } from "@/lib/toast";
 
 import { AiKeyPanel } from "@/components/brand-dna/ai-key-panel";
 import { DnaResultEditor } from "@/components/brand-dna/dna-result-editor";

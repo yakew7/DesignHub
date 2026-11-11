@@ -2,7 +2,7 @@
 
 import { ArrowLeftRight, Bookmark, Lock, Shuffle, Unlock } from "lucide-react";
 import { useMemo, useState } from "react";
-import { toast } from "sonner";
+import { toast } from "@/lib/toast";
 
 import { useI18n } from "@/components/layout/locale-provider";
 import { FontPicker } from "@/components/typography/font-picker";

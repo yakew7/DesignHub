@@ -2,7 +2,7 @@
 
 import { CopyPlus, RotateCcw } from "lucide-react";
 import { useCallback, useEffect, useMemo, useState } from "react";
-import { toast } from "sonner";
+import { toast } from "@/lib/toast";
 
 import { useI18n } from "@/components/layout/locale-provider";
 import { BrandDiffTable } from "@/components/projects/brand-diff-table";

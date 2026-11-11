@@ -2,7 +2,7 @@
 
 import { Download, Plus, Trash2, Upload } from "lucide-react";
 import { useId, useMemo, useRef, useState } from "react";
-import { toast } from "sonner";
+import { toast } from "@/lib/toast";
 
 import { useI18n } from "@/components/layout/locale-provider";
 import { Button } from "@/components/ui/button";

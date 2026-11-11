@@ -3,7 +3,7 @@
 import { StudioLink as Link } from "@/components/layout/studio-link";
 import { usePathname } from "next/navigation";
 import type { MouseEvent, ReactNode } from "react";
-import { toast } from "sonner";
+import { toast } from "@/lib/toast";
 import { BookOpen, ChevronDown, Home, PanelLeftClose, PanelLeftOpen } from "lucide-react";
 
 import { GithubIcon } from "@/components/layout/github-icon";

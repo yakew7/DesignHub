@@ -1,10 +1,15 @@
 "use client";
 
 import { useTheme } from "next-themes";
+import { useEffect } from "react";
 import { Toaster as Sonner, type ToasterProps } from "sonner";
+
+import { toasterReady } from "@/lib/toast";
 
 function Toaster(props: ToasterProps) {
   const { resolvedTheme } = useTheme();
+  // Sonner subscribes in its own effect, which runs before this one: queued toasts can be shown now.
+  useEffect(() => void toasterReady(), []);
 
   return (
     <Sonner

@@ -2,7 +2,7 @@
 
 import { FileArchive, FileJson, FileText, ImageDown, Loader2 } from "lucide-react";
 import { useCallback, useEffect, useMemo, useState, type RefObject } from "react";
-import { toast } from "sonner";
+import { toast } from "@/lib/toast";
 
 import { ExportPanel } from "@/components/export/export-panel";
 import { Button } from "@/components/ui/button";
