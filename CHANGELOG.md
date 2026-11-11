@@ -15,6 +15,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Lighthouse performance floors for `/colors` (90) and `/projects` (70) next to the home page's.
 - A `summaries` table (database version 6): the Brand Projects list is drawn from one small row per project, written with the project and filled in for older projects on first open; a card reads its whole project only when it is near the view.
 - `lib/toast.ts`: toasts queue until the toaster is loaded, so none is lost.
+- The end-to-end job summaries list the ten slowest tests, and the nightly repeated run uploads every test's time as the `e2e-durations` artifact (`scripts/flaky-tests.mjs --durations=<file>`).
 
 ### Changed
 

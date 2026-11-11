@@ -1,6 +1,13 @@
 import { describe, expect, test } from "vitest";
 
-import { failedRuns, repeatSummary, retriedTests, summary } from "../../scripts/flaky-tests.mjs";
+import {
+  failedRuns,
+  repeatSummary,
+  retriedTests,
+  slowestSummary,
+  summary,
+  testDurations,
+} from "../../scripts/flaky-tests.mjs";
 
 const report = {
   suites: [
@@ -62,5 +69,69 @@ describe("flaky test report", () => {
     expect(found).toEqual([{ title: "b.spec.ts › sometimes", file: "b.spec.ts", failed: 1, runs: 3 }]);
     expect(repeatSummary(found)).toContain("| `b.spec.ts` | b.spec.ts › sometimes | 1 of 3 |");
     expect(repeatSummary([])).toContain("Every run of every test passed.");
+  });
+});
+
+describe("slowest tests", () => {
+  const timed = {
+    suites: [
+      {
+        title: "c.spec.ts",
+        file: "c.spec.ts",
+        specs: [
+          { title: "quick", file: "c.spec.ts", tests: [{ results: [{ status: "passed", duration: 400 }] }] },
+          {
+            title: "retried",
+            file: "c.spec.ts",
+            tests: [
+              {
+                results: [
+                  { status: "failed", duration: 3000 },
+                  { status: "passed", duration: 2500 },
+                ],
+              },
+            ],
+          },
+          {
+            title: "repeated",
+            file: "c.spec.ts",
+            tests: [
+              { results: [{ status: "passed", duration: 1200 }] },
+              { results: [{ status: "passed", duration: 4100 }] },
+            ],
+          },
+        ],
+        suites: [
+          {
+            title: "axe | studios",
+            specs: [{ title: "home", file: "c.spec.ts", tests: [{ results: [{ status: "passed", duration: 900 }] }] }],
+          },
+        ],
+      },
+    ],
+  };
+
+  test("a test's time is its longest run with that run's retries added, slowest first", () => {
+    expect(testDurations(timed)).toEqual([
+      { title: "c.spec.ts › retried", file: "c.spec.ts", duration: 5500 },
+      { title: "c.spec.ts › repeated", file: "c.spec.ts", duration: 4100 },
+      { title: "c.spec.ts › axe | studios › home", file: "c.spec.ts", duration: 900 },
+      { title: "c.spec.ts › quick", file: "c.spec.ts", duration: 400 },
+    ]);
+  });
+
+  test("the table lists the slowest tests in seconds, at most the count asked for", () => {
+    const table = slowestSummary(testDurations(timed), 2);
+    expect(table).toContain("### Slowest 2 end-to-end tests");
+    expect(table).toContain("| `c.spec.ts` | c.spec.ts › retried | 5.5 s |");
+    expect(table).toContain("| `c.spec.ts` | c.spec.ts › repeated | 4.1 s |");
+    expect(table).not.toContain("quick");
+    expect(slowestSummary(testDurations(timed))).toContain(
+      "| `c.spec.ts` | c.spec.ts › axe \\| studios › home | 0.9 s |",
+    );
+  });
+
+  test("a report with no tests says so", () => {
+    expect(slowestSummary(testDurations({ suites: [] }))).toContain("The report has no test times.");
   });
 });
