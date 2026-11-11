@@ -1,7 +1,7 @@
 "use client";
 
 import { Check, Pencil, Star, Trash2, X } from "lucide-react";
-import { useMemo, useState, type ReactNode } from "react";
+import { useEffect, useMemo, useRef, useState, type ReactNode } from "react";
 
 import { useI18n } from "@/components/layout/locale-provider";
 import { ProjectTags } from "@/components/projects/project-tags";
@@ -44,6 +44,52 @@ function ago(time: number, locale: string, t: Translate): string {
   return t("projects.card.justNow");
 }
 
+/**
+ * The card's picture and color strip. The brand is read out of the snapshot and drawn only once the card is
+ * within a screen of the view, so a long list pays for the cards that are seen. It then stays drawn.
+ */
+function CardPreview({ snapshot }: { snapshot: BrandProject["snapshot"] }) {
+  const box = useRef<HTMLSpanElement>(null);
+  const [near, setNear] = useState(false);
+  useEffect(() => {
+    const element = box.current;
+    if (!element || near) return;
+    if (typeof IntersectionObserver === "undefined") return setNear(true);
+    const observer = new IntersectionObserver(
+      (entries) => {
+        if (entries.some((entry) => entry.isIntersecting)) setNear(true);
+      },
+      { rootMargin: "100% 0px" },
+    );
+    observer.observe(element);
+    return () => observer.disconnect();
+  }, [near]);
+  const tokens = useMemo(() => (near ? snapshotTokens(snapshot) : null), [near, snapshot]);
+  return (
+    <span
+      ref={box}
+      data-preview={tokens ? "drawn" : "waiting"}
+      className="absolute inset-0 flex items-center justify-center"
+    >
+      {tokens ? (
+        <>
+          {/* eslint-disable-next-line @next/next/no-img-element -- sanitized SVG data URL */}
+          <img
+            src={svgToDataUrl(tokens.logo.svg)}
+            alt=""
+            className="size-16 object-contain transition-transform duration-200 group-hover:scale-105"
+          />
+          <span className="absolute inset-x-0 bottom-0 flex h-2">
+            {tokens.colors.all.map((color) => (
+              <span key={color.id} className="flex-1" style={{ background: color.hex }} />
+            ))}
+          </span>
+        </>
+      ) : null}
+    </span>
+  );
+}
+
 export function ProjectCard({
   project,
   active,
@@ -57,7 +103,6 @@ export function ProjectCard({
   select,
 }: Props) {
   const { locale, t } = useI18n();
-  const tokens = useMemo(() => snapshotTokens(project.snapshot), [project.snapshot]);
   const name = projectName(project);
   const [editing, setEditing] = useState(false);
   const [draft, setDraft] = useState(name);
@@ -92,17 +137,7 @@ export function ProjectCard({
         className="group relative flex h-36 items-center justify-center bg-surface-raised outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-inset"
         aria-label={t(active ? "projects.card.isOpen" : "projects.card.openNamed", { name })}
       >
-        {/* eslint-disable-next-line @next/next/no-img-element -- sanitized SVG data URL */}
-        <img
-          src={svgToDataUrl(tokens.logo.svg)}
-          alt=""
-          className="size-16 object-contain transition-transform duration-200 group-hover:scale-105"
-        />
-        <span className="absolute inset-x-0 bottom-0 flex h-2">
-          {tokens.colors.all.map((color) => (
-            <span key={color.id} className="flex-1" style={{ background: color.hex }} />
-          ))}
-        </span>
+        <CardPreview snapshot={project.snapshot} />
       </button>
       <div className="flex flex-1 flex-col gap-2 p-3">
         <div className="flex min-w-0 items-center gap-2">

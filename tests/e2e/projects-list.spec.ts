@@ -32,6 +32,13 @@ test("a hundred and fifty projects draw thirty cards first, search by name and t
   // Newest first, so the last imported is on top; the first page is a screenful, not all hundred and fifty.
   await expect(page.getByRole("button", { name: "Open Brand 149" })).toBeVisible();
   expect(await cards.count()).toBeLessThanOrEqual(36);
+  // Only the cards within a screen of the view draw their picture; the others wait until they come near.
+  const drawn = page.locator('[data-preview="drawn"]');
+  await expect(drawn.first()).toBeVisible();
+  const drawnCount = await drawn.count();
+  expect(drawnCount).toBeGreaterThan(0);
+  expect(drawnCount).toBeLessThan(await cards.count());
+  expect(await page.locator('[data-preview="waiting"]').count()).toBeGreaterThan(0);
   await expectUnder(testInfo, "import-ms", Date.now() - started, 10_000);
 
   // A search matches the name or a tag, and covers the whole list, not only what is drawn.
