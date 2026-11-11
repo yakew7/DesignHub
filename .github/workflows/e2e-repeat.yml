@@ -33,10 +33,18 @@ jobs:
       - run: pnpm build
       - name: Run every test several times
         run: pnpm exec playwright test --repeat-each="${{ inputs.repeat || '5' }}" --retries=0
-      - name: Tests that failed a run
+      - name: Tests that failed a run, and the slowest tests
         if: always()
         run: |
-          if [ -f test-results/report.json ]; then node scripts/flaky-tests.mjs --repeat test-results/report.json >> "$GITHUB_STEP_SUMMARY"; fi
+          if [ -f test-results/report.json ]; then node scripts/flaky-tests.mjs --repeat --durations=test-durations.json test-results/report.json >> "$GITHUB_STEP_SUMMARY"; fi
+      # Every test's time from each night, so a test that gets slower shows up when two runs are compared.
+      - uses: actions/upload-artifact@v7
+        if: always()
+        with:
+          name: e2e-durations
+          path: test-durations.json
+          if-no-files-found: ignore
+          retention-days: 90
       - uses: actions/upload-artifact@v7
         if: failure()
         with:
