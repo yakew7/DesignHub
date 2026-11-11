@@ -441,6 +441,150 @@ export const fr = {
   "icons.export.rasterNote": "PNG avec transparence. currentColor est rendu avec la couleur de texte de votre thème.",
   "icons.export.pngFailed": "L’export PNG a échoué dans ce navigateur.",
   "icons.export.label": "Format d’export de l’icône",
+  "mockups.description.business-card": "Recto et verso, 3,5 × 2 in, sur un bureau.",
+  "mockups.description.letterhead": "Lettre A4 avec en-tête, signature et pied de page.",
+  "mockups.description.envelope": "Enveloppe DL, face avant et rabat.",
+  "mockups.description.sticker": "Autocollants découpés ronds et en forme d'écusson.",
+  "mockups.description.poster": "Affiche de 18 × 24 in sur un mur.",
+  "mockups.description.billboard":
+    "Un panneau d'affichage en bord de route avec la mise en page de l'affiche en perspective.",
+  "mockups.description.trade-show-booth":
+    "Un stand de 3 x 3 m en perspective avec un visuel sur la cloison du fond, un comptoir et une bannière roll-up.",
+  "mockups.description.delivery-van":
+    "Une camionnette de livraison avec l'habillage de la marque sur toute la carrosserie, avec le nom, le site web et le téléphone.",
+  "mockups.description.merch": "Un t-shirt et un tote bag avec le logo imprimé dessus.",
+  "mockups.description.coffee-cup": "Un gobelet à emporter avec le logo sur son manchon, posé sur une table.",
+  "mockups.description.notebook":
+    "Un carnet à couverture rigide avec le logo en gaufrage creux, le nom sur la couverture et un élastique.",
+  "mockups.description.shopping-bag":
+    "Des sacs en papier à poignées en corde, avec le logo sur le devant et la couleur de la marque sur le côté.",
+  "mockups.description.id-badge": "Badge d'événement ou d'équipe sur un tour de cou.",
+  "mockups.description.laptop-landing": "Site marketing sur un ordinateur portable.",
+  "mockups.description.desktop-dashboard": "Tableau de bord d'analyse sur un écran de bureau.",
+  "mockups.description.mobile-app": "Écrans d'intégration, d'accueil et de profil sur des téléphones.",
+  "mockups.description.app-store":
+    "Trois téléphones sur un fond aux couleurs de la marque, chacun avec une légende au-dessus, comme dans une fiche de boutique d'applications.",
+  "mockups.description.smartwatch":
+    "Un cadran de montre avec la marque et l'heure, et une notification de l'application.",
+  "mockups.description.lock-screen":
+    "Un écran de verrouillage de téléphone avec un fond d'écran de la marque, l'heure et deux notifications de l'application.",
+  "mockups.description.tablet":
+    "Tableau de bord sur une tablette en paysage, à côté de la version mobile sur une tablette en portrait.",
+  "mockups.description.presentation": "Une diapositive de titre et une diapositive de contenu en 16:9 sur une scène.",
+  "mockups.description.browser-tab":
+    "Le favicon et le titre de la page dans un onglet de navigateur, avec un agrandissement à 16 px et 2x, au-dessus de la page d'atterrissage.",
+  "mockups.description.email-signature":
+    "Une signature aux couleurs de la marque dans une fenêtre de messagerie. Copiez-la en HTML pour Gmail ou Outlook.",
+  "social.description.github-minimal":
+    "Typographie épurée et beaucoup d'espace blanc. Aperçu social et en-tête du README, 1280 × 640.",
+  "social.description.github-editorial":
+    "Grand titre en gras dans une mise en page de magazine. Aperçu social et en-tête du README, 1280 × 640.",
+  "social.description.github-aurora":
+    "Halo doux et coloré avec un éclairage en dégradé. Aperçu social et en-tête du README, 1280 × 640.",
+  "social.description.github-grid":
+    "Fond en grille technique, avec un style de développeur. Aperçu social et en-tête du README, 1280 × 640.",
+  "social.description.github-terminal":
+    "Monospace, inspiré du code, avec des accents verts. Aperçu social et en-tête du README, 1280 × 640.",
+  "social.description.github-glass":
+    "Panneaux dépolis et superposés sur une couleur douce. Aperçu social et en-tête du README, 1280 × 640.",
+  "social.description.github-gradient":
+    "Dégradé maillé coloré et audacieux pour l'image d'une startup. Aperçu social et en-tête du README, 1280 × 640.",
+  "social.description.github-split":
+    "Contenu à gauche, grand logo à droite, avec une forte asymétrie. Aperçu social et en-tête du README, 1280 × 640.",
+  "social.description.github-bento":
+    "Cartes modulaires dans une grille bento moderne. Aperçu social et en-tête du README, 1280 × 640.",
+  "social.description.github-spotlight":
+    "Éclairage dramatique, un logo immense et très peu de contenu. Aperçu social et en-tête du README, 1280 × 640.",
+  "social.description.github-classic":
+    "La bannière d'origine : titre, slogan et un grand symbole. Aperçu social et en-tête du README, 1280 × 640.",
+  "social.description.github-launch":
+    "Mise en page classique sur le dégradé de la marque, avec un appel à l'action. Aperçu social et en-tête du README, 1280 × 640.",
+  "social.description.github-showcase":
+    "Titre et détails à côté d'une fenêtre du produit. Aperçu social et en-tête du README, 1280 × 640.",
+  "social.description.github-features":
+    "Titre et liste de points construite à partir de votre slogan. Aperçu social et en-tête du README, 1280 × 640.",
+  "social.description.github-badges":
+    "Mise en page classique avec des badges de style README pour vos liens. Aperçu social et en-tête du README, 1280 × 640.",
+  "social.description.linkedin-cover":
+    "Arrière-plan du profil personnel, 1584 × 396. La photo recouvre le bas à gauche.",
+  "social.description.x-banner":
+    "En-tête de profil, 1500 × 500. Sur mobile, le haut et le bas sont rognés ; l'avatar recouvre le bas à gauche.",
+  "social.description.x-post-image":
+    "Image de publication, 1600 × 900 (16:9). Le fil rogne les bords, donc le texte reste dans les 80 pour cent centraux.",
+  "social.description.instagram-square":
+    "Publication du fil, 1080 × 1080. La grille du profil affiche un recadrage central en 3:4.",
+  "social.description.instagram-portrait":
+    "Publication du fil, 1080 × 1350 (4:5). La grille du profil affiche un recadrage central en 3:4.",
+  "social.description.instagram-story":
+    "Couverture de story et de Reel, 1080 × 1920. Laissez 250 px libres en haut et 340 px en bas.",
+  "social.description.instagram-highlight":
+    "Couverture de story à la une, 1080 × 1920. Instagram n'affiche que le cercle central.",
+  "social.description.og-article": "Articles de blog et pages de documentation : titre, sous-titre et site.",
+  "social.description.og-product": "Pages d'atterrissage : titre, appel à l'action et cadre du produit.",
+  "social.description.og-minimal": "Page d'accueil : logo et nom centrés.",
+  "social.description.product-hunt-gallery":
+    "Diapositive de la galerie de lancement, 1270 × 760. La première image sert aussi d'aperçu social.",
+  "social.description.product-hunt-thumbnail":
+    "Vignette du produit, 240 × 240, affichée à côté de son nom. Si petite que seul le logo reste lisible.",
+  "social.description.youtube-thumbnail": "Miniature, 1280 × 720. Le badge de durée recouvre le bas à droite.",
+  "social.description.youtube-banner":
+    "Bannière de chaîne, 2560 × 1440. Chaque appareil la rogne différemment, donc seule la zone centrale de 1546 × 423 est toujours visible.",
+  "social.description.pinterest-pin":
+    "Épingle standard, 1000 × 1500 (2:3). Le bouton d'enregistrement et la superposition du profil recouvrent les 100 px du bas.",
+  "social.description.pinterest-board-cover":
+    "Couverture de tableau, 600 × 600 (1:1). Affichée en petit dans la grille du profil, elle ne porte que le logo et le nom de la marque.",
+  "social.description.linkedin-company":
+    "Couverture de la page entreprise, 1128 × 191. Sur ordinateur, le logo de l'entreprise chevauche le bas à gauche.",
+  "social.description.bluesky-banner": "Bannière de profil, 1500 × 500 (3:1). L'avatar chevauche le bas à gauche.",
+  "social.description.facebook-cover":
+    "Couverture de la page, 1640 × 624. Sur mobile, les côtés sont rognés, donc tout reste centré.",
+  "social.description.discord-banner":
+    "Bannière de serveur, 960 × 540 (16:9). La barre du nom du serveur recouvre le bas.",
+  "social.description.twitch-banner":
+    "Bannière de profil, 1200 × 480 (5:2). Les petits écrans rognent les côtés, donc tout reste centré.",
+  "social.description.mastodon-header":
+    "En-tête de profil, 1500 × 500 (3:1). L'avatar recouvre le coin inférieur gauche.",
+  "social.description.reddit-banner":
+    "Bannière de communauté, 1920 × 384 (5:1). L'icône de la communauté recouvre le bas à gauche.",
+  "social.description.tumblr-header":
+    "En-tête de blog, 3000 × 1055. Les téléphones rognent les côtés et l'avatar recouvre le bas au centre.",
+  "social.description.dribbble-shot":
+    "Shot, 1600 × 1200 (4:3). Une vitrine du logo, du nom et d'un exemple de kit d'interface.",
+  "social.description.behance-cover":
+    "Couverture de projet, 808 × 632. Au survol, la superposition du titre recouvre les 120 px du bas.",
+  "social.description.patreon-cover":
+    "Couverture de la page de créateur, 1600 × 400 (4:1). L'avatar recouvre le bas au centre et les téléphones rognent les côtés.",
+  "social.description.kick-banner":
+    "Bannière de chaîne, 1920 × 480 (4:1). Les petits écrans la rognent, donc restez dans la zone centrale de 1600 × 400.",
+  "social.description.bandcamp-header":
+    "En-tête de la page d'artiste, 975 × 180. Les téléphones le réduisent, donc gardez un texte grand.",
+  "social.description.twitch-offline":
+    "Écran hors ligne, 1920 × 1080 (16:9). Affiché sur la chaîne tant que le direct est hors ligne.",
+  "social.description.linkedin-event":
+    "Couverture d'événement, 1776 × 444. Sur mobile, les côtés sont rognés, donc restez dans la zone centrale de 1200 × 364.",
+  "social.description.telegram-cover":
+    "Couverture de chaîne et aperçu de lien, 1280 × 720 (16:9). Sur mobile, les bords sont rognés, donc restez dans la zone de sécurité.",
+  "social.description.substack-banner":
+    "Bannière de publication, 1100 × 220. Elle s'adapte à la largeur de la page, donc gardez un texte grand.",
+  "social.description.ghost-cover":
+    "Couverture de publication, 2000 x 1000. Ghost rogne les côtés, donc le logo, le nom et la description restent centrés.",
+  "social.description.spotify-playlist-cover":
+    "Pochette de playlist, 640 × 640. Affichée en petit, elle ne porte que le logo, le nom et un court slogan.",
+  "social.description.devto-cover":
+    "Couverture de publication, 1000 × 420. Les fils la rognent en bandeau large, donc gardez le titre dans la zone de sécurité centrale.",
+  "social.description.hashnode-cover": "Couverture de blog, 1600 × 840. Gardez le titre dans la zone de sécurité.",
+  "social.description.etsy-shop-banner":
+    "Bannière de boutique, 3360 × 840. Gardez le texte et le logo dans la zone de sécurité ; l'icône de boutique d'Etsy recouvre le bas à gauche.",
+  "social.description.gumroad-cover":
+    "Couverture du profil de créateur, 1280 × 420. L'avatar recouvre le bas à gauche et les téléphones rognent les côtés.",
+  "social.description.kofi-banner":
+    "Bannière de page, 1920 × 480 (4:1). Les grands écrans centrent la page et les téléphones rognent les côtés.",
+  "social.description.buy-me-a-coffee-cover":
+    "Couverture de page, 1200 x 400. L'avatar chevauche le bas à gauche, donc le texte et le bouton restent à l'écart.",
+  "social.description.notion-cover":
+    "Couverture de page, 1500 × 600. L'icône et le titre de la page recouvrent le bas à gauche et Notion rogne les côtés.",
+  "social.description.medium-banner":
+    "Bannière de publication, 1500 × 500. Elle s'adapte à la largeur de la page, donc gardez un texte grand.",
   "projects.storage.keep.button.one": "Garder {count} atelier",
   "projects.storage.keep.button.other": "Garder {count} ateliers",
   "projects.storage.keep.progress": "Enregistrement de {done} sur {total}…",

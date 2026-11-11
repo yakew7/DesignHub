@@ -28,3 +28,11 @@ export function socialTemplateName(t: Translate, template: Named): string {
     });
   return socialShortName(t, template);
 }
+
+/** The description of a template in the chosen language (its tooltip). A template with no message keeps its English text. */
+export function socialTemplateDescription(
+  t: Translate,
+  template: Pick<SocialTemplateInfo, "id" | "description">,
+): string {
+  return translateName(t, `social.description.${template.id}`, template.description);
+}

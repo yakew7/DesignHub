@@ -432,6 +432,132 @@ export const hi = {
   "icons.export.rasterNote": "पारदर्शिता वाला PNG। currentColor आपकी थीम के टेक्स्ट रंग में बनता है।",
   "icons.export.pngFailed": "इस ब्राउज़र में PNG निर्यात विफल रहा।",
   "icons.export.label": "आइकन निर्यात प्रारूप",
+  "mockups.description.business-card": "आगे और पीछे, 3.5 × 2 in, डेस्क पर।",
+  "mockups.description.letterhead": "हेडर, हस्ताक्षर और फ़ुटर वाला A4 पत्र।",
+  "mockups.description.envelope": "DL लिफ़ाफ़ा, सामने का हिस्सा और फ़्लैप।",
+  "mockups.description.sticker": "डाई-कट गोल और बैज स्टिकर।",
+  "mockups.description.poster": "दीवार पर 18 × 24 in का पोस्टर।",
+  "mockups.description.billboard": "सड़क किनारे का होर्डिंग, जिस पर पोस्टर का लेआउट परिप्रेक्ष्य में दिखता है।",
+  "mockups.description.trade-show-booth":
+    "परिप्रेक्ष्य में 3 x 3 m का बूथ, जिसमें पीछे की दीवार पर ग्राफ़िक, एक काउंटर और एक पुल-अप बैनर है।",
+  "mockups.description.delivery-van":
+    "डिलीवरी वैन, जिसकी बॉडी पर ब्रांड की लिवरी लिपटी है, साथ में नाम, वेबसाइट और फ़ोन नंबर।",
+  "mockups.description.merch": "एक टी-शर्ट और एक टोट बैग, जिन पर लोगो छपा है।",
+  "mockups.description.coffee-cup": "मेज़ पर रखा टेकअवे कप, जिसकी स्लीव पर लोगो है।",
+  "mockups.description.notebook": "हार्डकवर नोटबुक, जिस पर लोगो उभरा हुआ दबा है, कवर पर नाम है और एक इलास्टिक बैंड है।",
+  "mockups.description.shopping-bag": "रस्सी के हैंडल वाले पेपर शॉपिंग बैग, सामने लोगो और बगल में ब्रांड का रंग।",
+  "mockups.description.id-badge": "लैनयार्ड पर इवेंट या टीम का बैज।",
+  "mockups.description.laptop-landing": "लैपटॉप पर मार्केटिंग साइट।",
+  "mockups.description.desktop-dashboard": "डेस्कटॉप डिस्प्ले पर एनालिटिक्स डैशबोर्ड।",
+  "mockups.description.mobile-app": "फ़ोन पर ऑनबोर्डिंग, होम और प्रोफ़ाइल स्क्रीन।",
+  "mockups.description.app-store":
+    "ब्रांड बैकग्राउंड पर तीन फ़ोन, हर एक के ऊपर एक कैप्शन, जैसा स्टोर लिस्टिंग में होता है।",
+  "mockups.description.smartwatch": "ब्रांड के चिह्न और समय वाला वॉच फ़ेस, साथ में ऐप की एक सूचना।",
+  "mockups.description.lock-screen": "ब्रांड वॉलपेपर, समय और ऐप की दो सूचनाओं वाली फ़ोन लॉक स्क्रीन।",
+  "mockups.description.tablet": "लैंडस्केप टैबलेट पर डैशबोर्ड, पोर्ट्रेट टैबलेट पर मोबाइल लेआउट के बगल में।",
+  "mockups.description.presentation": "मंच पर 16:9 में एक टाइटल स्लाइड और एक कंटेंट स्लाइड।",
+  "mockups.description.browser-tab":
+    "ब्राउज़र टैब में फ़ेविकॉन और पेज का शीर्षक, 16 px और 2x के कॉलआउट के साथ, लैंडिंग पेज के ऊपर।",
+  "mockups.description.email-signature":
+    "मेल विंडो में ब्रांड वाला सिग्नेचर। इसे Gmail या Outlook के लिए HTML के रूप में कॉपी करें।",
+  "social.description.github-minimal":
+    "साफ़-सुथरी टाइपोग्राफ़ी और खुली खाली जगह। सोशल प्रीव्यू और README हेडर, 1280 × 640।",
+  "social.description.github-editorial":
+    "मैगज़ीन लेआउट में बड़ा, गाढ़ा शीर्षक। सोशल प्रीव्यू और README हेडर, 1280 × 640।",
+  "social.description.github-aurora": "हल्की रंगीन चमक और ग्रेडिएंट रोशनी। सोशल प्रीव्यू और README हेडर, 1280 × 640।",
+  "social.description.github-grid":
+    "डेवलपर जैसा एहसास देने वाला तकनीकी ग्रिड बैकग्राउंड। सोशल प्रीव्यू और README हेडर, 1280 × 640।",
+  "social.description.github-terminal":
+    "मोनोस्पेस, कोड से प्रेरित, हरे उच्चारणों के साथ। सोशल प्रीव्यू और README हेडर, 1280 × 640।",
+  "social.description.github-glass": "हल्के रंग पर धुंधले, परतदार पैनल। सोशल प्रीव्यू और README हेडर, 1280 × 640।",
+  "social.description.github-gradient":
+    "स्टार्टअप ब्रांडिंग के लिए चटख रंगीन मेश। सोशल प्रीव्यू और README हेडर, 1280 × 640।",
+  "social.description.github-split":
+    "बाईं ओर कंटेंट, दाईं ओर बड़ा लोगो, तीखी असमरूपता के साथ। सोशल प्रीव्यू और README हेडर, 1280 × 640।",
+  "social.description.github-bento": "आधुनिक बेंटो ग्रिड में मॉड्यूलर कार्ड। सोशल प्रीव्यू और README हेडर, 1280 × 640।",
+  "social.description.github-spotlight":
+    "नाटकीय रोशनी, विशाल लोगो और बहुत कम कंटेंट। सोशल प्रीव्यू और README हेडर, 1280 × 640।",
+  "social.description.github-classic":
+    "मूल बैनर: हेडलाइन, टैगलाइन और एक बड़ा चिह्न। सोशल प्रीव्यू और README हेडर, 1280 × 640।",
+  "social.description.github-launch":
+    "ब्रांड ग्रेडिएंट पर क्लासिक लेआउट, एक कॉल टू एक्शन के साथ। सोशल प्रीव्यू और README हेडर, 1280 × 640।",
+  "social.description.github-showcase":
+    "प्रोडक्ट विंडो के बगल में हेडलाइन और विवरण। सोशल प्रीव्यू और README हेडर, 1280 × 640।",
+  "social.description.github-features":
+    "हेडलाइन और आपकी टैगलाइन से बनी चेकलिस्ट। सोशल प्रीव्यू और README हेडर, 1280 × 640।",
+  "social.description.github-badges":
+    "आपके लिंक के लिए README शैली के बैज वाला क्लासिक लेआउट। सोशल प्रीव्यू और README हेडर, 1280 × 640।",
+  "social.description.linkedin-cover": "व्यक्तिगत प्रोफ़ाइल का बैकग्राउंड, 1584 × 396। फ़ोटो नीचे बाईं ओर को ढकती है।",
+  "social.description.x-banner":
+    "प्रोफ़ाइल हेडर, 1500 × 500। मोबाइल पर ऊपर और नीचे का हिस्सा कट जाता है; अवतार नीचे बाईं ओर को ढकता है।",
+  "social.description.x-post-image":
+    "पोस्ट की इमेज, 1600 × 900 (16:9)। टाइमलाइन किनारों को काट देती है, इसलिए टेक्स्ट बीच के 80 प्रतिशत हिस्से में रहता है।",
+  "social.description.instagram-square": "फ़ीड पोस्ट, 1080 × 1080। प्रोफ़ाइल ग्रिड में 3:4 का बीच वाला क्रॉप दिखता है।",
+  "social.description.instagram-portrait":
+    "फ़ीड पोस्ट, 1080 × 1350 (4:5)। प्रोफ़ाइल ग्रिड में 3:4 का बीच वाला क्रॉप दिखता है।",
+  "social.description.instagram-story": "स्टोरी और Reel का कवर, 1080 × 1920। ऊपर 250 px और नीचे 340 px खाली रखें।",
+  "social.description.instagram-highlight": "स्टोरी हाइलाइट का कवर, 1080 × 1920। Instagram केवल बीच का गोला दिखाता है।",
+  "social.description.og-article": "ब्लॉग पोस्ट और डॉक्स पेज: हेडलाइन, उपशीर्षक और साइट।",
+  "social.description.og-product": "लैंडिंग पेज: हेडलाइन, कॉल टू एक्शन और प्रोडक्ट फ़्रेम।",
+  "social.description.og-minimal": "होम पेज: बीच में लोगो और नाम।",
+  "social.description.product-hunt-gallery":
+    "लॉन्च गैलरी की स्लाइड, 1270 × 760। पहली इमेज सोशल प्रीव्यू का भी काम करती है।",
+  "social.description.product-hunt-thumbnail":
+    "प्रोडक्ट का थंबनेल, 240 × 240, प्रोडक्ट के नाम के बगल में दिखता है। इतना छोटा कि केवल लोगो पढ़ने में आता है।",
+  "social.description.youtube-thumbnail": "थंबनेल, 1280 × 720। अवधि का बैज नीचे दाईं ओर को ढकता है।",
+  "social.description.youtube-banner":
+    "चैनल बैनर, 2560 × 1440। अलग-अलग डिवाइस इसे अलग तरह से काटते हैं, इसलिए केवल बीच का 1546 × 423 हिस्सा हमेशा दिखता है।",
+  "social.description.pinterest-pin":
+    "स्टैंडर्ड पिन, 1000 × 1500 (2:3)। सेव बटन और प्रोफ़ाइल ओवरले नीचे के 100 px को ढकते हैं।",
+  "social.description.pinterest-board-cover":
+    "बोर्ड कवर, 600 × 600 (1:1)। प्रोफ़ाइल ग्रिड में छोटा दिखता है, इसलिए इसमें केवल लोगो और ब्रांड का नाम रहता है।",
+  "social.description.linkedin-company":
+    "कंपनी पेज का कवर, 1128 × 191। डेस्कटॉप पर कंपनी का लोगो नीचे बाईं ओर ऊपर आ जाता है।",
+  "social.description.bluesky-banner": "प्रोफ़ाइल बैनर, 1500 × 500 (3:1)। अवतार नीचे बाईं ओर ऊपर आ जाता है।",
+  "social.description.facebook-cover":
+    "पेज का कवर, 1640 × 624। मोबाइल पर किनारे कट जाते हैं, इसलिए सब कुछ बीच में रहता है।",
+  "social.description.discord-banner": "सर्वर बैनर, 960 × 540 (16:9)। सर्वर के नाम की बार नीचे के हिस्से को ढकती है।",
+  "social.description.twitch-banner":
+    "प्रोफ़ाइल बैनर, 1200 × 480 (5:2)। छोटी स्क्रीन पर किनारे कट जाते हैं, इसलिए सब कुछ बीच में रहता है।",
+  "social.description.mastodon-header": "प्रोफ़ाइल हेडर, 1500 × 500 (3:1)। अवतार नीचे बाएँ कोने को ढकता है।",
+  "social.description.reddit-banner": "कम्युनिटी बैनर, 1920 × 384 (5:1)। कम्युनिटी का आइकन नीचे बाईं ओर को ढकता है।",
+  "social.description.tumblr-header":
+    "ब्लॉग हेडर, 3000 × 1055। फ़ोन पर किनारे कट जाते हैं और अवतार नीचे बीच के हिस्से को ढकता है।",
+  "social.description.dribbble-shot": "शॉट, 1600 × 1200 (4:3)। लोगो, नाम और UI किट के एक नमूने की झलक।",
+  "social.description.behance-cover":
+    "प्रोजेक्ट कवर, 808 × 632। होवर करने पर शीर्षक का ओवरले नीचे के 120 px को ढकता है।",
+  "social.description.patreon-cover":
+    "क्रिएटर पेज का कवर, 1600 × 400 (4:1)। अवतार नीचे बीच के हिस्से को ढकता है और फ़ोन पर किनारे कट जाते हैं।",
+  "social.description.kick-banner":
+    "चैनल बैनर, 1920 × 480 (4:1)। छोटी स्क्रीन इसे काट देती हैं, इसलिए सब कुछ बीच के 1600 × 400 में रखें।",
+  "social.description.bandcamp-header":
+    "कलाकार पेज का हेडर, 975 × 180। फ़ोन पर यह छोटा हो जाता है, इसलिए टेक्स्ट बड़ा रखें।",
+  "social.description.twitch-offline": "ऑफ़लाइन स्क्रीन, 1920 × 1080 (16:9)। स्ट्रीम ऑफ़लाइन होने पर चैनल पर दिखती है।",
+  "social.description.linkedin-event":
+    "इवेंट कवर, 1776 × 444। मोबाइल पर किनारे कट जाते हैं, इसलिए सब कुछ बीच के 1200 × 364 में रखें।",
+  "social.description.telegram-cover":
+    "चैनल कवर और लिंक प्रीव्यू, 1280 × 720 (16:9)। मोबाइल पर किनारे कट जाते हैं, इसलिए सब कुछ सुरक्षित क्षेत्र में रखें।",
+  "social.description.substack-banner":
+    "प्रकाशन का बैनर, 1100 × 220। यह पेज की चौड़ाई के साथ बदलता है, इसलिए टेक्स्ट बड़ा रखें।",
+  "social.description.ghost-cover":
+    "प्रकाशन का कवर, 2000 x 1000। Ghost किनारों को काट देता है, इसलिए लोगो, नाम और विवरण बीच में रहते हैं।",
+  "social.description.spotify-playlist-cover":
+    "प्लेलिस्ट कवर, 640 × 640। छोटा दिखता है, इसलिए इसमें केवल लोगो, नाम और एक छोटी टैगलाइन रहती है।",
+  "social.description.devto-cover":
+    "पोस्ट का कवर, 1000 × 420। फ़ीड इसे चौड़ी पट्टी में काट देते हैं, इसलिए शीर्षक को बीच के सुरक्षित क्षेत्र में रखें।",
+  "social.description.hashnode-cover": "ब्लॉग कवर, 1600 × 840। शीर्षक को सुरक्षित क्षेत्र के अंदर रखें।",
+  "social.description.etsy-shop-banner":
+    "शॉप बैनर, 3360 × 840। टेक्स्ट और लोगो को सुरक्षित क्षेत्र में रखें; Etsy का शॉप आइकन नीचे बाईं ओर को ढकता है।",
+  "social.description.gumroad-cover":
+    "क्रिएटर प्रोफ़ाइल का कवर, 1280 × 420। अवतार नीचे बाईं ओर को ढकता है और फ़ोन पर किनारे कट जाते हैं।",
+  "social.description.kofi-banner":
+    "पेज बैनर, 1920 × 480 (4:1)। चौड़ी स्क्रीन पर पेज बीच में आ जाता है और फ़ोन पर किनारे कट जाते हैं।",
+  "social.description.buy-me-a-coffee-cover":
+    "पेज कवर, 1200 x 400। अवतार नीचे बाईं ओर ऊपर आ जाता है, इसलिए टेक्स्ट और बटन उससे दूर रहते हैं।",
+  "social.description.notion-cover":
+    "पेज का कवर, 1500 × 600। पेज का आइकन और शीर्षक नीचे बाईं ओर को ढकते हैं और Notion किनारों को काट देता है।",
+  "social.description.medium-banner":
+    "प्रकाशन का बैनर, 1500 × 500। यह पेज की चौड़ाई के साथ बदलता है, इसलिए टेक्स्ट बड़ा रखें।",
   "projects.storage.keep.button.one": "{count} स्टूडियो रखें",
   "projects.storage.keep.button.other": "{count} स्टूडियो रखें",
   "projects.storage.keep.progress": "{total} में से {done} रखे जा रहे हैं…",

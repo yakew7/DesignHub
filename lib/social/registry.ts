@@ -107,13 +107,14 @@ export function getSocialTemplate(id: string): SocialTemplateInfo | undefined {
 
 /**
  * What a person can type to find a template: its name, its platform, its size ("1200x630"), its style and group.
- * `translated` is the name in the chosen language, so a search finds a template by that name and the English one.
+ * `translated` is the name and `translatedDescription` the description in the chosen language, so a search finds a
+ * template by those words and by the English ones.
  */
-export function socialSearchItem(template: SocialTemplateInfo, translated = "") {
+export function socialSearchItem(template: SocialTemplateInfo, translated = "", translatedDescription = "") {
   return {
     id: template.id,
     label: `${template.label} ${translated}`.trim(),
-    description: template.description,
+    description: `${template.description} ${translatedDescription}`.trim(),
     keywords: `${template.platform} ${template.width}x${template.height} ${template.width} x ${template.height} ${template.group ?? ""} ${template.style ?? ""}`,
   };
 }
@@ -122,11 +123,14 @@ export function socialSearchItem(template: SocialTemplateInfo, translated = "") 
 export function matchingSocialTemplates(
   query: string,
   translatedName?: (template: SocialTemplateInfo) => string,
+  translatedDescription?: (template: SocialTemplateInfo) => string,
 ): Set<string> | null {
   if (!query.trim()) return null;
   return new Set(
     socialTemplates
-      .filter((template) => matchesQuery(socialSearchItem(template, translatedName?.(template)), query))
+      .filter((template) =>
+        matchesQuery(socialSearchItem(template, translatedName?.(template), translatedDescription?.(template)), query),
+      )
       .map((template) => template.id),
   );
 }

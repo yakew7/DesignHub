@@ -5,7 +5,7 @@ import { useState } from "react";
 import { useI18n } from "@/components/layout/locale-provider";
 import { GroupedPicker, type PickerGroup } from "@/components/ui/grouped-picker";
 import { useHotkey } from "@/hooks/use-hotkeys";
-import { mockupCategoryName, mockupName } from "@/lib/mockups/names";
+import { mockupCategoryName, mockupDescription, mockupName } from "@/lib/mockups/names";
 import { mockupTemplates } from "@/lib/mockups/registry";
 import { mockupCategories } from "@/lib/mockups/types";
 import { filterGroups } from "@/lib/picker-search";
@@ -26,9 +26,9 @@ export function MockupPicker() {
         .map((item) => ({
           id: item.id,
           label: mockupName(t, item),
-          description: item.description,
-          // The English names stay searchable in every language.
-          keywords: `${item.category} ${item.label}`,
+          description: mockupDescription(t, item),
+          // The English name and description stay searchable in every language.
+          keywords: `${item.category} ${item.label} ${item.description}`,
         })),
     }))
     .filter((group) => group.items.length > 0);

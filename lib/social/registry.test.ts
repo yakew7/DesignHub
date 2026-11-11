@@ -173,6 +173,14 @@ describe("social template search", () => {
     for (const id of matchingSocialTemplates("kick") ?? []) expect(getSocialTemplate(id)!.platform).toBe("Kick");
   });
 
+  test("finds a template by a word of its English description and of its translated one", () => {
+    expect(matchingSocialTemplates("frosted")?.has("github-glass")).toBe(true);
+    expect(matchingSocialTemplates("frosted")?.has("github-minimal")).toBe(false);
+    const translated = (template: { id: string }) => (template.id === "github-glass" ? "paneles esmerilados" : "");
+    expect([...(matchingSocialTemplates("esmerilados", undefined, translated) ?? [])]).toEqual(["github-glass"]);
+    expect(matchingSocialTemplates("frosted", undefined, translated)?.has("github-glass")).toBe(true);
+  });
+
   test("a search with no match is an empty set, not null", () => {
     expect(matchingSocialTemplates("zzzzzz")?.size).toBe(0);
   });

@@ -13,7 +13,7 @@ import {
   socialPlatformGroups,
   socialTemplates,
 } from "@/lib/social/registry";
-import { socialGroupName, socialShortName, socialTemplateName } from "@/lib/social/names";
+import { socialGroupName, socialShortName, socialTemplateDescription, socialTemplateName } from "@/lib/social/names";
 import type { SocialPlatform, SocialTemplateInfo } from "@/lib/social/types";
 import { cn } from "@/lib/utils";
 import { useSocialStore } from "@/store/social-store";
@@ -69,7 +69,7 @@ function PlatformSection({
                 type="button"
                 role="radio"
                 aria-checked={item.id === template}
-                title={item.description}
+                title={socialTemplateDescription(t, item)}
                 onClick={() => setTemplate(item.id)}
                 className={cn(rowClass, item.id === template && "border-brand/60 bg-surface-raised text-foreground")}
               >
@@ -125,7 +125,7 @@ function PlatformSection({
                       type="button"
                       role="radio"
                       aria-checked={item.id === template}
-                      title={item.description}
+                      title={socialTemplateDescription(t, item)}
                       onClick={() => setTemplate(item.id)}
                       className={cn(
                         "flex h-8 items-center gap-2 rounded-md px-2 text-left text-sm text-muted-foreground transition-colors duration-150 hover:bg-surface-raised hover:text-foreground",
@@ -162,7 +162,11 @@ export function SocialPicker() {
   // Groups the user folded away. A group with the selected style is open unless folded.
   const [folded, setFolded] = useState<Record<string, boolean>>({});
   const [query, setQuery] = useState("");
-  const matches = matchingSocialTemplates(query, (item) => socialTemplateName(t, item));
+  const matches = matchingSocialTemplates(
+    query,
+    (item) => socialTemplateName(t, item),
+    (item) => socialTemplateDescription(t, item),
+  );
   const platforms = orderedSocialPlatforms.filter((platform) =>
     socialTemplates.some((item) => item.platform === platform && (!matches || matches.has(item.id))),
   );

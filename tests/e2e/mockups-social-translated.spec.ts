@@ -53,3 +53,48 @@ test("the Social Studio speaks the chosen language, and search finds a template 
   await search.fill("zzzz");
   await expect(page.getByText("Ninguna plantilla coincide con la búsqueda.")).toBeVisible();
 });
+
+test("a Mockup template's description is translated, and search finds it by an English or a translated word", async ({
+  page,
+}) => {
+  await page.goto("/mockups");
+  const picker = page.getByRole("group", { name: "Plantilla de maqueta" });
+  const search = page.getByRole("searchbox", { name: "Buscar una maqueta" });
+  await expect(search).toBeVisible();
+
+  // A word of the English description finds the template, and its tooltip is in Spanish.
+  await search.fill("lanyard");
+  const badge = picker.getByRole("radio");
+  await expect(badge).toHaveCount(1);
+  await expect(badge).toHaveAttribute("title", "Credencial de evento o de equipo con cordón.");
+
+  // A word of the translated description finds the same template.
+  await search.fill("cordón");
+  await expect(badge).toHaveCount(1);
+  await expect(badge).toHaveAttribute("title", "Credencial de evento o de equipo con cordón.");
+  await badge.click();
+  await saved(page, "designhub:mockups", '"template":"id-badge"');
+});
+
+test("a Social template's description is translated, and search finds it by an English or a translated word", async ({
+  page,
+}) => {
+  await page.goto("/social");
+  const search = page.getByRole("searchbox", { name: "Buscar una plantilla" });
+  await expect(search).toBeVisible();
+
+  const glass =
+    "Paneles esmerilados y superpuestos sobre un color suave. Vista previa social y encabezado del README, 1280 × 640.";
+  // A word of the English description finds the template, and its tooltip is in Spanish.
+  await search.fill("frosted");
+  const style = page.getByRole("radiogroup", { name: "Estilos de Banner del repositorio" }).getByRole("radio");
+  await expect(style).toHaveCount(1);
+  await expect(style).toHaveAttribute("title", glass);
+
+  // A word of the translated description finds the same template.
+  await search.fill("esmerilados");
+  await expect(style).toHaveCount(1);
+  await expect(style).toHaveAttribute("title", glass);
+  await style.click();
+  await saved(page, "designhub:social", '"template":"github-glass"');
+});

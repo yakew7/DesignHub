@@ -11,3 +11,8 @@ export function mockupName(t: Translate, template: { id: string; label: string }
 export function mockupCategoryName(t: Translate, category: MockupCategory): string {
   return translateName(t, `mockups.category.${category.toLowerCase()}`, category);
 }
+
+/** The description of a template in the chosen language (its tooltip). A template with no message keeps its English text. */
+export function mockupDescription(t: Translate, template: { id: string; description: string }): string {
+  return translateName(t, `mockups.description.${template.id}`, template.description);
+}
