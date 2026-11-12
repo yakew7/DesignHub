@@ -606,6 +606,9 @@ export const es = {
   "projects.storage.keepRecent": "Conservar mis estudios recientes",
   "projects.storage.keepRecentHint":
     "Guarda para uso sin conexión los últimos cuatro estudios que usaste, también tras una actualización. Desactívalo para conservar solo los que elijas.",
+  "projects.storage.recent.title": "Tus estudios recientes",
+  "projects.storage.recent.keep": "Guardar ahora",
+  "projects.storage.recent.keepNamed": "Guardar ahora: {name}",
   "projects.storage.title": "Almacenamiento",
   "projects.storage.description":
     "Lo que DesignHub guarda en este dispositivo. Solo se muestran tamaños y recuentos; nada se lee ni se envía.",

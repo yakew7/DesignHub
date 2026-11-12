@@ -10,6 +10,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 
 - Storage panel: a note from 80% of the quota with what to do and a button to the old versions; a **Keep my recent studios** switch (on by default) that keeps the last four studios used for offline use on each visit with a connection; the Update available toast says how many kept studios will be downloaded again (and is translated).
+- Storage panel, Offline use: **Your recent studios** under the Keep my recent studios switch lists the studios it keeps, each marked kept or with a Keep now button (translated; hidden while the switch is off).
 - `pnpm check:messages` lists English messages no source file refers to (CI runs it as a warning); `tests/e2e/translations-fit.spec.ts` opens every studio at 320 px in Spanish, French and Hindi and fails on sideways scroll or cut-off control text.
 - The Mockup and Social template descriptions are translated, and the search finds a template by a word of its English or translated description.
 - Lighthouse performance floors for `/colors` (90) and `/projects` (70) next to the home page's.
