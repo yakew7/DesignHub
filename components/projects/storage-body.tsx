@@ -5,6 +5,7 @@ import { useState } from "react";
 import { useKeptStudios } from "@/hooks/use-kept-studios";
 import { clearIconCache } from "@/lib/icons/iconify";
 import { keepStudios } from "@/lib/offline-keep";
+import { recentStudioHrefs } from "@/lib/offline-recent";
 import { studios } from "@/lib/navigation";
 import { toast } from "@/lib/toast";
 
@@ -13,6 +14,7 @@ import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { Section } from "@/components/ui/section";
 import { Switch } from "@/components/ui/switch";
+import { useCommandRecentsStore } from "@/store/command-recents-store";
 import { useNavStore } from "@/store/nav-store";
 import { usePanelStore } from "@/store/panel-store";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
@@ -131,14 +133,13 @@ export function StorageBody() {
     await check();
   }
 
-  async function keepNow() {
+  async function keep(paths: string[]) {
     if (typeof navigator === "undefined" || !("serviceWorker" in navigator)) return;
-    const paths = [...wanted];
     const before = typeof caches === "undefined" ? null : await measureOfflineCaches(caches).catch(() => null);
     setKeeping({ done: 0, total: paths.length });
     const result = await keepStudios(paths, navigator.serviceWorker, (done, total) => setKeeping({ done, total }));
     setKeeping(null);
-    setWanted(new Set());
+    setWanted((current) => new Set([...current].filter((href) => !paths.includes(href))));
     const after = typeof caches === "undefined" ? null : await measureOfflineCaches(caches).catch(() => null);
     const added = before && after ? Math.max(0, after.bytes - before.bytes) : 0;
     toast(plural("projects.storage.keep.kept", result.kept.length, { size: formatBytes(added) }), {
@@ -150,6 +151,11 @@ export function StorageBody() {
 
   const keepRecent = useNavStore((state) => state.keepRecent);
   const setKeepRecent = useNavStore((state) => state.setKeepRecent);
+  const lastStudio = useNavStore((state) => state.lastStudio);
+  const recentCommands = useCommandRecentsStore((state) => state.recent);
+  const recentStudios = keepRecent
+    ? recentStudioHrefs(lastStudio, recentCommands).flatMap((href) => studios.filter((studio) => studio.href === href))
+    : [];
   const setSectionOpen = usePanelStore((state) => state.setOpen);
   const share = report ? quotaShare(report.usage, report.quota) : null;
   const rows = report
@@ -242,6 +248,36 @@ export function StorageBody() {
               </div>
               <Switch id="keep-recent" checked={keepRecent} onCheckedChange={setKeepRecent} />
             </div>
+            {recentStudios.length > 0 ? (
+              <div className="flex flex-col gap-1">
+                <h4 id="storage-recent" className="text-xs font-medium">
+                  {t("projects.storage.recent.title")}
+                </h4>
+                <ul aria-labelledby="storage-recent" className="flex flex-col gap-1 text-xs">
+                  {recentStudios.map((studio) => {
+                    const name = t(`studio.${studio.id}.short`);
+                    return (
+                      <li key={studio.id} className="flex min-h-7 items-center justify-between gap-2">
+                        <span>{name}</span>
+                        {kept.has(studio.href) ? (
+                          <span className="text-muted-foreground">{t("nav.kept")}</span>
+                        ) : (
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            disabled={keeping !== null}
+                            aria-label={t("projects.storage.recent.keepNamed", { name })}
+                            onClick={() => void keep([studio.href])}
+                          >
+                            {t("projects.storage.recent.keep")}
+                          </Button>
+                        )}
+                      </li>
+                    );
+                  })}
+                </ul>
+              </div>
+            ) : null}
             <fieldset className="flex flex-col gap-1.5">
               <legend className="pb-1 text-xs font-medium">{t("projects.storage.keep.title")}</legend>
               <p className="text-xs text-muted-foreground">{t("projects.storage.keep.hint")}</p>
@@ -276,7 +312,7 @@ export function StorageBody() {
                 size="sm"
                 className="self-start"
                 disabled={wanted.size === 0 || keeping !== null}
-                onClick={() => void keepNow()}
+                onClick={() => void keep([...wanted])}
               >
                 {keeping
                   ? t("projects.storage.keep.progress", { done: keeping.done, total: keeping.total })

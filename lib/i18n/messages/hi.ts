@@ -583,6 +583,9 @@ export const hi = {
   "projects.storage.keepRecent": "मेरे हाल के स्टूडियो रखें",
   "projects.storage.keepRecentHint":
     "आपके उपयोग किए गए पिछले चार स्टूडियो अपडेट के बाद भी ऑफ़लाइन उपयोग के लिए रखे जाते हैं। बंद करें तो केवल वही रखे जाएँगे जो आप चुनें।",
+  "projects.storage.recent.title": "आपके हाल के स्टूडियो",
+  "projects.storage.recent.keep": "अभी रखें",
+  "projects.storage.recent.keepNamed": "अभी रखें: {name}",
   "projects.storage.title": "स्टोरेज",
   "projects.storage.description":
     "DesignHub इस डिवाइस पर क्या रखता है। केवल आकार और गिनती दिखती है; कुछ पढ़ा या भेजा नहीं जाता।",

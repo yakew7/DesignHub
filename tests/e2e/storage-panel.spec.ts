@@ -1,3 +1,4 @@
+import AxeBuilder from "@axe-core/playwright";
 import { expect, test } from "@playwright/test";
 import { saved } from "./storage";
 
@@ -222,6 +223,58 @@ test("the panel says so when the storage is nearly full, and its button opens th
   await expect(projects).toHaveAttribute("aria-expanded", "false");
   await page.getByRole("button", { name: "Show old versions" }).click();
   await expect(projects).toHaveAttribute("aria-expanded", "true");
+});
+
+test("the recent studios are listed under the switch, kept or with a Keep now button, and hidden when it is off", async ({
+  page,
+}) => {
+  await page.goto("/colors");
+  await expect(page.locator("h1").first()).toBeVisible();
+  await page.evaluate(async () => {
+    await navigator.serviceWorker.ready;
+  });
+  await page.reload();
+  await expect.poll(() => page.evaluate(() => Boolean(navigator.serviceWorker.controller))).toBe(true);
+  // Two studios used: Color Studio, chosen in the palette, and Brand Projects, opened last.
+  await page.keyboard.press("ControlOrMeta+k");
+  await page
+    .getByRole("dialog")
+    .getByRole("option", { name: /^Color Studio/ })
+    .click();
+  await saved(page, "designhub:command-recents", "studio:colors");
+  await page.goto("/projects");
+  const kept = (href: string) =>
+    page.evaluate(async (path) => Boolean(await caches.match(path, { ignoreSearch: true })), href);
+  await expect.poll(() => kept("/colors"), { timeout: 30_000 }).toBe(true);
+  await expect.poll(() => kept("/projects"), { timeout: 30_000 }).toBe(true);
+  // Brand Projects goes from the caches, so the list offers to keep it again.
+  await page.evaluate(async () => {
+    for (const name of await caches.keys()) await (await caches.open(name)).delete("/projects", { ignoreSearch: true });
+  });
+
+  await page.getByRole("button", { name: "Storage", exact: true }).click();
+  await page.getByRole("button", { name: "Check storage" }).click();
+  await page.getByRole("button", { name: "Offline use", exact: true }).click();
+  const list = page.getByRole("list", { name: "Your recent studios" });
+  await expect(list.getByRole("listitem")).toHaveText([/^Brand Projects/, /^Color.*Available offline$/]);
+  await expect(list.getByRole("button")).toHaveCount(1);
+  await list.getByRole("button", { name: "Keep now: Brand Projects" }).click();
+  await expect(list.getByRole("listitem").first()).toHaveText(/^Brand Projects.*Available offline$/);
+  expect(await kept("/projects")).toBe(true);
+
+  const scan = await new AxeBuilder({ page })
+    .include("section:has(#storage-recent)")
+    .withTags(["wcag2a", "wcag2aa", "wcag21a", "wcag21aa", "wcag22aa", "best-practice"])
+    .options({ resultTypes: ["violations"] })
+    .analyze();
+  expect(
+    scan.violations
+      .filter((violation) => violation.impact === "serious" || violation.impact === "critical")
+      .map((violation) => violation.id),
+  ).toEqual([]);
+
+  await page.getByRole("switch", { name: "Keep my recent studios" }).click();
+  await expect(list).toHaveCount(0);
 });
 
 test("the studios used last are kept again on their own, and the switch turns it off and is remembered", async ({

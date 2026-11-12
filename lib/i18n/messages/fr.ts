@@ -612,6 +612,9 @@ export const fr = {
   "projects.storage.keepRecent": "Conserver mes studios récents",
   "projects.storage.keepRecentHint":
     "Garde hors ligne les quatre derniers studios utilisés, y compris après une mise à jour. Désactivez pour ne garder que ceux que vous choisissez.",
+  "projects.storage.recent.title": "Vos studios récents",
+  "projects.storage.recent.keep": "Garder maintenant",
+  "projects.storage.recent.keepNamed": "Garder maintenant : {name}",
   "projects.storage.title": "Stockage",
   "projects.storage.description":
     "Ce que DesignHub conserve sur cet appareil. Seuls les tailles et les nombres sont affichés ; rien n'est lu ni envoyé.",

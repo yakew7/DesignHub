@@ -273,6 +273,9 @@ export const enCore = {
   "projects.storage.keepRecent": "Keep my recent studios",
   "projects.storage.keepRecentHint":
     "Keeps the last four studios you used for offline use, also after an update. Turn it off to keep only the ones you choose.",
+  "projects.storage.recent.title": "Your recent studios",
+  "projects.storage.recent.keep": "Keep now",
+  "projects.storage.recent.keepNamed": "Keep now: {name}",
   "projects.storage.title": "Storage",
   "projects.storage.description":
     "What DesignHub keeps on this device. Only sizes and counts are shown; nothing is read out or sent.",
