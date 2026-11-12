@@ -2,7 +2,7 @@ import vm from "node:vm";
 
 import { describe, expect, test } from "vitest";
 
-import { serviceWorkerSource } from "../../scripts/service-worker-source.mjs";
+import { RUNTIME_RECORD_PATH, serviceWorkerSource } from "../../scripts/service-worker-source.mjs";
 
 const ORIGIN = "https://designhub.test";
 
@@ -101,6 +101,10 @@ const build = {
   },
 };
 
+/** The files in a cache, oldest first, without the runtime cache's own record. */
+const filesIn = (cache: FakeCache) =>
+  [...cache.entries.keys()].map((href) => new URL(href).pathname).filter((path) => path !== RUNTIME_RECORD_PATH);
+
 describe("the service worker", () => {
   test("installing downloads the shell and nothing else", async () => {
     const worker = start(build);
@@ -166,7 +170,7 @@ describe("the service worker", () => {
     const worker = start({ ...build, runtimeLimit: 3 });
     for (const name of ["a", "b", "c", "d", "e"]) await worker.open(`/_next/static/chunks/${name}.js`);
     const runtime = await worker.caches.open("designhub-runtime-one");
-    expect([...runtime.entries.keys()].map((href) => new URL(href).pathname)).toEqual([
+    expect(filesIn(runtime)).toEqual([
       "/_next/static/chunks/c.js",
       "/_next/static/chunks/d.js",
       "/_next/static/chunks/e.js",
@@ -205,10 +209,7 @@ describe("the runtime cache is also capped by size", () => {
     // Each body is "body of https://designhub.test/_next/static/chunks/x.js", 55 bytes: two fit in 120, three do not.
     for (const name of ["a", "b", "c", "d"]) await worker.open(`/_next/static/chunks/${name}.js`);
     const runtime = await worker.caches.open("designhub-runtime-one");
-    expect([...runtime.entries.keys()].map((href) => new URL(href).pathname)).toEqual([
-      "/_next/static/chunks/c.js",
-      "/_next/static/chunks/d.js",
-    ]);
+    expect(filesIn(runtime)).toEqual(["/_next/static/chunks/c.js", "/_next/static/chunks/d.js"]);
   });
 
   test("an entry bigger than the limit is still kept alone", async () => {
@@ -216,7 +217,7 @@ describe("the runtime cache is also capped by size", () => {
     await worker.open("/_next/static/chunks/a.js");
     await worker.open("/_next/static/chunks/b.js");
     const runtime = await worker.caches.open("designhub-runtime-one");
-    expect([...runtime.entries.keys()].map((href) => new URL(href).pathname)).toEqual(["/_next/static/chunks/b.js"]);
+    expect(filesIn(runtime)).toEqual(["/_next/static/chunks/b.js"]);
   });
 });
 
@@ -242,5 +243,74 @@ describe("the service worker tells the page which studios it kept", () => {
       source: { postMessage: (message: unknown) => replies.push(message) },
     });
     expect(replies).toEqual([{ type: "ROUTE_REMEMBERED", pathname: "/typography", kept: false }]);
+  });
+});
+
+describe("the runtime cache keeps a record of what it holds", () => {
+  /** A response that counts how often its body is read as a blob, and declares no length, so only the body tells its size. */
+  const counted = (body: string, reads: { count: number }) => {
+    const response = new Response(body);
+    const clone = response.clone.bind(response);
+    response.clone = () => {
+      const copy = clone();
+      copy.blob = async () => {
+        reads.count += 1;
+        return new Blob([body]);
+      };
+      return copy;
+    };
+    return response;
+  };
+
+  test("a put with 1,000 entries already cached reads the size of none of them", async () => {
+    const worker = start({ ...build, runtimeLimit: 2000 });
+    const reads = { count: 0 };
+    for (let index = 0; index < 1000; index += 1) {
+      await worker.open(`/_next/static/chunks/${index}.js`);
+    }
+    const runtime = await worker.caches.open("designhub-runtime-one");
+    for (const href of runtime.entries.keys()) {
+      if (new URL(href).pathname !== RUNTIME_RECORD_PATH) runtime.entries.set(href, counted("old", reads));
+    }
+    await worker.open("/_next/static/chunks/new.js");
+    expect(reads.count).toBe(0);
+    expect(filesIn(runtime)).toHaveLength(1001);
+  });
+
+  test("a lost record is rebuilt from the cache with no error, and the limits still hold", async () => {
+    const worker = start({ ...build, runtimeLimit: 3 });
+    for (const name of ["a", "b", "c"]) await worker.open(`/_next/static/chunks/${name}.js`);
+    const runtime = await worker.caches.open("designhub-runtime-one");
+    await runtime.delete(RUNTIME_RECORD_PATH);
+    await worker.open("/_next/static/chunks/d.js");
+    expect(filesIn(runtime)).toEqual([
+      "/_next/static/chunks/b.js",
+      "/_next/static/chunks/c.js",
+      "/_next/static/chunks/d.js",
+    ]);
+    const record = await (await runtime.match(RUNTIME_RECORD_PATH))!.json();
+    expect(record.map(([href]: [string, number]) => new URL(href).pathname)).toEqual(filesIn(runtime));
+  });
+
+  test("a record that is broken or does not match the cache is rebuilt", async () => {
+    const worker = start({ ...build, runtimeBytes: 120 });
+    await worker.open("/_next/static/chunks/a.js");
+    const runtime = await worker.caches.open("designhub-runtime-one");
+    // An entry the record does not know (put by an older worker), then a record that is not JSON.
+    await runtime.put("/_next/static/chunks/old.js", new Response("x".repeat(100)));
+    await worker.open("/_next/static/chunks/b.js");
+    expect(filesIn(runtime)).toEqual(["/_next/static/chunks/b.js"]);
+    await runtime.put(RUNTIME_RECORD_PATH, new Response("not json"));
+    await worker.open("/_next/static/chunks/c.js");
+    expect(filesIn(runtime)).toEqual(["/_next/static/chunks/b.js", "/_next/static/chunks/c.js"]);
+  });
+
+  test("two puts at the same time both end up in the record", async () => {
+    const worker = start(build);
+    await Promise.all([worker.open("/_next/static/chunks/a.js"), worker.open("/_next/static/chunks/b.js")]);
+    const runtime = await worker.caches.open("designhub-runtime-one");
+    const record = await (await runtime.match(RUNTIME_RECORD_PATH))!.json();
+    expect(record.map(([href]: [string, number]) => new URL(href).pathname).sort()).toEqual(filesIn(runtime).sort());
+    expect(record).toHaveLength(2);
   });
 });

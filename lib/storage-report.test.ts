@@ -1,8 +1,10 @@
 import { describe, expect, test } from "vitest";
 
+import { RUNTIME_RECORD_PATH } from "../scripts/service-worker-source.mjs";
 import {
   clearOfflineCaches,
   isOfflineCache,
+  measureOfflineCaches,
   measureRows,
   protectionOf,
   quotaNearlyFull,
@@ -36,6 +38,24 @@ describe("storage report", () => {
     expect(quotaShare(undefined, 1000)).toBeNull();
     expect(quotaShare(10, 0)).toBeNull();
     expect(quotaShare(500, 100)).toBe(100);
+  });
+
+  test("the service worker's record of its runtime cache is not counted as a cached file", async () => {
+    const runtime = new Map([
+      ["https://designhub.test/font.woff2", new Response("12345")],
+      [`https://designhub.test${RUNTIME_RECORD_PATH}`, new Response("[]")],
+    ]);
+    const cache = {
+      keys: async () => [...runtime.keys()].map((href) => new Request(href)),
+      match: async (request: Request) => runtime.get(request.url),
+    };
+    const store = { keys: async () => ["designhub-runtime-1"], open: async () => cache } as unknown as CacheStorage;
+    expect(await measureOfflineCaches(store)).toEqual({
+      caches: 1,
+      files: 1,
+      bytes: 5,
+      runtime: { files: 1, bytes: 5 },
+    });
   });
 
   test("clearing deletes the offline caches and leaves the share cache and others alone", async () => {

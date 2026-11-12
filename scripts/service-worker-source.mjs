@@ -1,3 +1,6 @@
+/** Where the runtime cache keeps its own record of what it holds; not a file the site serves. */
+export const RUNTIME_RECORD_PATH = "/__designhub-runtime-record";
+
 /**
  * The service worker, as text. Kept apart from the build step so a test can run it against a fake
  * `caches` and `fetch`.
@@ -31,6 +34,7 @@ const ROUTE_FILES = ${JSON.stringify(routeFiles, null, 2)};
 const RUNTIME_LIMIT = ${runtimeLimit};
 /** The most bytes the runtime cache keeps; the oldest go first. Fonts and icons differ a lot in size, so the count alone is not enough. */
 const RUNTIME_BYTES = ${runtimeBytes};
+const RUNTIME_RECORD_URL = new URL(${JSON.stringify(RUNTIME_RECORD_PATH)}, self.location.origin).href;
 const OFFLINE_PAGE =
   "<!doctype html><meta charset=utf-8><meta name=viewport content='width=device-width,initial-scale=1'><title>Offline</title>" +
   "<body style='font:16px system-ui;max-width:32rem;margin:4rem auto;padding:0 1rem'>" +
@@ -48,25 +52,47 @@ async function sizeOf(response) {
   try { return (await response.clone().blob()).size; } catch { return 0; }
 }
 
-async function trim(cache) {
-  const keys = await cache.keys();
-  const doomed = new Set(keys.slice(0, Math.max(0, keys.length - RUNTIME_LIMIT)));
-  // Then the oldest of what is left, until the cache is under its byte limit (the newest entry always stays).
-  const left = keys.filter((key) => !doomed.has(key));
-  const sizes = await Promise.all(left.map(async (key) => sizeOf(await cache.match(key))));
-  let total = sizes.reduce((sum, size) => sum + size, 0);
-  for (let index = 0; index < left.length - 1 && total > RUNTIME_BYTES; index += 1) {
-    doomed.add(left[index]);
-    total -= sizes[index];
-  }
-  await Promise.all([...doomed].map((key) => cache.delete(key)));
+/** [url, size] pairs of the runtime cache, oldest first; rebuilt from the cache when missing or out of date. */
+async function readRecord(cache, url) {
+  const urls = (await cache.keys()).map((key) => key.url).filter((key) => key !== RUNTIME_RECORD_URL && key !== url);
+  try {
+    const record = (await (await cache.match(RUNTIME_RECORD_URL)).clone().json()).filter(([recorded]) => recorded !== url);
+    const recorded = new Set(record.map(([recordedUrl]) => recordedUrl));
+    if (record.length === urls.length && recorded.size === urls.length && urls.every((key) => recorded.has(key))) return record;
+  } catch {}
+  return Promise.all(urls.map(async (key) => [key, await sizeOf(await cache.match(key))]));
 }
+
+async function trim(cache, url, size) {
+  const record = await readRecord(cache, url);
+  record.push([url, size]);
+  // The oldest go first, until the cache is under both limits; the newest entry always stays.
+  let total = record.reduce((sum, [, bytes]) => sum + bytes, 0);
+  let drop = 0;
+  while (drop < record.length - 1 && (record.length - drop > RUNTIME_LIMIT || total > RUNTIME_BYTES)) {
+    total -= record[drop][1];
+    drop += 1;
+  }
+  await Promise.all(record.slice(0, drop).map(([doomed]) => cache.delete(doomed)));
+  await cache.put(RUNTIME_RECORD_URL, new Response(JSON.stringify(record.slice(drop)), { headers: { "content-type": "application/json" } }));
+}
+
+// Puts into the runtime cache run one at a time, so two of them never write the record over each other.
+let runtimeQueue = Promise.resolve();
 
 async function put(cacheName, request, response) {
   if (!isCacheable(response)) return;
   const cache = await caches.open(cacheName);
-  await cache.put(request, response.clone());
-  if (cacheName === RUNTIME_CACHE) await trim(cache);
+  if (cacheName !== RUNTIME_CACHE) return cache.put(request, response.clone());
+  const url = new URL(typeof request === "string" ? request : request.url, self.location.origin).href;
+  const size = await sizeOf(response);
+  const stored = response.clone();
+  const turn = runtimeQueue.then(async () => {
+    await cache.put(request, stored);
+    await trim(cache, url, size);
+  });
+  runtimeQueue = turn.catch(() => {});
+  await turn;
 }
 
 async function cacheFirst(request) {
