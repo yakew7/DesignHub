@@ -58,7 +58,7 @@ import {
 import { listProjects } from "@/lib/projects/repository";
 import { listVersions } from "@/lib/projects/versions";
 import { projectSorts, sortProjects, type ProjectSort } from "@/lib/projects/sort";
-import { matchesProject, PROJECT_PAGE } from "@/lib/projects/search";
+import { filterSorted, PROJECT_PAGE, searchText } from "@/lib/projects/search";
 import { projectTags } from "@/lib/projects/tags";
 import { deletable, pruned, toggled, toggledAll, withRange, withTagged } from "@/lib/projects/selection";
 import { projectsToJson, projectToJson } from "@/lib/projects/transfer";
@@ -160,15 +160,17 @@ export function ProjectManager() {
   // Removing the last use of the filtered tag would otherwise leave an empty list with no way back.
   const activeTag = tagFilter && tags.includes(tagFilter) ? tagFilter : null;
 
-  const visible = useMemo(() => {
-    const matching = (projects ?? []).filter(
-      (project) =>
-        (!favoritesOnly || project.favorite) &&
-        (!activeTag || project.tags.includes(activeTag)) &&
-        matchesProject(project, query),
-    );
-    return sortProjects(matching, sort);
-  }, [projects, query, favoritesOnly, activeTag, sort]);
+  // Sorted once per list or sort change, searched a moment after typing stops: a key press only filters (#546).
+  const sorted = useMemo(() => sortProjects(projects ?? [], sort), [projects, sort]);
+  const texts = useMemo(
+    () => new Map((projects ?? []).map((project) => [project.id, searchText(project)])),
+    [projects],
+  );
+  const search = useDebouncedValue(query, 150);
+  const visible = useMemo(
+    () => filterSorted(sorted, texts, { search, favoritesOnly, tag: activeTag }),
+    [sorted, texts, search, favoritesOnly, activeTag],
+  );
 
   // A project that was deleted, here or in another tab, leaves the selection.
   useEffect(() => {
@@ -258,7 +260,7 @@ export function ProjectManager() {
   // Only the first cards are drawn, and more as the end of the list comes into view, so a hundred projects
   // open as fast as thirty. A new search or filter starts again from the top.
   const [drawn, setDrawn] = useState({ key: "", count: PROJECT_PAGE });
-  const filterKey = `${query}|${favoritesOnly}|${activeTag}|${sort}`;
+  const filterKey = `${search}|${favoritesOnly}|${activeTag}|${sort}`;
   const count = drawn.key === filterKey ? drawn.count : PROJECT_PAGE;
   const more = () => setDrawn({ key: filterKey, count: count + PROJECT_PAGE });
   const sentinel = useRef<HTMLDivElement>(null);
@@ -570,7 +572,7 @@ export function ProjectManager() {
         </ul>
       ) : visible.length === 0 ? (
         <p className="rounded-lg border border-dashed p-8 text-center text-sm text-muted-foreground">
-          {t(query || favoritesOnly || activeTag ? "projects.noMatch" : "projects.empty")}
+          {t(search || favoritesOnly || activeTag ? "projects.noMatch" : "projects.empty")}
         </p>
       ) : (
         <ul className="grid gap-3 sm:grid-cols-2 xl:grid-cols-3" aria-label={t("projects.list")}>

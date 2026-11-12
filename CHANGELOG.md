@@ -21,6 +21,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
+- Brand Projects: the list is sorted once per sort change and the search filters that list a moment after typing stops, with each project's search text built once, so a key press no longer sorts and rebuilds every row (#546). `tests/e2e/projects-search.spec.ts` types a search in 5,000 projects and records the longest task and key press.
 - Brand Projects: the summary rows no longer hold six colors for a strip a card showed until its picture was drawn; the card is a plain box until then. A row is about 30% smaller (71 of 242 bytes) and saving a project skips the color conversion. Rows saved before keep the colors until that project is saved again (#547).
 - The service worker keeps a record of the runtime cache (each file and its size, oldest first) in that cache, so a new file no longer rereads the size of every file there; a missing or stale record is rebuilt from the cache. The Storage panel does not count the record as a file.
 - The English catalog is split: `en-core.ts` loads with every route, and the Icon, Logo, Mockup, Social and SVG studios register their own messages from the studio's code (`lib/i18n/areas/<area>.ts`, imported by the studio's workspace). Every route's first load is smaller (the home page by about 8 kB gzipped) and the budgets are lowered to match.
