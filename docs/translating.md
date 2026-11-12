@@ -47,6 +47,8 @@ If a language uses another writing system, check whether the current fonts suppo
 
 `tests/e2e/translations-fit.spec.ts` opens every studio at 320 px in Spanish, French and Hindi and fails when the page scrolls sideways or a button, tab or radio cuts its text off (an ellipsis is allowed), naming the studio. Long translations may wrap differently from English. Test the interface at a narrow mobile width and check buttons, navigation, cards, and headings for clipping or overflow.
 
+`tests/e2e/translations-no-english.spec.ts` opens every studio in the same three languages and fails when a button, tab, label or heading still shows the English text of a message that the language translates differently, naming the studio, the text and the key. A word that is the same in a language on purpose goes in its `ALLOWED` list with the reason. English that is already known is listed in `KNOWN` with its issue; remove the entry when you translate it.
+
 ## 6. Test your translations
 
 From the project root, install dependencies if needed and run:
