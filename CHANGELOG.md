@@ -9,6 +9,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- `tests/e2e/translations-no-english.spec.ts` opens every studio in Spanish, French and Hindi and fails, naming the studio, the text and the key, when a button, tab, label or heading shows the English text of a message that language translates differently. What it found on adding it is listed in the test with its issue (#563 to #568).
 - Storage panel: a note from 80% of the quota with what to do and a button to the old versions; a **Keep my recent studios** switch (on by default) that keeps the last four studios used for offline use on each visit with a connection; the Update available toast says how many kept studios will be downloaded again (and is translated).
 - Storage panel, Offline use: **Your recent studios** under the Keep my recent studios switch lists the studios it keeps, each marked kept or with a Keep now button (translated; hidden while the switch is off).
 - `pnpm check:messages` lists English messages no source file refers to (CI runs it as a warning); `tests/e2e/translations-fit.spec.ts` opens every studio at 320 px in Spanish, French and Hindi and fails on sideways scroll or cut-off control text.
