@@ -3,7 +3,7 @@ import { join } from "node:path";
 
 import { describe, expect, test } from "vitest";
 
-import { listItemOf, LIST_COLORS, projectName, type BrandProject } from "@/lib/projects/types";
+import { listItemOf, projectName, type BrandProject } from "@/lib/projects/types";
 
 const fixture = JSON.parse(readFileSync(join(__dirname, "__fixtures__/v1/projects.json"), "utf8")) as {
   projects: BrandProject[];
@@ -33,11 +33,8 @@ describe("a project's list item", () => {
     });
   });
 
-  test("keeps at most six colors, as hex", () => {
-    const item = listItemOf(project);
-    expect(item.colors.length).toBeLessThanOrEqual(LIST_COLORS);
-    expect(item.colors.length).toBe(Math.min(LIST_COLORS, project.snapshot.colors.swatches.length));
-    for (const hex of item.colors) expect(hex).toMatch(/^#[0-9a-f]{6}$/i);
+  test("keeps no colors: a card shows a plain box until its picture is drawn (#547)", () => {
+    expect(listItemOf(project)).not.toHaveProperty("colors");
   });
 
   test("names the project the same as the project is named", () => {

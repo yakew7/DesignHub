@@ -50,6 +50,17 @@ test("a hundred and fifty projects draw thirty cards first, search by name and t
   expect(await page.locator('[data-preview="waiting"]').count()).toBeGreaterThan(0);
   await expectUnder(testInfo, "import-ms", Date.now() - started, 10_000);
 
+  // A card waiting for its picture is a plain box of the same size as a drawn one, so nothing moves when it is
+  // drawn (#547).
+  const waitingName = await page.locator('button:has(> [data-preview="waiting"])').last().getAttribute("aria-label");
+  const waitingCard = page.getByRole("button", { name: waitingName!, exact: true });
+  await expect(waitingCard.locator("> [data-preview]")).toHaveAttribute("data-preview", "waiting");
+  const height = await waitingCard.evaluate((element) => element.getBoundingClientRect().height);
+  await waitingCard.scrollIntoViewIfNeeded();
+  await expect(waitingCard.locator("> [data-preview]")).toHaveAttribute("data-preview", "drawn");
+  expect(await waitingCard.evaluate((element) => element.getBoundingClientRect().height)).toBe(height);
+  await page.evaluate(() => window.scrollTo(0, 0));
+
   // A search matches the name or a tag, and covers the whole list, not only what is drawn.
   const search = page.getByLabel("Search projects");
   await search.fill("brand 000");
