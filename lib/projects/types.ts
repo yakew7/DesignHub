@@ -1,4 +1,3 @@
-import { toHex } from "@/lib/color/color";
 import type { BrandSnapshot } from "@/lib/projects/snapshot";
 
 /** The project's name is its brand name (snapshot.brand.profile.name), so it is never stored twice. */
@@ -15,21 +14,15 @@ export type BrandProject = {
 
 /**
  * What the project list needs of a project, stored beside it so the list opens without reading any snapshot: the
- * name, up to six colors for a placeholder strip, and the fields the list sorts, filters and searches on.
+ * name and the fields the list sorts, filters and searches on. No colors: a card shows a plain box until its
+ * picture is drawn (#547). Rows written before that still carry a `colors` field, which nothing reads.
  */
-export type ProjectListItem = Omit<BrandProject, "snapshot"> & { name: string; colors: string[] };
-
-/** How many colors a list item keeps. */
-export const LIST_COLORS = 6;
+export type ProjectListItem = Omit<BrandProject, "snapshot"> & { name: string };
 
 /** The list item of a project, written whenever the project is saved. */
 export function listItemOf(project: BrandProject): ProjectListItem {
   const { snapshot, ...rest } = project;
-  return {
-    ...rest,
-    name: snapshot.brand.profile.name,
-    colors: snapshot.colors.swatches.slice(0, LIST_COLORS).map((swatch) => toHex(swatch.color)),
-  };
+  return { ...rest, name: snapshot.brand.profile.name };
 }
 
 /** A project, or its list item: either has a name to show. */

@@ -70,7 +70,7 @@ When a new version of DesignHub is installed, the new worker reads which studios
 
 ## The project list
 
-The Brand Projects list is drawn from one small row per project in the `summaries` table (added in database version 6; older databases upgrade in place and keep every project): the name, up to six colors, the tags, favorite flag and the three times. It is written in the same transaction as the project, so it never disagrees. Opening the list reads these rows and no snapshot; a card reads its whole project only when it is within a screen of the view (to draw its picture), and exports, compare and history read the projects they need. A project with no row (saved before version 6) gets one the first time the list opens, and a row whose project is gone is dropped. The rows hold nothing that is not already in the project.
+The Brand Projects list is drawn from one small row per project in the `summaries` table (added in database version 6; older databases upgrade in place and keep every project): the name, the tags, favorite flag and the three times. A card is a plain box until its picture is drawn; rows saved before #547 also hold up to six colors, which nothing reads and the next save of that project drops. It is written in the same transaction as the project, so it never disagrees. Opening the list reads these rows and no snapshot; a card reads its whole project only when it is within a screen of the view (to draw its picture), and exports, compare and history read the projects they need. A project with no row (saved before version 6) gets one the first time the list opens, and a row whose project is gone is dropped. The rows hold nothing that is not already in the project.
 
 ## Trimming old versions
 

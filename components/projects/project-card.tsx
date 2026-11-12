@@ -47,9 +47,8 @@ function ago(time: number, locale: string, t: Translate): string {
 }
 
 /**
- * The card's picture and color strip. The list item carries only a name and a few colors, so the strip of those
- * colors shows at once, and the whole project is read (and the brand drawn from it) only once the card is within a
- * screen of the view. It then stays drawn.
+ * The card's picture and color strip. The list item carries no colors, so the card is a plain box until the whole
+ * project is read (and the brand drawn from it), once the card is within a screen of the view. It then stays drawn.
  */
 function CardPreview({ project }: { project: ProjectListItem }) {
   const box = useRef<HTMLSpanElement>(null);
@@ -98,13 +97,7 @@ function CardPreview({ project }: { project: ProjectListItem }) {
             ))}
           </span>
         </>
-      ) : (
-        <span className="absolute inset-x-0 bottom-0 flex h-2" aria-hidden>
-          {project.colors.map((hex, index) => (
-            <span key={index} className="flex-1" style={{ background: hex }} />
-          ))}
-        </span>
-      )}
+      ) : null}
     </span>
   );
 }

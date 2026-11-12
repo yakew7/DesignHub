@@ -32,7 +32,7 @@ type DesignHubDatabase = Dexie & {
   kv: EntityTable<KeyValueRecord, "key">;
   icons: EntityTable<CachedIconRecord, "id">;
   projects: EntityTable<BrandProject, "id">;
-  /** One small row per project (name, colors, times, tags), so the list does not read whole projects. */
+  /** One small row per project (name, times, tags), so the list does not read whole projects. */
   summaries: EntityTable<ProjectListItem, "id">;
   versions: EntityTable<StoredVersion, "id">;
   handles: EntityTable<FolderRecord, "key">;
