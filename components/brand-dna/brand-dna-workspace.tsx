@@ -6,6 +6,7 @@ import { toast } from "@/lib/toast";
 
 import { AiKeyPanel } from "@/components/brand-dna/ai-key-panel";
 import { DnaResultEditor } from "@/components/brand-dna/dna-result-editor";
+import { useI18n } from "@/components/layout/locale-provider";
 import { StudioLayout } from "@/components/layout/studio-layout";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -25,6 +26,7 @@ import { useBrandDnaStore } from "@/store/brand-dna-store";
 type Status = { kind: "idle" } | { kind: "running"; stage: DnaStage } | { kind: "error"; message: string };
 
 export function BrandDnaWorkspace() {
+  const { t } = useI18n();
   const providerId = useBrandDnaStore((state) => state.providerId);
   const setProvider = useBrandDnaStore((state) => state.setProvider);
   const ignoreBackground = useBrandDnaStore((state) => state.ignoreBackground);
@@ -386,7 +388,7 @@ export function BrandDnaWorkspace() {
       }
       output={
         <>
-          <h2 className="text-sm font-medium">Brand DNA</h2>
+          <h2 className="text-sm font-medium">{t("studio.brand-dna.title")}</h2>
           {dna ? (
             <>
               <DnaResultEditor dna={dna} onChange={setDna} images={images} />

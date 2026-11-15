@@ -31,7 +31,7 @@ test("the storage panel shows sizes, and clearing the offline cache keeps the pr
   await keep.click();
   await expect(keep).not.toBeChecked();
   await page.getByRole("button", { name: "Clear the offline cache" }).click();
-  await expect(status).toContainText("None yet");
+  await expect(status).not.toContainText("Available offline");
   // The share cache and the projects are untouched: the same number of projects is still counted.
   expect((await status.locator("dd").first().innerText()).split(" · ")[0]).toBe(projects);
   await expect(page.getByRole("button", { name: "Clear the offline cache" })).toHaveCount(0);

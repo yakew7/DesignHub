@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 
+import { Message } from "@/components/layout/message";
 import { Workspace } from "@/components/layout/workspace";
 import { SvgWorkspace } from "@/components/svg/svg-workspace";
 import { ModeSwitch } from "@/components/layout/mode-switch";
@@ -13,7 +14,12 @@ export const metadata: Metadata = { title: "SVG Playground", description: studio
 export default function SvgPage() {
   return (
     <Workspace className="gap-6">
-      <PageHeader eyebrow="Studio" title={studio.title} description={studio.description} actions={<ModeSwitch />} />
+      <PageHeader
+        eyebrow="Studio"
+        title={<Message id="studio.svg.title" />}
+        description={studio.description}
+        actions={<ModeSwitch />}
+      />
       <SvgWorkspace />
     </Workspace>
   );

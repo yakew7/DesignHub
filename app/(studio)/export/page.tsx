@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 
+import { Message } from "@/components/layout/message";
 import { ExportEngine } from "@/components/export/export-engine";
 import { Workspace } from "@/components/layout/workspace";
 import { ModeSwitch } from "@/components/layout/mode-switch";
@@ -13,7 +14,12 @@ export const metadata: Metadata = { title: "Export Engine", description: studio.
 export default function ExportPage() {
   return (
     <Workspace>
-      <PageHeader eyebrow="Studio" title={studio.title} description={studio.description} actions={<ModeSwitch />} />
+      <PageHeader
+        eyebrow="Studio"
+        title={<Message id="studio.export.title" />}
+        description={studio.description}
+        actions={<ModeSwitch />}
+      />
       <ExportEngine />
     </Workspace>
   );

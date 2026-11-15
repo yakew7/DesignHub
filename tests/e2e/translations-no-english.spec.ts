@@ -18,7 +18,7 @@ const ALLOWED: readonly { text: string; languages: readonly string[]; reason: st
 
 /**
  * English found when this test was added, by studio, with the issue that tracks it. Remove an entry once it is
- * translated. The studio titles are #563 on every studio that passes `studio.title` to its header.
+ * translated. Studio headings are checked against their catalog entries below.
  */
 const KNOWN: Readonly<Record<string, { issue: number; texts: readonly string[] }>> = {
   "/effects": {
@@ -45,20 +45,6 @@ const KNOWN: Readonly<Record<string, { issue: number; texts: readonly string[] }
   "/guidelines": { issue: 568, texts: ["Light", "Dark", "Gradient", "Minimal", "Editorial", "Export"] },
   "/svg": { issue: 568, texts: ["Solid"] },
 };
-const TITLES_IN_ENGLISH = new Set([
-  "/accessibility",
-  "/backgrounds",
-  "/brand-dna",
-  "/guidelines",
-  "/effects",
-  "/export",
-  "/icons",
-  "/logo",
-  "/mockups",
-  "/social",
-  "/svg",
-  "/typography",
-]);
 
 type Pattern = { keys: string[]; match: RegExp };
 
@@ -96,13 +82,12 @@ for (const language of LANGUAGES) {
 
     for (const studio of studios) {
       test(`${studio.title}`, async ({ page }) => {
-        const known = new Set([
-          ...(KNOWN[studio.href]?.texts ?? []),
-          ...(TITLES_IN_ENGLISH.has(studio.href) ? [studio.title] : []),
-        ]);
+        const known = new Set(KNOWN[studio.href]?.texts ?? []);
         await page.addInitScript((value) => window.localStorage.setItem("designhub:locale", value), language);
         await page.goto(studio.href);
         await expect(page.locator("h1").first()).toBeVisible();
+        const titleKey = `studio.${studio.id}.title` as keyof typeof en;
+        await expect(page.locator("h1").first()).toHaveText(catalogs[language][titleKey] ?? en[titleKey]);
         await expect(page.locator("html")).toHaveAttribute("lang", language);
         await expect(page.locator('[aria-busy="true"]')).toHaveCount(0);
 
