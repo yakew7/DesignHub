@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 
+import { Message } from "@/components/layout/message";
 import { Workspace } from "@/components/layout/workspace";
 import { TypographyWorkspace } from "@/components/typography/typography-workspace";
 import { ModeSwitch } from "@/components/layout/mode-switch";
@@ -13,7 +14,12 @@ export const metadata: Metadata = { title: "Typography Studio", description: stu
 export default function TypographyPage() {
   return (
     <Workspace>
-      <PageHeader eyebrow="Studio" title={studio.title} description={studio.description} actions={<ModeSwitch />} />
+      <PageHeader
+        eyebrow="Studio"
+        title={<Message id="studio.typography.title" />}
+        description={studio.description}
+        actions={<ModeSwitch />}
+      />
       <TypographyWorkspace />
     </Workspace>
   );

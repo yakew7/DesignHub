@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 
+import { Message } from "@/components/layout/message";
 import { EffectsWorkspace } from "@/components/effects/effects-workspace";
 import { Workspace } from "@/components/layout/workspace";
 import { ModeSwitch } from "@/components/layout/mode-switch";
@@ -13,7 +14,12 @@ export const metadata: Metadata = { title: "Effects Lab", description: studio.de
 export default function EffectsPage() {
   return (
     <Workspace className="gap-6">
-      <PageHeader eyebrow="Studio" title={studio.title} description={studio.description} actions={<ModeSwitch />} />
+      <PageHeader
+        eyebrow="Studio"
+        title={<Message id="studio.effects.title" />}
+        description={studio.description}
+        actions={<ModeSwitch />}
+      />
       <EffectsWorkspace />
     </Workspace>
   );

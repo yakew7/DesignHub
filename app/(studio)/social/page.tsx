@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 
+import { Message } from "@/components/layout/message";
 import { ModeSwitch } from "@/components/layout/mode-switch";
 import { Workspace } from "@/components/layout/workspace";
 import { SocialWorkspace } from "@/components/social/social-workspace";
@@ -13,7 +14,12 @@ export const metadata: Metadata = { title: "Social Media Studio", description: s
 export default function SocialPage() {
   return (
     <Workspace className="gap-6">
-      <PageHeader eyebrow="Studio" title={studio.title} description={studio.description} actions={<ModeSwitch />} />
+      <PageHeader
+        eyebrow="Studio"
+        title={<Message id="studio.social.title" />}
+        description={studio.description}
+        actions={<ModeSwitch />}
+      />
       <SocialWorkspace />
     </Workspace>
   );
