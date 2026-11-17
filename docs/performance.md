@@ -54,6 +54,28 @@ pnpm build && pnpm dlx @lhci/cli autorun
 
 **How to read it.** The command starts `pnpm start -p 3000`, so stop any other server on that port first. It prints each assertion that failed or warned, with the median score it found and all five values, and writes the HTML reports to `.lighthouseci/`; open one to see the opportunities and diagnostics behind a score. Accessibility, best practices and SEO must be 100 on every page. Performance must be 90 on the home page and `/colors`, and 70 on `/projects` (a lower median fails); on the other studios a lower score is only a warning. The floors sit a few points under the scores on a laptop (about 100 for `/colors`, about 80 for `/projects`); raise one only with the score you measured, and lower one only with the reason in the pull request. Scores on a laptop or a busy machine are noisier than in CI, so compare runs of `main` and your branch on the same machine before chasing a few points.
 
+### Where the home page's time goes
+
+Measured on 2026-11-17 on a laptop with the production build, the median of five runs of `/` (Lighthouse CI as in `lighthouserc.json`; reproduce with the command above and read `.lighthouseci/`):
+
+| Metric                               |       Median |
+| ------------------------------------ | -----------: |
+| Performance score                    |          100 |
+| First and largest contentful paint   |       909 ms |
+| Total blocking time                  |        31 ms |
+| Time to interactive                  |        3.4 s |
+| Cumulative layout shift              |            0 |
+| JavaScript transferred               |      307 KiB |
+| Unused JavaScript Lighthouse reports | about 49 KiB |
+
+The three biggest costs, by script time and bytes, in the report of one run (the others agree within a few percent):
+
+1. **The React DOM chunk** (`_next/static/chunks/0wu-2js9uksdr.js`, 229 KB raw): 205 ms of the 262 ms of scripting on the page, and 25.5 KiB of its 70.2 KiB unused. It is React itself, so the only lever is not loading it for work the page does not need.
+2. **The Next.js app router chunk** (`00kp496l9v7jl.js`, 160 KB raw): 23.7 KiB of its 43.1 KiB unused. Also framework code.
+3. **The unattributable rest** (160 ms): the app's own providers, the header, the locale and nav stores and the studio chooser, spread over about a dozen small chunks.
+
+All three are in every route's first load. The home page moved from 259.6 kB to 245 kB gzipped first load in November by loading the toaster on first use and the English studio messages with their studios (see `docs/bundle-budget.md`); what is left is mostly the framework, so a further cut has to come from loading less of the app shell (the stores read on the home page, the locale provider) before the first paint, not from any single module. If the score drops, compare these three numbers first.
+
 ## Long tasks in the end-to-end tests
 
 **What it measures.** How long the main thread is blocked during an interaction. The browser reports every task over 50 ms as a [long task](https://developer.mozilla.org/en-US/docs/Web/API/PerformanceLongTaskTiming); a test records them and fails when the longest is over a bound. `tests/e2e/font-browser.spec.ts` and `tests/e2e/background-picker.spec.ts` use this pattern.
