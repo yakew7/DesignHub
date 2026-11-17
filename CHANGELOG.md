@@ -9,6 +9,22 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- Translated: the Effects Lab, Background Studio (generator names), Typography Studio, Export Engine, Brand Studio, Brand Guidelines and SVG Playground labels the no-English test named, and the README written into the social ZIP.
+- `docs/i18n-architecture.md` (how messages load, how to add one) and `tests/e2e/no-raw-keys.spec.ts` (fails on text that looks like a message key in any studio or tab).
+- Where the home page's time goes, with numbers, in `docs/performance.md`.
+
+### Changed
+
+- The Colors, Projects and Brand English messages load with the code that uses them, and Spanish, French and Hindi are split the same way (a core and a part per area): a person reading another language downloads a studio's messages with the studio. Every route's first load is smaller again (the home page is 239 kB gzipped).
+
+### Fixed
+
+- `next` is 16.4.6: 16.3.0 to 16.4.4 are affected by GHSA-mfr8-8qww-v76h, and `next build` stops on a version with an advisory.
+- The last studio is remembered only after the saved navigation state has loaded, so the Continue link and the recent studios no longer name the wrong studio.
+- The nightly repeated run's flaky tests (the sidebar tooltip and the Storage sections) press their buttons again until the page has hydrated.
+
+### Added
+
 - `tests/e2e/translations-no-english.spec.ts` opens every studio in Spanish, French and Hindi and fails, naming the studio, the text and the key, when a button, tab, label or heading shows the English text of a message that language translates differently. What it found on adding it is listed in the test with its issue (#563 to #568).
 - Storage panel: a note from 80% of the quota with what to do and a button to the old versions; a **Keep my recent studios** switch (on by default) that keeps the last four studios used for offline use on each visit with a connection; the Update available toast says how many kept studios will be downloaded again (and is translated).
 - Storage panel, Offline use: **Your recent studios** under the Keep my recent studios switch lists the studios it keeps, each marked kept or with a Keep now button (translated; hidden while the switch is off).
