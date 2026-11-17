@@ -267,6 +267,9 @@ export const enCore = {
   "projects.storage.section.protection": "Protection",
   "projects.storage.runtime":
     "Fonts, icons and files used while browsing: {files} files, {size} (kept under {limit}, the oldest go first)",
+  "guidelines.cover.gradient": "Gradient",
+  "guidelines.cover.minimal": "Minimal",
+  "guidelines.cover.editorial": "Editorial",
   "projects.storage.nearlyFull":
     "Storage is {percent}% full. To make room: delete old versions (Projects), clear the icon cache, or export a project and delete it.",
   "projects.storage.showVersions": "Show old versions",

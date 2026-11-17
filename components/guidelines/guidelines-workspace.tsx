@@ -3,6 +3,7 @@
 import { Moon, Sun } from "lucide-react";
 import { useMemo } from "react";
 
+import { useI18n } from "@/components/layout/locale-provider";
 import { SvgPreviewCanvas } from "@/components/canvas/svg-preview-canvas";
 import { GuidelineExportPanel } from "@/components/guidelines/guideline-export-panel";
 import { GuidelineMissionPanel } from "@/components/guidelines/guideline-mission-panel";
@@ -14,10 +15,19 @@ import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
 import { useGuidelineContext } from "@/hooks/use-guideline-context";
 import { getGuidelinePage, guidelinePages } from "@/lib/guidelines/registry";
 import { coverStyles, type CoverStyle } from "@/lib/guidelines/types";
+import type { MessageKey } from "@/lib/i18n/translate";
 import { useGuidelinesStore } from "@/store/guidelines-store";
 import type { BrandMode } from "@/types/brand";
 
+/** The message of each cover style label. The ids stay as they are. */
+const coverStyleKeys = {
+  gradient: "guidelines.cover.gradient",
+  minimal: "guidelines.cover.minimal",
+  editorial: "guidelines.cover.editorial",
+} as const satisfies Record<CoverStyle, MessageKey>;
+
 export function GuidelinesWorkspace() {
+  const { t } = useI18n();
   const { ctx, pages } = useGuidelineContext();
   const selected = useGuidelinesStore((state) => state.selected);
   const mode = useGuidelinesStore((state) => state.mode);
@@ -42,10 +52,10 @@ export function GuidelinesWorkspace() {
               className="w-full"
             >
               <ToggleGroupItem value="light" className="flex-1">
-                <Sun /> Light
+                <Sun /> {t("brand.preview.light")}
               </ToggleGroupItem>
               <ToggleGroupItem value="dark" className="flex-1">
-                <Moon /> Dark
+                <Moon /> {t("brand.preview.dark")}
               </ToggleGroupItem>
             </ToggleGroup>
             <GuidelinePageList />
@@ -61,7 +71,7 @@ export function GuidelinesWorkspace() {
               >
                 {coverStyles.map((item) => (
                   <ToggleGroupItem key={item.value} value={item.value} className="flex-1">
-                    {item.label}
+                    {t(coverStyleKeys[item.value])}
                   </ToggleGroupItem>
                 ))}
               </ToggleGroup>

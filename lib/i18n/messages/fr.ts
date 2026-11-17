@@ -607,6 +607,10 @@ export const fr = {
   "projects.storage.section.protection": "Protection",
   "projects.storage.runtime":
     "Polices, icônes et fichiers utilisés en naviguant : {files} fichiers, {size} (limités à {limit}, les plus anciens partent d'abord)",
+  "guidelines.cover.gradient": "Dégradé",
+  "guidelines.cover.minimal": "Minimal",
+  "guidelines.cover.editorial": "Éditorial",
+  "svg.format.solid": "SolidJS",
   "projects.storage.nearlyFull":
     "Le stockage est plein à {percent} %. Pour libérer de la place : supprimez d'anciennes versions (Projets), videz le cache d'icônes, ou exportez un projet puis supprimez-le.",
   "projects.storage.showVersions": "Afficher les anciennes versions",

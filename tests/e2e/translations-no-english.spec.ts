@@ -41,9 +41,6 @@ const KNOWN: Readonly<Record<string, { issue: number; texts: readonly string[] }
       "Optimized SVG",
     ],
   },
-  "/brand": { issue: 568, texts: ["CSS variables", "JSON tokens"] },
-  "/guidelines": { issue: 568, texts: ["Light", "Dark", "Gradient", "Minimal", "Editorial", "Export"] },
-  "/svg": { issue: 568, texts: ["Solid"] },
 };
 
 type Pattern = { keys: string[]; match: RegExp };

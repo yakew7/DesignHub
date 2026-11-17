@@ -92,4 +92,5 @@ export const enSvg = {
   "svg.native.unsupported": "<{tag}> isn't supported by react-native-svg and was removed.",
   "svg.native.class": "CSS classes don't apply in React Native; style them with props instead.",
   "svg.native.style": "<style> blocks aren't supported; their rules were dropped. Inline the colors first.",
+  "svg.format.solid": "Solid",
 } as const;

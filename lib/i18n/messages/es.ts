@@ -601,6 +601,10 @@ export const es = {
   "projects.storage.section.protection": "Protección",
   "projects.storage.runtime":
     "Fuentes, iconos y archivos usados al navegar: {files} archivos, {size} (se mantienen bajo {limit}, se eliminan primero los más antiguos)",
+  "guidelines.cover.gradient": "Degradado",
+  "guidelines.cover.minimal": "Minimalista",
+  "guidelines.cover.editorial": "Editorial",
+  "svg.format.solid": "SolidJS",
   "projects.storage.nearlyFull":
     "El almacenamiento está al {percent}%. Para liberar espacio: elimina versiones antiguas (Proyectos), borra la caché de iconos, o exporta un proyecto y elimínalo.",
   "projects.storage.showVersions": "Mostrar versiones antiguas",

@@ -4,6 +4,7 @@ import { FileText, FileCode2, Globe, ImageDown, Loader2 } from "lucide-react";
 import { useState } from "react";
 import { toast } from "@/lib/toast";
 
+import { useI18n } from "@/components/layout/locale-provider";
 import { Button } from "@/components/ui/button";
 import { downloadBlob } from "@/lib/download";
 import { rasterize } from "@/lib/export/raster";
@@ -14,6 +15,7 @@ import { slugify } from "@/lib/logo/pack";
 type Props = { ctx: GuidelineContext; pages: GuidelinePage[]; page: GuidelinePage | undefined; svg: string };
 
 export function GuidelineExportPanel({ ctx, pages, page, svg }: Props) {
+  const { t } = useI18n();
   const [busy, setBusy] = useState(false);
   const [siteBusy, setSiteBusy] = useState(false);
   const [markdownBusy, setMarkdownBusy] = useState(false);
@@ -92,7 +94,7 @@ export function GuidelineExportPanel({ ctx, pages, page, svg }: Props) {
 
   return (
     <>
-      <h2 className="text-sm font-medium">Export</h2>
+      <h2 className="text-sm font-medium">{t("colors.tab.export")}</h2>
       <p className="text-xs text-muted-foreground">
         {ctx.contents.length} pages. Every page updates live from the brand.
       </p>
