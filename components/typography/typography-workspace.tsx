@@ -4,6 +4,7 @@ import dynamic from "next/dynamic";
 import { Braces, Combine, LayoutGrid, Ruler } from "lucide-react";
 import type { ReactNode } from "react";
 
+import { useI18n } from "@/components/layout/locale-provider";
 import { FontBrowser } from "@/components/typography/font-browser";
 import { OpenTypeControls } from "@/components/typography/opentype-controls";
 import { SpecimenControls } from "@/components/typography/specimen-controls";
@@ -13,6 +14,7 @@ import { VariablePlayground } from "@/components/typography/variable-playground"
 import { TabSkeleton } from "@/components/ui/tab-skeleton";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useFontCatalog } from "@/hooks/use-font-catalog";
+import type { PlainMessageKey } from "@/lib/i18n/translate";
 import { useTypographyStore, type TypographyTab } from "@/store/typography-store";
 
 // Secondary tabs are split out so the first tab paints fast.
@@ -31,11 +33,11 @@ const FontInspector = dynamic(() => import("@/components/typography/font-inspect
   loading: () => null,
 });
 
-const tabs: { value: TypographyTab; label: string; icon: ReactNode }[] = [
-  { value: "browse", label: "Browse", icon: <LayoutGrid /> },
-  { value: "pair", label: "Pairing", icon: <Combine /> },
-  { value: "scale", label: "Type scale", icon: <Ruler /> },
-  { value: "export", label: "Export", icon: <Braces /> },
+const tabs: { value: TypographyTab; label: PlainMessageKey; icon: ReactNode }[] = [
+  { value: "browse", label: "typography.tab.browse", icon: <LayoutGrid /> },
+  { value: "pair", label: "home.hl.pairing", icon: <Combine /> },
+  { value: "scale", label: "typography.tab.scale", icon: <Ruler /> },
+  { value: "export", label: "colors.tab.export", icon: <Braces /> },
 ];
 
 function isTab(value: string): value is TypographyTab {
@@ -43,6 +45,7 @@ function isTab(value: string): value is TypographyTab {
 }
 
 export function TypographyWorkspace() {
+  const { t } = useI18n();
   const tab = useTypographyStore((state) => state.tab);
   const setTab = useTypographyStore((state) => state.setTab);
   const { fonts, loading } = useFontCatalog();
@@ -53,7 +56,7 @@ export function TypographyWorkspace() {
         {tabs.map((item) => (
           <TabsTrigger key={item.value} value={item.value}>
             {item.icon}
-            {item.label}
+            {t(item.label)}
           </TabsTrigger>
         ))}
       </TabsList>

@@ -2,6 +2,7 @@
 
 import { RotateCcw } from "lucide-react";
 
+import { useI18n } from "@/components/layout/locale-provider";
 import { Button } from "@/components/ui/button";
 import { SliderField } from "@/components/ui/field";
 import { Panel } from "@/components/ui/panel";
@@ -9,13 +10,14 @@ import { WeightPicker } from "@/components/typography/weight-picker";
 import { useTypographyStore } from "@/store/typography-store";
 
 export function SpecimenControls() {
+  const { t } = useI18n();
   const specimen = useTypographyStore((state) => state.specimen);
   const updateSpecimen = useTypographyStore((state) => state.updateSpecimen);
   const resetSpecimen = useTypographyStore((state) => state.resetSpecimen);
 
   return (
     <Panel
-      title="Preview"
+      title={t("studio.pane.preview")}
       actions={
         <Button variant="ghost" size="icon" onClick={resetSpecimen} aria-label="Reset preview settings">
           <RotateCcw />

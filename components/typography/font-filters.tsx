@@ -33,7 +33,7 @@ const sorts: { value: FontSort; label: string }[] = [
 ];
 
 export function FontFilters({ resultCount }: { resultCount: number }) {
-  const { plural } = useI18n();
+  const { t, plural } = useI18n();
   const filters = useTypographyStore((state) => state.filters);
   const [announcedCount, setAnnouncedCount] = useState(resultCount);
   useEffect(() => {
@@ -101,7 +101,7 @@ export function FontFilters({ resultCount }: { resultCount: number }) {
           aria-label="Category"
           className="w-full"
         >
-          <ToggleGroupItem value="all">All</ToggleGroupItem>
+          <ToggleGroupItem value="all">{t("colors.library.all")}</ToggleGroupItem>
           {fontCategories.map((category) => (
             <ToggleGroupItem key={category} value={category} aria-label={fontCategoryLabels[category]}>
               {shortLabels[category]}
@@ -123,7 +123,7 @@ export function FontFilters({ resultCount }: { resultCount: number }) {
             onCheckedChange={(favoritesOnly) => setFilters({ favoritesOnly })}
           />
           <Label htmlFor="favorites-only">
-            <Heart className="size-3" aria-hidden /> Favorites
+            <Heart className="size-3" aria-hidden /> {t("projects.favorites")}
           </Label>
         </div>
         <p className="ml-auto text-xs text-subtle-foreground" aria-live="off">

@@ -645,6 +645,9 @@ export const es = {
   "projects.storage.section.offline": "Uso sin conexión",
   "projects.storage.section.projects": "Proyectos",
   "projects.storage.section.protection": "Protección",
+  "typography.tab.browse": "Explorar",
+  "typography.tab.scale": "Escala tipográfica",
+  "typography.compare.close": "Cerrar comparación",
   "projects.storage.runtime":
     "Fuentes, iconos y archivos usados al navegar: {files} archivos, {size} (se mantienen bajo {limit}, se eliminan primero los más antiguos)",
   "guidelines.cover.gradient": "Degradado",

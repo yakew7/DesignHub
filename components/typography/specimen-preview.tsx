@@ -3,6 +3,7 @@
 import { ArrowLeftRight, Columns2, Languages, Pin, X } from "lucide-react";
 import type { CSSProperties, ReactNode } from "react";
 
+import { useI18n } from "@/components/layout/locale-provider";
 import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useFontMeta } from "@/hooks/use-font-catalog";
@@ -173,6 +174,7 @@ function SampleMenu() {
 
 /** Large, editable specimen for the active font, optionally next to a pinned second font. */
 export function SpecimenPreview({ className }: { className?: string }) {
+  const { t } = useI18n();
   const activeFont = useTypographyStore((state) => state.activeFont);
   const compareFont = useTypographyStore((state) => state.compareFont);
   const setCompareFont = useTypographyStore((state) => state.setCompareFont);
@@ -197,7 +199,7 @@ export function SpecimenPreview({ className }: { className?: string }) {
           aria-pressed={comparing}
           onClick={() => (comparing ? setCompareFont(null) : startCompare())}
         >
-          {comparing ? <X /> : <Columns2 />} {comparing ? "Close compare" : "Compare"}
+          {comparing ? <X /> : <Columns2 />} {comparing ? t("typography.compare.close") : t("projects.compare")}
         </Button>
       </div>
       <div className={cn("flex min-h-0 flex-1 flex-col gap-6", comparing && "sm:flex-row sm:gap-8")}>

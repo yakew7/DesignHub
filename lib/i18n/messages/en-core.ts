@@ -311,6 +311,9 @@ export const enCore = {
   "projects.storage.section.offline": "Offline use",
   "projects.storage.section.projects": "Projects",
   "projects.storage.section.protection": "Protection",
+  "typography.tab.browse": "Browse",
+  "typography.tab.scale": "Type scale",
+  "typography.compare.close": "Close compare",
   "projects.storage.runtime":
     "Fonts, icons and files used while browsing: {files} files, {size} (kept under {limit}, the oldest go first)",
   "guidelines.cover.gradient": "Gradient",

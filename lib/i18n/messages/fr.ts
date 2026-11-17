@@ -651,6 +651,9 @@ export const fr = {
   "projects.storage.section.offline": "Utilisation hors ligne",
   "projects.storage.section.projects": "Projets",
   "projects.storage.section.protection": "Protection",
+  "typography.tab.browse": "Parcourir",
+  "typography.tab.scale": "Échelle typographique",
+  "typography.compare.close": "Fermer la comparaison",
   "projects.storage.runtime":
     "Polices, icônes et fichiers utilisés en naviguant : {files} fichiers, {size} (limités à {limit}, les plus anciens partent d'abord)",
   "guidelines.cover.gradient": "Dégradé",
