@@ -4,6 +4,7 @@ import { Plus, Trash2 } from "lucide-react";
 import { useState } from "react";
 
 import { ShadowLayerEditor } from "@/components/effects/shadow-layer-editor";
+import { useI18n } from "@/components/layout/locale-provider";
 import { Button } from "@/components/ui/button";
 import { SliderField } from "@/components/ui/field";
 import { Label } from "@/components/ui/label";
@@ -15,6 +16,7 @@ import type { ShadowLayer } from "@/types/effects";
 const MAX_LAYERS = 8;
 
 export function ShadowControls() {
+  const { t } = useI18n();
   const s = useEffectSettings("shadow");
   const update = useEffectsStore((state) => state.update);
   const [selected, setSelected] = useState(0);
@@ -95,7 +97,7 @@ export function ShadowControls() {
       </div>
       {active ? <ShadowLayerEditor layer={active} onChange={(patch) => patchLayer(active.id, patch)} /> : null}
       <SliderField
-        label="Radius"
+        label={t("effects.field.radius")}
         value={s.radius}
         min={0}
         max={48}

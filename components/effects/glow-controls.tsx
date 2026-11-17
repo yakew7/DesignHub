@@ -1,10 +1,12 @@
 "use client";
 
 import { ColorField, SwitchField } from "@/components/effects/fields";
+import { useI18n } from "@/components/layout/locale-provider";
 import { SliderField } from "@/components/ui/field";
 import { useEffectSettings, useEffectsStore } from "@/store/effects-store";
 
 export function GlowControls() {
+  const { t } = useI18n();
   const s = useEffectSettings("glow");
   const update = useEffectsStore((state) => state.update);
   const set = (patch: Partial<typeof s>) => update("glow", patch);
@@ -13,7 +15,7 @@ export function GlowControls() {
     <>
       <ColorField label="Glow color" value={s.color} onChange={(color) => set({ color })} />
       <SliderField
-        label="Radius"
+        label={t("effects.field.radius")}
         value={s.radius}
         min={4}
         max={120}

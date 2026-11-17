@@ -1,10 +1,12 @@
 "use client";
 
 import { ColorField } from "@/components/effects/fields";
+import { useI18n } from "@/components/layout/locale-provider";
 import { SliderField } from "@/components/ui/field";
 import { useEffectSettings, useEffectsStore } from "@/store/effects-store";
 
 export function CardTiltControls() {
+  const { t } = useI18n();
   const s = useEffectSettings("card-tilt");
   const update = useEffectsStore((state) => state.update);
   const set = (patch: Partial<typeof s>) => update("card-tilt", patch);
@@ -48,7 +50,7 @@ export function CardTiltControls() {
         format={(v) => `${v}ms`}
       />
       <SliderField
-        label="Radius"
+        label={t("effects.field.radius")}
         value={s.radius}
         min={0}
         max={32}

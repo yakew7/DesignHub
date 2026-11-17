@@ -1,12 +1,14 @@
 "use client";
 
 import { ColorField } from "@/components/effects/fields";
+import { useI18n } from "@/components/layout/locale-provider";
 import { SliderField } from "@/components/ui/field";
 import { useEffectSettings, useEffectsStore } from "@/store/effects-store";
 
 const percent = (value: number) => `${Math.round(value * 100)}%`;
 
 export function GlassControls() {
+  const { t } = useI18n();
   const s = useEffectSettings("glass");
   const update = useEffectsStore((state) => state.update);
   const set = (patch: Partial<typeof s>) => update("glass", patch);
@@ -41,7 +43,7 @@ export function GlassControls() {
         format={percent}
       />
       <SliderField
-        label="Border"
+        label={t("effects.kind.border.label")}
         value={s.borderOpacity}
         min={0}
         max={1}
@@ -50,7 +52,7 @@ export function GlassControls() {
         format={percent}
       />
       <SliderField
-        label="Shadow"
+        label={t("effects.kind.shadow.label")}
         value={s.shadowOpacity}
         min={0}
         max={0.8}
@@ -59,7 +61,7 @@ export function GlassControls() {
         format={percent}
       />
       <SliderField
-        label="Radius"
+        label={t("effects.field.radius")}
         value={s.radius}
         min={0}
         max={48}

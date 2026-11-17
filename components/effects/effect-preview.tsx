@@ -1,10 +1,12 @@
 "use client";
 
+import { useI18n } from "@/components/layout/locale-provider";
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
 import { EFFECT_PHOTO_DATA_URL, EffectBackdrop } from "@/components/effects/effect-backdrop";
 import { parseColor } from "@/lib/color/color";
 import { effectStylesheet } from "@/lib/effects/css";
 import { useEffectsStore } from "@/store/effects-store";
+import type { MessageKey } from "@/lib/i18n/translate";
 import type { EffectBackdrop as Backdrop, EffectCss, EffectKind } from "@/types/effects";
 
 function isDark(hex: string): boolean {
@@ -16,14 +18,15 @@ const PREVIEW_SELECTOR = ".dh-effect-preview";
 
 const PLAIN = new Set<Backdrop>(["light", "dark"]);
 
-const backdrops: { value: Backdrop; label: string }[] = [
-  { value: "gradient", label: "Gradient" },
-  { value: "photo", label: "Photo" },
-  { value: "light", label: "Light" },
-  { value: "dark", label: "Dark" },
-];
+const backdrops = [
+  { value: "gradient", label: "effects.field.gradient" },
+  { value: "photo", label: "effects.backdrop.photo" },
+  { value: "light", label: "effects.backdrop.light" },
+  { value: "dark", label: "effects.backdrop.dark" },
+] as const satisfies readonly { value: Backdrop; label: MessageKey }[];
 
 export function EffectPreview({ effect, kind }: { effect: EffectCss | null; kind: EffectKind }) {
+  const { t } = useI18n();
   const chosen = useEffectsStore((state) => state.backdrop);
   const scrimText = useEffectsStore((state) => state.settings.scrim.text);
   const setBackdrop = useEffectsStore((state) => state.setBackdrop);
@@ -54,7 +57,7 @@ export function EffectPreview({ effect, kind }: { effect: EffectCss | null; kind
   return (
     <>
       <div className="flex items-center justify-between gap-2">
-        <h2 className="text-sm font-medium">Preview</h2>
+        <h2 className="text-sm font-medium">{t("studio.pane.preview")}</h2>
         <ToggleGroup
           type="single"
           value={backdrop}
@@ -64,7 +67,7 @@ export function EffectPreview({ effect, kind }: { effect: EffectCss | null; kind
         >
           {backdrops.map((item) => (
             <ToggleGroupItem key={item.value} value={item.value} disabled={plain && !PLAIN.has(item.value)}>
-              {item.label}
+              {t(item.label)}
             </ToggleGroupItem>
           ))}
         </ToggleGroup>

@@ -1,10 +1,12 @@
 "use client";
 
 import { ColorField, GradientColorsField, SwitchField } from "@/components/effects/fields";
+import { useI18n } from "@/components/layout/locale-provider";
 import { SliderField } from "@/components/ui/field";
 import { useEffectSettings, useEffectsStore } from "@/store/effects-store";
 
 export function BorderControls() {
+  const { t } = useI18n();
   const s = useEffectSettings("border");
   const update = useEffectsStore((state) => state.update);
   const set = (patch: Partial<typeof s>) => update("border", patch);
@@ -22,7 +24,7 @@ export function BorderControls() {
         format={(v) => `${v}px`}
       />
       <SliderField
-        label="Radius"
+        label={t("effects.field.radius")}
         value={s.radius}
         min={0}
         max={48}

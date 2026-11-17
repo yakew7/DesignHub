@@ -1,6 +1,7 @@
 "use client";
 
 import { ColorField } from "@/components/effects/fields";
+import { useI18n } from "@/components/layout/locale-provider";
 import { SliderField } from "@/components/ui/field";
 import { Label } from "@/components/ui/label";
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
@@ -10,6 +11,7 @@ import type { NeumorphismShape } from "@/types/effects";
 const shapes: NeumorphismShape[] = ["flat", "concave", "convex", "pressed"];
 
 export function NeumorphismControls() {
+  const { t } = useI18n();
   const s = useEffectSettings("neumorphism");
   const update = useEffectsStore((state) => state.update);
   const set = (patch: Partial<typeof s>) => update("neumorphism", patch);
@@ -67,7 +69,7 @@ export function NeumorphismControls() {
         format={(v) => `${v}°`}
       />
       <SliderField
-        label="Radius"
+        label={t("effects.field.radius")}
         value={s.radius}
         min={0}
         max={64}

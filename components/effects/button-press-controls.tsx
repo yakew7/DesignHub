@@ -1,6 +1,7 @@
 "use client";
 
 import { ColorField } from "@/components/effects/fields";
+import { useI18n } from "@/components/layout/locale-provider";
 import { SliderField } from "@/components/ui/field";
 import { Label } from "@/components/ui/label";
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
@@ -15,6 +16,7 @@ const easings: { value: ButtonPressEasing; label: string }[] = [
 ];
 
 export function ButtonPressControls() {
+  const { t } = useI18n();
   const s = useEffectSettings("button-press");
   const update = useEffectsStore((state) => state.update);
   const set = (patch: Partial<typeof s>) => update("button-press", patch);
@@ -67,7 +69,7 @@ export function ButtonPressControls() {
         </ToggleGroup>
       </div>
       <SliderField
-        label="Radius"
+        label={t("effects.field.radius")}
         value={s.radius}
         min={0}
         max={32}
