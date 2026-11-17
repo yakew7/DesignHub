@@ -21,7 +21,6 @@ const ALLOWED: readonly { text: string; languages: readonly string[]; reason: st
  * translated. Studio headings are checked against their catalog entries below.
  */
 const KNOWN: Readonly<Record<string, { issue: number; texts: readonly string[] }>> = {
-  "/backgrounds": { issue: 565, texts: ["Controls", "Colors", "Palette", "Mesh", "Aurora"] },
   "/typography": { issue: 566, texts: ["Pairing", "Export", "Preview", "Compare", "All", "Favorites"] },
   "/export": {
     issue: 567,

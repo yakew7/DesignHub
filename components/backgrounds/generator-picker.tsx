@@ -1,5 +1,6 @@
 "use client";
 
+import { useI18n } from "@/components/layout/locale-provider";
 import { GroupedPicker, type PickerGroup } from "@/components/ui/grouped-picker";
 import { backgroundCategories } from "@/lib/background/categories";
 import { backgroundGenerators } from "@/lib/background/registry";
@@ -7,6 +8,7 @@ import { useBackgroundStore } from "@/store/background-store";
 import type { BackgroundKind } from "@/types/background";
 
 export function GeneratorPicker() {
+  const { t } = useI18n();
   const kind = useBackgroundStore((state) => state.settings.kind);
   const setKind = useBackgroundStore((state) => state.setKind);
 
@@ -22,11 +24,14 @@ export function GeneratorPicker() {
         .filter((generator) => generator.category === category.id)
         .map((generator) => ({
           id: generator.kind,
-          label: generator.label,
+          label: t(`background.generator.${generator.kind}.label`),
           description: generator.description,
           keywords: [
             generator.kind,
-            ...(generator.variants?.map((variant) => `${variant.label} ${variant.variant}`) ?? []),
+            generator.label,
+            ...(generator.variants?.map(
+              (variant) => `${t(`background.variant.${variant.variant}.label`)} ${variant.label} ${variant.variant}`,
+            ) ?? []),
           ].join(" "),
         })),
     }))

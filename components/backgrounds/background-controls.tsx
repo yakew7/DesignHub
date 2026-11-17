@@ -4,6 +4,7 @@ import { Dices, RotateCcw } from "lucide-react";
 
 import { ColorList } from "@/components/backgrounds/color-list";
 import { GeneratorPicker } from "@/components/backgrounds/generator-picker";
+import { useI18n } from "@/components/layout/locale-provider";
 import { Advanced } from "@/components/ui/advanced";
 import { Button } from "@/components/ui/button";
 import { SliderField } from "@/components/ui/field";
@@ -34,6 +35,7 @@ const halftoneGradients: { value: HalftoneGradientChoice; label: string }[] = [
 ];
 
 export function BackgroundControls() {
+  const { t } = useI18n();
   const settings = useBackgroundStore((state) => state.settings);
   const update = useBackgroundStore((state) => state.update);
   const updateOptions = useBackgroundStore((state) => state.updateOptions);
@@ -50,7 +52,7 @@ export function BackgroundControls() {
         <GeneratorPicker />
       </Panel>
       <Panel
-        title="Controls"
+        title={t("studio.pane.controls")}
         actions={
           <Button variant="ghost" size="icon" aria-label="Reset background" onClick={reset}>
             <RotateCcw />
@@ -93,7 +95,7 @@ export function BackgroundControls() {
             >
               {variants.map((item) => (
                 <ToggleGroupItem key={item.variant} value={item.variant} className="flex-1" title={item.description}>
-                  {item.label}
+                  {t(`background.variant.${item.variant}.label`)}
                 </ToggleGroupItem>
               ))}
             </ToggleGroup>

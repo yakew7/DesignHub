@@ -2,6 +2,7 @@
 
 import { Palette, Plus, X } from "lucide-react";
 
+import { useI18n } from "@/components/layout/locale-provider";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { toHex } from "@/lib/color/color";
@@ -24,6 +25,7 @@ function Swatch({ label, value, onChange }: { label: string; value: string; onCh
 }
 
 export function ColorList() {
+  const { t } = useI18n();
   const settings = useBackgroundStore((state) => state.settings);
   const update = useBackgroundStore((state) => state.update);
   const setColor = useBackgroundStore((state) => state.setColor);
@@ -43,9 +45,9 @@ export function ColorList() {
   return (
     <div className="flex flex-col gap-3">
       <div className="flex items-center justify-between">
-        <Label>Colors</Label>
+        <Label>{t("brand.colors.label")}</Label>
         <Button variant="ghost" size="sm" className="h-7" onClick={applyPalette} title="Use your Color Studio palette">
-          <Palette /> Palette
+          <Palette /> {t("colors.tab.palette")}
         </Button>
       </div>
       <div className="flex flex-wrap items-center gap-1.5">
