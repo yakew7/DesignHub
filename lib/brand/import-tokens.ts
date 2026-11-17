@@ -1,3 +1,4 @@
+import "@/lib/i18n/areas/brand";
 import { oklch, parseColor } from "@/lib/color/color";
 import { LocalizedError, localized, type Localized } from "@/lib/i18n/errors";
 import type { Oklch } from "@/types/color";

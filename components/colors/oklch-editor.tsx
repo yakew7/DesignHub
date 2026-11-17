@@ -1,5 +1,7 @@
 "use client";
 
+import "@/lib/i18n/areas/colors";
+
 import { ChannelSlider } from "@/components/colors/channel-slider";
 import { ColorInput } from "@/components/colors/color-input";
 import { useI18n } from "@/components/layout/locale-provider";

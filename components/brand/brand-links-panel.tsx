@@ -1,5 +1,7 @@
 "use client";
 
+import "@/lib/i18n/areas/brand";
+
 import Link from "next/link";
 import { ArrowUpRight } from "lucide-react";
 

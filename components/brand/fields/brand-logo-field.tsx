@@ -1,5 +1,7 @@
 "use client";
 
+import "@/lib/i18n/areas/brand";
+
 import { RotateCcw, Upload } from "lucide-react";
 import { useRef } from "react";
 import { toast } from "@/lib/toast";

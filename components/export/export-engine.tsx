@@ -1,5 +1,7 @@
 "use client";
 
+import "@/lib/i18n/areas/brand";
+
 import dynamic from "next/dynamic";
 import { useRef } from "react";
 

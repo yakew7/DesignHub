@@ -1,5 +1,7 @@
 "use client";
 
+import "@/lib/i18n/areas/colors";
+
 import { ArrowUpDown, Check, Wand2, X } from "lucide-react";
 
 import { ColorWell } from "@/components/colors/color-well";

@@ -1,5 +1,7 @@
 "use client";
 
+import "@/lib/i18n/areas/projects";
+
 import { useState } from "react";
 
 import { useKeptStudios } from "@/hooks/use-kept-studios";

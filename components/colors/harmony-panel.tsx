@@ -1,5 +1,7 @@
 "use client";
 
+import "@/lib/i18n/areas/colors";
+
 import { HarmonyWheel } from "@/components/colors/harmony-wheel";
 import { useI18n } from "@/components/layout/locale-provider";
 import { Label } from "@/components/ui/label";

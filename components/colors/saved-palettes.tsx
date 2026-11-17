@@ -1,5 +1,7 @@
 "use client";
 
+import "@/lib/i18n/areas/colors";
+
 import { Trash2 } from "lucide-react";
 
 import { useI18n } from "@/components/layout/locale-provider";

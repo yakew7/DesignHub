@@ -1,3 +1,4 @@
+import "@/lib/i18n/areas/colors";
 import type { PlainMessageKey, Translate } from "@/lib/i18n/translate";
 
 /**

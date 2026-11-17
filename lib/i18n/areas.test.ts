@@ -1,14 +1,17 @@
 import { describe, expect, test } from "vitest";
 
 import { en } from "@/lib/i18n/messages/en";
+import { enBrand } from "@/lib/i18n/messages/en-brand";
+import { enColors } from "@/lib/i18n/messages/en-colors";
 import { enCore } from "@/lib/i18n/messages/en-core";
 import { enIcons } from "@/lib/i18n/messages/en-icons";
 import { enLogo } from "@/lib/i18n/messages/en-logo";
 import { enMockups } from "@/lib/i18n/messages/en-mockups";
+import { enProjects } from "@/lib/i18n/messages/en-projects";
 import { enSocial } from "@/lib/i18n/messages/en-social";
 import { enSvg } from "@/lib/i18n/messages/en-svg";
 
-const parts = { enCore, enIcons, enLogo, enMockups, enSocial, enSvg };
+const parts = { enBrand, enColors, enCore, enIcons, enLogo, enMockups, enProjects, enSocial, enSvg };
 
 describe("the English catalog in parts", () => {
   test("no key is in two parts, and together they are the whole catalog", () => {
@@ -24,9 +27,12 @@ describe("the English catalog in parts", () => {
 
   test("each studio area holds only its own keys, and the core holds none of them", () => {
     const owners: [string, Record<string, string>][] = [
+      ["brand.", enBrand],
+      ["colors.", enColors],
       ["icons.", enIcons],
       ["logo.", enLogo],
       ["mockups.", enMockups],
+      ["projects.", enProjects],
       ["social.", enSocial],
       ["svg.", enSvg],
     ];
@@ -34,7 +40,9 @@ describe("the English catalog in parts", () => {
       for (const key of Object.keys(part)) expect(key.startsWith(prefix), key).toBe(true);
     }
     // svg.compare.* is used by the comparison canvas in several studios, so it stays in the core.
-    const inCore = Object.keys(enCore).filter((key) => /^(icons|logo|mockups|social|svg)\./.test(key));
+    const inCore = Object.keys(enCore).filter((key) =>
+      /^(brand|colors|icons|logo|mockups|projects|social|svg)\./.test(key),
+    );
     expect(inCore.every((key) => key.startsWith("svg.compare."))).toBe(true);
   });
 });

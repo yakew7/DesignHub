@@ -1,5 +1,7 @@
 "use client";
 
+import "@/lib/i18n/areas/colors";
+
 import dynamic from "next/dynamic";
 import { Blend, Braces, Contrast, Layers, Palette } from "lucide-react";
 import type { ReactNode } from "react";

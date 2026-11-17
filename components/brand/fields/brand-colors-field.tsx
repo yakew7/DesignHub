@@ -1,5 +1,7 @@
 "use client";
 
+import "@/lib/i18n/areas/brand";
+
 import { Plus } from "lucide-react";
 
 import { useI18n } from "@/components/layout/locale-provider";

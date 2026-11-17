@@ -1,5 +1,7 @@
 "use client";
 
+import "@/lib/i18n/areas/brand";
+
 import { useI18n } from "@/components/layout/locale-provider";
 import { FontPicker } from "@/components/typography/font-picker";
 import { Label } from "@/components/ui/label";

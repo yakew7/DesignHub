@@ -1,5 +1,7 @@
 "use client";
 
+import "@/lib/i18n/areas/projects";
+
 import { FolderSync } from "lucide-react";
 import { useEffect } from "react";
 

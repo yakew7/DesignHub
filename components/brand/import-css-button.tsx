@@ -1,5 +1,7 @@
 "use client";
 
+import "@/lib/i18n/areas/brand";
+
 import { Code2 } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
 import { toast } from "@/lib/toast";

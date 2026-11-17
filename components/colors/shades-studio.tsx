@@ -1,5 +1,7 @@
 "use client";
 
+import "@/lib/i18n/areas/colors";
+
 import { useMemo } from "react";
 
 import { ShadeRamp } from "@/components/colors/shade-ramp";

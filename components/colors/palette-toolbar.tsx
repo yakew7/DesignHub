@@ -1,5 +1,7 @@
 "use client";
 
+import "@/lib/i18n/areas/colors";
+
 import dynamic from "next/dynamic";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { Bookmark, Download, MoreHorizontal, Pipette, Plus, Redo2, Shuffle, Undo2 } from "lucide-react";

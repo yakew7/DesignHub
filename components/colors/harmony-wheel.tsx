@@ -1,5 +1,7 @@
 "use client";
 
+import "@/lib/i18n/areas/colors";
+
 import { useI18n } from "@/components/layout/locale-provider";
 import { toHex } from "@/lib/color/color";
 import type { Oklch } from "@/types/color";

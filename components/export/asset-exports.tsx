@@ -1,5 +1,7 @@
 "use client";
 
+import "@/lib/i18n/areas/colors";
+
 import { Download } from "lucide-react";
 import Link from "next/link";
 import { useMemo } from "react";

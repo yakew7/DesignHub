@@ -1,5 +1,7 @@
 "use client";
 
+import "@/lib/i18n/areas/projects";
+
 import { Check, Pencil, Star, Trash2, X } from "lucide-react";
 import { useEffect, useMemo, useRef, useState, type ReactNode } from "react";
 

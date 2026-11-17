@@ -1,5 +1,8 @@
 "use client";
 
+import "@/lib/i18n/areas/colors";
+import "@/lib/i18n/areas/brand";
+
 import { Palette, Plus, X } from "lucide-react";
 
 import { useI18n } from "@/components/layout/locale-provider";

@@ -1,5 +1,7 @@
 "use client";
 
+import "@/lib/i18n/areas/projects";
+
 import { FileArchive, FileText, FolderOpen, Plus, Redo2, Undo2 } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";

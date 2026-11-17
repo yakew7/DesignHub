@@ -1,5 +1,7 @@
 "use client";
 
+import "@/lib/i18n/areas/colors";
+
 import { useRef, type KeyboardEvent, type PointerEvent } from "react";
 
 import { useI18n } from "@/components/layout/locale-provider";

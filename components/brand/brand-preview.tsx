@@ -1,5 +1,7 @@
 "use client";
 
+import "@/lib/i18n/areas/brand";
+
 import { Moon, Sun } from "lucide-react";
 import { useMemo, useState, type CSSProperties } from "react";
 

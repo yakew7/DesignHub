@@ -1,5 +1,7 @@
 "use client";
 
+import "@/lib/i18n/areas/projects";
+
 import { Plus, X } from "lucide-react";
 import { useRef, useState } from "react";
 

@@ -1,5 +1,7 @@
 "use client";
 
+import "@/lib/i18n/areas/brand";
+
 import type { CSSProperties } from "react";
 
 import { useI18n } from "@/components/layout/locale-provider";

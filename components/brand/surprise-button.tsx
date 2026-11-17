@@ -1,5 +1,7 @@
 "use client";
 
+import "@/lib/i18n/areas/brand";
+
 import { Shuffle } from "lucide-react";
 import { toast } from "@/lib/toast";
 

@@ -1,5 +1,7 @@
 "use client";
 
+import "@/lib/i18n/areas/projects";
+
 import { ArrowLeftRight, Columns2, Languages, Pin, X } from "lucide-react";
 import type { CSSProperties, ReactNode } from "react";
 

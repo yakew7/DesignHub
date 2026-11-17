@@ -1,5 +1,7 @@
 "use client";
 
+import "@/lib/i18n/areas/colors";
+
 import { ArrowLeftRight, Palette, Shuffle } from "lucide-react";
 import { useState } from "react";
 

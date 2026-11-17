@@ -1,5 +1,7 @@
 "use client";
 
+import "@/lib/i18n/areas/projects";
+
 import dynamic from "next/dynamic";
 
 import { useI18n } from "@/components/layout/locale-provider";

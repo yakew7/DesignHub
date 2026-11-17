@@ -1,5 +1,7 @@
 "use client";
 
+import "@/lib/i18n/areas/colors";
+
 import { useI18n } from "@/components/layout/locale-provider";
 import { useCopy } from "@/hooks/use-copy";
 import { contrastRatio, formatColor, oklch, readableTextColor, toHex } from "@/lib/color/color";

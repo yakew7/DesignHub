@@ -1,5 +1,7 @@
 "use client";
 
+import "@/lib/i18n/areas/colors";
+
 import { useState } from "react";
 import { toast } from "@/lib/toast";
 

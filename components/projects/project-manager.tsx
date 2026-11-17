@@ -1,5 +1,8 @@
 "use client";
 
+import "@/lib/i18n/areas/colors";
+import "@/lib/i18n/areas/projects";
+
 import {
   ArrowLeftRight,
   Copy,

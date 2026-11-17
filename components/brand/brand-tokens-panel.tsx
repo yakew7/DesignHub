@@ -1,5 +1,8 @@
 "use client";
 
+import "@/lib/i18n/areas/colors";
+import "@/lib/i18n/areas/brand";
+
 import { useCallback, useMemo } from "react";
 
 import { useI18n } from "@/components/layout/locale-provider";

@@ -1,5 +1,7 @@
 "use client";
 
+import "@/lib/i18n/areas/brand";
+
 import { BrandColorsField } from "@/components/brand/fields/brand-colors-field";
 import { BrandIdentityFields } from "@/components/brand/fields/brand-identity-fields";
 import { BrandLogoField } from "@/components/brand/fields/brand-logo-field";

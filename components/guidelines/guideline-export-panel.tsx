@@ -1,5 +1,7 @@
 "use client";
 
+import "@/lib/i18n/areas/colors";
+
 import { FileText, FileCode2, Globe, ImageDown, Loader2 } from "lucide-react";
 import { useState } from "react";
 import { toast } from "@/lib/toast";

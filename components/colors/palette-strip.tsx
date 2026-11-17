@@ -1,5 +1,7 @@
 "use client";
 
+import "@/lib/i18n/areas/colors";
+
 import { AnimatePresence, LazyMotion, MotionConfig, domAnimation } from "framer-motion";
 import { useMemo } from "react";
 

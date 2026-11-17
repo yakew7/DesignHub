@@ -1,3 +1,4 @@
+import "@/lib/i18n/areas/projects";
 import type { Metadata } from "next";
 
 import { Message } from "@/components/layout/message";

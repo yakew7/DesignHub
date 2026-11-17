@@ -1,5 +1,7 @@
 "use client";
 
+import "@/lib/i18n/areas/brand";
+
 import { useI18n } from "@/components/layout/locale-provider";
 import { Button } from "@/components/ui/button";
 import { SliderField } from "@/components/ui/field";

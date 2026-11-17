@@ -1,5 +1,7 @@
 "use client";
 
+import "@/lib/i18n/areas/colors";
+
 import { m } from "framer-motion";
 import { ChevronLeft, ChevronRight, Copy, Lock, Unlock, X } from "lucide-react";
 import type { ReactNode } from "react";
