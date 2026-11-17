@@ -330,6 +330,7 @@ export const hi = {
   "svg.native.unsupported": "<{tag}> को react-native-svg सपोर्ट नहीं करता, इसलिए उसे हटा दिया गया।",
   "svg.native.class": "CSS क्लास React Native में लागू नहीं होतीं; उन्हें props से स्टाइल करें।",
   "svg.native.style": "<style> ब्लॉक समर्थित नहीं हैं; उनके नियम छोड़ दिए गए। पहले रंगों को इनलाइन करें।",
+  "social.pack.readmeTitle": "{name} के सोशल एसेट",
   "pwa.update.body": "नवीनतम संस्करण के लिए रीलोड करें।",
   "pwa.update.kept.one":
     "नवीनतम संस्करण के लिए रीलोड करें। ऑफ़लाइन उपयोग के लिए रखा गया {count} स्टूडियो फिर से डाउनलोड होगा।",

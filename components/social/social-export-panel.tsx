@@ -16,6 +16,7 @@ import { withSvgCredit } from "@/lib/export/credit";
 import { rasterize } from "@/lib/export/raster";
 import { slugify } from "@/lib/logo/pack";
 import { SocialPackPicker } from "@/components/social/social-pack-picker";
+import { socialTemplateDescription } from "@/lib/social/names";
 import { buildSocialPack, packTemplates } from "@/lib/social/pack";
 import { readmeSnippet } from "@/lib/social/readme";
 import { ogMetaTags } from "@/lib/social/templates/open-graph";
@@ -87,6 +88,11 @@ export function SocialExportPanel({ svg, ctx, template }: Props) {
         (done, total) => setPackProgress(Math.round((done / total) * 100)),
         packSelection,
         controller.signal,
+        // The README inside the ZIP is in the language of the interface (platform names and sizes stay as they are).
+        {
+          title: (brand) => t("social.pack.readmeTitle", { name: brand }),
+          describe: (template) => socialTemplateDescription(t, template),
+        },
       );
       downloadBlob(
         new Blob([zip.slice().buffer], { type: "application/zip" }),

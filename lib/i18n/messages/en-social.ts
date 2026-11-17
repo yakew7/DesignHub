@@ -226,4 +226,5 @@ export const enSocial = {
   "social.pack.all": "Select all",
   "social.pack.none": "None",
   "social.pack.more": "More platforms (not in the default pack)",
+  "social.pack.readmeTitle": "{name} social assets",
 } as const;

@@ -339,6 +339,7 @@ export const fr = {
   "svg.native.class": "Les classes CSS ne s'appliquent pas dans React Native ; stylez-les avec des props.",
   "svg.native.style":
     "Les blocs <style> ne sont pas pris en charge ; leurs règles ont été ignorées. Intégrez d'abord les couleurs.",
+  "social.pack.readmeTitle": "Ressources sociales de {name}",
   "pwa.update.body": "Rechargez pour utiliser la dernière version.",
   "pwa.update.kept.one":
     "Rechargez pour utiliser la dernière version. Le studio ({count}) conservé hors ligne sera téléchargé de nouveau.",

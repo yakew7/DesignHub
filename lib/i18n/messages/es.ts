@@ -335,6 +335,7 @@ export const es = {
   "svg.native.unsupported": "<{tag}> no es compatible con react-native-svg y se quitó.",
   "svg.native.class": "Las clases CSS no se aplican en React Native; dales estilo con props.",
   "svg.native.style": "Los bloques <style> no son compatibles; se descartaron sus reglas. Integra primero los colores.",
+  "social.pack.readmeTitle": "Recursos sociales de {name}",
   "pwa.update.body": "Recarga para usar la última versión.",
   "pwa.update.kept.one":
     "Recarga para usar la última versión. El estudio que guardaste para uso sin conexión ({count}) se descargará de nuevo.",

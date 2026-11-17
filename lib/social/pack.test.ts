@@ -27,6 +27,22 @@ describe("buildSocialPack", () => {
     expect(zip.length).toBeGreaterThan(0);
   });
 
+  test("writes the README in the language given, and in English when none is", async () => {
+    const readme = async (text?: Parameters<typeof buildSocialPack>[4]) => {
+      const zip = await buildSocialPack(socialContext("light"), undefined, ["x-banner"], undefined, text);
+      return new TextDecoder().decode(zip);
+    };
+    const english = await readme();
+    expect(english).toContain("social assets");
+    const spanish = await readme({
+      title: (brand) => `Recursos sociales de ${brand}`,
+      describe: (template) => `DESC ${template.id}`,
+    });
+    expect(spanish).toContain("Recursos sociales de ");
+    expect(spanish).toContain("DESC x-banner");
+    expect(spanish).not.toContain("social assets");
+  });
+
   test("stops between templates when cancelled, and rasterizes nothing more", async () => {
     const controller = new AbortController();
     rasterize.mockImplementation(async () => {
