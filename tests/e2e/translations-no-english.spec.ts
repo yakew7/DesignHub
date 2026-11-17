@@ -14,6 +14,7 @@ const LANGUAGES = ["es", "fr", "hi"] as const;
 /** Text that is the same in a language on purpose. Each entry says why. */
 const ALLOWED: readonly { text: string; languages: readonly string[]; reason: string }[] = [
   { text: "Material", languages: ["hi"], reason: "the Material Design icon set, a name" },
+  { text: "Plus", languages: ["fr"], reason: 'the French word "plus" (more), spelled like the English generator name' },
 ];
 
 /**
