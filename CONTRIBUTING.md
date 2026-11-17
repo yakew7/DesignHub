@@ -259,7 +259,7 @@ A Brand Guidelines page is one function that returns an SVG, registered in `lib/
 
 ## Translating the interface
 
-DesignHub stores UI translations in `lib/i18n/messages/`. English is the source of truth, in `en-core.ts` and the `en-<area>.ts` files of the bigger studios (joined by `en.ts` for types); other locales may be incomplete, and missing keys fall back to English. Supported locales currently include English, Spanish (`es`), French (`fr`) and Hindi (`hi`).
+DesignHub stores UI translations in `lib/i18n/messages/`. English is the source of truth, in `en-core.ts` and the `en-<area>.ts` files of the bigger areas (joined by `en.ts` for types), and every other language has the same parts (`es.ts`, `es-<area>.ts`); [docs/i18n-architecture.md](docs/i18n-architecture.md) says how they load; other locales may be incomplete, and missing keys fall back to English. Supported locales currently include English, Spanish (`es`), French (`fr`) and Hindi (`hi`).
 
 To improve an existing translation or add a new language, follow the [Translation Guide](docs/translating.md). It explains how to edit catalogs, preserve keys and placeholders, register a locale, check fonts and text overflow, and test your changes.
 
@@ -273,7 +273,7 @@ Translation changes should preserve the existing message keys and placeholders. 
 - In a Server Component, render `<Message id="nav.home" />` (`components/layout/message.tsx`) for messages without placeholders.
 - Keys and placeholders are type-checked: an unknown key or a missing placeholder is a compile error.
 - To translate an error thrown in `lib/`, throw `new LocalizedError("error.…")` (`lib/i18n/errors.ts`) and show it with `errorMessage(error, t, fallbackKey)`. Its `message` stays English.
-- New text goes into the English part its prefix belongs to (`en-core.ts`, or `en-icons.ts`, `en-logo.ts`, `en-mockups.ts`, `en-social.ts`, `en-svg.ts` for those studios) first (sentence case, no em dashes), then into the other catalogs when you can.
+- New text goes into the English part its prefix belongs to (`en-core.ts`, or `en-<area>.ts` for brand, colors, icons, logo, mockups, projects, social and svg) first (sentence case, no em dashes), then into the other catalogs when you can.
 
 ### Adding a locale
 

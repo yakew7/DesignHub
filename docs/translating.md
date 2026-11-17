@@ -4,7 +4,7 @@ This guide explains how to add a new language or improve an existing translation
 
 ## 1. How translations work
 
-DesignHub stores its translations in `lib/i18n/messages/`. The English catalog is the source of truth. It is in parts: `en-core.ts` (what every route needs) and one file per big studio (`en-icons.ts`, `en-logo.ts`, `en-mockups.ts`, `en-social.ts`, `en-svg.ts`), which load with their studio; `en.ts` joins them for types and tests. A new key goes in the part its prefix belongs to (`icons.` in `en-icons.ts`), or in `en-core.ts`. Other language catalogs can be incomplete, and missing translations fall back to English.
+DesignHub stores its translations in `lib/i18n/messages/`. The English catalog is the source of truth. It is in parts: `en-core.ts` (what every route needs) and one file per big area (`en-brand.ts`, `en-colors.ts`, `en-icons.ts`, `en-logo.ts`, `en-mockups.ts`, `en-projects.ts`, `en-social.ts`, `en-svg.ts`), which load with the code that uses them; `en.ts` joins them for types and tests. A new key goes in the part its prefix belongs to (`icons.` in `en-icons.ts`), or in `en-core.ts`. Spanish, French and Hindi have the same parts (`es.ts` is the core, `es-icons.ts` the icons area, and so on). See [the i18n architecture](i18n-architecture.md) for how they load. Other language catalogs can be incomplete, and missing translations fall back to English.
 
 Use the existing translation system instead of writing translated UI text directly in components.
 
