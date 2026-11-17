@@ -625,6 +625,7 @@ export const hi = {
   "typography.tab.browse": "ब्राउज़ करें",
   "typography.tab.scale": "टाइप स्केल",
   "typography.compare.close": "तुलना बंद करें",
+  "export.downloadJson": "JSON डाउनलोड करें",
   "projects.storage.runtime":
     "ब्राउज़ करते समय उपयोग हुए फ़ॉन्ट, आइकन और फ़ाइलें: {files} फ़ाइलें, {size} ({limit} से कम रखी जाती हैं, सबसे पुरानी पहले हटती हैं)",
   "guidelines.cover.gradient": "ग्रेडिएंट",

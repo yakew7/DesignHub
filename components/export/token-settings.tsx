@@ -2,6 +2,7 @@
 
 import { RotateCcw } from "lucide-react";
 
+import { useI18n } from "@/components/layout/locale-provider";
 import { Advanced } from "@/components/ui/advanced";
 import { Button } from "@/components/ui/button";
 import { SliderField } from "@/components/ui/field";
@@ -27,6 +28,7 @@ const sectionLabels: Record<keyof TokenSections, string> = {
 };
 
 export function TokenSettingsPanel() {
+  const { t } = useI18n();
   const settings = useTokensStore((state) => state.settings);
   const update = useTokensStore((state) => state.update);
   const toggleSection = useTokensStore((state) => state.toggleSection);
@@ -44,7 +46,7 @@ export function TokenSettingsPanel() {
       }
     >
       <div className="flex flex-col gap-2">
-        <Label htmlFor="token-name">Brand name</Label>
+        <Label htmlFor="token-name">{t("brand.name")}</Label>
         <Input id="token-name" value={brandName} onChange={(event) => updateProfile({ name: event.target.value })} />
       </div>
       <div className="flex flex-col gap-2">

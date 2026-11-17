@@ -6,6 +6,7 @@ import { useMemo, useState } from "react";
 import { toast } from "@/lib/toast";
 
 import { AssetCard } from "@/components/export/asset-card";
+import { useI18n } from "@/components/layout/locale-provider";
 import { Button } from "@/components/ui/button";
 import { CopyButton } from "@/components/ui/copy-button";
 import { useBrandTokens } from "@/hooks/use-brand";
@@ -27,6 +28,7 @@ const pdfBlob = (bytes: Uint8Array, type: string) => new Blob([bytes.slice().buf
 
 /** Brand-level files: the brand JSON, the brand book, and the logo and social packs. */
 export function BrandAssetExports() {
+  const { t } = useI18n();
   const brand = useBrandTokens();
   const voice = useBrandStore((state) => state.profile.voice);
   const mission = useBrandStore((state) => state.profile.mission);
@@ -103,7 +105,7 @@ export function BrandAssetExports() {
           actions={
             <>
               <CopyButton value={json} variant="outline" size="sm" toastMessage="Brand JSON copied">
-                Copy
+                {t("copy.label")}
               </CopyButton>
               <Button variant="outline" size="sm" onClick={() => downloadText(json, `${base}.brand.json`)}>
                 <Download /> brand.json

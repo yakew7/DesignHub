@@ -5,9 +5,11 @@ import { useCallback, useEffect, useMemo, useState, type RefObject } from "react
 import { toast } from "@/lib/toast";
 
 import { ExportPanel } from "@/components/export/export-panel";
+import { useI18n } from "@/components/layout/locale-provider";
 import { Button } from "@/components/ui/button";
 import { downloadBlob, downloadDataUrl, downloadText } from "@/lib/download";
 import { tokenFormat, tokenFormatList, tokenFormats } from "@/lib/tokens/formats";
+import { translateFormatLabels } from "@/lib/tokens/format-labels";
 import { createZip } from "@/lib/zip";
 import { useTokensStore } from "@/store/tokens-store";
 import type { DesignTokens } from "@/types/tokens";
@@ -42,7 +44,8 @@ export function TokenOutput({
   previewRef: RefObject<HTMLDivElement | null>;
 }) {
   // The list is cheap; code is written for the open format only, and for everything when the ZIP is asked for.
-  const formats = useMemo(() => tokenFormatList(tokens), [tokens]);
+  const { t } = useI18n();
+  const formats = useMemo(() => translateFormatLabels(t, tokenFormatList(tokens)), [t, tokens]);
   const renderCode = useCallback((id: string) => tokenFormat(tokens, id)?.code ?? "", [tokens]);
   const openFormat = useTokensStore((state) => state.openFormat);
   const setOpenFormat = useTokensStore((state) => state.setOpenFormat);
@@ -98,11 +101,11 @@ export function TokenOutput({
     <section aria-labelledby="output-title" className="flex flex-col gap-4">
       <div className="flex flex-wrap items-center justify-between gap-3">
         <h2 id="output-title" className="text-lg font-medium">
-          Output
+          {t("studio.pane.output")}
         </h2>
         <div className="flex flex-wrap gap-2">
           <Button onClick={() => downloadText(tokenFormat(tokens, "json")?.code ?? "", `${name}.tokens.json`)}>
-            <FileJson /> Download JSON
+            <FileJson /> {t("export.downloadJson")}
           </Button>
           <Button variant="outline" onClick={() => run("zip")} disabled={busy !== null}>
             {spinner("zip") ?? <FileArchive />} All formats (.zip)

@@ -21,20 +21,6 @@ const ALLOWED: readonly { text: string; languages: readonly string[]; reason: st
  * translated. Studio headings are checked against their catalog entries below.
  */
 const KNOWN: Readonly<Record<string, { issue: number; texts: readonly string[] }>> = {
-  "/export": {
-    issue: 567,
-    texts: [
-      "Live preview",
-      "Brand name",
-      "Output",
-      "CSS variables",
-      "JSON tokens",
-      "Copy",
-      "Download JSON",
-      "Background",
-      "Optimized SVG",
-    ],
-  },
 };
 
 type Pattern = { keys: string[]; match: RegExp };

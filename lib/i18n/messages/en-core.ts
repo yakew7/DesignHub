@@ -314,6 +314,7 @@ export const enCore = {
   "typography.tab.browse": "Browse",
   "typography.tab.scale": "Type scale",
   "typography.compare.close": "Close compare",
+  "export.downloadJson": "Download JSON",
   "projects.storage.runtime":
     "Fonts, icons and files used while browsing: {files} files, {size} (kept under {limit}, the oldest go first)",
   "guidelines.cover.gradient": "Gradient",

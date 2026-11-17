@@ -5,6 +5,7 @@ import Link from "next/link";
 import { useMemo } from "react";
 
 import { AssetCard } from "@/components/export/asset-card";
+import { useI18n } from "@/components/layout/locale-provider";
 import { Button } from "@/components/ui/button";
 import { CopyButton } from "@/components/ui/copy-button";
 import { backgroundCss } from "@/lib/background/export";
@@ -24,6 +25,7 @@ import { useSvgStore } from "@/store/svg-store";
 
 /** Files from the other studios that don't fit the token model: backgrounds, effects… */
 export function AssetExports() {
+  const { t } = useI18n();
   const background = useBackgroundStore((state) => state.settings);
   const effects = useEffectsStore((state) => state.settings);
 
@@ -47,7 +49,7 @@ export function AssetExports() {
       </div>
       <ul className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
         <AssetCard
-          title="Background"
+          title={t("colors.contrast.background")}
           description={`${background.kind} · seed ${background.seed} · ${background.width}×${background.height}`}
           preview={
             // eslint-disable-next-line @next/next/no-img-element -- generated SVG data URL
@@ -90,7 +92,7 @@ export function AssetExports() {
         />
         {optimized ? (
           <AssetCard
-            title="Optimized SVG"
+            title={t("svg.compare.optimized")}
             description={`${svgName} · ${formatBytes(optimized.before)} → ${formatBytes(optimized.after)} (−${Math.round(optimized.saved * 100)}%)`}
             preview={
               // eslint-disable-next-line @next/next/no-img-element -- optimized SVG data URL (scripts already stripped)

@@ -654,6 +654,7 @@ export const fr = {
   "typography.tab.browse": "Parcourir",
   "typography.tab.scale": "Échelle typographique",
   "typography.compare.close": "Fermer la comparaison",
+  "export.downloadJson": "Télécharger le JSON",
   "projects.storage.runtime":
     "Polices, icônes et fichiers utilisés en naviguant : {files} fichiers, {size} (limités à {limit}, les plus anciens partent d'abord)",
   "guidelines.cover.gradient": "Dégradé",

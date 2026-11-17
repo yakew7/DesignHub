@@ -648,6 +648,7 @@ export const es = {
   "typography.tab.browse": "Explorar",
   "typography.tab.scale": "Escala tipográfica",
   "typography.compare.close": "Cerrar comparación",
+  "export.downloadJson": "Descargar JSON",
   "projects.storage.runtime":
     "Fuentes, iconos y archivos usados al navegar: {files} archivos, {size} (se mantienen bajo {limit}, se eliminan primero los más antiguos)",
   "guidelines.cover.gradient": "Degradado",

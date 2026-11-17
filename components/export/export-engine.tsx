@@ -8,6 +8,7 @@ import { TokenOutput } from "@/components/export/token-output";
 import { TokenPreview } from "@/components/export/token-preview";
 import { TokenSettingsPanel } from "@/components/export/token-settings";
 import { TokenSources } from "@/components/export/token-sources";
+import { useI18n } from "@/components/layout/locale-provider";
 import { useDesignTokens } from "@/hooks/use-design-tokens";
 
 // Brand assets embed fonts and render logos; load them after the token tools are interactive.
@@ -17,6 +18,7 @@ const BrandAssetExports = dynamic(
 );
 
 export function ExportEngine() {
+  const { t } = useI18n();
   const tokens = useDesignTokens();
   const previewRef = useRef<HTMLDivElement>(null);
 
@@ -24,8 +26,8 @@ export function ExportEngine() {
     <div className="flex flex-col gap-6">
       <TokenSources tokens={tokens} />
       <div className="grid items-start gap-6 lg:grid-cols-[minmax(0,1fr)_320px]">
-        <section aria-label="Live preview" className="flex min-w-0 flex-col gap-3">
-          <h2 className="text-sm font-medium">Live preview</h2>
+        <section aria-label={t("brand.preview.title")} className="flex min-w-0 flex-col gap-3">
+          <h2 className="text-sm font-medium">{t("brand.preview.title")}</h2>
           <TokenPreview ref={previewRef} tokens={tokens} />
         </section>
         <TokenSettingsPanel />
