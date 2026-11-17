@@ -20,8 +20,7 @@ const ALLOWED: readonly { text: string; languages: readonly string[]; reason: st
  * English found when this test was added, by studio, with the issue that tracks it. Remove an entry once it is
  * translated. Studio headings are checked against their catalog entries below.
  */
-const KNOWN: Readonly<Record<string, { issue: number; texts: readonly string[] }>> = {
-};
+const KNOWN: Readonly<Record<string, { issue: number; texts: readonly string[] }>> = {};
 
 type Pattern = { keys: string[]; match: RegExp };
 

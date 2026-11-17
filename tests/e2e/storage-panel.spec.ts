@@ -1,6 +1,19 @@
 import AxeBuilder from "@axe-core/playwright";
-import { expect, test } from "@playwright/test";
+import { expect, test, type Page } from "@playwright/test";
 import { saved } from "./storage";
+
+/**
+ * Opens the Storage panel and runs the check. A click before the page has hydrated does nothing, and the panel
+ * remembers being open, so press Storage only while the check button is not there, until it is.
+ */
+async function openStorage(page: Page) {
+  const check = page.getByRole("button", { name: "Check storage" });
+  await expect(async () => {
+    if (!(await check.isVisible())) await page.getByRole("button", { name: "Storage", exact: true }).click();
+    await expect(check).toBeVisible({ timeout: 1000 });
+  }).toPass();
+  await check.click();
+}
 
 test("the storage panel shows sizes, and clearing the offline cache keeps the projects", async ({ page }) => {
   // Let the service worker install so there is an offline cache to clear.
@@ -15,8 +28,7 @@ test("the storage panel shows sizes, and clearing the offline cache keeps the pr
 
   await page.goto("/projects");
   await expect(page.locator("h1").first()).toBeVisible();
-  await page.getByRole("button", { name: "Storage", exact: true }).click();
-  await page.getByRole("button", { name: "Check storage" }).click();
+  await openStorage(page);
   const status = page.getByRole("status").filter({ hasText: "Offline cache" });
   await expect(status).toContainText("Projects");
   await expect(status).toContainText("Version history");
@@ -74,8 +86,7 @@ test("the panel lists the largest projects and trims old versions with an undo, 
   );
   await page.reload();
 
-  await page.getByRole("button", { name: "Storage", exact: true }).click();
-  await page.getByRole("button", { name: "Check storage" }).click();
+  await openStorage(page);
   await page.getByRole("button", { name: "Projects", exact: true }).click();
   const status = page.getByRole("status").filter({ hasText: "Largest projects" });
   await expect(status).toContainText("Acme");
@@ -106,8 +117,7 @@ test("the panel says whether the data is protected and asks the browser only whe
       return original();
     };
   });
-  await page.getByRole("button", { name: "Storage", exact: true }).click();
-  await page.getByRole("button", { name: "Check storage" }).click();
+  await openStorage(page);
   await page.getByRole("button", { name: "Protection", exact: true }).click();
   const status = page.getByRole("status").filter({ hasText: "Largest projects" });
   await expect(status).toContainText(/Protected:|Not protected:|cannot say/);
@@ -134,8 +144,7 @@ test("a studio that was never opened can be kept for offline use from the panel,
   await page.reload();
   await expect.poll(() => page.evaluate(() => Boolean(navigator.serviceWorker.controller))).toBe(true);
 
-  await page.getByRole("button", { name: "Storage", exact: true }).click();
-  await page.getByRole("button", { name: "Check storage" }).click();
+  await openStorage(page);
   await page.getByRole("button", { name: "Offline use", exact: true }).click();
   const group = page.getByRole("group", { name: "Keep studios for offline use" });
   const effects = group.getByRole("checkbox", { name: /^Effects/ });
@@ -179,8 +188,7 @@ test("the icon cache can be cleared on its own, and the projects stay", async ({
   );
   await page.reload();
 
-  await page.getByRole("button", { name: "Storage", exact: true }).click();
-  await page.getByRole("button", { name: "Check storage" }).click();
+  await openStorage(page);
   const status = page.getByRole("status").filter({ hasText: "Icon cache" });
   await expect(status).toContainText(/Removes 2 cached icons/);
   const projects = (await status.locator("dd").first().innerText()).split(" · ")[0];
@@ -195,8 +203,7 @@ test("the icon cache can be cleared on its own, and the projects stay", async ({
 
 test("the panel's sections start folded, and the ones opened stay open after a reload", async ({ page }) => {
   await page.goto("/projects");
-  await page.getByRole("button", { name: "Storage", exact: true }).click();
-  await page.getByRole("button", { name: "Check storage" }).click();
+  await openStorage(page);
   const projects = page.getByRole("button", { name: "Projects", exact: true });
   await expect(page.getByRole("button", { name: "Overview", exact: true })).toHaveAttribute("aria-expanded", "true");
   await expect(projects).toHaveAttribute("aria-expanded", "false");
@@ -216,8 +223,7 @@ test("the panel says so when the storage is nearly full, and its button opens th
   });
   await page.goto("/projects");
   await expect(page.locator("h1").first()).toBeVisible();
-  await page.getByRole("button", { name: "Storage", exact: true }).click();
-  await page.getByRole("button", { name: "Check storage" }).click();
+  await openStorage(page);
   await expect(page.getByText(/Storage is 85% full/)).toBeVisible();
   const projects = page.getByRole("button", { name: "Projects", exact: true });
   await expect(projects).toHaveAttribute("aria-expanded", "false");
@@ -252,8 +258,7 @@ test("the recent studios are listed under the switch, kept or with a Keep now bu
     for (const name of await caches.keys()) await (await caches.open(name)).delete("/projects", { ignoreSearch: true });
   });
 
-  await page.getByRole("button", { name: "Storage", exact: true }).click();
-  await page.getByRole("button", { name: "Check storage" }).click();
+  await openStorage(page);
   await page.getByRole("button", { name: "Offline use", exact: true }).click();
   const list = page.getByRole("list", { name: "Your recent studios" });
   await expect(list.getByRole("listitem")).toHaveText([/^Brand Projects/, /^Color.*Available offline$/]);
@@ -309,8 +314,7 @@ test("the studios used last are kept again on their own, and the switch turns it
   await expect.poll(kept, { timeout: 30_000 }).toBe(true);
 
   // The switch is on by default, turns off, and stays off after a reload.
-  await page.getByRole("button", { name: "Storage", exact: true }).click();
-  await page.getByRole("button", { name: "Check storage" }).click();
+  await openStorage(page);
   await page.getByRole("button", { name: "Offline use", exact: true }).click();
   const keep = page.getByRole("switch", { name: "Keep my recent studios" });
   await expect(keep).toBeChecked();

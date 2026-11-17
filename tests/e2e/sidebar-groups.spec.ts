@@ -64,8 +64,12 @@ test("the sidebar collapses to icons, keeps every studio reachable by name, and 
 test("on the collapsed rail a keyboard user sees each studio's name and shortcut in a tooltip", async ({ page }) => {
   await page.goto("/colors");
   const nav = page.getByRole("navigation", { name: "Studios" });
-  await nav.getByRole("button", { name: "Collapse sidebar" }).click();
-  await expect(nav.getByRole("button", { name: "Expand sidebar" })).toBeVisible();
+  // A click before the page has hydrated does nothing, so press again until the rail has collapsed.
+  await expect(async () => {
+    const collapse = nav.getByRole("button", { name: "Collapse sidebar" });
+    if (await collapse.isVisible()) await collapse.click();
+    await expect(nav.getByRole("button", { name: "Expand sidebar" })).toBeVisible({ timeout: 1000 });
+  }).toPass();
 
   // Tab from the collapse button: home, then the first studio.
   await nav.getByRole("button", { name: "Expand sidebar" }).focus();
