@@ -1,3 +1,4 @@
+import { areaMessages } from "@/lib/i18n/area-parts";
 import type { en } from "@/lib/i18n/messages/en";
 import { enCore } from "@/lib/i18n/messages/en-core";
 
@@ -57,18 +58,21 @@ export function format(template: string, params?: Record<string, string | number
   );
 }
 
-/** Looks a key up in a catalog, falling back to English when the catalog leaves it out. */
-function lookup(catalog: Catalog, key: MessageKey): string {
-  return catalog[key] ?? english[key] ?? key;
+/**
+ * Looks a key up in a catalog, then in the language's studio areas loaded so far (lib/i18n/area-parts.ts), and falls
+ * back to English when neither has it.
+ */
+function lookup(catalog: Catalog, key: MessageKey, language: string): string {
+  return catalog[key] ?? areaMessages(language)?.[key] ?? english[key] ?? key;
 }
 
 export function createTranslator(catalog: Catalog, language: string): { t: Translate; plural: TranslatePlural } {
   const rules = new Intl.PluralRules(language);
-  const t: Translate = (key, ...args) => format(lookup(catalog, key), args[0]);
+  const t: Translate = (key, ...args) => format(lookup(catalog, key, language), args[0]);
   const plural: TranslatePlural = (base, count, ...args) => {
     // Catalogs only define "one" and "other"; categories like "few" or "many" use "other".
     const key = rules.select(count) === "one" ? (`${base}.one` as MessageKey) : (`${base}.other` as MessageKey);
-    return format(lookup(catalog, key), { ...args[0], count: count.toLocaleString(language) });
+    return format(lookup(catalog, key, language), { ...args[0], count: count.toLocaleString(language) });
   };
   return { t, plural };
 }

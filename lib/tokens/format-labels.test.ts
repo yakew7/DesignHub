@@ -1,11 +1,11 @@
 import { describe, expect, test } from "vitest";
 
-import { fr } from "@/lib/i18n/messages/fr";
+import { catalogs } from "@/lib/i18n/all-catalogs";
 import { createTranslator } from "@/lib/i18n/translate";
 import { tokenFormatDefinitions } from "@/lib/tokens/formats";
 import { translateFormatLabels } from "@/lib/tokens/format-labels";
 
-const { t } = createTranslator(fr, "fr");
+const { t } = createTranslator(catalogs.fr, "fr");
 
 describe("translateFormatLabels", () => {
   test("translates the label of a format that has a message and keeps everything else", () => {

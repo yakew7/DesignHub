@@ -2,6 +2,7 @@
 
 import { createContext, useContext, useEffect, useMemo, useState, useSyncExternalStore, type ReactNode } from "react";
 
+import { areaPartsVersion, setActiveLocale, subscribeAreaParts } from "@/lib/i18n/area-parts";
 import { defaultLocale, isLocale, loadCatalog, LOCALE_STORAGE_KEY, type Locale } from "@/lib/i18n/locales";
 import { preferredLocale, writeStoredLocale } from "@/lib/i18n/storage";
 import { createTranslator, type Catalog, type Translate, type TranslatePlural } from "@/lib/i18n/translate";
@@ -71,10 +72,16 @@ export function LocaleProvider({ children }: { children: ReactNode }) {
       current = false;
     };
   }, [locale]);
+  // The studio areas' messages in this language load as the areas appear (lib/i18n/area-parts.ts); the translator is
+  // made again each time one arrives, so the text on the page changes from English to the language.
+  useEffect(() => setActiveLocale(locale), [locale]);
+  const partsVersion = useSyncExternalStore(subscribeAreaParts, areaPartsVersion, () => 0);
   const value = useMemo(
     () =>
       loadedCatalog.locale === locale ? i18nFor(locale, loadedCatalog.catalog) : i18nFor(locale, {}, defaultLocale),
-    [locale, loadedCatalog],
+    // `partsVersion` is not read inside: it only asks for a new translator when a part has loaded.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [locale, loadedCatalog, partsVersion],
   );
 
   useEffect(() => {
