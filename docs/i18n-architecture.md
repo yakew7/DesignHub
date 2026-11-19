@@ -38,10 +38,11 @@ The server and the first paint are always English, so hydration matches; the lan
 
 ## Adding an area
 
-1. Create `en-<area>.ts` exporting `en<Area>`, and `es-<area>.ts`, `fr-<area>.ts`, `hi-<area>.ts` exporting `es<Area>` and so on, and join them in `en.ts` and `all-catalogs.ts`.
-2. Create `lib/i18n/areas/<area>.ts`, copying an existing one, and import it from the files that use the keys.
+Run `pnpm new:area <name>` (for example `pnpm new:area reports`). It creates `en-<name>.ts`, `es-<name>.ts`, `fr-<name>.ts` and `hi-<name>.ts` (empty, exporting `en<Name>` and so on) and `lib/i18n/areas/<name>.ts`, joins the new parts in `lib/i18n/messages/en.ts`, `lib/i18n/all-catalogs.ts` and `lib/i18n/areas.test.ts`, and refuses a name that exists. Then:
+
+1. Add the keys, starting with `<name>.`, to the four parts.
+2. Add `import "@/lib/i18n/areas/<name>";` to every file that uses one of them (`pnpm check:areas` finds the ones you missed).
 3. Add the prefix to `completeAreas` in `lib/i18n/complete-areas.ts` when every language has all its keys.
-4. Add the part to `lib/i18n/areas.test.ts`.
 
 ## Why it is built this way
 

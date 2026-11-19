@@ -21,6 +21,7 @@
     "check:unused": "knip",
     "check:messages": "node scripts/check-messages.mjs",
     "check:areas": "node scripts/check-areas.mjs",
+    "new:area": "node scripts/new-area.mjs",
     "audit:summary": "node scripts/audit-summary.mjs"
   },
   "packageManager": "pnpm@11.17.0",
