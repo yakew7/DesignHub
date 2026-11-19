@@ -23,3 +23,11 @@ export async function saved(page: Page, key: string, text: string) {
     )
     .toBe(true);
 }
+
+/**
+ * Waits until the page has hydrated. A click or a typed value before that does nothing, because the app's handlers
+ * are not attached yet. Call it after `page.goto` or `page.reload`, before the first interaction.
+ */
+export async function hydrated(page: Page) {
+  await expect(page.locator("html")).toHaveAttribute("data-hydrated", "true");
+}

@@ -1,17 +1,12 @@
 import AxeBuilder from "@axe-core/playwright";
 import { expect, test, type Page } from "@playwright/test";
-import { saved } from "./storage";
+import { hydrated, saved } from "./storage";
 
-/**
- * Opens the Storage panel and runs the check. A click before the page has hydrated does nothing, and the panel
- * remembers being open, so press Storage only while the check button is not there, until it is.
- */
+/** Opens the Storage panel (it remembers being open, so only when it is closed) and runs the check. */
 async function openStorage(page: Page) {
+  await hydrated(page);
   const check = page.getByRole("button", { name: "Check storage" });
-  await expect(async () => {
-    if (!(await check.isVisible())) await page.getByRole("button", { name: "Storage", exact: true }).click();
-    await expect(check).toBeVisible({ timeout: 1000 });
-  }).toPass();
+  if (!(await check.isVisible())) await page.getByRole("button", { name: "Storage", exact: true }).click();
   await check.click();
 }
 
@@ -46,7 +41,11 @@ test("the storage panel shows sizes, and clearing the offline cache keeps the pr
   await expect(status).not.toContainText("Available offline");
   // The share cache and the projects are untouched: the same number of projects is still counted.
   expect((await status.locator("dd").first().innerText()).split(" · ")[0]).toBe(projects);
-  await expect(page.getByRole("button", { name: "Clear the offline cache" })).toHaveCount(0);
+  // The app shell's cache is gone. (The runtime cache can fill again at once with a file the page loads late, such as
+  // the toaster's code, so the button may come back; what was cleared is what is checked.)
+  await expect
+    .poll(() => page.evaluate(async () => (await caches.keys()).some((name) => name.startsWith("designhub-static-"))))
+    .toBe(false);
 });
 
 test("the panel lists the largest projects and trims old versions with an undo, keeping the newest", async ({

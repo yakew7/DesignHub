@@ -1,5 +1,5 @@
 import { expect, test, type Page } from "@playwright/test";
-import { saved } from "./storage";
+import { hydrated, saved } from "./storage";
 
 /** Controls that only Advanced mode shows, by studio: the panels and fields listed here are the whole split. */
 const advancedPanels = [
@@ -193,11 +193,9 @@ test("the export settings fold the Include switches, and an opened fold stays op
 }) => {
   await page.goto("/export");
   const advanced = modeGroup(page).getByRole("radio", { name: "Advanced" });
-  // A click before the page has hydrated does nothing, so press again until the mode has changed.
-  await expect(async () => {
-    await advanced.click();
-    await expect(advanced).toHaveAttribute("aria-checked", "true", { timeout: 1000 });
-  }).toPass();
+  await hydrated(page);
+  await advanced.click();
+  await expect(advanced).toHaveAttribute("aria-checked", "true");
   const include = page.getByRole("button", { name: "Include", exact: true });
   await expect(include).toHaveAttribute("aria-expanded", "false");
   await expect(page.getByRole("group", { name: "Include" })).toBeHidden();

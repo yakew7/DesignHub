@@ -12,6 +12,8 @@ import { readFile } from "node:fs/promises";
 
 import { expect, test, type Page } from "@playwright/test";
 
+import { hydrated } from "./storage";
+
 /** Waits for a studio's heading, so the test continues from a settled page and never from a fixed delay. */
 async function ready(page: Page) {
   await expect(page.locator("h1").first()).toBeVisible();
@@ -102,7 +104,9 @@ test("keyboard only: the command palette, a jump with G and a letter, and the co
   await ready(page);
 
   // Jump with G, then a letter: E is the Export Engine.
-  // The shortcut listener attaches when the page hydrates, which can lag on a busy machine: try again until it is there.
+  // The shortcut listener attaches when the page hydrates, and again after a move to another studio, which can lag
+  // on a busy machine: wait for hydration, then try the chord again until the listener is there.
+  await hydrated(page);
   await expect(async () => {
     await page.keyboard.press("g");
     await page.keyboard.press("e");

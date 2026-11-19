@@ -1,5 +1,5 @@
 import { expect, test, type Locator } from "@playwright/test";
-import { saved } from "./storage";
+import { hydrated, saved } from "./storage";
 
 test("sidebar groups fold with the keyboard, remember it, and the current studio's group stays open", async ({
   page,
@@ -64,12 +64,9 @@ test("the sidebar collapses to icons, keeps every studio reachable by name, and 
 test("on the collapsed rail a keyboard user sees each studio's name and shortcut in a tooltip", async ({ page }) => {
   await page.goto("/colors");
   const nav = page.getByRole("navigation", { name: "Studios" });
-  // A click before the page has hydrated does nothing, so press again until the rail has collapsed.
-  await expect(async () => {
-    const collapse = nav.getByRole("button", { name: "Collapse sidebar" });
-    if (await collapse.isVisible()) await collapse.click();
-    await expect(nav.getByRole("button", { name: "Expand sidebar" })).toBeVisible({ timeout: 1000 });
-  }).toPass();
+  await hydrated(page);
+  await nav.getByRole("button", { name: "Collapse sidebar" }).click();
+  await expect(nav.getByRole("button", { name: "Expand sidebar" })).toBeVisible();
 
   // Tab from the collapse button: home, then the first studio.
   await nav.getByRole("button", { name: "Expand sidebar" }).focus();

@@ -1,9 +1,12 @@
 import { expect, test } from "@playwright/test";
 
+import { hydrated } from "./storage";
+
 test("variable-axis animation respects reduced motion", async ({ page }) => {
   await page.emulateMedia({ reducedMotion: "reduce" });
   await page.goto("/typography");
   await expect(page.locator("h1").first()).toBeVisible();
+  await hydrated(page);
 
   await page.getByRole("radio", { name: "Advanced" }).click();
   await page.getByRole("switch", { name: "Variable only" }).click();
