@@ -1,8 +1,7 @@
 import { expect, test, type Page } from "@playwright/test";
 
-import { hydrated } from "./hydrated";
 import { readTable } from "./indexeddb";
-import { saved } from "./storage";
+import { hydrated, saved } from "./storage";
 
 type Project = {
   id: string;

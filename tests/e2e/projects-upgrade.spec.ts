@@ -3,7 +3,7 @@ import { join } from "node:path";
 
 import { expect, test } from "@playwright/test";
 
-import { hydrated } from "./hydrated";
+import { hydrated } from "./storage";
 import { createVersionFiveDatabase, databaseShape, readTable, type VersionFiveRows } from "./indexeddb";
 
 type Project = { id: string; favorite: boolean; tags: string[]; snapshot: { brand: { profile: { name: string } } } };
