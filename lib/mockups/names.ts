@@ -1,3 +1,4 @@
+// check-areas: ignore the components that show these names import the mockups area
 import { translateName } from "@/lib/i18n/dynamic-key";
 import type { Translate } from "@/lib/i18n/translate";
 import type { MockupCategory } from "@/lib/mockups/types";

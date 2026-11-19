@@ -1,3 +1,4 @@
+// check-areas: ignore its English text is for logs and tests; the studio that shows a problem imports the svg area
 import { parseSync } from "svgson";
 
 import { localized, type Localized } from "@/lib/i18n/errors";

@@ -1,5 +1,7 @@
 "use client";
 
+import "@/lib/i18n/areas/svg";
+
 import { Upload } from "lucide-react";
 import { useState, type DragEvent, type ReactNode } from "react";
 import { toast } from "@/lib/toast";

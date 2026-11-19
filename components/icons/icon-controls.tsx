@@ -1,5 +1,7 @@
 "use client";
 
+import "@/lib/i18n/areas/icons";
+
 import { FlipHorizontal2, FlipVertical2, RotateCcw, RotateCw } from "lucide-react";
 
 import { useI18n } from "@/components/layout/locale-provider";

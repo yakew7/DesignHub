@@ -1,3 +1,4 @@
+// check-areas: ignore the components that show these labels import the icons area
 import type { PlainMessageKey } from "@/lib/i18n/translate";
 import type { IconId } from "@/types/icons";
 

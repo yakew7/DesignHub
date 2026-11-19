@@ -1,5 +1,7 @@
 "use client";
 
+import "@/lib/i18n/areas/svg";
+
 import { Download } from "lucide-react";
 
 import { SwitchField } from "@/components/effects/fields";

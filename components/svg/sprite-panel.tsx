@@ -1,5 +1,7 @@
 "use client";
 
+import "@/lib/i18n/areas/svg";
+
 import { Download, Plus, Trash2, Upload } from "lucide-react";
 import { useId, useMemo, useRef, useState } from "react";
 import { toast } from "@/lib/toast";

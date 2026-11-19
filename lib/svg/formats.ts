@@ -1,3 +1,4 @@
+// check-areas: ignore the components that show these labels import the svg area
 import { componentNameFromFile, reactComponent, toJsx, withCurrentColor } from "@/lib/svg/jsx";
 import { translateName } from "@/lib/i18n/dynamic-key";
 import type { Translate } from "@/lib/i18n/translate";

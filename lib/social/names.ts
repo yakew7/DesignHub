@@ -1,3 +1,4 @@
+// check-areas: ignore the components that show these names import the social area
 import { keySlug, translateName } from "@/lib/i18n/dynamic-key";
 import type { Translate } from "@/lib/i18n/translate";
 import type { SocialTemplateInfo } from "@/lib/social/types";

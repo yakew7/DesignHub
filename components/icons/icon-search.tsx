@@ -1,5 +1,7 @@
 "use client";
 
+import "@/lib/i18n/areas/icons";
+
 import { Search, X } from "lucide-react";
 import { useRef } from "react";
 

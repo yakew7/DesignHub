@@ -32,7 +32,7 @@ The server and the first paint are always English, so hydration matches; the lan
 ## Adding a message
 
 1. Add the key to the English part its prefix belongs to (`en-colors.ts` for `colors.`), or to `en-core.ts` if every route needs it. Sentence case, no em dashes, `{name}` for placeholders, `.one` and `.other` for plurals.
-2. If the file that uses it is the first to use that area, add `import "@/lib/i18n/areas/<area>";` to it. Any file that uses a key of an area must import the area, or the key shows as text such as `colors.tab.export`. `tests/e2e/no-raw-keys.spec.ts` opens every studio and each of its tabs and fails on such text.
+2. If the file that uses it is the first to use that area, add `import "@/lib/i18n/areas/<area>";` to it. Any file that uses a key of an area must import the area, or the key shows as text such as `colors.tab.export`. `pnpm check:areas` (it runs in CI and takes about a second) reads the source and fails on every file that uses a key of an area without importing it, directly or through a file of its own folder that it imports; a file that only names keys for components that import the area can opt out with `// check-areas: ignore <reason>`. `tests/e2e/no-raw-keys.spec.ts` opens every studio and each of its tabs and fails on any text that looks like a key.
 3. Add the translation to the same part of `es`, `fr` and `hi` when you can (`es-colors.ts`). A key in the wrong part still works, because the core is always loaded, but keep to the part of its prefix.
 4. Run `pnpm test` (keys, placeholders, complete areas) and `pnpm check:messages` (keys that nothing uses).
 

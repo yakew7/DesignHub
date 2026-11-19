@@ -1,5 +1,7 @@
 "use client";
 
+import "@/lib/i18n/areas/logo";
+
 import { useI18n } from "@/components/layout/locale-provider";
 import { SwitchField } from "@/components/effects/fields";
 import { SliderField } from "@/components/ui/field";

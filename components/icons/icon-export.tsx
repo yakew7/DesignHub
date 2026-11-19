@@ -1,5 +1,7 @@
 "use client";
 
+import "@/lib/i18n/areas/icons";
+
 import { Download, ImageDown } from "lucide-react";
 import { useMemo } from "react";
 import { toast } from "@/lib/toast";

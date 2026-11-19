@@ -1,5 +1,7 @@
 "use client";
 
+import "@/lib/i18n/areas/icons";
+
 import { Download, FileArchive, Loader2 } from "lucide-react";
 import { useState } from "react";
 import { toast } from "@/lib/toast";

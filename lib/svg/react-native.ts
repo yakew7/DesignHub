@@ -1,3 +1,4 @@
+import "@/lib/i18n/areas/svg";
 import { localized, type Localized } from "@/lib/i18n/errors";
 import { englishText, format } from "@/lib/i18n/translate";
 import { componentNameFromFile, toJsx } from "@/lib/svg/jsx";

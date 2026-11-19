@@ -1,5 +1,7 @@
 "use client";
 
+import "@/lib/i18n/areas/svg";
+
 import { useMemo } from "react";
 
 import { SwitchField } from "@/components/effects/fields";

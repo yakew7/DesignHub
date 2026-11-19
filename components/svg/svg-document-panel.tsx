@@ -1,5 +1,7 @@
 "use client";
 
+import "@/lib/i18n/areas/svg";
+
 import { ClipboardPaste, FileCode2, RotateCcw, Upload } from "lucide-react";
 import { useRef } from "react";
 import { toast } from "@/lib/toast";

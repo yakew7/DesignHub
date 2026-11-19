@@ -1,5 +1,7 @@
 "use client";
 
+import "@/lib/i18n/areas/logo";
+
 import { useI18n } from "@/components/layout/locale-provider";
 import { BrandLogo } from "@/components/brand/brand-logo";
 import { FAVICON_PREVIEW_SIZES, TAB_THEMES, faviconSvg } from "@/lib/logo/favicon-preview";

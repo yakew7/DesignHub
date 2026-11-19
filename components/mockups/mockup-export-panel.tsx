@@ -1,5 +1,7 @@
 "use client";
 
+import "@/lib/i18n/areas/mockups";
+
 import { ClipboardCopy, FileText, ImageDown, Loader2 } from "lucide-react";
 import { useState } from "react";
 import { toast } from "@/lib/toast";

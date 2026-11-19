@@ -1,5 +1,7 @@
 "use client";
 
+import "@/lib/i18n/areas/logo";
+
 import { BrandLogoField } from "@/components/brand/fields/brand-logo-field";
 import { useI18n } from "@/components/layout/locale-provider";
 import { Panel } from "@/components/ui/panel";

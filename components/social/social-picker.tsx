@@ -1,5 +1,7 @@
 "use client";
 
+import "@/lib/i18n/areas/social";
+
 import { ChevronDown, Search } from "lucide-react";
 import { useState, type Dispatch, type SetStateAction } from "react";
 

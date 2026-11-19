@@ -1,5 +1,7 @@
 "use client";
 
+import "@/lib/i18n/areas/logo";
+
 import { Download, FileArchive, FileText, Globe, ImageDown, Loader2, PenTool, RotateCcw } from "lucide-react";
 import { useMemo, useState } from "react";
 import { toast } from "@/lib/toast";

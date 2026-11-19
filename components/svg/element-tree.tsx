@@ -1,5 +1,7 @@
 "use client";
 
+import "@/lib/i18n/areas/svg";
+
 import { useMemo, type KeyboardEvent } from "react";
 
 import { useI18n } from "@/components/layout/locale-provider";

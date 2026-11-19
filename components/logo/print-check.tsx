@@ -1,5 +1,7 @@
 "use client";
 
+import "@/lib/i18n/areas/logo";
+
 import { Check, Loader2, X } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
 

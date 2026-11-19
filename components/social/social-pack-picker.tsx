@@ -1,5 +1,7 @@
 "use client";
 
+import "@/lib/i18n/areas/social";
+
 import { ChevronDown } from "lucide-react";
 import { Fragment, useState } from "react";
 

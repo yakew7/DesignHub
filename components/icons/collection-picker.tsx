@@ -1,5 +1,7 @@
 "use client";
 
+import "@/lib/i18n/areas/icons";
+
 import { Check, ChevronsUpDown, Library } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
 

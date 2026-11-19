@@ -1,5 +1,7 @@
 "use client";
 
+import "@/lib/i18n/areas/svg";
+
 import { useI18n } from "@/components/layout/locale-provider";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";

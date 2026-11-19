@@ -1,5 +1,7 @@
 "use client";
 
+import "@/lib/i18n/areas/logo";
+
 import { ChevronDown, Search } from "lucide-react";
 import { useMemo, useState } from "react";
 
