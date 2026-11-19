@@ -285,6 +285,10 @@ Translation changes should preserve the existing message keys and placeholders. 
 4. Pick the language in the header switcher and check the shell and Brand Projects at a mobile width, where longer words can wrap.
 5. Inter and Space Grotesk only cover Latin scripts. For another script, add system fonts that cover it to `--font-sans` and `--font-display` in `app/globals.css`, as Hindi does with Kohinoor and Noto Sans Devanagari.
 
+## Releases
+
+A release is a tag (`v1.3.0`) and a GitHub release made from it. Before tagging, move the `Unreleased` entries of `CHANGELOG.md` under a new `## v1.3.0 - <date>` heading, set the version in `package.json` and `lib/site.ts`, and add the release to the README roadmap. Then publish the release: if its notes are empty, `.github/workflows/release.yml` fills them from that CHANGELOG section (`node scripts/release-notes.mjs v1.3.0` prints it) and attaches the build. The job fails with a clear message when the section is missing, so write it first.
+
 ## Component guidelines
 
 - Start from the primitives in `components/ui` (Button, Input, Panel, Select, Switch, ToggleGroup, Dialog). Add a primitive there only when two studios need it.

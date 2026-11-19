@@ -13,6 +13,18 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v7
+      # A release published with no notes gets the CHANGELOG section of its tag, so the notes and the changelog agree.
+      # The job fails with a clear message when the section is missing.
+      - name: Release notes from the CHANGELOG
+        env:
+          GH_TOKEN: ${{ github.token }}
+          TAG: ${{ github.event.release.tag_name }}
+          BODY: ${{ github.event.release.body }}
+        run: |
+          if [ -z "$(printf '%s' "$BODY" | tr -d '[:space:]')" ]; then
+            node scripts/release-notes.mjs "$TAG" > release-notes.md
+            gh release edit "$TAG" --notes-file release-notes.md
+          fi
       - uses: pnpm/action-setup@v6
       - uses: actions/setup-node@v7
         with:
