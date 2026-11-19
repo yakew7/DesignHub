@@ -14,10 +14,14 @@ Reports about the AI provider's key handling (for example the key reaching stora
 
 | Version        | Supported         |
 | -------------- | ----------------- |
-| 1.0.x (latest) | ✅ Security fixes |
-| < 1.0          | ❌ Not supported  |
+| 1.2.x (latest) | ✅ Security fixes |
+| < 1.2          | ❌ Not supported  |
 
 Only the latest release on the `main` branch receives security updates. Please upgrade before reporting.
+
+## Dependency advisories
+
+Every run of the CI workflow audits the production dependencies (`pnpm audit --prod`) and lists any known advisory in the job summary (`scripts/audit-summary.mjs`). A high or critical advisory fails the job; a moderate or lower one is listed and fixed in the next dependency update. `next build` itself also stops on a Next.js version that has a known advisory, so a vulnerable framework version does not ship. Dependabot proposes the updates; a security update is merged as soon as CI passes.
 
 ## Reporting a vulnerability
 

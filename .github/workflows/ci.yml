@@ -29,6 +29,12 @@ jobs:
       - run: pnpm format:check
       # Unused files, exports and dependencies (knip.json lists the few exceptions, each with a reason in the docs).
       - run: pnpm check:unused
+      # Known advisories in the production dependencies, listed in the job summary. High and critical ones fail the
+      # job; a moderate or lower one is only listed. The audit itself may not fail the step (the registry can be down).
+      - name: Dependency advisories
+        run: |
+          pnpm audit --prod --json > audit.json || true
+          node scripts/audit-summary.mjs audit.json >> "$GITHUB_STEP_SUMMARY"
       # Every file that uses a studio area's messages imports the area (docs/i18n-architecture.md); fails the job.
       - run: pnpm check:areas
       # English messages nothing refers to (each costs bytes in every route). Lists them and does not fail the job.
