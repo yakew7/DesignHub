@@ -3,7 +3,7 @@
 import { createContext, useContext, useEffect, useMemo, useState, useSyncExternalStore, type ReactNode } from "react";
 
 import { areaPartsVersion, setActiveLocale, subscribeAreaParts } from "@/lib/i18n/area-parts";
-import { defaultLocale, isLocale, loadCatalog, LOCALE_STORAGE_KEY, type Locale } from "@/lib/i18n/locales";
+import { defaultLocale, isLocale, loadCatalog, LOCALE_STORAGE_KEY, localeNames, type Locale } from "@/lib/i18n/locales";
 import { preferredLocale, writeStoredLocale } from "@/lib/i18n/storage";
 import { createTranslator, type Catalog, type Translate, type TranslatePlural } from "@/lib/i18n/translate";
 
@@ -17,12 +17,16 @@ type I18n = {
 const listeners = new Set<() => void>();
 // Remembers a choice made in this tab even when storage is blocked.
 let chosen: Locale | null = null;
+// The language a person has just chosen and that has not been announced yet. The announcement waits for the language's
+// core messages, and only a choice made here sets it: the language a page opens in is not announced.
+let toAnnounce: Locale | null = null;
 
 function notify() {
   for (const listener of listeners) listener();
 }
 
 function setLocale(locale: Locale) {
+  if (locale !== getSnapshot()) toAnnounce = locale;
   chosen = locale;
   writeStoredLocale(locale);
   notify();
@@ -65,9 +69,18 @@ export function LocaleProvider({ children }: { children: ReactNode }) {
     locale: defaultLocale,
     catalog: {},
   });
+  const [announcement, setAnnouncement] = useState("");
   useEffect(() => {
     let current = true;
-    void loadCatalog(locale).then((catalog) => current && setLoadedCatalog({ locale, catalog }));
+    void loadCatalog(locale).then((catalog) => {
+      if (!current) return;
+      setLoadedCatalog({ locale, catalog });
+      // Once the core messages are in, say the new language's own name, once. The studio parts that follow are not announced.
+      if (toAnnounce === locale) {
+        toAnnounce = null;
+        setAnnouncement(localeNames[locale]);
+      }
+    });
     return () => {
       current = false;
     };
@@ -84,11 +97,30 @@ export function LocaleProvider({ children }: { children: ReactNode }) {
     [locale, loadedCatalog, partsVersion],
   );
 
+  // The page's `lang` is the language its text is in. It changes when the new language's core messages arrive, together
+  // with the announcement, so a screen reader does not read English text in the new voice while they load.
+  const textLocale = loadedCatalog.locale;
   useEffect(() => {
-    document.documentElement.lang = locale;
-  }, [locale]);
+    document.documentElement.lang = textLocale;
+  }, [textLocale]);
 
-  return <I18nContext.Provider value={value}>{children}</I18nContext.Provider>;
+  return (
+    <I18nContext.Provider value={value}>
+      {children}
+      {/* In the new language, so it is read in that voice. Always in the page, because a live region that appears
+          together with its text is often not announced. */}
+      <div
+        role="status"
+        aria-live="polite"
+        aria-atomic="true"
+        lang={textLocale}
+        className="sr-only"
+        data-testid="language-announcement"
+      >
+        {announcement}
+      </div>
+    </I18nContext.Provider>
+  );
 }
 
 /** The current language, a way to change it, and `t` / `plural` to read messages in it. */
