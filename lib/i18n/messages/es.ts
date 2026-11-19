@@ -231,6 +231,8 @@ export const es = {
   "background.variant.zigzag.label": "Zigzag",
   "background.variant.chevron.label": "Chevron",
   "background.variant.squiggle.label": "Garabatos",
+  "code.note.gtk": "Poco usado. Se eliminará en la 2.1; copia el archivo que necesites antes de entonces.",
+  "code.note.stylus": "Poco usado. Se eliminará en la 2.1; la exportación SCSS o Less cubre las mismas variables.",
   "pwa.rekept.one": "{count} estudio guardado de nuevo para usar sin conexión tras la actualización",
   "pwa.rekept.other": "{count} estudios guardados de nuevo para usar sin conexión tras la actualización",
   "typography.tab.browse": "Explorar",

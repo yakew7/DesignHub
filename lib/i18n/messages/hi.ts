@@ -230,6 +230,8 @@ export const hi = {
   "background.variant.zigzag.label": "ज़िगज़ैग",
   "background.variant.chevron.label": "शेवरॉन",
   "background.variant.squiggle.label": "टेढ़ी-मेढ़ी रेखाएँ",
+  "code.note.gtk": "इसका उपयोग कम होता है। इसे 2.1 में हटा दिया जाएगा; तब तक अपनी ज़रूरत की फ़ाइल कॉपी कर लें।",
+  "code.note.stylus": "इसका उपयोग कम होता है। इसे 2.1 में हटा दिया जाएगा; SCSS या Less एक्सपोर्ट वही वेरिएबल देता है।",
   "pwa.rekept.one": "अपडेट के बाद {count} स्टूडियो फिर से ऑफ़लाइन उपयोग के लिए रखा गया",
   "pwa.rekept.other": "अपडेट के बाद {count} स्टूडियो फिर से ऑफ़लाइन उपयोग के लिए रखे गए",
   "typography.tab.browse": "ब्राउज़ करें",

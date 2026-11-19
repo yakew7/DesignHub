@@ -13,7 +13,11 @@ import { cn } from "@/lib/utils";
 import type { ExportFormat, ExportTier } from "@/types/export";
 
 /** A format with its code, or without it when `renderCode` writes the code of the open format on demand. */
-export type ExportPanelFormat = Omit<ExportFormat, "code"> & { code?: string };
+export type ExportPanelFormat = Omit<ExportFormat, "code"> & {
+  code?: string;
+  /** Other names the search finds the format by, such as its English name when `label` is translated. */
+  aliases?: string[];
+};
 
 type ExportPanelProps = {
   formats: ExportPanelFormat[];
@@ -29,7 +33,7 @@ type ExportPanelProps = {
 
 /** The words a search matches on: what a person would type for a format. */
 function matches(format: ExportPanelFormat, query: string): boolean {
-  const text = `${format.label} ${format.id} ${format.filename}`.toLowerCase();
+  const text = `${format.label} ${(format.aliases ?? []).join(" ")} ${format.id} ${format.filename}`.toLowerCase();
   return query
     .toLowerCase()
     .split(/\s+/)

@@ -11,10 +11,33 @@ const formatLabelKeys: Readonly<Record<string, PlainMessageKey>> = {
   json: "colors.export.format.json",
 };
 
-/** The formats with their labels in the chosen language. Ids, file names and code are untouched. */
-export function translateFormatLabels<T extends { id: string; label: string }>(t: Translate, formats: T[]): T[] {
+/** The messages for the deprecation notes in `lib/tokens/tiers.ts`, whose English text is also what the CLI prints. */
+const noteKeys: Readonly<Record<string, PlainMessageKey>> = {
+  gtk: "code.note.gtk",
+  stylus: "code.note.stylus",
+};
+
+const own = (table: Readonly<Record<string, PlainMessageKey>>, id: string): PlainMessageKey | undefined =>
+  Object.hasOwn(table, id) ? table[id] : undefined;
+
+/**
+ * The formats with their labels and deprecation notes in the chosen language. Ids, file names and code are untouched.
+ * A format whose label changed keeps its English label in `aliases`, so the format search finds it by either name.
+ */
+export function translateFormatLabels<T extends { id: string; label: string; deprecated?: string }>(
+  t: Translate,
+  formats: T[],
+): (T & { aliases?: string[] })[] {
   return formats.map((format) => {
-    const key = Object.hasOwn(formatLabelKeys, format.id) ? formatLabelKeys[format.id] : undefined;
-    return key ? { ...format, label: t(key) } : format;
+    const labelKey = own(formatLabelKeys, format.id);
+    const noteKey = format.deprecated ? own(noteKeys, format.id) : undefined;
+    if (!labelKey && !noteKey) return format;
+    const label = labelKey ? t(labelKey) : format.label;
+    return {
+      ...format,
+      label,
+      ...(noteKey ? { deprecated: t(noteKey) } : {}),
+      ...(label !== format.label ? { aliases: [format.label] } : {}),
+    };
   });
 }

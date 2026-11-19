@@ -232,6 +232,8 @@ export const enCore = {
   "background.variant.zigzag.label": "Zigzag",
   "background.variant.chevron.label": "Chevron",
   "background.variant.squiggle.label": "Squiggle",
+  "code.note.gtk": "Rarely used. It will be removed in 2.1; copy the file you need before then.",
+  "code.note.stylus": "Rarely used. It will be removed in 2.1; the SCSS or Less export covers the same variables.",
   "pwa.rekept.one": "{count} studio kept for offline use again after the update",
   "pwa.rekept.other": "{count} studios kept for offline use again after the update",
   "typography.tab.browse": "Browse",
