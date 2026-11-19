@@ -9,12 +9,19 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- A language change is announced to a screen reader (the new language's own name, once), and `document.documentElement.lang` follows the language of the text on the page.
+- The tier names and deprecation notes of the token formats are translated, and the format search finds a format by its English or translated name.
+- `pnpm check:areas` (every file that uses an area's messages imports the area; runs in CI), `pnpm new:area <name>` (starts a message area), `scripts/audit-summary.mjs` (dependency advisories in the CI job summary; high and critical fail it) and `scripts/release-notes.mjs` (an empty release gets its CHANGELOG section as notes).
+- A `data-hydrated` mark on the root element and `hydrated(page)` for the end-to-end tests; tests for the upgrade from a saved version 5 database and for the summary row staying in step with the project.
+- The no-English check opens every tab and reads aria-labels, titles and placeholders too; the English it found is listed with issues (#583 to #585).
 - Translated: the Effects Lab, Background Studio (generator names), Typography Studio, Export Engine, Brand Studio, Brand Guidelines and SVG Playground labels the no-English test named, and the README written into the social ZIP.
 - `docs/i18n-architecture.md` (how messages load, how to add one) and `tests/e2e/no-raw-keys.spec.ts` (fails on text that looks like a message key in any studio or tab).
 - Where the home page's time goes, with numbers, in `docs/performance.md`.
 
 ### Changed
 
+- Every component file imports the area whose messages it uses (the Icon, Logo, Mockup, Social and SVG components did it through their workspace before).
+- The Storage clear test checks that the app shell's cache is gone, as the runtime cache can fill again at once.
 - The Colors, Projects and Brand English messages load with the code that uses them, and Spanish, French and Hindi are split the same way (a core and a part per area): a person reading another language downloads a studio's messages with the studio. Every route's first load is smaller again (the home page is 239 kB gzipped).
 
 ### Fixed
