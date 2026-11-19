@@ -1,0 +1,2860 @@
+{
+ "kv": [
+  {
+   "key": "designhub:project",
+   "value": "{\"state\":{\"activeId\":\"0a1b2c3d-4e5f-4a6b-8c7d-9e0f1a2b3c04\",\"sort\":\"opened\",\"exportHistory\":false},\"version\":1}",
+   "updatedAt": 1760000300000
+  },
+  {
+   "key": "designhub:mode",
+   "value": "{\"state\":{\"mode\":\"advanced\",\"decided\":true},\"version\":1}",
+   "updatedAt": 1760000001000
+  },
+  {
+   "key": "designhub:colors",
+   "value": "{\"state\":{\"swatches\":[{\"id\":\"sw_95116be4\",\"color\":{\"l\":0.2076819155738133,\"c\":0.03982432659974598,\"h\":265.7548754713905,\"alpha\":1},\"locked\":false},{\"id\":\"sw_7b2852ab\",\"color\":{\"l\":0.5854043125544901,\"c\":0.20405527824372596,\"h\":277.11729232808455,\"alpha\":1},\"locked\":false},{\"id\":\"sw_5cb9ea91\",\"color\":{\"l\":0.7252664125825393,\"c\":0.17522734150856534,\"h\":349.7607396894376,\"alpha\":1},\"locked\":false},{\"id\":\"sw_104f97fa\",\"color\":{\"l\":0.8608898880667115,\"c\":0.16252743670617992,\"h\":86.98328816187376,\"alpha\":1},\"locked\":false},{\"id\":\"sw_8239ede0\",\"color\":{\"l\":0.7729443867354562,\"c\":0.15349040394553426,\"h\":163.2230861936597,\"alpha\":1},\"locked\":false}],\"shadeOptions\":{\"hueShift\":0,\"anchor\":true},\"gradient\":{\"type\":\"linear\",\"angle\":135,\"x\":50,\"y\":50,\"interpolation\":\"oklch\",\"stops\":[{\"id\":\"stop_e29244d5\",\"color\":{\"l\":0.62,\"c\":0.2,\"h\":277,\"alpha\":1},\"position\":0},{\"id\":\"stop_92aa7980\",\"color\":{\"l\":0.72,\"c\":0.17,\"h\":350,\"alpha\":1},\"position\":50},{\"id\":\"stop_1630290d\",\"color\":{\"l\":0.85,\"c\":0.15,\"h\":85,\"alpha\":1},\"position\":100}]}},\"version\":1}",
+   "updatedAt": 1760000004000
+  }
+ ],
+ "icons": [
+  {
+   "id": "lucide:house",
+   "body": "<path d=\"M15 21v-8a1 1 0 0 0-1-1h-4a1 1 0 0 0-1 1v8\"/><path d=\"M3 10a2 2 0 0 1 .709-1.528l7-5.999a2 2 0 0 1 2.582 0l7 5.999A2 2 0 0 1 21 10v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z\"/>",
+   "width": 24,
+   "height": 24,
+   "cachedAt": 1760000002000
+  },
+  {
+   "id": "lucide:coffee",
+   "body": "<path d=\"M10 2v2\"/><path d=\"M14 2v2\"/><path d=\"M16 8a1 1 0 0 1 1 1v8a4 4 0 0 1-4 4H7a4 4 0 0 1-4-4V9a1 1 0 0 1 1-1h14a4 4 0 1 1 0 8h-1\"/><path d=\"M6 2v2\"/>",
+   "width": 24,
+   "height": 24,
+   "cachedAt": 1760000003000
+  }
+ ],
+ "projects": [
+  {
+   "id": "0a1b2c3d-4e5f-4a6b-8c7d-9e0f1a2b3c04",
+   "favorite": false,
+   "tags": [],
+   "createdAt": 1759999900000,
+   "updatedAt": 1759999950000,
+   "lastOpenedAt": 1760000900000,
+   "snapshot": {
+    "version": 1,
+    "brand": {
+     "profile": {
+      "name": "Acme",
+      "description": "Design tools for people who ship.",
+      "logoSvg": null,
+      "roles": {},
+      "voice": {
+       "personality": [
+        "Clear",
+        "Confident",
+        "Warm"
+       ],
+       "dos": [
+        "Lead with the benefit",
+        "Use plain words",
+        "Write like you talk"
+       ],
+       "donts": [
+        "Jargon without a reason",
+        "Exclamation marks everywhere",
+        "Passive voice"
+       ],
+       "sample": "We build tools that get out of your way, so you can do the best work of your life."
+      },
+      "mission": {
+       "statement": "Give every team the tools to turn a good idea into a finished, consistent brand.",
+       "values": [
+        {
+         "title": "Craft",
+         "description": "Details matter. We sweat the small things so nobody else has to."
+        },
+        {
+         "title": "Clarity",
+         "description": "Plain words and honest defaults beat clever tricks."
+        },
+        {
+         "title": "Openness",
+         "description": "We build in public, share what we learn and welcome help."
+        },
+        {
+         "title": "Care",
+         "description": "Every choice starts with the people who use what we make."
+        }
+       ]
+      }
+     }
+    },
+    "colors": {
+     "swatches": [
+      {
+       "id": "sw_95116be4",
+       "color": {
+        "l": 0.2076819155738133,
+        "c": 0.03982432659974598,
+        "h": 265.7548754713905,
+        "alpha": 1
+       },
+       "locked": false
+      },
+      {
+       "id": "sw_7b2852ab",
+       "color": {
+        "l": 0.5854043125544901,
+        "c": 0.20405527824372596,
+        "h": 277.11729232808455,
+        "alpha": 1
+       },
+       "locked": false
+      },
+      {
+       "id": "sw_5cb9ea91",
+       "color": {
+        "l": 0.7252664125825393,
+        "c": 0.17522734150856534,
+        "h": 349.7607396894376,
+        "alpha": 1
+       },
+       "locked": false
+      },
+      {
+       "id": "sw_104f97fa",
+       "color": {
+        "l": 0.8608898880667115,
+        "c": 0.16252743670617992,
+        "h": 86.98328816187376,
+        "alpha": 1
+       },
+       "locked": false
+      },
+      {
+       "id": "sw_8239ede0",
+       "color": {
+        "l": 0.7729443867354562,
+        "c": 0.15349040394553426,
+        "h": 163.2230861936597,
+        "alpha": 1
+       },
+       "locked": false
+      }
+     ],
+     "shadeOptions": {
+      "hueShift": 0,
+      "anchor": true
+     },
+     "gradient": {
+      "type": "linear",
+      "angle": 135,
+      "x": 50,
+      "y": 50,
+      "interpolation": "oklch",
+      "stops": [
+       {
+        "id": "stop_e29244d5",
+        "color": {
+         "l": 0.62,
+         "c": 0.2,
+         "h": 277,
+         "alpha": 1
+        },
+        "position": 0
+       },
+       {
+        "id": "stop_92aa7980",
+        "color": {
+         "l": 0.72,
+         "c": 0.17,
+         "h": 350,
+         "alpha": 1
+        },
+        "position": 50
+       },
+       {
+        "id": "stop_1630290d",
+        "color": {
+         "l": 0.85,
+         "c": 0.15,
+         "h": 85,
+         "alpha": 1
+        },
+        "position": 100
+       }
+      ]
+     }
+    },
+    "typography": {
+     "headingFont": "Space Grotesk",
+     "bodyFont": "Inter",
+     "scale": {
+      "baseSize": 18,
+      "ratio": 1.25,
+      "minBase": 16,
+      "minRatio": 1.2,
+      "minViewport": 360,
+      "maxViewport": 1280,
+      "stepsUp": 5,
+      "stepsDown": 2
+     },
+     "rhythm": {
+      "headingWeight": 600,
+      "bodyWeight": 400,
+      "headingLineHeight": 1.1,
+      "bodyLineHeight": 1.6,
+      "headingTracking": -0.02,
+      "bodyTracking": 0
+     }
+    },
+    "tokens": {
+     "settings": {
+      "name": "My Design System",
+      "prefix": "",
+      "colorFormat": "oklch",
+      "spacingBase": 8,
+      "radiusBase": 12,
+      "sections": {
+       "colors": true,
+       "shades": true,
+       "gradient": true,
+       "typography": true,
+       "spacing": true,
+       "radius": true,
+       "effects": true
+      }
+     }
+    },
+    "effects": {
+     "settings": {
+      "glass": {
+       "blur": 16,
+       "saturation": 160,
+       "tint": "#ffffff",
+       "opacity": 0.12,
+       "borderOpacity": 0.25,
+       "shadowOpacity": 0.25,
+       "radius": 20
+      },
+      "neumorphism": {
+       "color": "#e0e5ec",
+       "depth": 12,
+       "blur": 24,
+       "intensity": 0.18,
+       "lightAngle": 315,
+       "radius": 24,
+       "shape": "flat"
+      },
+      "shadow": {
+       "radius": 16,
+       "layers": [
+        {
+         "id": "s1",
+         "x": 0,
+         "y": 1,
+         "blur": 2,
+         "spread": 0,
+         "color": "#000000",
+         "opacity": 0.08,
+         "inset": false
+        },
+        {
+         "id": "s2",
+         "x": 0,
+         "y": 8,
+         "blur": 24,
+         "spread": -4,
+         "color": "#000000",
+         "opacity": 0.18,
+         "inset": false
+        }
+       ]
+      },
+      "inset": {
+       "x": 0,
+       "y": 2,
+       "blur": 6,
+       "spread": 0,
+       "color": "#000000",
+       "opacity": 0.18,
+       "fill": "#f4f4f5",
+       "radius": 12
+      },
+      "glow": {
+       "color": "#6366f1",
+       "radius": 32,
+       "intensity": 0.7,
+       "text": false,
+       "radiusCorner": 16
+      },
+      "border": {
+       "colors": [
+        "#6366f1",
+        "#f472b6",
+        "#fbbf24"
+       ],
+       "fill": "#18181b",
+       "thickness": 2,
+       "radius": 16,
+       "angle": 135,
+       "animated": false,
+       "speed": 4
+      },
+      "grain": {
+       "scale": 180,
+       "opacity": 0.25,
+       "frequency": 0.8,
+       "blend": "overlay"
+      },
+      "long-shadow": {
+       "angle": 45,
+       "length": 48,
+       "color": "#312e81",
+       "fade": 0.6,
+       "target": "box",
+       "fill": "#6366f1",
+       "radius": 12
+      },
+      "gradient-text": {
+       "source": "studio",
+       "colors": [
+        "#6366f1",
+        "#f472b6",
+        "#fbbf24"
+       ],
+       "angle": 90,
+       "fallback": null,
+       "animated": false,
+       "speed": 6
+      },
+      "skeleton": {
+       "source": "brand",
+       "tone": "light",
+       "base": "#e4e4e7",
+       "highlight": "#f4f4f5",
+       "speed": 1.6,
+       "angle": 100,
+       "radius": 12
+      },
+      "text-outline": {
+       "color": "#6366f1",
+       "width": 2,
+       "hollow": true,
+       "fill": "#ffffff",
+       "shadow": true,
+       "shadowX": 4,
+       "shadowY": 4,
+       "shadowColor": "#f472b6"
+      },
+      "highlighter": {
+       "color": "#fde047",
+       "thickness": 56,
+       "offset": 2,
+       "textColor": "#18181b"
+      },
+      "scroll-shadow": {
+       "color": "#0f172a",
+       "opacity": 0.35,
+       "size": 14,
+       "surface": "#ffffff"
+      },
+      "button-press": {
+       "fill": "#6366f1",
+       "lift": 3,
+       "press": 2,
+       "duration": 150,
+       "easing": "ease-out",
+       "radius": 12
+      },
+      "link-underline": {
+       "color": "#4338ca",
+       "thickness": 2,
+       "offset": 4,
+       "page": "#ffffff"
+      },
+      "card-tilt": {
+       "maxTilt": 10,
+       "perspective": 800,
+       "glare": 0.35,
+       "duration": 200,
+       "fill": "#6366f1",
+       "radius": 16
+      },
+      "scrim": {
+       "direction": "bottom",
+       "strength": 0.7,
+       "height": 60,
+       "color": "#000000",
+       "text": "#ffffff"
+      },
+      "duotone": {
+       "shadow": "#1e1b4b",
+       "highlight": "#fbbf24",
+       "strength": 1
+      },
+      "selection": {
+       "background": "#4f46e5",
+       "text": "#ffffff",
+       "page": "#ffffff"
+      },
+      "scrollbar": {
+       "thumb": "#6366f1",
+       "thumbHover": "#4338ca",
+       "track": "#e4e4e7",
+       "width": 10,
+       "radius": 6
+      },
+      "focus-ring": {
+       "color": "#4f46e5",
+       "inner": "#ffffff",
+       "width": 3,
+       "offset": 2,
+       "background": "#ffffff",
+       "component": "#e4e4e7"
+      }
+     }
+    },
+    "logo": {
+     "clearSpace": 0.25
+    },
+    "mockups": {
+     "content": {
+      "person": "Jordan Lee",
+      "role": "Head of Design",
+      "email": "",
+      "phone": "+1 (555) 010-2030",
+      "website": "",
+      "address": "100 Market Street, San Francisco",
+      "headline": "",
+      "cta": "Get started"
+     },
+     "mode": "light"
+    },
+    "social": {
+     "content": {
+      "name": "",
+      "headline": "",
+      "subtitle": "Open source. Local first. Free forever.",
+      "handle": "",
+      "github": "",
+      "website": "",
+      "cta": "Try it free"
+     },
+     "mode": "dark",
+     "design": {
+      "primary": null,
+      "secondary": null,
+      "background": "auto",
+      "radius": null,
+      "padding": 80,
+      "logoSvg": null
+     }
+    }
+   }
+  },
+  {
+   "id": "b3f1c2a0-5d6e-4f7a-8b19-0c2d3e4f5a61",
+   "favorite": true,
+   "tags": [
+    "client",
+    "demo"
+   ],
+   "createdAt": 1760000000000,
+   "updatedAt": 1760000200000,
+   "lastOpenedAt": 1760000300000,
+   "snapshot": {
+    "version": 1,
+    "brand": {
+     "profile": {
+      "name": "Fixture Brand",
+      "description": "A brand exported by DesignHub 1.0.0.",
+      "logoSvg": null,
+      "roles": {},
+      "voice": {
+       "personality": [
+        "Clear",
+        "Confident",
+        "Warm"
+       ],
+       "dos": [
+        "Lead with the benefit",
+        "Use plain words",
+        "Write like you talk"
+       ],
+       "donts": [
+        "Jargon without a reason",
+        "Exclamation marks everywhere",
+        "Passive voice"
+       ],
+       "sample": "We build tools that get out of your way, so you can do the best work of your life."
+      },
+      "mission": {
+       "statement": "Give every team the tools to turn a good idea into a finished, consistent brand.",
+       "values": [
+        {
+         "title": "Craft",
+         "description": "Details matter. We sweat the small things so nobody else has to."
+        },
+        {
+         "title": "Clarity",
+         "description": "Plain words and honest defaults beat clever tricks."
+        },
+        {
+         "title": "Openness",
+         "description": "We build in public, share what we learn and welcome help."
+        },
+        {
+         "title": "Care",
+         "description": "Every choice starts with the people who use what we make."
+        }
+       ]
+      }
+     }
+    },
+    "colors": {
+     "swatches": [
+      {
+       "id": "sw_694f64ed",
+       "color": {
+        "l": 0.2076819155738133,
+        "c": 0.03982432659974598,
+        "h": 265.7548754713905,
+        "alpha": 1
+       },
+       "locked": false
+      },
+      {
+       "id": "sw_de7c56cc",
+       "color": {
+        "l": 0.5854043125544901,
+        "c": 0.20405527824372596,
+        "h": 277.11729232808455,
+        "alpha": 1
+       },
+       "locked": false
+      },
+      {
+       "id": "sw_9bfec36d",
+       "color": {
+        "l": 0.7252664125825393,
+        "c": 0.17522734150856534,
+        "h": 349.7607396894376,
+        "alpha": 1
+       },
+       "locked": false
+      },
+      {
+       "id": "sw_f123ac75",
+       "color": {
+        "l": 0.8608898880667115,
+        "c": 0.16252743670617992,
+        "h": 86.98328816187376,
+        "alpha": 1
+       },
+       "locked": false
+      },
+      {
+       "id": "sw_ba2e25bb",
+       "color": {
+        "l": 0.7729443867354562,
+        "c": 0.15349040394553426,
+        "h": 163.2230861936597,
+        "alpha": 1
+       },
+       "locked": false
+      }
+     ],
+     "shadeOptions": {
+      "hueShift": 0,
+      "anchor": true
+     },
+     "gradient": {
+      "type": "linear",
+      "angle": 135,
+      "x": 50,
+      "y": 50,
+      "interpolation": "oklch",
+      "stops": [
+       {
+        "id": "stop_7d1a7409",
+        "color": {
+         "l": 0.62,
+         "c": 0.2,
+         "h": 277,
+         "alpha": 1
+        },
+        "position": 0
+       },
+       {
+        "id": "stop_c9fb5db9",
+        "color": {
+         "l": 0.72,
+         "c": 0.17,
+         "h": 350,
+         "alpha": 1
+        },
+        "position": 50
+       },
+       {
+        "id": "stop_a672f1ca",
+        "color": {
+         "l": 0.85,
+         "c": 0.15,
+         "h": 85,
+         "alpha": 1
+        },
+        "position": 100
+       }
+      ]
+     }
+    },
+    "typography": {
+     "headingFont": "Space Grotesk",
+     "bodyFont": "Inter",
+     "scale": {
+      "baseSize": 18,
+      "ratio": 1.25,
+      "minBase": 16,
+      "minRatio": 1.2,
+      "minViewport": 360,
+      "maxViewport": 1280,
+      "stepsUp": 5,
+      "stepsDown": 2
+     },
+     "rhythm": {
+      "headingWeight": 600,
+      "bodyWeight": 400,
+      "headingLineHeight": 1.1,
+      "bodyLineHeight": 1.6,
+      "headingTracking": -0.02,
+      "bodyTracking": 0
+     }
+    },
+    "tokens": {
+     "settings": {
+      "name": "My Design System",
+      "prefix": "",
+      "colorFormat": "oklch",
+      "spacingBase": 8,
+      "radiusBase": 12,
+      "sections": {
+       "colors": true,
+       "shades": true,
+       "gradient": true,
+       "typography": true,
+       "spacing": true,
+       "radius": true,
+       "effects": true
+      }
+     }
+    },
+    "effects": {
+     "settings": {
+      "glass": {
+       "blur": 16,
+       "saturation": 160,
+       "tint": "#ffffff",
+       "opacity": 0.12,
+       "borderOpacity": 0.25,
+       "shadowOpacity": 0.25,
+       "radius": 20
+      },
+      "neumorphism": {
+       "color": "#e0e5ec",
+       "depth": 12,
+       "blur": 24,
+       "intensity": 0.18,
+       "lightAngle": 315,
+       "radius": 24,
+       "shape": "flat"
+      },
+      "shadow": {
+       "radius": 16,
+       "layers": [
+        {
+         "id": "s1",
+         "x": 0,
+         "y": 1,
+         "blur": 2,
+         "spread": 0,
+         "color": "#000000",
+         "opacity": 0.08,
+         "inset": false
+        },
+        {
+         "id": "s2",
+         "x": 0,
+         "y": 8,
+         "blur": 24,
+         "spread": -4,
+         "color": "#000000",
+         "opacity": 0.18,
+         "inset": false
+        }
+       ]
+      },
+      "inset": {
+       "x": 0,
+       "y": 2,
+       "blur": 6,
+       "spread": 0,
+       "color": "#000000",
+       "opacity": 0.18,
+       "fill": "#f4f4f5",
+       "radius": 12
+      },
+      "glow": {
+       "color": "#6366f1",
+       "radius": 32,
+       "intensity": 0.7,
+       "text": false,
+       "radiusCorner": 16
+      },
+      "border": {
+       "colors": [
+        "#6366f1",
+        "#f472b6",
+        "#fbbf24"
+       ],
+       "fill": "#18181b",
+       "thickness": 2,
+       "radius": 16,
+       "angle": 135,
+       "animated": false,
+       "speed": 4
+      },
+      "grain": {
+       "scale": 180,
+       "opacity": 0.25,
+       "frequency": 0.8,
+       "blend": "overlay"
+      },
+      "long-shadow": {
+       "angle": 45,
+       "length": 48,
+       "color": "#312e81",
+       "fade": 0.6,
+       "target": "box",
+       "fill": "#6366f1",
+       "radius": 12
+      },
+      "gradient-text": {
+       "source": "studio",
+       "colors": [
+        "#6366f1",
+        "#f472b6",
+        "#fbbf24"
+       ],
+       "angle": 90,
+       "fallback": null,
+       "animated": false,
+       "speed": 6
+      },
+      "skeleton": {
+       "source": "brand",
+       "tone": "light",
+       "base": "#e4e4e7",
+       "highlight": "#f4f4f5",
+       "speed": 1.6,
+       "angle": 100,
+       "radius": 12
+      },
+      "text-outline": {
+       "color": "#6366f1",
+       "width": 2,
+       "hollow": true,
+       "fill": "#ffffff",
+       "shadow": true,
+       "shadowX": 4,
+       "shadowY": 4,
+       "shadowColor": "#f472b6"
+      },
+      "highlighter": {
+       "color": "#fde047",
+       "thickness": 56,
+       "offset": 2,
+       "textColor": "#18181b"
+      },
+      "scroll-shadow": {
+       "color": "#0f172a",
+       "opacity": 0.35,
+       "size": 14,
+       "surface": "#ffffff"
+      },
+      "button-press": {
+       "fill": "#6366f1",
+       "lift": 3,
+       "press": 2,
+       "duration": 150,
+       "easing": "ease-out",
+       "radius": 12
+      },
+      "link-underline": {
+       "color": "#4338ca",
+       "thickness": 2,
+       "offset": 4,
+       "page": "#ffffff"
+      },
+      "selection": {
+       "background": "#4f46e5",
+       "text": "#ffffff",
+       "page": "#ffffff"
+      },
+      "scrollbar": {
+       "thumb": "#6366f1",
+       "thumbHover": "#4338ca",
+       "track": "#e4e4e7",
+       "width": 10,
+       "radius": 6
+      },
+      "focus-ring": {
+       "color": "#4f46e5",
+       "inner": "#ffffff",
+       "width": 3,
+       "offset": 2,
+       "background": "#ffffff",
+       "component": "#e4e4e7"
+      }
+     }
+    },
+    "logo": {
+     "clearSpace": 0.25
+    },
+    "mockups": {
+     "content": {
+      "person": "Jordan Lee",
+      "role": "Head of Design",
+      "email": "",
+      "phone": "+1 (555) 010-2030",
+      "website": "",
+      "address": "100 Market Street, San Francisco",
+      "headline": "",
+      "cta": "Get started"
+     },
+     "mode": "light"
+    },
+    "social": {
+     "content": {
+      "name": "",
+      "headline": "",
+      "subtitle": "Open source. Local first. Free forever.",
+      "handle": "",
+      "github": "",
+      "website": "",
+      "cta": "Try it free"
+     },
+     "mode": "dark",
+     "design": {
+      "primary": null,
+      "secondary": null,
+      "background": "auto",
+      "radius": null,
+      "padding": 80,
+      "logoSvg": null
+     }
+    }
+   }
+  },
+  {
+   "id": "6e7d8c9b-1a2b-4c3d-9e4f-5a6b7c8d9e02",
+   "favorite": false,
+   "tags": [],
+   "createdAt": 1760000400000,
+   "updatedAt": 1760000500000,
+   "lastOpenedAt": 1760000100000,
+   "snapshot": {
+    "version": 1,
+    "brand": {
+     "profile": {
+      "name": "Second Fixture",
+      "description": "Design tools for people who ship.",
+      "logoSvg": null,
+      "roles": {},
+      "voice": {
+       "personality": [
+        "Clear",
+        "Confident",
+        "Warm"
+       ],
+       "dos": [
+        "Lead with the benefit",
+        "Use plain words",
+        "Write like you talk"
+       ],
+       "donts": [
+        "Jargon without a reason",
+        "Exclamation marks everywhere",
+        "Passive voice"
+       ],
+       "sample": "We build tools that get out of your way, so you can do the best work of your life."
+      },
+      "mission": {
+       "statement": "Give every team the tools to turn a good idea into a finished, consistent brand.",
+       "values": [
+        {
+         "title": "Craft",
+         "description": "Details matter. We sweat the small things so nobody else has to."
+        },
+        {
+         "title": "Clarity",
+         "description": "Plain words and honest defaults beat clever tricks."
+        },
+        {
+         "title": "Openness",
+         "description": "We build in public, share what we learn and welcome help."
+        },
+        {
+         "title": "Care",
+         "description": "Every choice starts with the people who use what we make."
+        }
+       ]
+      }
+     }
+    },
+    "colors": {
+     "swatches": [
+      {
+       "id": "sw_694f64ed",
+       "color": {
+        "l": 0.2076819155738133,
+        "c": 0.03982432659974598,
+        "h": 265.7548754713905,
+        "alpha": 1
+       },
+       "locked": false
+      },
+      {
+       "id": "sw_de7c56cc",
+       "color": {
+        "l": 0.5854043125544901,
+        "c": 0.20405527824372596,
+        "h": 277.11729232808455,
+        "alpha": 1
+       },
+       "locked": false
+      },
+      {
+       "id": "sw_9bfec36d",
+       "color": {
+        "l": 0.7252664125825393,
+        "c": 0.17522734150856534,
+        "h": 349.7607396894376,
+        "alpha": 1
+       },
+       "locked": false
+      },
+      {
+       "id": "sw_f123ac75",
+       "color": {
+        "l": 0.8608898880667115,
+        "c": 0.16252743670617992,
+        "h": 86.98328816187376,
+        "alpha": 1
+       },
+       "locked": false
+      },
+      {
+       "id": "sw_ba2e25bb",
+       "color": {
+        "l": 0.7729443867354562,
+        "c": 0.15349040394553426,
+        "h": 163.2230861936597,
+        "alpha": 1
+       },
+       "locked": false
+      }
+     ],
+     "shadeOptions": {
+      "hueShift": 0,
+      "anchor": true
+     },
+     "gradient": {
+      "type": "linear",
+      "angle": 135,
+      "x": 50,
+      "y": 50,
+      "interpolation": "oklch",
+      "stops": [
+       {
+        "id": "stop_7d1a7409",
+        "color": {
+         "l": 0.62,
+         "c": 0.2,
+         "h": 277,
+         "alpha": 1
+        },
+        "position": 0
+       },
+       {
+        "id": "stop_c9fb5db9",
+        "color": {
+         "l": 0.72,
+         "c": 0.17,
+         "h": 350,
+         "alpha": 1
+        },
+        "position": 50
+       },
+       {
+        "id": "stop_a672f1ca",
+        "color": {
+         "l": 0.85,
+         "c": 0.15,
+         "h": 85,
+         "alpha": 1
+        },
+        "position": 100
+       }
+      ]
+     }
+    },
+    "typography": {
+     "headingFont": "Space Grotesk",
+     "bodyFont": "Inter",
+     "scale": {
+      "baseSize": 18,
+      "ratio": 1.25,
+      "minBase": 16,
+      "minRatio": 1.2,
+      "minViewport": 360,
+      "maxViewport": 1280,
+      "stepsUp": 5,
+      "stepsDown": 2
+     },
+     "rhythm": {
+      "headingWeight": 600,
+      "bodyWeight": 400,
+      "headingLineHeight": 1.1,
+      "bodyLineHeight": 1.6,
+      "headingTracking": -0.02,
+      "bodyTracking": 0
+     }
+    },
+    "tokens": {
+     "settings": {
+      "name": "My Design System",
+      "prefix": "",
+      "colorFormat": "oklch",
+      "spacingBase": 8,
+      "radiusBase": 12,
+      "sections": {
+       "colors": true,
+       "shades": true,
+       "gradient": true,
+       "typography": true,
+       "spacing": true,
+       "radius": true,
+       "effects": true
+      }
+     }
+    },
+    "effects": {
+     "settings": {
+      "glass": {
+       "blur": 16,
+       "saturation": 160,
+       "tint": "#ffffff",
+       "opacity": 0.12,
+       "borderOpacity": 0.25,
+       "shadowOpacity": 0.25,
+       "radius": 20
+      },
+      "neumorphism": {
+       "color": "#e0e5ec",
+       "depth": 12,
+       "blur": 24,
+       "intensity": 0.18,
+       "lightAngle": 315,
+       "radius": 24,
+       "shape": "flat"
+      },
+      "shadow": {
+       "radius": 16,
+       "layers": [
+        {
+         "id": "s1",
+         "x": 0,
+         "y": 1,
+         "blur": 2,
+         "spread": 0,
+         "color": "#000000",
+         "opacity": 0.08,
+         "inset": false
+        },
+        {
+         "id": "s2",
+         "x": 0,
+         "y": 8,
+         "blur": 24,
+         "spread": -4,
+         "color": "#000000",
+         "opacity": 0.18,
+         "inset": false
+        }
+       ]
+      },
+      "inset": {
+       "x": 0,
+       "y": 2,
+       "blur": 6,
+       "spread": 0,
+       "color": "#000000",
+       "opacity": 0.18,
+       "fill": "#f4f4f5",
+       "radius": 12
+      },
+      "glow": {
+       "color": "#6366f1",
+       "radius": 32,
+       "intensity": 0.7,
+       "text": false,
+       "radiusCorner": 16
+      },
+      "border": {
+       "colors": [
+        "#6366f1",
+        "#f472b6",
+        "#fbbf24"
+       ],
+       "fill": "#18181b",
+       "thickness": 2,
+       "radius": 16,
+       "angle": 135,
+       "animated": false,
+       "speed": 4
+      },
+      "grain": {
+       "scale": 180,
+       "opacity": 0.25,
+       "frequency": 0.8,
+       "blend": "overlay"
+      },
+      "long-shadow": {
+       "angle": 45,
+       "length": 48,
+       "color": "#312e81",
+       "fade": 0.6,
+       "target": "box",
+       "fill": "#6366f1",
+       "radius": 12
+      },
+      "gradient-text": {
+       "source": "studio",
+       "colors": [
+        "#6366f1",
+        "#f472b6",
+        "#fbbf24"
+       ],
+       "angle": 90,
+       "fallback": null,
+       "animated": false,
+       "speed": 6
+      },
+      "skeleton": {
+       "source": "brand",
+       "tone": "light",
+       "base": "#e4e4e7",
+       "highlight": "#f4f4f5",
+       "speed": 1.6,
+       "angle": 100,
+       "radius": 12
+      },
+      "text-outline": {
+       "color": "#6366f1",
+       "width": 2,
+       "hollow": true,
+       "fill": "#ffffff",
+       "shadow": true,
+       "shadowX": 4,
+       "shadowY": 4,
+       "shadowColor": "#f472b6"
+      },
+      "highlighter": {
+       "color": "#fde047",
+       "thickness": 56,
+       "offset": 2,
+       "textColor": "#18181b"
+      },
+      "scroll-shadow": {
+       "color": "#0f172a",
+       "opacity": 0.35,
+       "size": 14,
+       "surface": "#ffffff"
+      },
+      "button-press": {
+       "fill": "#6366f1",
+       "lift": 3,
+       "press": 2,
+       "duration": 150,
+       "easing": "ease-out",
+       "radius": 12
+      },
+      "link-underline": {
+       "color": "#4338ca",
+       "thickness": 2,
+       "offset": 4,
+       "page": "#ffffff"
+      },
+      "selection": {
+       "background": "#4f46e5",
+       "text": "#ffffff",
+       "page": "#ffffff"
+      },
+      "scrollbar": {
+       "thumb": "#6366f1",
+       "thumbHover": "#4338ca",
+       "track": "#e4e4e7",
+       "width": 10,
+       "radius": 6
+      },
+      "focus-ring": {
+       "color": "#4f46e5",
+       "inner": "#ffffff",
+       "width": 3,
+       "offset": 2,
+       "background": "#ffffff",
+       "component": "#e4e4e7"
+      }
+     }
+    },
+    "logo": {
+     "clearSpace": 0.25
+    },
+    "mockups": {
+     "content": {
+      "person": "Jordan Lee",
+      "role": "Head of Design",
+      "email": "",
+      "phone": "+1 (555) 010-2030",
+      "website": "",
+      "address": "100 Market Street, San Francisco",
+      "headline": "",
+      "cta": "Get started"
+     },
+     "mode": "light"
+    },
+    "social": {
+     "content": {
+      "name": "",
+      "headline": "",
+      "subtitle": "Open source. Local first. Free forever.",
+      "handle": "",
+      "github": "",
+      "website": "",
+      "cta": "Try it free"
+     },
+     "mode": "dark",
+     "design": {
+      "primary": null,
+      "secondary": null,
+      "background": "auto",
+      "radius": null,
+      "padding": 80,
+      "logoSvg": null
+     }
+    }
+   }
+  },
+  {
+   "id": "d4c3b2a1-0f9e-4d8c-a7b6-5c4d3e2f1a03",
+   "favorite": false,
+   "tags": [
+    "archived",
+    "coffee"
+   ],
+   "createdAt": 1760000600000,
+   "updatedAt": 1760000700000,
+   "lastOpenedAt": 0,
+   "snapshot": {
+    "version": 1,
+    "brand": {
+     "profile": {
+      "name": "Harbour Coffee",
+      "description": "Design tools for people who ship.",
+      "logoSvg": null,
+      "roles": {},
+      "voice": {
+       "personality": [
+        "Clear",
+        "Confident",
+        "Warm"
+       ],
+       "dos": [
+        "Lead with the benefit",
+        "Use plain words",
+        "Write like you talk"
+       ],
+       "donts": [
+        "Jargon without a reason",
+        "Exclamation marks everywhere",
+        "Passive voice"
+       ],
+       "sample": "We build tools that get out of your way, so you can do the best work of your life."
+      },
+      "mission": {
+       "statement": "Give every team the tools to turn a good idea into a finished, consistent brand.",
+       "values": [
+        {
+         "title": "Craft",
+         "description": "Details matter. We sweat the small things so nobody else has to."
+        },
+        {
+         "title": "Clarity",
+         "description": "Plain words and honest defaults beat clever tricks."
+        },
+        {
+         "title": "Openness",
+         "description": "We build in public, share what we learn and welcome help."
+        },
+        {
+         "title": "Care",
+         "description": "Every choice starts with the people who use what we make."
+        }
+       ]
+      }
+     }
+    },
+    "colors": {
+     "swatches": [
+      {
+       "id": "sw_694f64ed",
+       "color": {
+        "l": 0.2076819155738133,
+        "c": 0.03982432659974598,
+        "h": 265.7548754713905,
+        "alpha": 1
+       },
+       "locked": false
+      },
+      {
+       "id": "sw_de7c56cc",
+       "color": {
+        "l": 0.5854043125544901,
+        "c": 0.20405527824372596,
+        "h": 277.11729232808455,
+        "alpha": 1
+       },
+       "locked": false
+      },
+      {
+       "id": "sw_9bfec36d",
+       "color": {
+        "l": 0.7252664125825393,
+        "c": 0.17522734150856534,
+        "h": 349.7607396894376,
+        "alpha": 1
+       },
+       "locked": false
+      },
+      {
+       "id": "sw_f123ac75",
+       "color": {
+        "l": 0.8608898880667115,
+        "c": 0.16252743670617992,
+        "h": 86.98328816187376,
+        "alpha": 1
+       },
+       "locked": false
+      },
+      {
+       "id": "sw_ba2e25bb",
+       "color": {
+        "l": 0.7729443867354562,
+        "c": 0.15349040394553426,
+        "h": 163.2230861936597,
+        "alpha": 1
+       },
+       "locked": false
+      }
+     ],
+     "shadeOptions": {
+      "hueShift": 0,
+      "anchor": true
+     },
+     "gradient": {
+      "type": "linear",
+      "angle": 135,
+      "x": 50,
+      "y": 50,
+      "interpolation": "oklch",
+      "stops": [
+       {
+        "id": "stop_7d1a7409",
+        "color": {
+         "l": 0.62,
+         "c": 0.2,
+         "h": 277,
+         "alpha": 1
+        },
+        "position": 0
+       },
+       {
+        "id": "stop_c9fb5db9",
+        "color": {
+         "l": 0.72,
+         "c": 0.17,
+         "h": 350,
+         "alpha": 1
+        },
+        "position": 50
+       },
+       {
+        "id": "stop_a672f1ca",
+        "color": {
+         "l": 0.85,
+         "c": 0.15,
+         "h": 85,
+         "alpha": 1
+        },
+        "position": 100
+       }
+      ]
+     }
+    },
+    "typography": {
+     "headingFont": "Space Grotesk",
+     "bodyFont": "Inter",
+     "scale": {
+      "baseSize": 18,
+      "ratio": 1.25,
+      "minBase": 16,
+      "minRatio": 1.2,
+      "minViewport": 360,
+      "maxViewport": 1280,
+      "stepsUp": 5,
+      "stepsDown": 2
+     },
+     "rhythm": {
+      "headingWeight": 600,
+      "bodyWeight": 400,
+      "headingLineHeight": 1.1,
+      "bodyLineHeight": 1.6,
+      "headingTracking": -0.02,
+      "bodyTracking": 0
+     }
+    },
+    "tokens": {
+     "settings": {
+      "name": "My Design System",
+      "prefix": "",
+      "colorFormat": "oklch",
+      "spacingBase": 8,
+      "radiusBase": 12,
+      "sections": {
+       "colors": true,
+       "shades": true,
+       "gradient": true,
+       "typography": true,
+       "spacing": true,
+       "radius": true,
+       "effects": true
+      }
+     }
+    },
+    "effects": {
+     "settings": {
+      "glass": {
+       "blur": 16,
+       "saturation": 160,
+       "tint": "#ffffff",
+       "opacity": 0.12,
+       "borderOpacity": 0.25,
+       "shadowOpacity": 0.25,
+       "radius": 20
+      },
+      "neumorphism": {
+       "color": "#e0e5ec",
+       "depth": 12,
+       "blur": 24,
+       "intensity": 0.18,
+       "lightAngle": 315,
+       "radius": 24,
+       "shape": "flat"
+      },
+      "shadow": {
+       "radius": 16,
+       "layers": [
+        {
+         "id": "s1",
+         "x": 0,
+         "y": 1,
+         "blur": 2,
+         "spread": 0,
+         "color": "#000000",
+         "opacity": 0.08,
+         "inset": false
+        },
+        {
+         "id": "s2",
+         "x": 0,
+         "y": 8,
+         "blur": 24,
+         "spread": -4,
+         "color": "#000000",
+         "opacity": 0.18,
+         "inset": false
+        }
+       ]
+      },
+      "inset": {
+       "x": 0,
+       "y": 2,
+       "blur": 6,
+       "spread": 0,
+       "color": "#000000",
+       "opacity": 0.18,
+       "fill": "#f4f4f5",
+       "radius": 12
+      },
+      "glow": {
+       "color": "#6366f1",
+       "radius": 32,
+       "intensity": 0.7,
+       "text": false,
+       "radiusCorner": 16
+      },
+      "border": {
+       "colors": [
+        "#6366f1",
+        "#f472b6",
+        "#fbbf24"
+       ],
+       "fill": "#18181b",
+       "thickness": 2,
+       "radius": 16,
+       "angle": 135,
+       "animated": false,
+       "speed": 4
+      },
+      "grain": {
+       "scale": 180,
+       "opacity": 0.25,
+       "frequency": 0.8,
+       "blend": "overlay"
+      },
+      "long-shadow": {
+       "angle": 45,
+       "length": 48,
+       "color": "#312e81",
+       "fade": 0.6,
+       "target": "box",
+       "fill": "#6366f1",
+       "radius": 12
+      },
+      "gradient-text": {
+       "source": "studio",
+       "colors": [
+        "#6366f1",
+        "#f472b6",
+        "#fbbf24"
+       ],
+       "angle": 90,
+       "fallback": null,
+       "animated": false,
+       "speed": 6
+      },
+      "skeleton": {
+       "source": "brand",
+       "tone": "light",
+       "base": "#e4e4e7",
+       "highlight": "#f4f4f5",
+       "speed": 1.6,
+       "angle": 100,
+       "radius": 12
+      },
+      "text-outline": {
+       "color": "#6366f1",
+       "width": 2,
+       "hollow": true,
+       "fill": "#ffffff",
+       "shadow": true,
+       "shadowX": 4,
+       "shadowY": 4,
+       "shadowColor": "#f472b6"
+      },
+      "highlighter": {
+       "color": "#fde047",
+       "thickness": 56,
+       "offset": 2,
+       "textColor": "#18181b"
+      },
+      "scroll-shadow": {
+       "color": "#0f172a",
+       "opacity": 0.35,
+       "size": 14,
+       "surface": "#ffffff"
+      },
+      "button-press": {
+       "fill": "#6366f1",
+       "lift": 3,
+       "press": 2,
+       "duration": 150,
+       "easing": "ease-out",
+       "radius": 12
+      },
+      "link-underline": {
+       "color": "#4338ca",
+       "thickness": 2,
+       "offset": 4,
+       "page": "#ffffff"
+      },
+      "selection": {
+       "background": "#4f46e5",
+       "text": "#ffffff",
+       "page": "#ffffff"
+      },
+      "scrollbar": {
+       "thumb": "#6366f1",
+       "thumbHover": "#4338ca",
+       "track": "#e4e4e7",
+       "width": 10,
+       "radius": 6
+      },
+      "focus-ring": {
+       "color": "#4f46e5",
+       "inner": "#ffffff",
+       "width": 3,
+       "offset": 2,
+       "background": "#ffffff",
+       "component": "#e4e4e7"
+      }
+     }
+    },
+    "logo": {
+     "clearSpace": 0.25
+    },
+    "mockups": {
+     "content": {
+      "person": "Jordan Lee",
+      "role": "Head of Design",
+      "email": "",
+      "phone": "+1 (555) 010-2030",
+      "website": "",
+      "address": "100 Market Street, San Francisco",
+      "headline": "",
+      "cta": "Get started"
+     },
+     "mode": "light"
+    },
+    "social": {
+     "content": {
+      "name": "",
+      "headline": "",
+      "subtitle": "Open source. Local first. Free forever.",
+      "handle": "",
+      "github": "",
+      "website": "",
+      "cta": "Try it free"
+     },
+     "mode": "dark",
+     "design": {
+      "primary": null,
+      "secondary": null,
+      "background": "auto",
+      "radius": null,
+      "padding": 80,
+      "logoSvg": null
+     }
+    }
+   }
+  }
+ ],
+ "versions": [
+  {
+   "id": "v-a-1",
+   "projectId": "b3f1c2a0-5d6e-4f7a-8b19-0c2d3e4f5a61",
+   "createdAt": 1760000050000,
+   "reason": "autosave",
+   "snapshot": {
+    "version": 1,
+    "brand": {
+     "profile": {
+      "name": "Fixture Brand (oldest)",
+      "description": "Design tools for people who ship.",
+      "logoSvg": null,
+      "roles": {},
+      "voice": {
+       "personality": [
+        "Clear",
+        "Confident",
+        "Warm"
+       ],
+       "dos": [
+        "Lead with the benefit",
+        "Use plain words",
+        "Write like you talk"
+       ],
+       "donts": [
+        "Jargon without a reason",
+        "Exclamation marks everywhere",
+        "Passive voice"
+       ],
+       "sample": "We build tools that get out of your way, so you can do the best work of your life."
+      },
+      "mission": {
+       "statement": "Give every team the tools to turn a good idea into a finished, consistent brand.",
+       "values": [
+        {
+         "title": "Craft",
+         "description": "Details matter. We sweat the small things so nobody else has to."
+        },
+        {
+         "title": "Clarity",
+         "description": "Plain words and honest defaults beat clever tricks."
+        },
+        {
+         "title": "Openness",
+         "description": "We build in public, share what we learn and welcome help."
+        },
+        {
+         "title": "Care",
+         "description": "Every choice starts with the people who use what we make."
+        }
+       ]
+      }
+     }
+    },
+    "colors": {
+     "swatches": [
+      {
+       "id": "sw_694f64ed",
+       "color": {
+        "l": 0.2076819155738133,
+        "c": 0.03982432659974598,
+        "h": 265.7548754713905,
+        "alpha": 1
+       },
+       "locked": false
+      },
+      {
+       "id": "sw_de7c56cc",
+       "color": {
+        "l": 0.5854043125544901,
+        "c": 0.20405527824372596,
+        "h": 277.11729232808455,
+        "alpha": 1
+       },
+       "locked": false
+      },
+      {
+       "id": "sw_9bfec36d",
+       "color": {
+        "l": 0.7252664125825393,
+        "c": 0.17522734150856534,
+        "h": 349.7607396894376,
+        "alpha": 1
+       },
+       "locked": false
+      },
+      {
+       "id": "sw_f123ac75",
+       "color": {
+        "l": 0.8608898880667115,
+        "c": 0.16252743670617992,
+        "h": 86.98328816187376,
+        "alpha": 1
+       },
+       "locked": false
+      },
+      {
+       "id": "sw_ba2e25bb",
+       "color": {
+        "l": 0.7729443867354562,
+        "c": 0.15349040394553426,
+        "h": 163.2230861936597,
+        "alpha": 1
+       },
+       "locked": false
+      }
+     ],
+     "shadeOptions": {
+      "hueShift": 0,
+      "anchor": true
+     },
+     "gradient": {
+      "type": "linear",
+      "angle": 135,
+      "x": 50,
+      "y": 50,
+      "interpolation": "oklch",
+      "stops": [
+       {
+        "id": "stop_7d1a7409",
+        "color": {
+         "l": 0.62,
+         "c": 0.2,
+         "h": 277,
+         "alpha": 1
+        },
+        "position": 0
+       },
+       {
+        "id": "stop_c9fb5db9",
+        "color": {
+         "l": 0.72,
+         "c": 0.17,
+         "h": 350,
+         "alpha": 1
+        },
+        "position": 50
+       },
+       {
+        "id": "stop_a672f1ca",
+        "color": {
+         "l": 0.85,
+         "c": 0.15,
+         "h": 85,
+         "alpha": 1
+        },
+        "position": 100
+       }
+      ]
+     }
+    },
+    "typography": {
+     "headingFont": "Space Grotesk",
+     "bodyFont": "Inter",
+     "scale": {
+      "baseSize": 18,
+      "ratio": 1.25,
+      "minBase": 16,
+      "minRatio": 1.2,
+      "minViewport": 360,
+      "maxViewport": 1280,
+      "stepsUp": 5,
+      "stepsDown": 2
+     },
+     "rhythm": {
+      "headingWeight": 600,
+      "bodyWeight": 400,
+      "headingLineHeight": 1.1,
+      "bodyLineHeight": 1.6,
+      "headingTracking": -0.02,
+      "bodyTracking": 0
+     }
+    },
+    "tokens": {
+     "settings": {
+      "name": "My Design System",
+      "prefix": "",
+      "colorFormat": "oklch",
+      "spacingBase": 8,
+      "radiusBase": 12,
+      "sections": {
+       "colors": true,
+       "shades": true,
+       "gradient": true,
+       "typography": true,
+       "spacing": true,
+       "radius": true,
+       "effects": true
+      }
+     }
+    },
+    "effects": {
+     "settings": {
+      "glass": {
+       "blur": 16,
+       "saturation": 160,
+       "tint": "#ffffff",
+       "opacity": 0.12,
+       "borderOpacity": 0.25,
+       "shadowOpacity": 0.25,
+       "radius": 20
+      },
+      "neumorphism": {
+       "color": "#e0e5ec",
+       "depth": 12,
+       "blur": 24,
+       "intensity": 0.18,
+       "lightAngle": 315,
+       "radius": 24,
+       "shape": "flat"
+      },
+      "shadow": {
+       "radius": 16,
+       "layers": [
+        {
+         "id": "s1",
+         "x": 0,
+         "y": 1,
+         "blur": 2,
+         "spread": 0,
+         "color": "#000000",
+         "opacity": 0.08,
+         "inset": false
+        },
+        {
+         "id": "s2",
+         "x": 0,
+         "y": 8,
+         "blur": 24,
+         "spread": -4,
+         "color": "#000000",
+         "opacity": 0.18,
+         "inset": false
+        }
+       ]
+      },
+      "inset": {
+       "x": 0,
+       "y": 2,
+       "blur": 6,
+       "spread": 0,
+       "color": "#000000",
+       "opacity": 0.18,
+       "fill": "#f4f4f5",
+       "radius": 12
+      },
+      "glow": {
+       "color": "#6366f1",
+       "radius": 32,
+       "intensity": 0.7,
+       "text": false,
+       "radiusCorner": 16
+      },
+      "border": {
+       "colors": [
+        "#6366f1",
+        "#f472b6",
+        "#fbbf24"
+       ],
+       "fill": "#18181b",
+       "thickness": 2,
+       "radius": 16,
+       "angle": 135,
+       "animated": false,
+       "speed": 4
+      },
+      "grain": {
+       "scale": 180,
+       "opacity": 0.25,
+       "frequency": 0.8,
+       "blend": "overlay"
+      },
+      "long-shadow": {
+       "angle": 45,
+       "length": 48,
+       "color": "#312e81",
+       "fade": 0.6,
+       "target": "box",
+       "fill": "#6366f1",
+       "radius": 12
+      },
+      "gradient-text": {
+       "source": "studio",
+       "colors": [
+        "#6366f1",
+        "#f472b6",
+        "#fbbf24"
+       ],
+       "angle": 90,
+       "fallback": null,
+       "animated": false,
+       "speed": 6
+      },
+      "skeleton": {
+       "source": "brand",
+       "tone": "light",
+       "base": "#e4e4e7",
+       "highlight": "#f4f4f5",
+       "speed": 1.6,
+       "angle": 100,
+       "radius": 12
+      },
+      "text-outline": {
+       "color": "#6366f1",
+       "width": 2,
+       "hollow": true,
+       "fill": "#ffffff",
+       "shadow": true,
+       "shadowX": 4,
+       "shadowY": 4,
+       "shadowColor": "#f472b6"
+      },
+      "highlighter": {
+       "color": "#fde047",
+       "thickness": 56,
+       "offset": 2,
+       "textColor": "#18181b"
+      },
+      "scroll-shadow": {
+       "color": "#0f172a",
+       "opacity": 0.35,
+       "size": 14,
+       "surface": "#ffffff"
+      },
+      "button-press": {
+       "fill": "#6366f1",
+       "lift": 3,
+       "press": 2,
+       "duration": 150,
+       "easing": "ease-out",
+       "radius": 12
+      },
+      "link-underline": {
+       "color": "#4338ca",
+       "thickness": 2,
+       "offset": 4,
+       "page": "#ffffff"
+      },
+      "selection": {
+       "background": "#4f46e5",
+       "text": "#ffffff",
+       "page": "#ffffff"
+      },
+      "scrollbar": {
+       "thumb": "#6366f1",
+       "thumbHover": "#4338ca",
+       "track": "#e4e4e7",
+       "width": 10,
+       "radius": 6
+      },
+      "focus-ring": {
+       "color": "#4f46e5",
+       "inner": "#ffffff",
+       "width": 3,
+       "offset": 2,
+       "background": "#ffffff",
+       "component": "#e4e4e7"
+      }
+     }
+    },
+    "logo": {
+     "clearSpace": 0.25
+    },
+    "mockups": {
+     "content": {
+      "person": "Jordan Lee",
+      "role": "Head of Design",
+      "email": "",
+      "phone": "+1 (555) 010-2030",
+      "website": "",
+      "address": "100 Market Street, San Francisco",
+      "headline": "",
+      "cta": "Get started"
+     },
+     "mode": "light"
+    },
+    "social": {
+     "content": {
+      "name": "",
+      "headline": "",
+      "subtitle": "Open source. Local first. Free forever.",
+      "handle": "",
+      "github": "",
+      "website": "",
+      "cta": "Try it free"
+     },
+     "mode": "dark",
+     "design": {
+      "primary": null,
+      "secondary": null,
+      "background": "auto",
+      "radius": null,
+      "padding": 80,
+      "logoSvg": null
+     }
+    }
+   }
+  },
+  {
+   "id": "v-a-2",
+   "projectId": "b3f1c2a0-5d6e-4f7a-8b19-0c2d3e4f5a61",
+   "createdAt": 1760000090000,
+   "reason": "surprise",
+   "snapshot": {
+    "version": 1,
+    "brand": {
+     "profile": {
+      "name": "Fixture Brand (older)",
+      "description": "Design tools for people who ship.",
+      "logoSvg": null,
+      "roles": {},
+      "voice": {
+       "personality": [
+        "Clear",
+        "Confident",
+        "Warm"
+       ],
+       "dos": [
+        "Lead with the benefit",
+        "Use plain words",
+        "Write like you talk"
+       ],
+       "donts": [
+        "Jargon without a reason",
+        "Exclamation marks everywhere",
+        "Passive voice"
+       ],
+       "sample": "We build tools that get out of your way, so you can do the best work of your life."
+      },
+      "mission": {
+       "statement": "Give every team the tools to turn a good idea into a finished, consistent brand.",
+       "values": [
+        {
+         "title": "Craft",
+         "description": "Details matter. We sweat the small things so nobody else has to."
+        },
+        {
+         "title": "Clarity",
+         "description": "Plain words and honest defaults beat clever tricks."
+        },
+        {
+         "title": "Openness",
+         "description": "We build in public, share what we learn and welcome help."
+        },
+        {
+         "title": "Care",
+         "description": "Every choice starts with the people who use what we make."
+        }
+       ]
+      }
+     }
+    },
+    "colors": {
+     "swatches": [
+      {
+       "id": "sw_694f64ed",
+       "color": {
+        "l": 0.2076819155738133,
+        "c": 0.03982432659974598,
+        "h": 265.7548754713905,
+        "alpha": 1
+       },
+       "locked": false
+      },
+      {
+       "id": "sw_de7c56cc",
+       "color": {
+        "l": 0.5854043125544901,
+        "c": 0.20405527824372596,
+        "h": 277.11729232808455,
+        "alpha": 1
+       },
+       "locked": false
+      },
+      {
+       "id": "sw_9bfec36d",
+       "color": {
+        "l": 0.7252664125825393,
+        "c": 0.17522734150856534,
+        "h": 349.7607396894376,
+        "alpha": 1
+       },
+       "locked": false
+      },
+      {
+       "id": "sw_f123ac75",
+       "color": {
+        "l": 0.8608898880667115,
+        "c": 0.16252743670617992,
+        "h": 86.98328816187376,
+        "alpha": 1
+       },
+       "locked": false
+      },
+      {
+       "id": "sw_ba2e25bb",
+       "color": {
+        "l": 0.7729443867354562,
+        "c": 0.15349040394553426,
+        "h": 163.2230861936597,
+        "alpha": 1
+       },
+       "locked": false
+      }
+     ],
+     "shadeOptions": {
+      "hueShift": 0,
+      "anchor": true
+     },
+     "gradient": {
+      "type": "linear",
+      "angle": 135,
+      "x": 50,
+      "y": 50,
+      "interpolation": "oklch",
+      "stops": [
+       {
+        "id": "stop_7d1a7409",
+        "color": {
+         "l": 0.62,
+         "c": 0.2,
+         "h": 277,
+         "alpha": 1
+        },
+        "position": 0
+       },
+       {
+        "id": "stop_c9fb5db9",
+        "color": {
+         "l": 0.72,
+         "c": 0.17,
+         "h": 350,
+         "alpha": 1
+        },
+        "position": 50
+       },
+       {
+        "id": "stop_a672f1ca",
+        "color": {
+         "l": 0.85,
+         "c": 0.15,
+         "h": 85,
+         "alpha": 1
+        },
+        "position": 100
+       }
+      ]
+     }
+    },
+    "typography": {
+     "headingFont": "Space Grotesk",
+     "bodyFont": "Inter",
+     "scale": {
+      "baseSize": 18,
+      "ratio": 1.25,
+      "minBase": 16,
+      "minRatio": 1.2,
+      "minViewport": 360,
+      "maxViewport": 1280,
+      "stepsUp": 5,
+      "stepsDown": 2
+     },
+     "rhythm": {
+      "headingWeight": 600,
+      "bodyWeight": 400,
+      "headingLineHeight": 1.1,
+      "bodyLineHeight": 1.6,
+      "headingTracking": -0.02,
+      "bodyTracking": 0
+     }
+    },
+    "tokens": {
+     "settings": {
+      "name": "My Design System",
+      "prefix": "",
+      "colorFormat": "oklch",
+      "spacingBase": 8,
+      "radiusBase": 12,
+      "sections": {
+       "colors": true,
+       "shades": true,
+       "gradient": true,
+       "typography": true,
+       "spacing": true,
+       "radius": true,
+       "effects": true
+      }
+     }
+    },
+    "effects": {
+     "settings": {
+      "glass": {
+       "blur": 16,
+       "saturation": 160,
+       "tint": "#ffffff",
+       "opacity": 0.12,
+       "borderOpacity": 0.25,
+       "shadowOpacity": 0.25,
+       "radius": 20
+      },
+      "neumorphism": {
+       "color": "#e0e5ec",
+       "depth": 12,
+       "blur": 24,
+       "intensity": 0.18,
+       "lightAngle": 315,
+       "radius": 24,
+       "shape": "flat"
+      },
+      "shadow": {
+       "radius": 16,
+       "layers": [
+        {
+         "id": "s1",
+         "x": 0,
+         "y": 1,
+         "blur": 2,
+         "spread": 0,
+         "color": "#000000",
+         "opacity": 0.08,
+         "inset": false
+        },
+        {
+         "id": "s2",
+         "x": 0,
+         "y": 8,
+         "blur": 24,
+         "spread": -4,
+         "color": "#000000",
+         "opacity": 0.18,
+         "inset": false
+        }
+       ]
+      },
+      "inset": {
+       "x": 0,
+       "y": 2,
+       "blur": 6,
+       "spread": 0,
+       "color": "#000000",
+       "opacity": 0.18,
+       "fill": "#f4f4f5",
+       "radius": 12
+      },
+      "glow": {
+       "color": "#6366f1",
+       "radius": 32,
+       "intensity": 0.7,
+       "text": false,
+       "radiusCorner": 16
+      },
+      "border": {
+       "colors": [
+        "#6366f1",
+        "#f472b6",
+        "#fbbf24"
+       ],
+       "fill": "#18181b",
+       "thickness": 2,
+       "radius": 16,
+       "angle": 135,
+       "animated": false,
+       "speed": 4
+      },
+      "grain": {
+       "scale": 180,
+       "opacity": 0.25,
+       "frequency": 0.8,
+       "blend": "overlay"
+      },
+      "long-shadow": {
+       "angle": 45,
+       "length": 48,
+       "color": "#312e81",
+       "fade": 0.6,
+       "target": "box",
+       "fill": "#6366f1",
+       "radius": 12
+      },
+      "gradient-text": {
+       "source": "studio",
+       "colors": [
+        "#6366f1",
+        "#f472b6",
+        "#fbbf24"
+       ],
+       "angle": 90,
+       "fallback": null,
+       "animated": false,
+       "speed": 6
+      },
+      "skeleton": {
+       "source": "brand",
+       "tone": "light",
+       "base": "#e4e4e7",
+       "highlight": "#f4f4f5",
+       "speed": 1.6,
+       "angle": 100,
+       "radius": 12
+      },
+      "text-outline": {
+       "color": "#6366f1",
+       "width": 2,
+       "hollow": true,
+       "fill": "#ffffff",
+       "shadow": true,
+       "shadowX": 4,
+       "shadowY": 4,
+       "shadowColor": "#f472b6"
+      },
+      "highlighter": {
+       "color": "#fde047",
+       "thickness": 56,
+       "offset": 2,
+       "textColor": "#18181b"
+      },
+      "scroll-shadow": {
+       "color": "#0f172a",
+       "opacity": 0.35,
+       "size": 14,
+       "surface": "#ffffff"
+      },
+      "button-press": {
+       "fill": "#6366f1",
+       "lift": 3,
+       "press": 2,
+       "duration": 150,
+       "easing": "ease-out",
+       "radius": 12
+      },
+      "link-underline": {
+       "color": "#4338ca",
+       "thickness": 2,
+       "offset": 4,
+       "page": "#ffffff"
+      },
+      "selection": {
+       "background": "#4f46e5",
+       "text": "#ffffff",
+       "page": "#ffffff"
+      },
+      "scrollbar": {
+       "thumb": "#6366f1",
+       "thumbHover": "#4338ca",
+       "track": "#e4e4e7",
+       "width": 10,
+       "radius": 6
+      },
+      "focus-ring": {
+       "color": "#4f46e5",
+       "inner": "#ffffff",
+       "width": 3,
+       "offset": 2,
+       "background": "#ffffff",
+       "component": "#e4e4e7"
+      }
+     }
+    },
+    "logo": {
+     "clearSpace": 0.25
+    },
+    "mockups": {
+     "content": {
+      "person": "Jordan Lee",
+      "role": "Head of Design",
+      "email": "",
+      "phone": "+1 (555) 010-2030",
+      "website": "",
+      "address": "100 Market Street, San Francisco",
+      "headline": "",
+      "cta": "Get started"
+     },
+     "mode": "light"
+    },
+    "social": {
+     "content": {
+      "name": "",
+      "headline": "",
+      "subtitle": "Open source. Local first. Free forever.",
+      "handle": "",
+      "github": "",
+      "website": "",
+      "cta": "Try it free"
+     },
+     "mode": "dark",
+     "design": {
+      "primary": null,
+      "secondary": null,
+      "background": "auto",
+      "radius": null,
+      "padding": 80,
+      "logoSvg": null
+     }
+    }
+   }
+  },
+  {
+   "id": "v-c-1",
+   "projectId": "d4c3b2a1-0f9e-4d8c-a7b6-5c4d3e2f1a03",
+   "createdAt": 1760000650000,
+   "reason": "autosave",
+   "snapshot": {
+    "version": 1,
+    "brand": {
+     "profile": {
+      "name": "Harbour Coffee Roasters",
+      "description": "Design tools for people who ship.",
+      "logoSvg": null,
+      "roles": {},
+      "voice": {
+       "personality": [
+        "Clear",
+        "Confident",
+        "Warm"
+       ],
+       "dos": [
+        "Lead with the benefit",
+        "Use plain words",
+        "Write like you talk"
+       ],
+       "donts": [
+        "Jargon without a reason",
+        "Exclamation marks everywhere",
+        "Passive voice"
+       ],
+       "sample": "We build tools that get out of your way, so you can do the best work of your life."
+      },
+      "mission": {
+       "statement": "Give every team the tools to turn a good idea into a finished, consistent brand.",
+       "values": [
+        {
+         "title": "Craft",
+         "description": "Details matter. We sweat the small things so nobody else has to."
+        },
+        {
+         "title": "Clarity",
+         "description": "Plain words and honest defaults beat clever tricks."
+        },
+        {
+         "title": "Openness",
+         "description": "We build in public, share what we learn and welcome help."
+        },
+        {
+         "title": "Care",
+         "description": "Every choice starts with the people who use what we make."
+        }
+       ]
+      }
+     }
+    },
+    "colors": {
+     "swatches": [
+      {
+       "id": "sw_694f64ed",
+       "color": {
+        "l": 0.2076819155738133,
+        "c": 0.03982432659974598,
+        "h": 265.7548754713905,
+        "alpha": 1
+       },
+       "locked": false
+      },
+      {
+       "id": "sw_de7c56cc",
+       "color": {
+        "l": 0.5854043125544901,
+        "c": 0.20405527824372596,
+        "h": 277.11729232808455,
+        "alpha": 1
+       },
+       "locked": false
+      },
+      {
+       "id": "sw_9bfec36d",
+       "color": {
+        "l": 0.7252664125825393,
+        "c": 0.17522734150856534,
+        "h": 349.7607396894376,
+        "alpha": 1
+       },
+       "locked": false
+      },
+      {
+       "id": "sw_f123ac75",
+       "color": {
+        "l": 0.8608898880667115,
+        "c": 0.16252743670617992,
+        "h": 86.98328816187376,
+        "alpha": 1
+       },
+       "locked": false
+      },
+      {
+       "id": "sw_ba2e25bb",
+       "color": {
+        "l": 0.7729443867354562,
+        "c": 0.15349040394553426,
+        "h": 163.2230861936597,
+        "alpha": 1
+       },
+       "locked": false
+      }
+     ],
+     "shadeOptions": {
+      "hueShift": 0,
+      "anchor": true
+     },
+     "gradient": {
+      "type": "linear",
+      "angle": 135,
+      "x": 50,
+      "y": 50,
+      "interpolation": "oklch",
+      "stops": [
+       {
+        "id": "stop_7d1a7409",
+        "color": {
+         "l": 0.62,
+         "c": 0.2,
+         "h": 277,
+         "alpha": 1
+        },
+        "position": 0
+       },
+       {
+        "id": "stop_c9fb5db9",
+        "color": {
+         "l": 0.72,
+         "c": 0.17,
+         "h": 350,
+         "alpha": 1
+        },
+        "position": 50
+       },
+       {
+        "id": "stop_a672f1ca",
+        "color": {
+         "l": 0.85,
+         "c": 0.15,
+         "h": 85,
+         "alpha": 1
+        },
+        "position": 100
+       }
+      ]
+     }
+    },
+    "typography": {
+     "headingFont": "Space Grotesk",
+     "bodyFont": "Inter",
+     "scale": {
+      "baseSize": 18,
+      "ratio": 1.25,
+      "minBase": 16,
+      "minRatio": 1.2,
+      "minViewport": 360,
+      "maxViewport": 1280,
+      "stepsUp": 5,
+      "stepsDown": 2
+     },
+     "rhythm": {
+      "headingWeight": 600,
+      "bodyWeight": 400,
+      "headingLineHeight": 1.1,
+      "bodyLineHeight": 1.6,
+      "headingTracking": -0.02,
+      "bodyTracking": 0
+     }
+    },
+    "tokens": {
+     "settings": {
+      "name": "My Design System",
+      "prefix": "",
+      "colorFormat": "oklch",
+      "spacingBase": 8,
+      "radiusBase": 12,
+      "sections": {
+       "colors": true,
+       "shades": true,
+       "gradient": true,
+       "typography": true,
+       "spacing": true,
+       "radius": true,
+       "effects": true
+      }
+     }
+    },
+    "effects": {
+     "settings": {
+      "glass": {
+       "blur": 16,
+       "saturation": 160,
+       "tint": "#ffffff",
+       "opacity": 0.12,
+       "borderOpacity": 0.25,
+       "shadowOpacity": 0.25,
+       "radius": 20
+      },
+      "neumorphism": {
+       "color": "#e0e5ec",
+       "depth": 12,
+       "blur": 24,
+       "intensity": 0.18,
+       "lightAngle": 315,
+       "radius": 24,
+       "shape": "flat"
+      },
+      "shadow": {
+       "radius": 16,
+       "layers": [
+        {
+         "id": "s1",
+         "x": 0,
+         "y": 1,
+         "blur": 2,
+         "spread": 0,
+         "color": "#000000",
+         "opacity": 0.08,
+         "inset": false
+        },
+        {
+         "id": "s2",
+         "x": 0,
+         "y": 8,
+         "blur": 24,
+         "spread": -4,
+         "color": "#000000",
+         "opacity": 0.18,
+         "inset": false
+        }
+       ]
+      },
+      "inset": {
+       "x": 0,
+       "y": 2,
+       "blur": 6,
+       "spread": 0,
+       "color": "#000000",
+       "opacity": 0.18,
+       "fill": "#f4f4f5",
+       "radius": 12
+      },
+      "glow": {
+       "color": "#6366f1",
+       "radius": 32,
+       "intensity": 0.7,
+       "text": false,
+       "radiusCorner": 16
+      },
+      "border": {
+       "colors": [
+        "#6366f1",
+        "#f472b6",
+        "#fbbf24"
+       ],
+       "fill": "#18181b",
+       "thickness": 2,
+       "radius": 16,
+       "angle": 135,
+       "animated": false,
+       "speed": 4
+      },
+      "grain": {
+       "scale": 180,
+       "opacity": 0.25,
+       "frequency": 0.8,
+       "blend": "overlay"
+      },
+      "long-shadow": {
+       "angle": 45,
+       "length": 48,
+       "color": "#312e81",
+       "fade": 0.6,
+       "target": "box",
+       "fill": "#6366f1",
+       "radius": 12
+      },
+      "gradient-text": {
+       "source": "studio",
+       "colors": [
+        "#6366f1",
+        "#f472b6",
+        "#fbbf24"
+       ],
+       "angle": 90,
+       "fallback": null,
+       "animated": false,
+       "speed": 6
+      },
+      "skeleton": {
+       "source": "brand",
+       "tone": "light",
+       "base": "#e4e4e7",
+       "highlight": "#f4f4f5",
+       "speed": 1.6,
+       "angle": 100,
+       "radius": 12
+      },
+      "text-outline": {
+       "color": "#6366f1",
+       "width": 2,
+       "hollow": true,
+       "fill": "#ffffff",
+       "shadow": true,
+       "shadowX": 4,
+       "shadowY": 4,
+       "shadowColor": "#f472b6"
+      },
+      "highlighter": {
+       "color": "#fde047",
+       "thickness": 56,
+       "offset": 2,
+       "textColor": "#18181b"
+      },
+      "scroll-shadow": {
+       "color": "#0f172a",
+       "opacity": 0.35,
+       "size": 14,
+       "surface": "#ffffff"
+      },
+      "button-press": {
+       "fill": "#6366f1",
+       "lift": 3,
+       "press": 2,
+       "duration": 150,
+       "easing": "ease-out",
+       "radius": 12
+      },
+      "link-underline": {
+       "color": "#4338ca",
+       "thickness": 2,
+       "offset": 4,
+       "page": "#ffffff"
+      },
+      "selection": {
+       "background": "#4f46e5",
+       "text": "#ffffff",
+       "page": "#ffffff"
+      },
+      "scrollbar": {
+       "thumb": "#6366f1",
+       "thumbHover": "#4338ca",
+       "track": "#e4e4e7",
+       "width": 10,
+       "radius": 6
+      },
+      "focus-ring": {
+       "color": "#4f46e5",
+       "inner": "#ffffff",
+       "width": 3,
+       "offset": 2,
+       "background": "#ffffff",
+       "component": "#e4e4e7"
+      }
+     }
+    },
+    "logo": {
+     "clearSpace": 0.25
+    },
+    "mockups": {
+     "content": {
+      "person": "Jordan Lee",
+      "role": "Head of Design",
+      "email": "",
+      "phone": "+1 (555) 010-2030",
+      "website": "",
+      "address": "100 Market Street, San Francisco",
+      "headline": "",
+      "cta": "Get started"
+     },
+     "mode": "light"
+    },
+    "social": {
+     "content": {
+      "name": "",
+      "headline": "",
+      "subtitle": "Open source. Local first. Free forever.",
+      "handle": "",
+      "github": "",
+      "website": "",
+      "cta": "Try it free"
+     },
+     "mode": "dark",
+     "design": {
+      "primary": null,
+      "secondary": null,
+      "background": "auto",
+      "radius": null,
+      "padding": 80,
+      "logoSvg": null
+     }
+    }
+   }
+  }
+ ],
+ "handles": []
+}
