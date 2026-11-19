@@ -110,9 +110,9 @@ export function LocaleProvider({ children }: { children: ReactNode }) {
       {/* In the new language, so it is read in that voice. Always in the page, because a live region that appears
           together with its text is often not announced. */}
       <div
+        // role="status" is polite and atomic on its own; the attributes are left off so that the studios' own live
+        // regions, which tests and tools find by them, stay the only ones with them.
         role="status"
-        aria-live="polite"
-        aria-atomic="true"
         lang={textLocale}
         className="sr-only"
         data-testid="language-announcement"

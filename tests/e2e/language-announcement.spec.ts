@@ -11,7 +11,6 @@ test("switching language announces the new language's name once and keeps lang c
   await hydrated(page);
   const announcement = page.getByTestId("language-announcement");
   await expect(announcement).toHaveAttribute("role", "status");
-  await expect(announcement).toHaveAttribute("aria-live", "polite");
   // Opening a page is not a change of language, so nothing is said yet.
   await expect(announcement).toHaveText("");
   await expect(page.locator("html")).toHaveAttribute("lang", "en");
