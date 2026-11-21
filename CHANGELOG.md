@@ -24,6 +24,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Translated: the Effects Lab, Background Studio (generator names), Typography Studio, Export Engine, Brand Studio, Brand Guidelines and SVG Playground labels the no-English test named, and the README written into the social ZIP.
 - `docs/i18n-architecture.md` (how messages load, how to add one) and `tests/e2e/no-raw-keys.spec.ts` (fails on text that looks like a message key in any studio or tab).
 - Where the home page's time goes, with numbers, in `docs/performance.md`.
+- `pnpm release:prepare <version> "<roadmap text>"` stages a release: moves the `Unreleased` entries under a new version heading, sets the version in `package.json` and `lib/site.ts`, and adds the release to the README roadmap; it prints the `git tag` and `gh release create` commands and publishes nothing.
 
 ### Changed
 
