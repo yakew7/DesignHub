@@ -80,7 +80,7 @@ export function ColorList() {
             variant="outline"
             size="icon"
             className="size-8"
-            aria-label="Add color"
+            aria-label={t("brand.colors.add")}
             onClick={() => addColor(settings.colors[settings.colors.length - 1] ?? "#6366f1")}
           >
             <Plus />
