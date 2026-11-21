@@ -153,6 +153,12 @@ Open [http://localhost:3000](http://localhost:3000). To bake in your public URL,
 docker build --build-arg NEXT_PUBLIC_SITE_URL=https://design.example.com -t designhub .
 ```
 
+## The Content-Security-Policy
+
+A production build sends a `Content-Security-Policy` header (`contentSecurityPolicy` in `next.config.ts`): the app's own scripts and styles (with the inline ones Next.js and React style props need), Google Fonts for type, the Iconify hosts for icon search, `blob:` for the module worker and files made in the page, `data:` images, and `connect-src` for the AI provider a person may choose in Brand DNA (any https host, or a server on the same machine). It also sets `object-src 'none'`, `base-uri 'self'`, `form-action 'self'` and `frame-ancestors 'self'`. It is not sent by `pnpm dev`.
+
+If your copy does not use Brand DNA's AI provider, narrow `connect-src` in `next.config.ts` to `'self'` and the three Iconify hosts (`https://api.iconify.design https://api.simplesvg.com https://api.unisvg.com`); if you serve fonts yourself, drop the two Google hosts. `tests/e2e/csp.spec.ts` opens every page, its tabs, the service worker, the module worker and a download, and fails on any policy violation, so run `pnpm build && pnpm test:e2e` after changing the policy.
+
 ## Checking your deployment
 
 - The home page and every studio (`/brand`, `/colors`, `/typography` and so on) load, and `/sw.js`, `/sitemap.xml` and `/robots.txt` return 200.

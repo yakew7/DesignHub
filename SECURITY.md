@@ -19,6 +19,10 @@ Reports about the AI provider's key handling (for example the key reaching stora
 
 Only the latest release on the `main` branch receives security updates. Please upgrade before reporting.
 
+## Content-Security-Policy
+
+A production build sends a Content-Security-Policy that closes plugins, base URI changes, form posts to other origins and framing by other origins, and limits scripts, styles, fonts, images and workers to the app's own origin plus the Google Fonts and Iconify hosts. `script-src` and `style-src` keep `'unsafe-inline'` because a statically built page cannot carry a per-request nonce, and `connect-src` allows https and localhost because the AI provider in Brand DNA is chosen by the person. It is a second layer behind the SVG sanitizer, not a replacement for it. `docs/self-hosting.md` says how to narrow it.
+
 ## Dependency advisories
 
 Every run of the CI workflow audits the production dependencies (`pnpm audit --prod`) and lists any known advisory in the job summary (`scripts/audit-summary.mjs`). A high or critical advisory fails the job; a moderate or lower one is listed and fixed in the next dependency update. `next build` itself also stops on a Next.js version that has a known advisory, so a vulnerable framework version does not ship. Dependabot proposes the updates; a security update is merged as soon as CI passes.
