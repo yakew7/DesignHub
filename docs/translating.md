@@ -78,7 +78,7 @@ pnpm test
 pnpm check:dashes
 ```
 
-The translation tests check catalog keys, placeholders, and prohibited em dashes. `tests/e2e/translations-no-english.spec.ts` opens every studio and each of its tabs in Spanish, French and Hindi and fails on visible English text, and on English in an aria-label, a title or a placeholder; English that is known and has an issue is listed in its `KNOWN` table, which you should shrink when you translate it. Fix any failures before submitting your changes.
+The translation tests check catalog keys, placeholders, and prohibited em dashes. `tests/e2e/translations-no-english.spec.ts` opens every studio and each of its tabs in Spanish, French and Hindi and fails on visible English text, and on English in an aria-label, a title or a placeholder; English that is known and has an issue is listed in its `KNOWN` table, which you should shrink when you translate it. It also opens the command palette, the shortcuts dialog and the select menus of Brand Projects, and a text that is spelled the same in a language on purpose (a brand name, a word the two languages share) goes in its `ALLOWED` list with the reason. Fix any failures before submitting your changes.
 
 Start the application using the instructions in the repository README. Use the language switcher in the header to select your language, then inspect the main interface and Brand Projects at desktop and mobile widths.
 

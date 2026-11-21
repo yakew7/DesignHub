@@ -9,6 +9,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- A Content-Security-Policy on every production page (own origin plus Google Fonts and the Iconify hosts, `blob:` workers, `connect-src` for the chosen AI provider), with a test that opens every page, tab and worker and fails on a violation; described in `SECURITY.md` and `docs/self-hosting.md`.
+- Archive in the Brand Projects select bar (and from the near-full note): saves the chosen projects with their history as one file, deletes them from the browser, and can be undone.
+- `pnpm new:language <code>` and the German language (no translations yet: it shows English, is not chosen on its own for a browser set to German, and the document says `lang="en"` until it is translated).
+- Firefox and WebKit run the routes test and the axe scan each night (`CROSS_BROWSER=1`).
+- The Accessibility Lab report buttons, the Background Studio's Add color label and the Typography Studio's weight names, Fonts and format names are translated; the no-English check also opens the command palette, the shortcuts dialog and the select menus.
+- `docs/decisions/`: why the message parts, the summary rows, the lazy toaster and the pinned framework.
+- `docs/performance.md` records a measured attempt that did not help (reading the stores after the first paint).
 - A language change is announced to a screen reader (the new language's own name, once), and `document.documentElement.lang` follows the language of the text on the page.
 - The tier names and deprecation notes of the token formats are translated, and the format search finds a format by its English or translated name.
 - `pnpm check:areas` (every file that uses an area's messages imports the area; runs in CI), `pnpm new:area <name>` (starts a message area), `scripts/audit-summary.mjs` (dependency advisories in the CI job summary; high and critical fail it) and `scripts/release-notes.mjs` (an empty release gets its CHANGELOG section as notes).
