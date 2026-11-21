@@ -76,6 +76,20 @@ The three biggest costs, by script time and bytes, in the report of one run (the
 
 All three are in every route's first load. The home page moved from 259.6 kB to 245 kB gzipped first load in November by loading the toaster on first use and the English studio messages with their studios (see `docs/bundle-budget.md`); what is left is mostly the framework, so a further cut has to come from loading less of the app shell (the stores read on the home page, the locale provider) before the first paint, not from any single module. If the score drops, compare these three numbers first.
 
+### Tried: reading the stores after the first paint
+
+The home chooser and `PwaRegister` read the nav and command-recents stores (the last studios used) while the page renders. Moving both reads into one hook that imports the two stores after the page has painted (`useRecentStudios`, a dynamic import in an effect) was measured against the build without it, seven Lighthouse runs each on the same machine in the same hour:
+
+|                            |                 With the hook |                       Without |
+| -------------------------- | ----------------------------: | ----------------------------: |
+| Median total blocking time |                        104 ms |                        111 ms |
+| Median time to interactive |                        3.75 s |                        3.49 s |
+| Median LCP                 |                        908 ms |                        910 ms |
+| `/` first load (gzip)      |                      240.6 kB |                      240.3 kB |
+| Scores                     | 65, 76, 96, 99, 100, 100, 100 | 99, 99, 99, 99, 100, 100, 100 |
+
+There is no gain, and the extra asynchronous step is not free, so the change was dropped. The stores are small and their middleware is shared with the rest of the root layout, so a lazy import does not take them out of the first load. The home page's remaining cost is the framework and the providers (see the table above), not these reads. If one day the first load must shrink further, the lever is what the root layout loads for every route, which is larger than any single store.
+
 ## Long tasks in the end-to-end tests
 
 **What it measures.** How long the main thread is blocked during an interaction. The browser reports every task over 50 ms as a [long task](https://developer.mozilla.org/en-US/docs/Web/API/PerformanceLongTaskTiming); a test records them and fails when the longest is over a bound. `tests/e2e/font-browser.spec.ts` and `tests/e2e/background-picker.spec.ts` use this pattern.
