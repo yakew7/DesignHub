@@ -16,6 +16,7 @@ import { snapshotTokens } from "@/lib/projects/preview";
 import type { BrandSnapshot } from "@/lib/projects/snapshot";
 import { getProject } from "@/lib/projects/repository";
 import { projectName, type ProjectListItem } from "@/lib/projects/types";
+import { formatBytes } from "@/lib/svg-size";
 import { cn } from "@/lib/utils";
 
 type Props = {
@@ -223,6 +224,11 @@ export function ProjectCard({
             opened: ago(project.lastOpenedAt, locale, t),
           })}
         </p>
+        {project.sizeBytes !== undefined ? (
+          <p className="text-xs text-muted-foreground">
+            {t("projects.card.size", { size: formatBytes(project.sizeBytes) })}
+          </p>
+        ) : null}
         <ProjectTags name={name} tags={project.tags} onAdd={onAddTag} onRemove={onRemoveTag} />
         <div className="mt-auto flex items-center gap-1 pt-1">
           <Button size="sm" variant={active ? "outline" : "default"} onClick={onOpen} disabled={active}>
