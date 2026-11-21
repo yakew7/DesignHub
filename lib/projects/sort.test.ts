@@ -2,7 +2,7 @@ import { expect, test } from "vitest";
 
 import { defaultSnapshot } from "@/lib/projects/snapshot";
 import { sortProjects } from "@/lib/projects/sort";
-import { projectName, type BrandProject } from "@/lib/projects/types";
+import { listItemOf, projectName, type BrandProject, type ProjectListItem } from "@/lib/projects/types";
 
 const make = (name: string, patch: Partial<BrandProject>): BrandProject => ({
   id: name,
@@ -27,8 +27,15 @@ test.each([
   ["edited", ["gamma", "Alpha", "beta"]],
   ["name", ["gamma", "Alpha", "beta"]],
   ["newest", ["gamma", "beta", "Alpha"]],
+  ["size", ["gamma", "beta", "Alpha"]],
 ] as const)("%s keeps favorites first", (sort, expected) => {
   expect(names(sortProjects(projects, sort))).toEqual(expected);
+});
+
+test("size sorts largest first, with unmeasured projects last", () => {
+  const item = (name: string, sizeBytes?: number): ProjectListItem => ({ ...listItemOf(make(name)), sizeBytes });
+  const items = [item("small", 100), item("big", 900), item("unmeasured"), item("mid", 500)];
+  expect(names(sortProjects(items, "size"))).toEqual(["big", "mid", "small", "unmeasured"]);
 });
 
 test("name sorting ignores case", () => {
