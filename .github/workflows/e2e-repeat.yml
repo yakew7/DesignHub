@@ -51,3 +51,34 @@ jobs:
           name: playwright-results
           path: test-results/
           retention-days: 7
+
+  cross-browser:
+    name: Routes and axe in Firefox and WebKit
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v7
+      - uses: pnpm/action-setup@v6
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 22
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - name: Drop the Microsoft apt source
+        run: sudo rm -f /etc/apt/sources.list.d/microsoft-prod.list /etc/apt/sources.list.d/microsoft-prod.sources
+      - run: pnpm exec playwright install --with-deps firefox webkit
+      - run: pnpm build
+      # The routes test and the axe scan, in the other two engines (CROSS_BROWSER in playwright.config.ts). A test
+      # that cannot pass in one browser is skipped there with `test.skip(browserName === "...", "reason, #issue")`.
+      - name: Routes and axe in Firefox and WebKit
+        run: CROSS_BROWSER=1 E2E_REPORT=test-results/cross-report.json pnpm exec playwright test --retries=0
+      - name: Failures, by browser
+        if: always()
+        run: |
+          if [ -f test-results/cross-report.json ]; then node scripts/flaky-tests.mjs --repeat test-results/cross-report.json >> "$GITHUB_STEP_SUMMARY"; fi
+      - uses: actions/upload-artifact@v7
+        if: failure()
+        with:
+          name: playwright-cross-browser-results
+          path: test-results/
+          retention-days: 7

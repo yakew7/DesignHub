@@ -41,8 +41,10 @@ export function failedRuns(report) {
   const visit = (suite, titles) => {
     const here = suite.title ? [...titles, suite.title] : titles;
     for (const spec of suite.specs ?? []) {
-      const title = [...here, spec.title].join(" › ");
+      const base = [...here, spec.title].join(" › ");
       for (const test of spec.tests ?? []) {
+        // A browser other than Chromium is named, so a failure in Firefox or WebKit says where it happened.
+        const title = test.projectName && test.projectName !== "chromium" ? `${base} (${test.projectName})` : base;
         const entry = found.get(title) ?? { title, file: spec.file ?? suite.file ?? "", failed: 0, runs: 0 };
         const last = (test.results ?? []).at(-1);
         entry.runs += 1;

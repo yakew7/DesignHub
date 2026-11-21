@@ -134,4 +134,28 @@ describe("slowest tests", () => {
   test("a report with no tests says so", () => {
     expect(slowestSummary(testDurations({ suites: [] }))).toContain("The report has no test times.");
   });
+
+  test("a failure in a browser other than Chromium names the browser", () => {
+    const report = {
+      suites: [
+        {
+          title: "routes.spec.ts",
+          specs: [
+            {
+              title: "Home loads",
+              file: "routes.spec.ts",
+              tests: [
+                { projectName: "firefox", results: [{ status: "passed" }] },
+                { projectName: "webkit", results: [{ status: "failed" }] },
+                { projectName: "chromium", results: [{ status: "passed" }] },
+              ],
+            },
+          ],
+        },
+      ],
+    };
+    expect(failedRuns(report)).toEqual([
+      { title: "routes.spec.ts › Home loads (webkit)", file: "routes.spec.ts", failed: 1, runs: 1 },
+    ]);
+  });
 });
