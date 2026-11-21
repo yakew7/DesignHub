@@ -323,7 +323,7 @@ cp .env.example .env.local
 | `pnpm check:unused`  | Fail on unused files, exports or dependencies          |
 | `pnpm bundle:size`   | Report each route's first-load JS and check its budget |
 
-The [performance guide](docs/performance.md) explains how to measure bundle size, unused code, Lighthouse scores, long tasks and autosave work, and how to read each result.
+The [decision log](docs/decisions/README.md) says why the architecture is the way it is (the message parts, the summary rows, the lazy toaster, the pinned framework). The [performance guide](docs/performance.md) explains how to measure bundle size, unused code, Lighthouse scores, long tasks and autosave work, and how to read each result.
 
 DesignHub builds to fully static pages, so you can deploy it to any static or Node host (Vercel, Netlify, Cloudflare Pages, a VPS).
 
