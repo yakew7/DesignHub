@@ -2,6 +2,7 @@
 
 import { createContext, useContext, useEffect, useMemo, useState, useSyncExternalStore, type ReactNode } from "react";
 
+import { languagesInProgress } from "@/lib/i18n/complete-areas";
 import { areaPartsVersion, setActiveLocale, subscribeAreaParts } from "@/lib/i18n/area-parts";
 import { defaultLocale, isLocale, loadCatalog, LOCALE_STORAGE_KEY, localeNames, type Locale } from "@/lib/i18n/locales";
 import { preferredLocale, writeStoredLocale } from "@/lib/i18n/storage";
@@ -99,7 +100,8 @@ export function LocaleProvider({ children }: { children: ReactNode }) {
 
   // The page's `lang` is the language its text is in. It changes when the new language's core messages arrive, together
   // with the announcement, so a screen reader does not read English text in the new voice while they load.
-  const textLocale = loadedCatalog.locale;
+  // A language still in progress shows English text, so the document says English until it is translated.
+  const textLocale = languagesInProgress.includes(loadedCatalog.locale) ? defaultLocale : loadedCatalog.locale;
   useEffect(() => {
     document.documentElement.lang = textLocale;
   }, [textLocale]);

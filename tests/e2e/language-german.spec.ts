@@ -21,13 +21,16 @@ async function chunksIn(browser: Browser, locale: string, path: string) {
   await page.addInitScript((value) => window.localStorage.setItem("designhub:locale", value), locale);
   await page.goto(path);
   await hydrated(page);
-  await expect(page.locator("html")).toHaveAttribute("lang", locale);
+  // A language in progress shows English text, so the document says English until it is translated.
+  await expect(page.locator("html")).toHaveAttribute("lang", locale === "de" ? "en" : locale);
   await page.waitForLoadState("networkidle");
   await context.close();
   return requests;
 }
 
-test("German is in the language switcher, and choosing it keeps the page in English with lang de", async ({ page }) => {
+test("German is in the language switcher, and choosing it keeps the page in English, and the document says so", async ({
+  page,
+}) => {
   await page.goto("/colors");
   await hydrated(page);
   const switcher = page
@@ -38,12 +41,12 @@ test("German is in the language switcher, and choosing it keeps the page in Engl
   await expect(switcher.locator('option[value="de"]')).toHaveAttribute("lang", "de");
 
   await switcher.selectOption("de");
-  await expect(page.locator("html")).toHaveAttribute("lang", "de");
-  // Nothing is translated yet, so the studio reads as it does in English.
+  // Nothing is translated yet, so the studio reads as it does in English, and the document says so.
+  await expect(page.locator("html")).toHaveAttribute("lang", "en");
   await expect(page.getByRole("tab", { name: "Export" }).first()).toBeVisible();
   await page.waitForLoadState("networkidle");
   await expect(page.getByRole("tab", { name: "Export" }).first()).toBeVisible();
-  await expect(page.locator("html")).toHaveAttribute("lang", "de");
+  await expect(page.locator("html")).toHaveAttribute("lang", "en");
 });
 
 test("in German the parts load like Spanish's: every chunk once, and as many as for Spanish", async ({ browser }) => {

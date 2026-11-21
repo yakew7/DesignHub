@@ -36,6 +36,8 @@ German (`de`) was added this way and is the first example: every part is empty a
 
 The tests that hold every language to every key of a complete area (`completeAreas`, above) skip the languages listed in `languagesInProgress` in `lib/i18n/complete-areas.ts`, because a new language starts with no translations at all. `pnpm new:language` adds the language there. Remove it from the list when its complete areas are translated, so the tests start to keep it complete. At the same time add the code to `LANGUAGES` in `tests/e2e/translations-fit.spec.ts` and `tests/e2e/translations-no-english.spec.ts`, which check the translated studios in the browser (they leave a language that has nothing translated out, as it would fail on all its English).
 
+A language in progress is not chosen for a visitor on its own (a browser set to German still gets the interface in English, see `detectableLanguages` in `lib/i18n/storage.ts`), the document says `lang="en"` while its text is English, and it can still be chosen in the language switcher.
+
 ### What the script does, by hand
 
 If you need to do it without the script, these are the steps it follows:
