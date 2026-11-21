@@ -2,7 +2,13 @@ import { describe, expect, test } from "vitest";
 
 import { defaultSnapshot } from "@/lib/projects/snapshot";
 import { MAX_VERSIONS, type ProjectVersion, type VersionReason } from "@/lib/projects/history";
-import { importedVersions, parseProjectsFile, projectsToJson, projectToJson } from "@/lib/projects/transfer";
+import {
+  archiveFileName,
+  importedVersions,
+  parseProjectsFile,
+  projectsToJson,
+  projectToJson,
+} from "@/lib/projects/transfer";
 import type { BrandProject } from "@/lib/projects/types";
 
 function project(name: string, patch: Partial<BrandProject> = {}): BrandProject {
@@ -237,5 +243,33 @@ describe("version history", () => {
     expect(history[0]?.snapshot.brand.profile.name).toBe("Evil");
     expect(history[0]?.snapshot.brand.profile.logoSvg).not.toMatch(/<script|onload=|<foreignObject|javascript:/i);
     expect(history[history.length - 1]?.createdAt).toBe(6);
+  });
+});
+
+describe("archive file", () => {
+  const version = (id: string, createdAt: number, name: string): ProjectVersion => ({
+    id,
+    projectId: "any",
+    createdAt,
+    reason: "autosave",
+    snapshot: defaultSnapshot(name),
+  });
+
+  test("is named for the day it was made, in UTC", () => {
+    expect(archiveFileName(new Date("2026-11-21T23:59:59Z"))).toBe("designhub-archive-2026-11-21.json");
+  });
+
+  test("holds each archived project with its history and reads back as the same projects", () => {
+    const first = project("First", { tags: ["old"] });
+    const second = project("Second", { favorite: true });
+    const histories = new Map([
+      [first.id, [version("a", 10, "A"), version("b", 20, "B")]],
+      [second.id, [version("c", 30, "C")]],
+    ]);
+    const entries = parseProjectsFile(projectsToJson([first, second], histories));
+    expect(entries.map((entry) => entry.snapshot.brand.profile.name)).toEqual(["First", "Second"]);
+    expect(entries.map((entry) => entry.history.length)).toEqual([2, 1]);
+    expect(entries[0]?.tags).toEqual(["old"]);
+    expect(entries[1]?.favorite).toBe(true);
   });
 });

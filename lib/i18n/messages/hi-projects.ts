@@ -174,4 +174,11 @@ export const hiProjects = {
   "projects.tags.add": "{name} में टैग जोड़ें",
   "projects.tags.limit": "अधिकतम {max} टैग",
   "projects.tags.button": "टैग",
+  "projects.bulk.archive": "संग्रहित करें",
+  "projects.bulk.archiveHint":
+    "चुने हुए प्रोजेक्ट को उनके इतिहास के साथ एक फ़ाइल में सहेजें, फिर उन्हें इस ब्राउज़र से हटाएँ। खुला प्रोजेक्ट रखा जाता है।",
+  "projects.bulk.archived.one": "{count} प्रोजेक्ट फ़ाइल में संग्रहित किया गया",
+  "projects.bulk.archived.other": "{count} प्रोजेक्ट फ़ाइल में संग्रहित किए गए",
+  "projects.bulk.archiveFailed": "संग्रह फ़ाइल नहीं बन सकी, इसलिए कुछ भी नहीं हटाया गया",
+  "projects.storage.archive": "प्रोजेक्ट संग्रहित करें",
 } satisfies Catalog;

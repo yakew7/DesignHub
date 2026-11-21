@@ -18,6 +18,7 @@ import { Section } from "@/components/ui/section";
 import { Switch } from "@/components/ui/switch";
 import { useCommandRecentsStore } from "@/store/command-recents-store";
 import { useNavStore } from "@/store/nav-store";
+import { useUiStore } from "@/store/ui-store";
 import { usePanelStore } from "@/store/panel-store";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { safeDb } from "@/lib/db";
@@ -159,6 +160,7 @@ export function StorageBody() {
     ? recentStudioHrefs(lastStudio, recentCommands).flatMap((href) => studios.filter((studio) => studio.href === href))
     : [];
   const setSectionOpen = usePanelStore((state) => state.setOpen);
+  const requestArchive = useUiStore((state) => state.requestArchive);
   const share = report ? quotaShare(report.usage, report.quota) : null;
   const rows = report
     ? [
@@ -211,6 +213,9 @@ export function StorageBody() {
                 <p className="text-xs">{t("projects.storage.nearlyFull", { percent: share ?? 0 })}</p>
                 <Button variant="outline" size="sm" onClick={() => setSectionOpen("storage-projects", true)}>
                   {t("projects.storage.showVersions")}
+                </Button>
+                <Button variant="outline" size="sm" onClick={requestArchive}>
+                  {t("projects.storage.archive")}
                 </Button>
               </div>
             ) : null}

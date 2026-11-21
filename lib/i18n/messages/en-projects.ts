@@ -170,4 +170,11 @@ export const enProjects = {
   "projects.tags.add": "Add a tag to {name}",
   "projects.tags.limit": "Up to {max} tags",
   "projects.tags.button": "Tag",
+  "projects.bulk.archive": "Archive",
+  "projects.bulk.archiveHint":
+    "Save the selected projects with their history as one file, then delete them from this browser. The open project is kept.",
+  "projects.bulk.archived.one": "Archived {count} project to a file",
+  "projects.bulk.archived.other": "Archived {count} projects to a file",
+  "projects.bulk.archiveFailed": "Could not make the archive file, so nothing was deleted",
+  "projects.storage.archive": "Archive projects",
 } as const;

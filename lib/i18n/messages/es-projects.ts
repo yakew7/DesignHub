@@ -177,4 +177,11 @@ export const esProjects = {
   "projects.tags.add": "Añadir una etiqueta a {name}",
   "projects.tags.limit": "Hasta {max} etiquetas",
   "projects.tags.button": "Etiqueta",
+  "projects.bulk.archive": "Archivar",
+  "projects.bulk.archiveHint":
+    "Guarda los proyectos seleccionados con su historial en un solo archivo y luego los elimina de este navegador. El proyecto abierto se conserva.",
+  "projects.bulk.archived.one": "Se archivó {count} proyecto en un archivo",
+  "projects.bulk.archived.other": "Se archivaron {count} proyectos en un archivo",
+  "projects.bulk.archiveFailed": "No se pudo crear el archivo, así que no se eliminó nada",
+  "projects.storage.archive": "Archivar proyectos",
 } satisfies Catalog;

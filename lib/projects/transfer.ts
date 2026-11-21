@@ -68,6 +68,9 @@ export function projectsToJson(projects: BrandProject[], histories?: ProjectHist
   );
 }
 
+/** The name of an archive file, with the day it was made (`designhub-archive-2026-11-21.json`). */
+export const archiveFileName = (date: Date): string => `designhub-archive-${date.toISOString().slice(0, 10)}.json`;
+
 const isObject = (value: unknown): value is Record<string, unknown> =>
   typeof value === "object" && value !== null && !Array.isArray(value);
 

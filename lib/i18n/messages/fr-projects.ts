@@ -180,4 +180,11 @@ export const frProjects = {
   "projects.tags.add": "Ajouter une étiquette à {name}",
   "projects.tags.limit": "Jusqu'à {max} étiquettes",
   "projects.tags.button": "Étiquette",
+  "projects.bulk.archive": "Archiver",
+  "projects.bulk.archiveHint":
+    "Enregistre les projets sélectionnés avec leur historique dans un seul fichier, puis les supprime de ce navigateur. Le projet ouvert est conservé.",
+  "projects.bulk.archived.one": "{count} projet archivé dans un fichier",
+  "projects.bulk.archived.other": "{count} projets archivés dans un fichier",
+  "projects.bulk.archiveFailed": "Impossible de créer le fichier d'archive, rien n'a donc été supprimé",
+  "projects.storage.archive": "Archiver des projets",
 } satisfies Catalog;

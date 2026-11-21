@@ -4,6 +4,7 @@ import "@/lib/i18n/areas/colors";
 import "@/lib/i18n/areas/projects";
 
 import {
+  Archive,
   ArrowLeftRight,
   Copy,
   Download,
@@ -64,7 +65,7 @@ import { projectSorts, sortProjects, type ProjectSort } from "@/lib/projects/sor
 import { filterSorted, PROJECT_PAGE, searchText } from "@/lib/projects/search";
 import { projectTags } from "@/lib/projects/tags";
 import { deletable, pruned, toggled, toggledAll, withRange, withTagged } from "@/lib/projects/selection";
-import { projectsToJson, projectToJson } from "@/lib/projects/transfer";
+import { archiveFileName, projectsToJson, projectToJson } from "@/lib/projects/transfer";
 import { projectsZip } from "@/lib/projects/zip";
 import { projectName, type ProjectListItem } from "@/lib/projects/types";
 import { cn } from "@/lib/utils";
@@ -100,6 +101,10 @@ export function ProjectManager() {
   const [menuOpen, setMenuOpen] = useState(false);
   const newProjectRequested = useUiStore((state) => state.newProjectRequested);
   const clearNewProjectRequest = useUiStore((state) => state.clearNewProjectRequest);
+  const archiveRequested = useUiStore((state) => state.archiveRequested);
+  const clearArchiveRequest = useUiStore((state) => state.clearArchiveRequest);
+  const [focusBar, setFocusBar] = useState(false);
+  const barStart = useRef<HTMLButtonElement>(null);
   const sort = useProjectStore((state) => state.sort);
   const setSort = useProjectStore((state) => state.setSort);
   const exportHistory = useProjectStore((state) => state.exportHistory);
@@ -112,6 +117,20 @@ export function ProjectManager() {
     setNewName("");
     setCreating(true);
   }, [newProjectRequested, clearNewProjectRequest]);
+
+  // "Archive projects" in the near-full note of the Storage panel lands here in select mode, with focus on the bar.
+  useEffect(() => {
+    if (!archiveRequested) return;
+    clearArchiveRequest();
+    setSelecting(true);
+    setFocusBar(true);
+  }, [archiveRequested, clearArchiveRequest]);
+
+  useEffect(() => {
+    if (!focusBar || !selecting) return;
+    setFocusBar(false);
+    barStart.current?.focus();
+  }, [focusBar, selecting]);
 
   async function exportOne(project: ProjectListItem) {
     const latest = await freshProject(project.id);
@@ -232,8 +251,22 @@ export function ProjectManager() {
     toast.success(plural("projects.bulk.tagged", ids.length));
   }
 
-  async function removeChosen() {
+  /**
+   * Deletes the chosen projects but the open one. With `archive`, they are first saved as one project file with their
+   * history (whatever the history switch says), and nothing is deleted if that file cannot be made.
+   */
+  async function removeChosen(archive = false) {
     const { ids, keptOpen } = deletable(chosen, activeId);
+    if (archive && ids.length > 0) {
+      try {
+        const all = (await listProjects()).filter((project) => ids.includes(project.id));
+        const histories = await projectHistories(all);
+        downloadText(projectsToJson(all, histories), archiveFileName(new Date()));
+      } catch (error) {
+        toast.error(errorMessage(error, t, "projects.bulk.archiveFailed"));
+        return;
+      }
+    }
     const removed: NonNullable<Awaited<ReturnType<typeof removeProject>>>[] = [];
     await run(async () => {
       for (const id of ids) {
@@ -247,9 +280,9 @@ export function ProjectManager() {
       return;
     }
     // One undo puts every deleted project back, with its history.
-    toast.success(plural("projects.bulk.deleted", removed.length), {
+    toast.success(plural(archive ? "projects.bulk.archived" : "projects.bulk.deleted", removed.length), {
       description: keptOpen ? t("projects.bulk.openKept") : undefined,
-      duration: 8000,
+      duration: archive ? 30_000 : 8000,
       action: {
         label: t("common.undo"),
         onClick: () =>
@@ -508,6 +541,7 @@ export function ProjectManager() {
             {plural("projects.bulk.count", settledCount)}
           </span>
           <Button
+            ref={barStart}
             variant="outline"
             size="sm"
             onClick={() =>
@@ -556,6 +590,15 @@ export function ProjectManager() {
           </form>
           <Button variant="outline" size="sm" onClick={() => void exportChosen()} disabled={chosen.size === 0}>
             <FileArchive /> {t("projects.bulk.export")}
+          </Button>
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => void removeChosen(true)}
+            disabled={chosen.size === 0}
+            title={t("projects.bulk.archiveHint")}
+          >
+            <Archive /> {t("projects.bulk.archive")}
           </Button>
           <Button variant="destructive" size="sm" onClick={() => void removeChosen()} disabled={chosen.size === 0}>
             <Trash2 /> {t("common.delete")}
