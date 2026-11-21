@@ -3,7 +3,7 @@ import { join } from "node:path";
 
 import { describe, expect, test } from "vitest";
 
-import { listItemOf, projectName, type BrandProject } from "@/lib/projects/types";
+import { listItemOf, projectName, snapshotBytes, type BrandProject } from "@/lib/projects/types";
 
 const fixture = JSON.parse(readFileSync(join(__dirname, "__fixtures__/v1/projects.json"), "utf8")) as {
   projects: BrandProject[];
@@ -30,7 +30,15 @@ describe("a project's list item", () => {
       updatedAt: project.updatedAt,
       lastOpenedAt: project.lastOpenedAt,
       name: project.snapshot.brand.profile.name,
+      sizeBytes: expect.any(Number),
     });
+  });
+
+  test("stores the size of the snapshot in bytes", () => {
+    const item = listItemOf(project);
+    expect(item.sizeBytes).toBe(snapshotBytes(project.snapshot));
+    expect(item.sizeBytes).toBe(new TextEncoder().encode(JSON.stringify(project.snapshot)).length);
+    expect(item.sizeBytes).toBeGreaterThan(0);
   });
 
   test("keeps no colors: a card shows a plain box until its picture is drawn (#547)", () => {
