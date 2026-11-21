@@ -9,6 +9,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- Each Brand Projects card shows the size of its stored snapshot, and the list gains a Size sort, largest first; rows saved before the size existed are measured once when the list opens.
 - A Content-Security-Policy on every production page (own origin plus Google Fonts and the Iconify hosts, `blob:` workers, `connect-src` for the chosen AI provider), with a test that opens every page, tab and worker and fails on a violation; described in `SECURITY.md` and `docs/self-hosting.md`.
 - Archive in the Brand Projects select bar (and from the near-full note): saves the chosen projects with their history as one file, deletes them from the browser, and can be undone.
 - `pnpm new:language <code>` and the German language (no translations yet: it shows English, is not chosen on its own for a browser set to German, and the document says `lang="en"` until it is translated).
