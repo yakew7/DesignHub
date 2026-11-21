@@ -2,7 +2,7 @@ import { describe, expect, test } from "vitest";
 
 import { homeGoals, orderGoals } from "@/lib/home-goals";
 import { catalogs } from "@/lib/i18n/all-catalogs";
-import { locales } from "@/lib/i18n/locales";
+import { finishedLocales } from "@/lib/i18n/complete-areas";
 import { en } from "@/lib/i18n/messages/en";
 import { getStudio, studios } from "@/lib/navigation";
 
@@ -23,7 +23,8 @@ describe("home goals", () => {
       for (const part of ["title", "body"]) {
         const key = `home.goal.${goal.id}.${part}`;
         expect(Object.hasOwn(en, key), key).toBe(true);
-        for (const locale of locales) expect(Object.hasOwn(catalogs[locale], key), `${locale} ${key}`).toBe(true);
+        for (const locale of finishedLocales)
+          expect(Object.hasOwn(catalogs[locale], key), `${locale} ${key}`).toBe(true);
       }
     }
   });

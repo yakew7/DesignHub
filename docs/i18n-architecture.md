@@ -1,6 +1,6 @@
 # How messages load
 
-DesignHub shows its interface in English, Spanish, French and Hindi. This page says where a message lives, how it reaches the page, and what to do when you add one. [docs/translating.md](translating.md) is the guide for translators; this one is for someone changing the code.
+DesignHub shows its interface in English, Spanish, French and Hindi, and German is added with its messages still in English. This page says where a message lives, how it reaches the page, and what to do when you add one. [docs/translating.md](translating.md) is the guide for translators; this one is for someone changing the code.
 
 ## The parts
 
@@ -43,6 +43,10 @@ Run `pnpm new:area <name>` (for example `pnpm new:area reports`). It creates `en
 1. Add the keys, starting with `<name>.`, to the four parts.
 2. Add `import "@/lib/i18n/areas/<name>";` to every file that uses one of them (`pnpm check:areas` finds the ones you missed).
 3. Add the prefix to `completeAreas` in `lib/i18n/complete-areas.ts` when every language has all its keys.
+
+## Adding a language
+
+Run `pnpm new:language <code>` (for example `pnpm new:language de`). It creates the language's empty core and one empty part per area, and registers them in `locales.ts`, `all-catalogs.ts`, every `areas/<area>.ts` and `languagesInProgress` in `complete-areas.ts`. See [docs/translating.md](translating.md).
 
 ## Why it is built this way
 

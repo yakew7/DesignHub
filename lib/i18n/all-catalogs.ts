@@ -26,6 +26,15 @@ import { hiMockups } from "@/lib/i18n/messages/hi-mockups";
 import { hiProjects } from "@/lib/i18n/messages/hi-projects";
 import { hiSocial } from "@/lib/i18n/messages/hi-social";
 import { hiSvg } from "@/lib/i18n/messages/hi-svg";
+import { de } from "@/lib/i18n/messages/de";
+import { deBrand } from "@/lib/i18n/messages/de-brand";
+import { deColors } from "@/lib/i18n/messages/de-colors";
+import { deIcons } from "@/lib/i18n/messages/de-icons";
+import { deLogo } from "@/lib/i18n/messages/de-logo";
+import { deMockups } from "@/lib/i18n/messages/de-mockups";
+import { deProjects } from "@/lib/i18n/messages/de-projects";
+import { deSocial } from "@/lib/i18n/messages/de-social";
+import { deSvg } from "@/lib/i18n/messages/de-svg";
 import type { Locale } from "@/lib/i18n/locales";
 import type { Catalog } from "@/lib/i18n/translate";
 
@@ -35,4 +44,5 @@ export const catalogs: Record<Locale, Catalog> = {
   es: { ...es, ...esBrand, ...esColors, ...esIcons, ...esLogo, ...esMockups, ...esProjects, ...esSocial, ...esSvg },
   fr: { ...fr, ...frBrand, ...frColors, ...frIcons, ...frLogo, ...frMockups, ...frProjects, ...frSocial, ...frSvg },
   hi: { ...hi, ...hiBrand, ...hiColors, ...hiIcons, ...hiLogo, ...hiMockups, ...hiProjects, ...hiSocial, ...hiSvg },
+  de: { ...de, ...deBrand, ...deColors, ...deIcons, ...deLogo, ...deMockups, ...deProjects, ...deSocial, ...deSvg },
 };

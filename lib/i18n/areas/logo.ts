@@ -10,4 +10,5 @@ registerAreaLoaders("logo", {
   es: () => import("@/lib/i18n/messages/es-logo").then((module) => module.esLogo),
   fr: () => import("@/lib/i18n/messages/fr-logo").then((module) => module.frLogo),
   hi: () => import("@/lib/i18n/messages/hi-logo").then((module) => module.hiLogo),
+  de: () => import("@/lib/i18n/messages/de-logo").then((module) => module.deLogo),
 });

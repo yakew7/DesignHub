@@ -10,4 +10,5 @@ registerAreaLoaders("svg", {
   es: () => import("@/lib/i18n/messages/es-svg").then((module) => module.esSvg),
   fr: () => import("@/lib/i18n/messages/fr-svg").then((module) => module.frSvg),
   hi: () => import("@/lib/i18n/messages/hi-svg").then((module) => module.hiSvg),
+  de: () => import("@/lib/i18n/messages/de-svg").then((module) => module.deSvg),
 });

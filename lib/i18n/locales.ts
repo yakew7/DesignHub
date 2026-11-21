@@ -1,6 +1,6 @@
 import type { Catalog } from "@/lib/i18n/translate";
 
-export const locales = ["en", "es", "fr", "hi"] as const;
+export const locales = ["en", "es", "fr", "hi", "de"] as const;
 
 export type Locale = (typeof locales)[number];
 
@@ -11,6 +11,7 @@ const loaders: Record<Exclude<Locale, "en">, () => Promise<Catalog>> = {
   es: () => import("@/lib/i18n/messages/es").then((module) => module.es),
   fr: () => import("@/lib/i18n/messages/fr").then((module) => module.fr),
   hi: () => import("@/lib/i18n/messages/hi").then((module) => module.hi),
+  de: () => import("@/lib/i18n/messages/de").then((module) => module.de),
 };
 
 const loaded = new Map<Locale, Promise<Catalog>>();
@@ -32,6 +33,7 @@ export const localeNames: Record<Locale, string> = {
   es: "Español",
   fr: "Français",
   hi: "हिन्दी",
+  de: "Deutsch",
 };
 
 /** Per-viewer UI setting, so it lives in localStorage rather than the IndexedDB stores. */

@@ -10,4 +10,5 @@ registerAreaLoaders("icons", {
   es: () => import("@/lib/i18n/messages/es-icons").then((module) => module.esIcons),
   fr: () => import("@/lib/i18n/messages/fr-icons").then((module) => module.frIcons),
   hi: () => import("@/lib/i18n/messages/hi-icons").then((module) => module.hiIcons),
+  de: () => import("@/lib/i18n/messages/de-icons").then((module) => module.deIcons),
 });

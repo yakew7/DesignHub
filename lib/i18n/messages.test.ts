@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 
-import { completeAreas } from "@/lib/i18n/complete-areas";
+import { completeAreas, finishedLocales } from "@/lib/i18n/complete-areas";
 import { LocalizedError, translateLocalized } from "@/lib/i18n/errors";
 import { catalogs } from "@/lib/i18n/all-catalogs";
 import { locales, resolveLocale } from "@/lib/i18n/locales";
@@ -40,7 +40,8 @@ describe("message catalogs", () => {
 
   it("translates every complete area in every language", () => {
     const keys = Object.keys(en).filter((key) => completeAreas.some((area) => key.startsWith(area)));
-    for (const locale of ["es", "fr", "hi"] as const) {
+    // A language in progress (`languagesInProgress`) shows English for what it has not translated yet.
+    for (const locale of finishedLocales) {
       const missing = keys.filter((key) => !Object.hasOwn(catalogs[locale], key));
       expect(missing, `${locale} is missing keys in a complete area`).toEqual([]);
     }
@@ -106,14 +107,15 @@ describe("resolveLocale", () => {
   it("uses the first browser language with a translation", () => {
     expect(resolveLocale(["es-MX", "en"])).toBe("es");
     expect(resolveLocale(["fr-FR", "ES"])).toBe("fr");
-    expect(resolveLocale(["de-DE", "ES"])).toBe("es");
+    expect(resolveLocale(["ja-JP", "ES"])).toBe("es");
     expect(resolveLocale(["en-GB", "es"])).toBe("en");
     expect(resolveLocale(["hi-IN", "en"])).toBe("hi");
-    expect(resolveLocale(["de", "HI"])).toBe("hi");
+    expect(resolveLocale(["de-DE", "en"])).toBe("de");
+    expect(resolveLocale(["ja", "HI"])).toBe("hi");
   });
 
   it("defaults to English", () => {
-    expect(resolveLocale(["de", "ja-JP"])).toBe("en");
+    expect(resolveLocale(["ja", "ko-KR"])).toBe("en");
     expect(resolveLocale([])).toBe("en");
   });
 });

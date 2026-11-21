@@ -10,4 +10,5 @@ registerAreaLoaders("brand", {
   es: () => import("@/lib/i18n/messages/es-brand").then((module) => module.esBrand),
   fr: () => import("@/lib/i18n/messages/fr-brand").then((module) => module.frBrand),
   hi: () => import("@/lib/i18n/messages/hi-brand").then((module) => module.hiBrand),
+  de: () => import("@/lib/i18n/messages/de-brand").then((module) => module.deBrand),
 });

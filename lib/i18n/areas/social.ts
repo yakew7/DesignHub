@@ -10,4 +10,5 @@ registerAreaLoaders("social", {
   es: () => import("@/lib/i18n/messages/es-social").then((module) => module.esSocial),
   fr: () => import("@/lib/i18n/messages/fr-social").then((module) => module.frSocial),
   hi: () => import("@/lib/i18n/messages/hi-social").then((module) => module.hiSocial),
+  de: () => import("@/lib/i18n/messages/de-social").then((module) => module.deSocial),
 });

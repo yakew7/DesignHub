@@ -10,4 +10,5 @@ registerAreaLoaders("projects", {
   es: () => import("@/lib/i18n/messages/es-projects").then((module) => module.esProjects),
   fr: () => import("@/lib/i18n/messages/fr-projects").then((module) => module.frProjects),
   hi: () => import("@/lib/i18n/messages/hi-projects").then((module) => module.hiProjects),
+  de: () => import("@/lib/i18n/messages/de-projects").then((module) => module.deProjects),
 });

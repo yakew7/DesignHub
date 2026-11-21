@@ -2,6 +2,7 @@ import { describe, expect, test } from "vitest";
 
 import { contrastPairs } from "@/lib/a11y/contrast";
 import { catalogs } from "@/lib/i18n/all-catalogs";
+import { finishedLocales } from "@/lib/i18n/complete-areas";
 import { locales } from "@/lib/i18n/locales";
 import { en } from "@/lib/i18n/messages/en";
 import { createTranslator } from "@/lib/i18n/translate";
@@ -34,7 +35,7 @@ describe("Accessibility Lab messages", () => {
   });
 
   test("the verdict words differ between pass, warning and fail in every language", () => {
-    for (const locale of locales) {
+    for (const locale of finishedLocales) {
       const words = ["pass", "warn", "fail"].map(
         (verdict) => catalogs[locale][`a11y.verdict.${verdict}` as keyof typeof en],
       );

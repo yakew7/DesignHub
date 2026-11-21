@@ -21,13 +21,30 @@ Some areas must be complete in every language, and a test fails when a key is mi
 
 ## 3. Add a new language
 
+Run `pnpm new:language <code>` with a two-letter lowercase code (for example `pnpm new:language de`; add the language's own name as a second argument when the runtime does not know it, as in `pnpm new:language xy "Name"`). It does the setup for you:
+
+- It creates `lib/i18n/messages/<code>.ts` (the core) and `<code>-<area>.ts` for every area in `lib/i18n/areas` (brand, colors, icons, logo, mockups, projects, social and svg). They are all empty, so every message still shows in English, which is the fallback.
+- It registers the language in `lib/i18n/locales.ts` (`locales`, `localeNames` and the `loaders` table), in `lib/i18n/all-catalogs.ts` (the imports and the joined catalog) and in the `registerAreaLoaders` call of every `lib/i18n/areas/<area>.ts`.
+- It adds the language to `languagesInProgress` in `lib/i18n/complete-areas.ts` (see below).
+- It refuses a code that exists, and a code that is not two lowercase letters.
+
+Then translate: copy the keys you want from the English parts (`en-core.ts` and `en-<area>.ts`, which `en.ts` joins) into the language's parts and translate the values, keeping every key and placeholder. A key in the part of its prefix (`icons.` in `<code>-icons.ts`) is the tidy place, though the core always works. If you are unsure how to translate a message, leave it out and it shows in English. Check that the translations are natural and consistent.
+
+German (`de`) was added this way and is the first example: every part is empty and waiting for translations.
+
+### Languages in progress
+
+The tests that hold every language to every key of a complete area (`completeAreas`, above) skip the languages listed in `languagesInProgress` in `lib/i18n/complete-areas.ts`, because a new language starts with no translations at all. `pnpm new:language` adds the language there. Remove it from the list when its complete areas are translated, so the tests start to keep it complete. At the same time add the code to `LANGUAGES` in `tests/e2e/translations-fit.spec.ts` and `tests/e2e/translations-no-english.spec.ts`, which check the translated studios in the browser (they leave a language that has nothing translated out, as it would fail on all its English).
+
+### What the script does, by hand
+
+If you need to do it without the script, these are the steps it follows:
+
 1. Choose a two-letter language code.
-2. Create a file named `lib/i18n/messages/<code>.ts`.
-3. Copy the structure and keys from the English parts (`en.ts` joins them).
-4. Translate the values while preserving every key and placeholder.
-5. Export the catalog using the existing TypeScript pattern, `satisfies Catalog`.
-6. Register the language in `lib/i18n/locales.ts`. Update `locales`, `localeNames` and the `loaders` table (the app downloads only the language in use, so a new language is one `import()` line there), following the existing examples. The tests read every language from `lib/i18n/all-catalogs.ts`, so add the new language there too.
-7. Check that the translations are natural and consistent.
+2. Create `lib/i18n/messages/<code>.ts` and one `lib/i18n/messages/<code>-<area>.ts` per area, each exporting its catalog with the existing TypeScript pattern, `export const <code> = {} satisfies Catalog;` (`<code>Brand`, `<code>Colors` and so on for the areas).
+3. Register the language in `lib/i18n/locales.ts`. Update `locales`, `localeNames` and the `loaders` table (the app downloads only the language in use, so a new language is one `import()` line there), following the existing examples.
+4. Add each area's part to the `registerAreaLoaders` call in `lib/i18n/areas/<area>.ts`. The tests read every language from `lib/i18n/all-catalogs.ts`, so add the new language's parts there too.
+5. Add the code to `languagesInProgress` in `lib/i18n/complete-areas.ts`.
 
 If you are unsure how to translate a message, leave it in English rather than guessing.
 

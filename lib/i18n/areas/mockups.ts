@@ -10,4 +10,5 @@ registerAreaLoaders("mockups", {
   es: () => import("@/lib/i18n/messages/es-mockups").then((module) => module.esMockups),
   fr: () => import("@/lib/i18n/messages/fr-mockups").then((module) => module.frMockups),
   hi: () => import("@/lib/i18n/messages/hi-mockups").then((module) => module.hiMockups),
+  de: () => import("@/lib/i18n/messages/de-mockups").then((module) => module.deMockups),
 });

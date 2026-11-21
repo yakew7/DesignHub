@@ -10,4 +10,5 @@ registerAreaLoaders("colors", {
   es: () => import("@/lib/i18n/messages/es-colors").then((module) => module.esColors),
   fr: () => import("@/lib/i18n/messages/fr-colors").then((module) => module.frColors),
   hi: () => import("@/lib/i18n/messages/hi-colors").then((module) => module.hiColors),
+  de: () => import("@/lib/i18n/messages/de-colors").then((module) => module.deColors),
 });
