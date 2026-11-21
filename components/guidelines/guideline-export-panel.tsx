@@ -120,7 +120,7 @@ export function GuidelineExportPanel({ ctx, pages, page, svg }: Props) {
         {siteBusy ? <Loader2 className="animate-spin" /> : <Globe />} Download website
       </Button>
       <Button variant="outline" onClick={downloadMarkdown} disabled={markdownBusy || pages.length === 0}>
-        {markdownBusy ? <Loader2 className="animate-spin" /> : <FileCode2 />} Download Markdown
+        {markdownBusy ? <Loader2 className="animate-spin" /> : <FileCode2 />} {t("a11y.report.downloadMarkdown")}
       </Button>
       <Button variant="outline" onClick={downloadPage} disabled={!svg || busy}>
         {busy ? <Loader2 className="animate-spin" /> : <ImageDown />} This page (PNG)

@@ -1,4 +1,4 @@
-import { expect, test } from "@playwright/test";
+import { expect, test, type Page } from "@playwright/test";
 
 import { catalogs } from "../../lib/i18n/all-catalogs";
 import { en } from "../../lib/i18n/messages/en";
@@ -16,6 +16,7 @@ const LANGUAGES = ["es", "fr", "hi"] as const;
 /** Text that is the same in a language on purpose. Each entry says why. */
 const ALLOWED: readonly { text: string; languages: readonly string[]; reason: string }[] = [
   { text: "Material", languages: ["hi"], reason: "the Material Design icon set, a name" },
+  { text: "Medium", languages: ["es", "fr", "hi"], reason: "the Medium publishing platform, a brand name" },
   { text: "Plus", languages: ["fr"], reason: 'the French word "plus" (more), spelled like the English generator name' },
 ];
 
@@ -73,6 +74,31 @@ for (const language of LANGUAGES) {
     const translated = translatedPatterns(language);
     const allowed = new Set(ALLOWED.filter((entry) => entry.languages.includes(language)).map((entry) => entry.text));
 
+    const englishLeftIn = (page: Page, known: ReadonlySet<string>) => async () => {
+      const texts = await page.evaluate(() => {
+        const selector =
+          "button, [role=button], [role=tab], [role=radio], [role=menuitem], [role=option], [role=heading], label, legend, summary, h1, h2, h3, h4, h5, h6";
+        const visible = (element: Element) =>
+          (element as HTMLElement).checkVisibility({ visibilityProperty: true, opacityProperty: true });
+        const clean = (text: string | null) => (text ?? "").replace(/\s+/g, " ").trim();
+        const shown = [...document.querySelectorAll<HTMLElement>(selector)]
+          .filter(visible)
+          .map((element) => clean(element.innerText));
+        // The names a screen reader and a pointer get: aria-label, title and placeholder of what is on screen.
+        const named = [...document.querySelectorAll<HTMLElement>("[aria-label], [title], [placeholder]")]
+          .filter(visible)
+          .flatMap((element) =>
+            ["aria-label", "title", "placeholder"].map((attribute) => clean(element.getAttribute(attribute))),
+          );
+        return [...new Set([...shown, ...named].filter(Boolean))];
+      });
+      return texts.flatMap((text) => {
+        if (allowed.has(text) || known.has(text) || translated.some((pattern) => pattern.test(text))) return [];
+        const found = patterns.find((pattern) => pattern.match.test(text));
+        return found ? [`"${text}" (${found.keys.join(", ")})`] : [];
+      });
+    };
+
     for (const studio of studios) {
       test(`${studio.title}`, async ({ page }) => {
         const known = new Set(KNOWN[studio.href]?.texts ?? []);
@@ -84,30 +110,7 @@ for (const language of LANGUAGES) {
         await expect(page.locator("html")).toHaveAttribute("lang", language);
         await expect(page.locator('[aria-busy="true"]')).toHaveCount(0);
 
-        const englishLeft = async () => {
-          const texts = await page.evaluate(() => {
-            const selector =
-              "button, [role=button], [role=tab], [role=radio], [role=menuitem], [role=heading], label, legend, summary, h1, h2, h3, h4, h5, h6";
-            const visible = (element: Element) =>
-              (element as HTMLElement).checkVisibility({ visibilityProperty: true, opacityProperty: true });
-            const clean = (text: string | null) => (text ?? "").replace(/\s+/g, " ").trim();
-            const shown = [...document.querySelectorAll<HTMLElement>(selector)]
-              .filter(visible)
-              .map((element) => clean(element.innerText));
-            // The names a screen reader and a pointer get: aria-label, title and placeholder of what is on screen.
-            const named = [...document.querySelectorAll<HTMLElement>("[aria-label], [title], [placeholder]")]
-              .filter(visible)
-              .flatMap((element) =>
-                ["aria-label", "title", "placeholder"].map((attribute) => clean(element.getAttribute(attribute))),
-              );
-            return [...new Set([...shown, ...named].filter(Boolean))];
-          });
-          return texts.flatMap((text) => {
-            if (allowed.has(text) || known.has(text) || translated.some((pattern) => pattern.test(text))) return [];
-            const found = patterns.find((pattern) => pattern.match.test(text));
-            return found ? [`"${text}" (${found.keys.join(", ")})`] : [];
-          });
-        };
+        const englishLeft = englishLeftIn(page, known);
         // The language and each studio's messages load after the first paint, so wait for them to arrive.
         await hydrated(page);
         await expect
@@ -132,5 +135,48 @@ for (const language of LANGUAGES) {
         }
       });
     }
+
+    // What an action opens: the command palette, the shortcuts dialog and the select menus of Brand Projects.
+    test("palette, shortcuts dialog and menus", async ({ page }) => {
+      await page.addInitScript((value) => window.localStorage.setItem("designhub:locale", value), language);
+      await page.goto("/projects");
+      await expect(page.locator("h1").first()).toBeVisible();
+      await expect(page.locator("html")).toHaveAttribute("lang", language);
+      await hydrated(page);
+      const englishLeft = englishLeftIn(page, new Set());
+      const check = (what: string) =>
+        expect.poll(englishLeft, { message: `${what} in ${language} shows English text`, timeout: 10_000 }).toEqual([]);
+
+      await page.keyboard.press("ControlOrMeta+k");
+      await expect(page.getByRole("dialog")).toBeVisible();
+      await expect(page.getByRole("option").first()).toBeVisible();
+      await check("The command palette");
+      await page.keyboard.press("Escape");
+      await expect(page.getByRole("dialog")).toHaveCount(0);
+
+      await page.keyboard.press("Shift+?");
+      await expect(page.getByRole("dialog")).toBeVisible();
+      await check("The shortcuts dialog");
+      await page.keyboard.press("Escape");
+      await expect(page.getByRole("dialog")).toHaveCount(0);
+
+      const menus = page.getByRole("combobox");
+      const count = await menus.count();
+      for (let index = 0; index < count; index += 1) {
+        const menu = menus.nth(index);
+        // The language switcher is a native select whose options are the languages' own names; the others are menus.
+        if (
+          !(await menu.isVisible()) ||
+          !(await menu.isEnabled()) ||
+          (await menu.evaluate((element) => element.tagName)) === "SELECT"
+        )
+          continue;
+        await menu.click();
+        await expect(page.getByRole("option").first()).toBeVisible();
+        await check(`Menu ${index + 1} of Brand Projects`);
+        await page.keyboard.press("Escape");
+        await expect(page.getByRole("listbox")).toHaveCount(0);
+      }
+    });
   });
 }
