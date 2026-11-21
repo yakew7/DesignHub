@@ -1,5 +1,6 @@
 "use client";
 
+import { useI18n } from "@/components/layout/locale-provider";
 import { CheckList } from "@/components/accessibility/check-list";
 import { SwitchField } from "@/components/effects/fields";
 import { Button } from "@/components/ui/button";
@@ -9,6 +10,7 @@ import { useReadability } from "@/hooks/use-readability";
 import { useA11yStore } from "@/store/a11y-store";
 
 export function ReadabilityPanel() {
+  const { t } = useI18n();
   const typography = useA11yStore((state) => state.typography);
   const setTypography = useA11yStore((state) => state.setTypography);
   const simulation = useA11yStore((state) => state.dyslexiaSimulation);
@@ -18,7 +20,7 @@ export function ReadabilityPanel() {
 
   return (
     <>
-      <Panel title="Readability">
+      <Panel title={t("home.hl.readability")}>
         <SliderField
           label="Font size"
           value={typography.size}
@@ -45,7 +47,7 @@ export function ReadabilityPanel() {
           onChange={(measure) => setTypography({ measure })}
           format={(v) => `${v}px`}
         />
-        <CheckList items={checks} label="Readability checks" />
+        <CheckList items={checks} label={t("a11y.readability.checks")} />
       </Panel>
       <Panel
         title="Dyslexia preview"
