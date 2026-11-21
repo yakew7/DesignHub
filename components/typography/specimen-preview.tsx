@@ -7,6 +7,7 @@ import type { CSSProperties, ReactNode } from "react";
 
 import { useI18n } from "@/components/layout/locale-provider";
 import { Button } from "@/components/ui/button";
+import { weightName } from "@/components/typography/weight-picker";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useFontMeta } from "@/hooks/use-font-catalog";
 import { useGoogleFont } from "@/hooks/use-google-font";
@@ -85,6 +86,7 @@ function SpecimenPane({ family, label, textId, useAxes, actions }: PaneProps) {
 
 /** One line per available weight (or named instance) using the specimen sample text. */
 function WeightComparisonStrip({ family }: { family: string }) {
+  const { t } = useI18n();
   const specimen = useTypographyStore((state) => state.specimen);
   const openType = useTypographyStore((state) => state.openType);
   const updateSpecimen = useTypographyStore((state) => state.updateSpecimen);
@@ -120,7 +122,7 @@ function WeightComparisonStrip({ family }: { family: string }) {
               >
                 {weight}
                 {/* The button is named by its text: the number, and the weight's name for screen readers. */}
-                <span className="sr-only"> {name}</span>
+                <span className="sr-only"> {weightName(t, weight, name)}</span>
               </span>
               <span
                 aria-hidden

@@ -1,8 +1,11 @@
 "use client";
 
+import "@/lib/i18n/areas/mockups";
+
 import { Laptop, Monitor, Smartphone, Tablet } from "lucide-react";
 import { useState, type CSSProperties } from "react";
 
+import { useI18n } from "@/components/layout/locale-provider";
 import { SliderField } from "@/components/ui/field";
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
 import { useElementWidth } from "@/hooks/use-element-width";
@@ -20,6 +23,7 @@ const devices = [
 
 /** Renders the fluid scale exactly as it would appear at a given viewport width. */
 export function ResponsivePreview({ steps }: { steps: TypeScaleStep[] }) {
+  const { t } = useI18n();
   const scale = useTypographyStore((state) => state.scale);
   const rhythm = useTypographyStore((state) => state.rhythm);
   const headingFont = useTypographyStore((state) => state.headingFont);
@@ -62,17 +66,20 @@ export function ResponsivePreview({ steps }: { steps: TypeScaleStep[] }) {
           }}
           aria-label="Viewport"
         >
-          {devices.map(({ id, label, icon: Icon, width: deviceWidth }) => (
-            <ToggleGroupItem
-              key={id}
-              value={id}
-              aria-label={`${label} (${deviceWidth}px)`}
-              title={`${label} · ${deviceWidth}px`}
-            >
-              <Icon />
-              <span className="hidden sm:inline">{label}</span>
-            </ToggleGroupItem>
-          ))}
+          {devices.map(({ id, label: english, icon: Icon, width: deviceWidth }) => {
+            const label = id === "tablet" ? t("mockups.template.tablet") : english;
+            return (
+              <ToggleGroupItem
+                key={id}
+                value={id}
+                aria-label={`${label} (${deviceWidth}px)`}
+                title={`${label} · ${deviceWidth}px`}
+              >
+                <Icon />
+                <span className="hidden sm:inline">{label}</span>
+              </ToggleGroupItem>
+            );
+          })}
         </ToggleGroup>
       </div>
       <SliderField

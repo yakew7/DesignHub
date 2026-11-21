@@ -4,6 +4,7 @@ import { SearchX } from "lucide-react";
 import { useCallback, useEffect, useId, useMemo, useRef, useState } from "react";
 import type { KeyboardEvent, UIEvent } from "react";
 
+import { useI18n } from "@/components/layout/locale-provider";
 import { FavoriteFontButton } from "@/components/typography/favorite-button";
 import { FontCard } from "@/components/typography/font-card";
 import { FontFilters } from "@/components/typography/font-filters";
@@ -28,6 +29,7 @@ type FontBrowserProps = {
 
 /** Search and filters on top, a virtualized scrolling list below that loads more as you reach the end. */
 export function FontBrowser({ fonts, loading, className }: FontBrowserProps) {
+  const { t } = useI18n();
   const activeFont = useTypographyStore((state) => state.activeFont);
   const filters = useTypographyStore((state) => state.filters);
   const resetFilters = useTypographyStore((state) => state.resetFilters);
@@ -218,7 +220,7 @@ export function FontBrowser({ fonts, loading, className }: FontBrowserProps) {
             tabIndex={shown.length > 0 ? 0 : undefined}
             className="group/fonts relative rounded-md focus-visible:outline-none"
             style={{ height: shown.length * ROW_HEIGHT }}
-            aria-label="Fonts"
+            aria-label={t("command.group.fonts")}
             aria-describedby={hintId}
             aria-activedescendant={activeDescendant}
             onKeyDown={handleKeyDown}

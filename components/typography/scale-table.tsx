@@ -1,5 +1,6 @@
 "use client";
 
+import { useI18n } from "@/components/layout/locale-provider";
 import { CopyButton } from "@/components/ui/copy-button";
 import { fontStack } from "@/lib/typography/css";
 import { recommendedLineHeight, recommendedTracking } from "@/lib/typography/scale";
@@ -12,8 +13,9 @@ type ScaleTableProps = {
 };
 
 export function ScaleTable({ steps, headingFont, bodyFont }: ScaleTableProps) {
+  const { t } = useI18n();
   return (
-    <ol className="flex flex-col divide-y rounded-lg border bg-card" aria-label="Type scale">
+    <ol className="flex flex-col divide-y rounded-lg border bg-card" aria-label={t("typography.tab.scale")}>
       {steps.map((step) => {
         const isHeading = step.step > 0;
         return (

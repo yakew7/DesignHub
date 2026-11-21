@@ -2,12 +2,15 @@
 
 import { useMemo } from "react";
 
+import { useI18n } from "@/components/layout/locale-provider";
 import { ExportPanel } from "@/components/export/export-panel";
+import { translateFormatLabels } from "@/lib/tokens/format-labels";
 import { typographyExports } from "@/lib/typography/export";
 import { useTypographyStore } from "@/store/typography-store";
 import type { FontFamily } from "@/types/typography";
 
 export function TypographyExport({ fonts }: { fonts: FontFamily[] }) {
+  const { t } = useI18n();
   const headingFont = useTypographyStore((state) => state.headingFont);
   const bodyFont = useTypographyStore((state) => state.bodyFont);
   const scale = useTypographyStore((state) => state.scale);
@@ -18,8 +21,8 @@ export function TypographyExport({ fonts }: { fonts: FontFamily[] }) {
     const heading = fonts.find((font) => font.family === headingFont);
     const body = fonts.find((font) => font.family === bodyFont);
     if (!heading || !body) return [];
-    return typographyExports({ heading, body, scale, rhythm, openType });
-  }, [fonts, headingFont, bodyFont, scale, rhythm, openType]);
+    return translateFormatLabels(t, typographyExports({ heading, body, scale, rhythm, openType }));
+  }, [fonts, headingFont, bodyFont, scale, rhythm, openType, t]);
 
   if (formats.length === 0) {
     return <p className="text-sm text-muted-foreground">Loading font metadata…</p>;

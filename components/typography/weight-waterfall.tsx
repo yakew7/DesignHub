@@ -1,7 +1,8 @@
 "use client";
 
+import { useI18n } from "@/components/layout/locale-provider";
 import { Panel } from "@/components/ui/panel";
-import { availableWeights, weightNames } from "@/components/typography/weight-picker";
+import { availableWeights, weightName } from "@/components/typography/weight-picker";
 import { useFontMeta } from "@/hooks/use-font-catalog";
 import { useGoogleFont } from "@/hooks/use-google-font";
 import { useInView } from "@/hooks/use-in-view";
@@ -13,6 +14,7 @@ const FALLBACK_TEXT = "The quick brown fox jumps over the lazy dog";
 
 /** The specimen text once per available weight. Click a row to use that weight. */
 export function WeightWaterfall() {
+  const { t } = useI18n();
   const activeFont = useTypographyStore((state) => state.activeFont);
   const specimen = useTypographyStore((state) => state.specimen);
   const openType = useTypographyStore((state) => state.openType);
@@ -50,7 +52,7 @@ export function WeightWaterfall() {
             >
               <span className="flex flex-col font-mono text-[11px] leading-tight text-muted-foreground tabular-nums">
                 <span className={cn(selected && "text-foreground")}>{weight}</span>
-                <span className="truncate font-sans">{weightNames[weight] ?? ""}</span>
+                <span className="truncate font-sans">{weightName(t, weight)}</span>
               </span>
               {/* A fixed line box and clipped overflow mean a font swap can't move anything. */}
               <span
