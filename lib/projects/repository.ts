@@ -23,7 +23,8 @@ const itemWithTags = (item: ProjectListItem): ProjectListItem => ({ ...item, tag
 
 /**
  * One small row per project, for the project list: no snapshot is read. A project with no row (saved before the
- * table existed) gets one now, read once and written, and a row whose project is gone is dropped.
+ * table existed) gets one now, read once and written, a row with no size gets one now, measured once the same
+ * way, and a row whose project is gone is dropped.
  */
 export async function listProjectItems(): Promise<ProjectListItem[]> {
   const stored = await safeDb(async (db) => {
@@ -32,18 +33,28 @@ export async function listProjectItems(): Promise<ProjectListItem[]> {
     const have = new Set(items.map((item) => item.id));
     const kept = items.filter((item) => present.has(item.id));
     const missing = ids.filter((id) => !have.has(id));
-    if (kept.length === items.length && missing.length === 0) return kept;
+    // A row saved before the size existed has none: read its project once and write the measured row back.
+    const unmeasured = kept.filter((item) => item.sizeBytes === undefined);
+    if (kept.length === items.length && missing.length === 0 && unmeasured.length === 0) return kept;
     const rows: ProjectListItem[] = [];
     for (const id of missing) {
       const project = await db.projects.get(id);
       reads.projects += 1;
       if (project) rows.push(listItemOf(withTags(project)));
     }
+    const measured: ProjectListItem[] = [];
+    for (const item of unmeasured) {
+      const project = await db.projects.get(item.id);
+      reads.projects += 1;
+      if (project) measured.push(listItemOf(withTags(project)));
+    }
     await db.transaction("rw", db.summaries, async () => {
       await db.summaries.bulkPut(rows);
+      if (measured.length > 0) await db.summaries.bulkPut(measured);
       await db.summaries.bulkDelete(items.filter((item) => !present.has(item.id)).map((item) => item.id));
     });
-    return [...kept, ...rows];
+    const byId = new Map(measured.map((item) => [item.id, item]));
+    return [...kept.map((item) => byId.get(item.id) ?? item), ...rows];
   }, null);
   if (stored) return stored.map(itemWithTags);
   return [...memory.values()].map((project) => listItemOf(withTags(project)));
