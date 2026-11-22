@@ -23,7 +23,8 @@
     "check:areas": "node scripts/check-areas.mjs",
     "new:area": "node scripts/new-area.mjs",
     "new:language": "node scripts/new-language.mjs",
-    "audit:summary": "node scripts/audit-summary.mjs"
+    "audit:summary": "node scripts/audit-summary.mjs",
+    "release:prepare": "node scripts/release-prepare.mjs"
   },
   "packageManager": "pnpm@11.17.0",
   "engines": {

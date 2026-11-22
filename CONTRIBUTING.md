@@ -289,7 +289,7 @@ Translation changes should preserve the existing message keys and placeholders. 
 
 ## Releases
 
-A release is a tag (`v1.3.0`) and a GitHub release made from it. Before tagging, move the `Unreleased` entries of `CHANGELOG.md` under a new `## v1.3.0 - <date>` heading, set the version in `package.json` and `lib/site.ts`, and add the release to the README roadmap. Then publish the release: if its notes are empty, `.github/workflows/release.yml` fills them from that CHANGELOG section (`node scripts/release-notes.mjs v1.3.0` prints it) and attaches the build. The job fails with a clear message when the section is missing, so write it first.
+A release is a tag (`v1.3.0`) and a GitHub release made from it. Before tagging, move the `Unreleased` entries of `CHANGELOG.md` under a new `## v1.3.0 - <date>` heading, set the version in `package.json` and `lib/site.ts`, and add the release to the README roadmap. Run `pnpm release:prepare 1.3.0 "<roadmap text>"` to do those four steps; it prints the `git tag` and `gh release create` commands and publishes nothing. Then publish the release: if its notes are empty, `.github/workflows/release.yml` fills them from that CHANGELOG section (`node scripts/release-notes.mjs v1.3.0` prints it) and attaches the build. The job fails with a clear message when the section is missing, so write it first.
 
 ## Component guidelines
 
