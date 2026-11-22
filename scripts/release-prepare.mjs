@@ -26,9 +26,7 @@ function parseVersion(version) {
   const clean = String(version).replace(/^v/, "");
   const parts = clean.split(".");
   if (parts.length !== 3 || parts.some((part) => !/^\d+$/.test(part))) {
-    throw new Error(
-      `"${version}" is not a semantic version (major.minor.patch).`,
-    );
+    throw new Error(`"${version}" is not a semantic version (major.minor.patch).`);
   }
   return parts.map(Number);
 }
@@ -42,34 +40,17 @@ export function prepareChangelog(changelog, version, date) {
   const clean = String(version).replace(/^v/, "");
   const lines = changelog.split("\n");
   const start = lines.findIndex((line) => /^## Unreleased(\s|$)/.test(line));
-  if (start < 0)
-    throw new Error("CHANGELOG.md has no `## Unreleased` heading.");
-  let end = lines.findIndex(
-    (line, index) => index > start && /^## /.test(line),
-  );
+  if (start < 0) throw new Error("CHANGELOG.md has no `## Unreleased` heading.");
+  let end = lines.findIndex((line, index) => index > start && /^## /.test(line));
   if (end < 0) end = lines.length;
   const body = lines.slice(start + 1, end);
-  const hasEntry = body.some(
-    (line) => line.trim() !== "" && !/^### /.test(line),
-  );
+  const hasEntry = body.some((line) => line.trim() !== "" && !/^### /.test(line));
   if (!hasEntry) {
-    throw new Error(
-      "CHANGELOG.md has nothing under `## Unreleased` to release.",
-    );
+    throw new Error("CHANGELOG.md has nothing under `## Unreleased` to release.");
   }
   const subsections = [...new Set(body.filter((line) => /^### /.test(line)))];
-  const empty = [
-    "## Unreleased",
-    "",
-    ...subsections.flatMap((heading) => [heading, ""]),
-  ];
-  return [
-    ...lines.slice(0, start),
-    ...empty,
-    `## v${clean} - ${date}`,
-    ...body,
-    ...lines.slice(end),
-  ].join("\n");
+  const empty = ["## Unreleased", "", ...subsections.flatMap((heading) => [heading, ""])];
+  return [...lines.slice(0, start), ...empty, `## v${clean} - ${date}`, ...body, ...lines.slice(end)].join("\n");
 }
 
 /** The package.json text with its version set. */
@@ -89,9 +70,7 @@ export function setPackageVersion(packageJson, version) {
 export function setSiteVersion(siteTs, version) {
   const clean = String(version).replace(/^v/, "");
   const lines = siteTs.split("\n");
-  const at = lines.findIndex((line) =>
-    /^\s*version:\s*"[^"]*",?\s*$/.test(line),
-  );
+  const at = lines.findIndex((line) => /^\s*version:\s*"[^"]*",?\s*$/.test(line));
   if (at < 0) throw new Error('lib/site.ts has no `version: "..."` line.');
   lines[at] = lines[at].replace(/"[^"]*"/, `"${clean}"`);
   return lines.join("\n");
@@ -151,9 +130,7 @@ if (import.meta.url === `file://${process.argv[1]}`) {
       throw new Error("package.json is not valid JSON.");
     }
     if (typeof current !== "string" || !isNewerVersion(version, current)) {
-      throw new Error(
-        `"${version}" is not newer than the current version ${current ?? "(none)"}.`,
-      );
+      throw new Error(`"${version}" is not newer than the current version ${current ?? "(none)"}.`);
     }
     const date = new Date().toISOString().slice(0, 10);
     const nextChangelog = prepareChangelog(changelog, version, date);
@@ -168,13 +145,9 @@ if (import.meta.url === `file://${process.argv[1]}`) {
     console.log(`  git tag ${tag}`);
     console.log(`  git push origin ${tag}`);
     console.log(`  gh release create ${tag} --notes ""`);
-    console.log(
-      "The release workflow fills the empty notes from the new CHANGELOG section.",
-    );
+    console.log("The release workflow fills the empty notes from the new CHANGELOG section.");
   } catch (error) {
-    console.error(
-      `::error::${error instanceof Error ? error.message : String(error)}`,
-    );
+    console.error(`::error::${error instanceof Error ? error.message : String(error)}`);
     process.exit(1);
   }
 }

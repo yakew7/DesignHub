@@ -58,9 +58,7 @@ describe("isNewerVersion", () => {
 
   test("refuses a version that is not three numbers", () => {
     for (const bad of ["1.3", "1.2.3.4", "x", "", "1.2.x"]) {
-      expect(() => isNewerVersion(bad, "1.2.0"), bad).toThrow(
-        /semantic version/,
-      );
+      expect(() => isNewerVersion(bad, "1.2.0"), bad).toThrow(/semantic version/);
     }
   });
 });
@@ -69,32 +67,21 @@ describe("prepareChangelog", () => {
   test("renames Unreleased to the new version with the date, and adds an empty one above it", () => {
     const next = prepareChangelog(changelog, "1.3.0", "2026-11-21");
 
-    expect(next).toContain(
-      "## Unreleased\n\n### Added\n\n### Fixed\n\n## v1.3.0 - 2026-11-21\n",
-    );
-    expect(next).toContain(
-      "### Added\n\n- Next thing\n\n### Fixed\n\n- A fix\n\n## v1.2.0 - 2026-11-08",
-    );
+    expect(next).toContain("## Unreleased\n\n### Added\n\n### Fixed\n\n## v1.3.0 - 2026-11-21\n");
+    expect(next).toContain("### Added\n\n- Next thing\n\n### Fixed\n\n- A fix\n\n## v1.2.0 - 2026-11-08");
     expect(next).not.toContain("## Unreleased\n\n### Added\n\n- Next thing");
   });
 
   test("accepts the version with a v, and keeps an Unreleased with no subsections bare", () => {
-    const plain =
-      "# Changelog\n\n## Unreleased\n\n- Next thing\n\n## v1.2.0 - 2026-11-08\n\n- A thing\n";
+    const plain = "# Changelog\n\n## Unreleased\n\n- Next thing\n\n## v1.2.0 - 2026-11-08\n\n- A thing\n";
     const next = prepareChangelog(plain, "v1.3.0", "2026-11-21");
 
-    expect(next).toContain(
-      "## Unreleased\n\n## v1.3.0 - 2026-11-21\n\n- Next thing\n",
-    );
+    expect(next).toContain("## Unreleased\n\n## v1.3.0 - 2026-11-21\n\n- Next thing\n");
   });
 
   test("refuses a changelog with no Unreleased heading, and one with nothing under it", () => {
     expect(() =>
-      prepareChangelog(
-        "# Changelog\n\n## v1.2.0 - 2026-11-08\n\n- A thing\n",
-        "1.3.0",
-        "2026-11-21",
-      ),
+      prepareChangelog("# Changelog\n\n## v1.2.0 - 2026-11-08\n\n- A thing\n", "1.3.0", "2026-11-21"),
     ).toThrow(/no `## Unreleased` heading/);
     expect(() =>
       prepareChangelog(
@@ -110,60 +97,41 @@ describe("prepareChangelog", () => {
       "# Changelog\n\n## Unreleased\n\n### Added\n\n- One\n\n### Fixed\n\n- Two\n\n### Added\n\n- Three\n\n## v1.2.0 - 2026-11-08\n\n- A thing\n";
     const next = prepareChangelog(doubled, "1.3.0", "2026-11-21");
 
-    expect(next).toContain(
-      "## Unreleased\n\n### Added\n\n### Fixed\n\n## v1.3.0 - 2026-11-21\n",
-    );
-    expect(next).toContain(
-      "### Added\n\n- One\n\n### Fixed\n\n- Two\n\n### Added\n\n- Three\n",
-    );
+    expect(next).toContain("## Unreleased\n\n### Added\n\n### Fixed\n\n## v1.3.0 - 2026-11-21\n");
+    expect(next).toContain("### Added\n\n- One\n\n### Fixed\n\n- Two\n\n### Added\n\n- Three\n");
   });
 });
 
 describe("setPackageVersion", () => {
   test("sets the version and keeps the rest of the file, ending with a newline", () => {
-    const next = setPackageVersion(
-      '{\n  "name": "designhub-app",\n  "version": "1.2.0"\n}\n',
-      "1.3.0",
-    );
+    const next = setPackageVersion('{\n  "name": "designhub-app",\n  "version": "1.2.0"\n}\n', "1.3.0");
 
-    expect(next).toBe(
-      '{\n  "name": "designhub-app",\n  "version": "1.3.0"\n}\n',
-    );
+    expect(next).toBe('{\n  "name": "designhub-app",\n  "version": "1.3.0"\n}\n');
   });
 
   test("refuses text that is not JSON", () => {
-    expect(() => setPackageVersion("not json", "1.3.0")).toThrow(
-      /not valid JSON/,
-    );
+    expect(() => setPackageVersion("not json", "1.3.0")).toThrow(/not valid JSON/);
   });
 });
 
 describe("setSiteVersion", () => {
   test("sets the version line and leaves the rest alone", () => {
-    const site =
-      'export const siteConfig = {\n  name: "DesignHub",\n  version: "1.2.0",\n} as const;\n';
+    const site = 'export const siteConfig = {\n  name: "DesignHub",\n  version: "1.2.0",\n} as const;\n';
     expect(setSiteVersion(site, "1.3.0")).toBe(
       'export const siteConfig = {\n  name: "DesignHub",\n  version: "1.3.0",\n} as const;\n',
     );
   });
 
   test("refuses a file with no version line", () => {
-    expect(() =>
-      setSiteVersion(
-        'export const siteConfig = {\n  name: "DesignHub",\n};\n',
-        "1.3.0",
-      ),
-    ).toThrow(/no `version: "..."` line/);
+    expect(() => setSiteVersion('export const siteConfig = {\n  name: "DesignHub",\n};\n', "1.3.0")).toThrow(
+      /no `version: "..."` line/,
+    );
   });
 });
 
 describe("addRoadmapLine", () => {
   test("inserts the new release before the (next) line, in version order", () => {
-    const next = addRoadmapLine(
-      readme,
-      "1.3.0",
-      "the Icon studio in Spanish, French and Hindi",
-    );
+    const next = addRoadmapLine(readme, "1.3.0", "the Icon studio in Spanish, French and Hindi");
 
     expect(next).toContain(
       "- **1.2.0** - the Icon studio in Spanish, French and Hindi ✅\n" +
@@ -183,14 +151,10 @@ describe("addRoadmapLine", () => {
   });
 
   test("refuses a line for a version that is already there, and a README with no roadmap lines", () => {
-    expect(() => addRoadmapLine(readme, "1.2.0", "again")).toThrow(
-      /already has a roadmap line/,
+    expect(() => addRoadmapLine(readme, "1.2.0", "again")).toThrow(/already has a roadmap line/);
+    expect(() => addRoadmapLine(readme, "v1.2.0", "again")).toThrow(/already has a roadmap line/);
+    expect(() => addRoadmapLine("## Roadmap\n\nNothing here yet.\n", "1.3.0", "text")).toThrow(
+      /no roadmap release lines/,
     );
-    expect(() => addRoadmapLine(readme, "v1.2.0", "again")).toThrow(
-      /already has a roadmap line/,
-    );
-    expect(() =>
-      addRoadmapLine("## Roadmap\n\nNothing here yet.\n", "1.3.0", "text"),
-    ).toThrow(/no roadmap release lines/);
   });
 });
