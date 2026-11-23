@@ -106,3 +106,7 @@ To capture an updated screenshot, run the application, select a language using t
 ## 7. Unused messages
 
 The English catalog is loaded by every route, so a message nothing uses costs bytes everywhere. `pnpm check:messages` lists the English keys that no source file refers to (a key built from a template such as `studio.${id}.short` or a prefix counts as used if its shape matches). CI runs it as a warning. Remove a listed key from `en.ts`, `es.ts`, `fr.ts` and `hi.ts` together, and say in the pull request what you removed. Use `--strict` to make it fail.
+
+## 8. English written in components
+
+The no-English test only finds English that has a translated message with the same text. `pnpm check:hardcoded` reads the JSX of every component and lists the literal text of JSX children and of `aria-label`, `title`, `placeholder` and `alt`, per studio, so you can find the labels no message exists for yet. It lists and exits 0; `--strict` fails when there is any, and a folder can be given (`pnpm check:hardcoded components/typography`). Names that are the same in every language (formats, brands) are skipped through the `NAMES` list in `scripts/check-hardcoded.mjs`, which is the place to add one with the reason. A good first translation: pick a folder from the list, turn each line into a message (see section 4 of [the architecture page](i18n-architecture.md)), and say in the pull request how many lines the count went down by.
