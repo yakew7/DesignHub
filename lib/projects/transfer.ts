@@ -11,6 +11,7 @@ import { defaultSnapshot, type BrandSnapshot } from "@/lib/projects/snapshot";
 import { normalizeTags } from "@/lib/projects/tags";
 import { projectName, type BrandProject } from "@/lib/projects/types";
 import { sanitizeSvg } from "@/lib/svg/sanitize";
+import { byteLength } from "@/lib/svg-size";
 import { MAX_BRAND_VALUES } from "@/store/brand-store";
 
 export const PROJECT_FORMAT = "designhub.project";
@@ -220,6 +221,19 @@ export function parseProjectsFile(text: string): ProjectEntry[] {
     throw new LocalizedError("error.file.brandJson");
   }
   throw new LocalizedError("error.file.notProject");
+}
+
+/** What a person sees of a project in a file before importing it: its name, tags, how many versions it has and its size. */
+export type EntryPreview = { name: string; tags: string[]; versions: number; bytes: number };
+
+/** The preview of each project in a file. The size is the bytes of the project and its history as they are in the file. */
+export function previewEntries(entries: readonly ProjectEntry[]): EntryPreview[] {
+  return entries.map((entry) => ({
+    name: entry.snapshot.brand.profile.name.trim() || "Imported brand",
+    tags: entry.tags,
+    versions: entry.history.length,
+    bytes: byteLength(JSON.stringify(entry)),
+  }));
 }
 
 /** Turns imported history into versions of the project it was imported as, with fresh ids. */

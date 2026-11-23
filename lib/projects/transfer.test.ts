@@ -6,6 +6,7 @@ import {
   archiveFileName,
   importedVersions,
   parseProjectsFile,
+  previewEntries,
   projectsToJson,
   projectToJson,
 } from "@/lib/projects/transfer";
@@ -271,5 +272,20 @@ describe("archive file", () => {
     expect(entries.map((entry) => entry.history.length)).toEqual([2, 1]);
     expect(entries[0]?.tags).toEqual(["old"]);
     expect(entries[1]?.favorite).toBe(true);
+  });
+
+  test("previews each project of a file: name, tags, number of versions and size", () => {
+    const first = project("First", { tags: ["old", "client"] });
+    const second = project("Second");
+    const histories = new Map([[first.id, [version("a", 10, "A"), version("b", 20, "B")]]]);
+    const entries = parseProjectsFile(projectsToJson([first, second], histories));
+    const preview = previewEntries(entries);
+    expect(preview.map((item) => [item.name, item.tags, item.versions])).toEqual([
+      ["First", ["old", "client"], 2],
+      ["Second", [], 0],
+    ]);
+    // The one with history is larger than the one without, and a size is a whole number of bytes.
+    expect(preview[0]!.bytes).toBeGreaterThan(preview[1]!.bytes);
+    expect(Number.isInteger(preview[1]!.bytes) && preview[1]!.bytes > 0).toBe(true);
   });
 });

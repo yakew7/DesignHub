@@ -4,6 +4,7 @@ import { join } from "node:path";
 
 import { expect, test } from "@playwright/test";
 
+import { confirmImport, hydrated } from "./storage";
 import { expectUnder } from "./timing";
 
 type Entry = { favorite: boolean; tags: string[]; snapshot: { brand: { profile: { name: string } } } };
@@ -24,9 +25,11 @@ test("a hundred and fifty projects draw thirty cards first, search by name and t
   writeFileSync(file, JSON.stringify(fixture));
 
   await page.goto("/projects");
+  await hydrated(page);
   await expect(page.locator("h1").first()).toBeVisible();
   const started = Date.now();
   await page.locator('input[type="file"]').first().setInputFiles(file);
+  await confirmImport(page);
   const cards = page.getByRole("button", { name: /^Open Brand \d+$/ });
   await expect(cards.first()).toBeVisible();
   // Newest first, so the last imported is on top; the first page is a screenful, not all hundred and fifty.

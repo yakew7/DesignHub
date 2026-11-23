@@ -3,7 +3,7 @@ import { join } from "node:path";
 
 import { expect, test, type Page } from "@playwright/test";
 
-import { hydrated } from "./storage";
+import { confirmImport, hydrated } from "./storage";
 
 type Entry = {
   favorite: boolean;
@@ -78,6 +78,7 @@ async function importThree(page: Page) {
   await hydrated(page);
   await expect(page.locator("h1").first()).toBeVisible();
   await page.locator('input[type="file"]').first().setInputFiles(writeProjectFile());
+  await confirmImport(page);
   for (const name of names) await expect(page.getByRole("heading", { name, level: 2 })).toBeVisible();
 }
 
@@ -136,6 +137,7 @@ test("archiving two projects saves them with history to one file, removes them, 
   await expect(page.getByRole("heading", { name: "Archive Alpha", level: 2 })).toHaveCount(0);
 
   await page.locator('input[type="file"]').first().setInputFiles(again);
+  await confirmImport(page);
   for (const name of ["Archive Alpha", "Archive Beta"]) {
     await expect(page.getByRole("heading", { name, level: 2 })).toBeVisible();
   }

@@ -32,6 +32,7 @@ import { StoragePanel } from "@/components/projects/storage-panel";
 import { ProjectCard } from "@/components/projects/project-card";
 import { ProjectCompare } from "@/components/projects/project-compare";
 import { ProjectHistory } from "@/components/projects/project-history";
+import { ProjectImportDialog } from "@/components/projects/project-import-dialog";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
@@ -49,7 +50,7 @@ import {
   createBlankProject,
   duplicateProject,
   freshProject,
-  importProjects,
+  importEntries,
   openProject,
   projectHistories,
   removeProject,
@@ -65,7 +66,13 @@ import { projectSorts, sortProjects, type ProjectSort } from "@/lib/projects/sor
 import { filterSorted, PROJECT_PAGE, searchText } from "@/lib/projects/search";
 import { projectTags } from "@/lib/projects/tags";
 import { deletable, pruned, toggled, toggledAll, withRange, withTagged } from "@/lib/projects/selection";
-import { archiveFileName, projectsToJson, projectToJson } from "@/lib/projects/transfer";
+import {
+  archiveFileName,
+  parseProjectsFile,
+  projectsToJson,
+  projectToJson,
+  type ProjectEntry,
+} from "@/lib/projects/transfer";
 import { projectsZip } from "@/lib/projects/zip";
 import { projectName, type ProjectListItem } from "@/lib/projects/types";
 import { cn } from "@/lib/utils";
@@ -88,6 +95,8 @@ export function ProjectManager() {
   const [newName, setNewName] = useState("");
   const [deleting, setDeleting] = useState<ProjectListItem | null>(null);
   const [comparing, setComparing] = useState(false);
+  // The projects of a file that holds several, while the person chooses which to import.
+  const [importing, setImporting] = useState<ProjectEntry[] | null>(null);
   const [history, setHistory] = useState<ProjectListItem | null>(null);
   const [selecting, setSelecting] = useState(false);
   const [chosen, setChosen] = useState<Set<string>>(new Set());
@@ -159,6 +168,18 @@ export function ProjectManager() {
     toast.success(plural("projects.toast.exportedZip", all.length));
   }
 
+  async function importNow(entries: ProjectEntry[]) {
+    try {
+      let count = 0;
+      await run(async () => {
+        count = await importEntries(entries);
+      });
+      toast.success(plural("projects.toast.imported", count));
+    } catch (error) {
+      toast.error(errorMessage(error, t, "projects.toast.importFailed"));
+    }
+  }
+
   async function importFile(file: File | undefined) {
     if (!file) return;
     // Files with history hold up to MAX_VERSIONS snapshots per project.
@@ -166,16 +187,16 @@ export function ProjectManager() {
       toast.error(t("projects.toast.tooLarge"));
       return;
     }
+    let entries: ProjectEntry[];
     try {
-      const text = await file.text();
-      let count = 0;
-      await run(async () => {
-        count = await importProjects(text);
-      });
-      toast.success(plural("projects.toast.imported", count));
+      entries = parseProjectsFile(await file.text());
     } catch (error) {
       toast.error(errorMessage(error, t, "projects.toast.importFailed"));
+      return;
     }
+    // One project imports in one step; a file of several asks which to add first.
+    if (entries.length > 1) setImporting(entries);
+    else await importNow(entries);
   }
 
   const tags = useMemo(() => projectTags(projects ?? []), [projects]);
@@ -713,6 +734,15 @@ export function ProjectManager() {
         onOpenChange={setComparing}
         projects={projects ?? []}
         initialId={activeId}
+        triggerRef={moreRef}
+      />
+      <ProjectImportDialog
+        entries={importing}
+        onCancel={() => setImporting(null)}
+        onImport={(chosen) => {
+          setImporting(null);
+          void importNow(chosen);
+        }}
         triggerRef={moreRef}
       />
       <ProjectHistory project={history} onClose={() => setHistory(null)} onChanged={() => void refresh()} />

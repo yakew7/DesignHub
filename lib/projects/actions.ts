@@ -19,7 +19,7 @@ import { snapshotKey, type ProjectVersion } from "@/lib/projects/history";
 import { countSave, planSave } from "@/lib/projects/save-plan";
 import { versionProjectName } from "@/lib/projects/names";
 import { addTag, removeTag } from "@/lib/projects/tags";
-import { importedVersions, parseProjectsFile, type ProjectHistories } from "@/lib/projects/transfer";
+import { importedVersions, parseProjectsFile, type ProjectEntry, type ProjectHistories } from "@/lib/projects/transfer";
 import { projectName, type BrandProject } from "@/lib/projects/types";
 import {
   autoVersion,
@@ -284,7 +284,11 @@ function uniqueName(snapshot: BrandSnapshot, existing: Set<string>): void {
 
 /** Adds every project in an exported file. Returns how many were imported. */
 export async function importProjects(text: string): Promise<number> {
-  const entries = parseProjectsFile(text);
+  return importEntries(parseProjectsFile(text));
+}
+
+/** Adds the given projects of a file (all of them, or the ones chosen in the preview). Returns how many were imported. */
+export async function importEntries(entries: readonly ProjectEntry[]): Promise<number> {
   const existing = new Set((await listProjectItems()).map(projectName));
   for (const entry of entries) {
     uniqueName(entry.snapshot, existing);

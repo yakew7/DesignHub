@@ -4,6 +4,8 @@ import { join } from "node:path";
 
 import { expect, test, type Page } from "@playwright/test";
 
+import { confirmImport, hydrated } from "./storage";
+
 type Entry = { favorite: boolean; tags: string[]; snapshot: { brand: { profile: { name: string } } } };
 
 const reads = (page: Page) =>
@@ -59,8 +61,10 @@ test("a database with no summary rows gets them once, and the list then reads no
   writeFileSync(file, JSON.stringify(fixture));
 
   await page.goto("/projects");
+  await hydrated(page);
   await expect(page.locator("h1").first()).toBeVisible();
   await page.locator('input[type="file"]').first().setInputFiles(file);
+  await confirmImport(page);
   await expect(page.getByRole("button", { name: "Open Summary 39" })).toBeVisible();
 
   // Saved projects have a summary row each (plus the first brand project).

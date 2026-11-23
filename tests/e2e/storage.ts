@@ -31,3 +31,13 @@ export async function saved(page: Page, key: string, text: string) {
 export async function hydrated(page: Page) {
   await expect(page.locator("html")).toHaveAttribute("data-hydrated", "true");
 }
+
+/**
+ * Confirms the preview that opens when a project file holds several projects, importing every project in it (all are
+ * checked at first). A file with one project imports without it, so do not call this for that.
+ */
+export async function confirmImport(page: Page) {
+  const dialog = page.getByRole("dialog", { name: "Choose what to import" });
+  await dialog.getByRole("button", { name: /^Import \d+ projects?$/ }).click();
+  await expect(dialog).toBeHidden();
+}

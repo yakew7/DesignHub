@@ -1,5 +1,5 @@
 import { readFileSync, writeFileSync } from "node:fs";
-import { saved } from "./storage";
+import { confirmImport, hydrated, saved } from "./storage";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 
@@ -86,8 +86,10 @@ test("Shift and click selects a range, and Select tagged adds every project with
   writeFileSync(file, JSON.stringify(fixture));
 
   await page.goto("/projects");
+  await hydrated(page);
   await expect(page.locator("h1").first()).toBeVisible();
   await page.locator('input[type="file"]').first().setInputFiles(file);
+  await confirmImport(page);
   await expect(page.getByRole("button", { name: "Open Brand 11" })).toBeVisible();
 
   await page.getByRole("button", { name: "Select", exact: true }).click();
@@ -127,8 +129,10 @@ test("the favorites and tag filters are remembered, and a tag nobody has is igno
   writeFileSync(file, JSON.stringify(fixture));
 
   await page.goto("/projects");
+  await hydrated(page);
   await expect(page.locator("h1").first()).toBeVisible();
   await page.locator('input[type="file"]').first().setInputFiles(file);
+  await confirmImport(page);
   await expect(page.getByRole("button", { name: "Open Filter 2" })).toBeVisible();
 
   await page.getByRole("combobox", { name: "Filter by tag" }).click();
@@ -165,8 +169,10 @@ test("Escape leaves select mode and returns focus, and the count is announced on
   writeFileSync(file, JSON.stringify(fixture));
 
   await page.goto("/projects");
+  await hydrated(page);
   await expect(page.locator("h1").first()).toBeVisible();
   await page.locator('input[type="file"]').first().setInputFiles(file);
+  await confirmImport(page);
   await expect(page.getByRole("button", { name: /^Open Escape/ }).first()).toBeVisible();
 
   const select = page.getByRole("button", { name: "Select", exact: true });
