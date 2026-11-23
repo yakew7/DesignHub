@@ -1,5 +1,5 @@
 import { spawn, type ChildProcess } from "node:child_process";
-import { cp, mkdtemp, readFile, rm, symlink, writeFile } from "node:fs/promises";
+import { cp, mkdir, mkdtemp, readFile, rm, symlink, writeFile } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 
@@ -56,7 +56,10 @@ async function nextBuild(): Promise<{ directory: string; oldId: string }> {
   const directory = await mkdtemp(join(tmpdir(), "designhub-next-build-"));
   await symlink(join(root, "node_modules"), join(directory, "node_modules"));
   await symlink(join(root, ".next"), join(directory, ".next"));
-  for (const file of ["package.json", "next.config.ts"]) await cp(join(root, file), join(directory, file));
+  // next.config.ts imports the policy from lib/csp.ts, so both are copied.
+  await mkdir(join(directory, "lib"));
+  for (const file of ["package.json", "next.config.ts", "lib/csp.ts"])
+    await cp(join(root, file), join(directory, file));
   await cp(join(root, "public"), join(directory, "public"), { recursive: true });
   const script = await readFile(join(root, "public/sw.js"), "utf8");
   const oldId = /const BUILD_ID = "([^"]+)"/.exec(script)?.[1] ?? "";
