@@ -8,6 +8,11 @@
  */
 import { readFile, writeFile } from "node:fs/promises";
 
+/** One report from several (one per shard of a split run): their suites, side by side. A single report is returned as it is. */
+export function mergeReports(reports) {
+  return reports.length === 1 ? reports[0] : { suites: reports.flatMap((report) => report.suites ?? []) };
+}
+
 /** Tests with more than one attempt whose last attempt passed, from a parsed Playwright JSON report. */
 export function retriedTests(report) {
   const found = [];
@@ -132,8 +137,12 @@ export function slowestSummary(durations, count = 10) {
 }
 
 if (import.meta.url === `file://${process.argv[1]}`) {
-  const path = process.argv.slice(2).find((arg) => !arg.startsWith("--")) ?? "test-results/report.json";
-  const report = JSON.parse(await readFile(path, "utf8"));
+  // One report, or several (one per shard of a split run), which are joined into one.
+  const paths = process.argv.slice(2).filter((arg) => !arg.startsWith("--"));
+  const reports = await Promise.all(
+    (paths.length ? paths : ["test-results/report.json"]).map(async (path) => JSON.parse(await readFile(path, "utf8"))),
+  );
+  const report = mergeReports(reports);
   const durations = testDurations(report);
   const durationsFile = process.argv.find((arg) => arg.startsWith("--durations="))?.slice("--durations=".length);
   if (durationsFile) await writeFile(durationsFile, `${JSON.stringify(durations, null, 2)}\n`);

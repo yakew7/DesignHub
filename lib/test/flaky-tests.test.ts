@@ -2,6 +2,7 @@ import { describe, expect, test } from "vitest";
 
 import {
   failedRuns,
+  mergeReports,
   repeatSummary,
   retriedTests,
   slowestSummary,
@@ -157,5 +158,16 @@ describe("slowest tests", () => {
     expect(failedRuns(report)).toEqual([
       { title: "routes.spec.ts › Home loads (webkit)", file: "routes.spec.ts", failed: 1, runs: 1 },
     ]);
+  });
+
+  test("the reports of the shards of a split run are joined, and a single report is left as it is", () => {
+    const shard = (title: string, status: string) => ({
+      suites: [{ title: "a.spec.ts", specs: [{ title, file: "a.spec.ts", tests: [{ results: [{ status }] }] }] }],
+    });
+    const one = shard("first", "passed");
+    expect(mergeReports([one])).toBe(one);
+    const joined = mergeReports([shard("first", "passed"), shard("second", "failed")]);
+    expect(failedRuns(joined).map((item) => item.title)).toEqual(["a.spec.ts › second"]);
+    expect(retriedTests(joined)).toEqual([]);
   });
 });

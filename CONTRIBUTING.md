@@ -55,7 +55,7 @@ CI (`.github/workflows/ci.yml`, `lint.yml`, `typecheck.yml` and `em-dash.yml`) r
 
 ### End-to-end smoke tests
 
-The `E2E` check (in `ci.yml`) runs [Playwright](https://playwright.dev) on every pull request and push, on the build the `build` job made once (the Lighthouse job uses the same build). `tests/e2e/routes.spec.ts` opens the home page and every studio from `lib/navigation.ts` in Chromium and fails on a page error, a console error or a missing main heading. It also opens a tab in each studio and checks every `g` shortcut. A new studio added to `lib/navigation.ts` is covered automatically.
+The `E2E` check (in `ci.yml`) runs [Playwright](https://playwright.dev) on every pull request and push, split into three shards that run in parallel on the build the `build` job made once (the Lighthouse job uses the same build), and a final job joins their reports in the job summary. Locally the whole suite runs in one go; to run one shard, `pnpm exec playwright test --shard=2/3`. `tests/e2e/routes.spec.ts` opens the home page and every studio from `lib/navigation.ts` in Chromium and fails on a page error, a console error or a missing main heading. It also opens a tab in each studio and checks every `g` shortcut. A new studio added to `lib/navigation.ts` is covered automatically.
 
 To run it locally:
 

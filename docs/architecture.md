@@ -195,5 +195,5 @@ pnpm build ──► pnpm start (:3100) ──► playwright test (tests/e2e/)
                                             └── g <shortcut> → studio URL
                                             │
                                             ▼
-                               CI: e2e.yml (Chromium) / local: pnpm test:e2e
+                               CI: ci.yml, the E2E job (Chromium, 3 shards) / local: pnpm test:e2e
 ```

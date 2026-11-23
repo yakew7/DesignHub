@@ -7,3 +7,4 @@ export function repeatSummary(found: FailedRuns[]): string;
 export type TestDuration = { title: string; file: string; duration: number };
 export function testDurations(report: unknown): TestDuration[];
 export function slowestSummary(durations: TestDuration[], count?: number): string;
+export function mergeReports(reports: unknown[]): unknown;

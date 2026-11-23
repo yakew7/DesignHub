@@ -59,10 +59,14 @@ jobs:
           retention-days: 1
 
   e2e:
-    name: Playwright smoke tests
+    name: Playwright (shard ${{ matrix.shard }} of 3)
     needs: build
     runs-on: ubuntu-latest
     timeout-minutes: 20
+    strategy:
+      fail-fast: false
+      matrix:
+        shard: [1, 2, 3]
     steps:
       - uses: actions/checkout@v7
       - uses: pnpm/action-setup@v6
@@ -79,17 +83,44 @@ jobs:
       - name: Drop the Microsoft apt source
         run: sudo rm -f /etc/apt/sources.list.d/microsoft-prod.list /etc/apt/sources.list.d/microsoft-prod.sources
       - run: pnpm exec playwright install --with-deps chromium
-      - run: pnpm test:e2e
-      - name: Tests that needed a retry, and the slowest tests
+      - name: Tests of this shard
+        run: E2E_REPORT=test-results/report-${{ matrix.shard }}.json pnpm exec playwright test --shard=${{ matrix.shard }}/3
+      - uses: actions/upload-artifact@v7
         if: always()
-        run: |
-          if [ -f test-results/report.json ]; then node scripts/flaky-tests.mjs test-results/report.json >> "$GITHUB_STEP_SUMMARY"; fi
+        with:
+          name: e2e-report-${{ matrix.shard }}
+          path: test-results/report-${{ matrix.shard }}.json
+          if-no-files-found: ignore
+          retention-days: 7
       - uses: actions/upload-artifact@v7
         if: failure()
         with:
-          name: playwright-results
+          name: playwright-results-${{ matrix.shard }}
           path: test-results/
           retention-days: 7
+
+  # One check for the three shards, with the name the end-to-end check always had: it fails when a shard does, and
+  # lists the tests that needed a retry and the slowest tests of all of them.
+  e2e-result:
+    name: E2E
+    needs: e2e
+    if: always()
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/download-artifact@v7
+        with:
+          pattern: e2e-report-*
+          path: reports
+      - name: Tests that needed a retry, and the slowest tests
+        run: |
+          files=$(find reports -name 'report-*.json' | sort)
+          if [ -n "$files" ]; then node scripts/flaky-tests.mjs $files >> "$GITHUB_STEP_SUMMARY"; fi
+      - name: Fail when a shard failed
+        if: needs.e2e.result != 'success'
+        run: |
+          echo "::error::At least one end-to-end shard did not pass (see its job)."
+          exit 1
 
   lighthouse:
     name: Lighthouse CI
