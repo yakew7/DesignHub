@@ -45,3 +45,80 @@ jobs:
       - run: pnpm --filter designhub build
       - name: Smoke test the built CLI
         run: node packages/cli/dist/designhub.mjs --help
+      # The build is made once here and used by the end-to-end and Lighthouse jobs below, so the three agree on it and
+      # none of them installs and builds again. (The Visual workflow stays apart: it can also be started by hand to
+      # make the screenshots again.)
+      - uses: actions/upload-artifact@v7
+        with:
+          name: production-build
+          path: |
+            .next
+            !.next/cache
+            public/sw.js
+          include-hidden-files: true
+          retention-days: 1
+
+  e2e:
+    name: Playwright smoke tests
+    needs: build
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v7
+      - uses: pnpm/action-setup@v6
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 22
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - uses: actions/download-artifact@v7
+        with:
+          name: production-build
+      # The runner image lists packages.microsoft.com, which sometimes answers 403 and fails apt-get update.
+      # Chromium's dependencies come from the Ubuntu mirrors, so that source isn't needed.
+      - name: Drop the Microsoft apt source
+        run: sudo rm -f /etc/apt/sources.list.d/microsoft-prod.list /etc/apt/sources.list.d/microsoft-prod.sources
+      - run: pnpm exec playwright install --with-deps chromium
+      - run: pnpm test:e2e
+      - name: Tests that needed a retry, and the slowest tests
+        if: always()
+        run: |
+          if [ -f test-results/report.json ]; then node scripts/flaky-tests.mjs test-results/report.json >> "$GITHUB_STEP_SUMMARY"; fi
+      - uses: actions/upload-artifact@v7
+        if: failure()
+        with:
+          name: playwright-results
+          path: test-results/
+          retention-days: 7
+
+  lighthouse:
+    name: Lighthouse CI
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - uses: pnpm/action-setup@v6
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 22
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - uses: actions/download-artifact@v7
+        with:
+          name: production-build
+      # Starts `pnpm start` (see lighthouserc.json), audits the home page, the Color Studio, Brand Projects and three
+      # other studios five times each, checks the thresholds on the median run and writes the reports to .lighthouseci/.
+      # Accessibility, best practices and SEO must score 100 everywhere. Performance must score 90 on the home page,
+      # 90 on /colors and 70 on /projects (each fails below its floor); on the other studios it is only a warning,
+      # because shared CI runners are noisy and a studio is a much larger page.
+      - run: pnpm dlx @lhci/cli autorun
+      - name: Scores in the job summary
+        if: always()
+        run: node scripts/lighthouse-summary.mjs >> "$GITHUB_STEP_SUMMARY"
+      - uses: actions/upload-artifact@v7
+        if: always()
+        with:
+          name: lighthouse-reports
+          path: .lighthouseci/
+          retention-days: 14
+          if-no-files-found: ignore

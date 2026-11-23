@@ -55,7 +55,7 @@ CI (`.github/workflows/ci.yml`, `lint.yml`, `typecheck.yml` and `em-dash.yml`) r
 
 ### End-to-end smoke tests
 
-`e2e.yml` runs [Playwright](https://playwright.dev) on every pull request and push to `main`. `tests/e2e/routes.spec.ts` opens the home page and every studio from `lib/navigation.ts` in Chromium and fails on a page error, a console error or a missing main heading. It also opens a tab in each studio and checks every `g` shortcut. A new studio added to `lib/navigation.ts` is covered automatically.
+The `E2E` check (in `ci.yml`) runs [Playwright](https://playwright.dev) on every pull request and push, on the build the `build` job made once (the Lighthouse job uses the same build). `tests/e2e/routes.spec.ts` opens the home page and every studio from `lib/navigation.ts` in Chromium and fails on a page error, a console error or a missing main heading. It also opens a tab in each studio and checks every `g` shortcut. A new studio added to `lib/navigation.ts` is covered automatically.
 
 To run it locally:
 
@@ -89,7 +89,7 @@ Adding a studio to Simple and Advanced mode, or moving a control between the mod
 
 The [performance guide](docs/performance.md) explains how to run and read each performance tool on your own machine (Lighthouse, bundle size, unused code, long tasks in the end-to-end tests and the autosave counters). This section and the next two cover what CI checks.
 
-`lighthouse.yml` builds the app and runs [Lighthouse CI](https://github.com/GoogleChrome/lighthouse-ci) on the home page, `/brand`, `/colors`, `/typography` and `/social` for every pull request and push to `main`. Each page is audited five times and the median run is checked. Accessibility, best practices and SEO must score 100 everywhere. Performance must score 90 on the home page (below that fails the check); on the studios it is a warning, because CI runners are noisy and a studio is a much larger page. The scores of each page are in the job summary. The thresholds live in `lighthouserc.json`, and the HTML reports are uploaded as the `lighthouse-reports` artifact.
+The `Lighthouse CI` job of `ci.yml`, on the build the `build` job made, runs [Lighthouse CI](https://github.com/GoogleChrome/lighthouse-ci) on the home page, `/brand`, `/colors`, `/typography` and `/social` for every pull request and push to `main`. Each page is audited five times and the median run is checked. Accessibility, best practices and SEO must score 100 everywhere. Performance must score 90 on the home page (below that fails the check); on the studios it is a warning, because CI runners are noisy and a studio is a much larger page. The scores of each page are in the job summary. The thresholds live in `lighthouserc.json`, and the HTML reports are uploaded as the `lighthouse-reports` artifact.
 
 To run it locally (it needs Chrome, and nothing else running on port 3000):
 
