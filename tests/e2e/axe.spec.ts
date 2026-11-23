@@ -2,6 +2,7 @@ import AxeBuilder from "@axe-core/playwright";
 import { expect, test, type Page } from "@playwright/test";
 
 import { studios } from "../../lib/navigation";
+import { hydrated } from "./storage";
 
 /**
  * Runs axe on every studio in light and dark, on first view and again with each of the studio's tabs
@@ -68,6 +69,8 @@ for (const theme of THEMES) {
         await page.addInitScript((value) => window.localStorage.setItem("theme", value), theme);
         await page.goto(studio.href);
         await expect(page.locator("h1").first()).toBeVisible();
+        // The server's markup is scanned by nobody: wait until React has taken it over (a slow engine scans it half done).
+        await hydrated(page);
 
         const problems = await scan(page, `${studio.title}, first view (${theme})`);
 

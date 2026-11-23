@@ -1,8 +1,9 @@
 import { expect, test, type Page } from "@playwright/test";
-import { saved } from "./storage";
+import { hydrated, saved } from "./storage";
 
 test("skip links jump to the preview and the export pane", async ({ page }) => {
   await page.goto("/effects");
+  await hydrated(page);
   const preview = page.getByRole("link", { name: "Skip to preview" });
   const output = page.getByRole("link", { name: "Skip to code and exports" });
   await expect(preview).toHaveCount(1);
@@ -15,6 +16,8 @@ test("skip links jump to the preview and the export pane", async ({ page }) => {
   await expect(page.locator("#studio-preview")).toBeFocused();
 
   await page.goto("/effects");
+
+  await hydrated(page);
   await output.focus();
   await page.keyboard.press("Enter");
   await expect(page.locator("#studio-output")).toBeFocused();
@@ -25,6 +28,7 @@ test.describe("on a phone, one pane shows at a time", () => {
 
   test("the bar switches panes and the skip links open a hidden one", async ({ page }) => {
     await page.goto("/effects");
+    await hydrated(page);
     const bar = page.getByRole("navigation", { name: "Studio panes" });
     await expect(bar).toBeVisible();
     const controls = page.locator('section[aria-label="Controls"]');
@@ -41,6 +45,8 @@ test.describe("on a phone, one pane shows at a time", () => {
     await expect(bar.getByRole("button", { name: "Preview" })).toHaveAttribute("aria-pressed", "true");
 
     await page.goto("/effects");
+
+    await hydrated(page);
     await page.getByRole("link", { name: "Skip to code and exports" }).focus();
     await page.keyboard.press("Enter");
     await expect(output).toBeVisible();
@@ -49,6 +55,7 @@ test.describe("on a phone, one pane shows at a time", () => {
 
   test("the open pane is announced and remembered for the studio after a reload", async ({ page }) => {
     await page.goto("/effects");
+    await hydrated(page);
     const bar = page.getByRole("navigation", { name: "Studio panes" });
     await bar.getByRole("button", { name: "Output" }).click();
     await expect(page.getByRole("status").filter({ hasText: "Output pane shown" })).toBeAttached();
@@ -61,12 +68,14 @@ test.describe("on a phone, one pane shows at a time", () => {
     await expect(bar.getByRole("button", { name: "Output" })).toHaveAttribute("aria-pressed", "true");
     // Another studio keeps its own choice.
     await page.goto("/backgrounds");
+    await hydrated(page);
     await expect(bar.getByRole("button", { name: "Controls" })).toHaveAttribute("aria-pressed", "true");
   });
 
   test("a desktop width has no bar and shows every pane", async ({ page }) => {
     await page.setViewportSize({ width: 1280, height: 800 });
     await page.goto("/effects");
+    await hydrated(page);
     await expect(page.getByRole("navigation", { name: "Studio panes" })).toBeHidden();
     await expect(page.locator("#studio-preview")).toBeVisible();
     await expect(page.locator("#studio-output")).toBeVisible();
@@ -109,6 +118,7 @@ test.describe("swiping between panes on a phone", () => {
     page,
   }) => {
     await page.goto("/effects");
+    await hydrated(page);
     await expect(page.locator("h1").first()).toBeVisible();
     const bar = page.getByRole("navigation", { name: "Studio panes" });
     const pressed = (name: string) => expect(bar.getByRole("button", { name })).toHaveAttribute("aria-pressed", "true");
@@ -139,6 +149,7 @@ test.describe("swiping between panes on a phone", () => {
 
   test("the canvas keeps its own pan gesture", async ({ page }) => {
     await page.goto("/backgrounds");
+    await hydrated(page);
     await expect(page.locator("h1").first()).toBeVisible();
     const bar = page.getByRole("navigation", { name: "Studio panes" });
     await bar.getByRole("button", { name: "Preview" }).click();
@@ -152,6 +163,7 @@ test.describe("swiping between panes on a phone", () => {
   test("a swipe is ignored on a desktop width", async ({ page }) => {
     await page.setViewportSize({ width: 1280, height: 800 });
     await page.goto("/effects");
+    await hydrated(page);
     await expect(page.locator("#studio-preview")).toBeVisible();
     await swipe(page, 'section[aria-label="Controls"] h2', -200);
     await expect(page.locator("#studio-preview")).toBeVisible();
