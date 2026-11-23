@@ -11,6 +11,7 @@ export const enProjects = {
   "projects.sort.edited": "Recently edited",
   "projects.sort.name": "Name (A to Z)",
   "projects.sort.newest": "Newest",
+  "projects.sort.size": "Size (largest first)",
   "projects.import": "Import",
   "projects.exportAll": "Export all",
   "projects.exportZip": "Export as ZIP",
@@ -187,4 +188,5 @@ export const enProjects = {
   "projects.importPreview.versions.other": "{count} versions",
   "projects.importPreview.submit.one": "Import {count} project",
   "projects.importPreview.submit.other": "Import {count} projects",
+  "projects.card.size": "Size {size}",
 } as const;

@@ -12,6 +12,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { svgToDataUrl } from "@/lib/icons/svg";
 import type { Translate } from "@/lib/i18n/translate";
+import { formatBytes } from "@/lib/svg-size";
 import { snapshotTokens } from "@/lib/projects/preview";
 import type { BrandSnapshot } from "@/lib/projects/snapshot";
 import { getProject } from "@/lib/projects/repository";
@@ -222,6 +223,9 @@ export function ProjectCard({
             edited: ago(project.updatedAt, locale, t),
             opened: ago(project.lastOpenedAt, locale, t),
           })}
+        </p>
+        <p data-slot="project-size" className="text-xs text-muted-foreground">
+          {t("projects.card.size", { size: formatBytes(project.bytes) })}
         </p>
         <ProjectTags name={name} tags={project.tags} onAdd={onAddTag} onRemove={onRemoveTag} />
         <div className="mt-auto flex items-center gap-1 pt-1">

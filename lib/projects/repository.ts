@@ -1,7 +1,7 @@
 import { databaseAvailable, safeDb } from "@/lib/db";
 import { upgradeStored } from "@/lib/projects/migrate";
 import { normalizeTags } from "@/lib/projects/tags";
-import { listItemOf, type BrandProject, type ProjectListItem } from "@/lib/projects/types";
+import { listItemOf, projectBytes, type BrandProject, type ProjectListItem } from "@/lib/projects/types";
 
 /** Session copy, used when IndexedDB is unavailable (private mode, blocked storage). */
 const memory = new Map<string, BrandProject>();
@@ -21,29 +21,35 @@ if (typeof window !== "undefined") Object.assign(window, { __designhubProjectRea
 /** A list item as stored, made current: tags are cleaned as they are for a project. */
 const itemWithTags = (item: ProjectListItem): ProjectListItem => ({ ...item, tags: normalizeTags(item.tags) });
 
+/** A row of the summaries table has its size once it holds a number; rows written before the field have none. */
+const hasSize = (item: ProjectListItem): boolean => typeof item.bytes === "number" && Number.isFinite(item.bytes);
+
 /**
  * One small row per project, for the project list: no snapshot is read. A project with no row (saved before the
- * table existed) gets one now, read once and written, and a row whose project is gone is dropped.
+ * table existed) or a row without its size (saved before the size was kept) gets one now, read once, measured and
+ * written, and a row whose project is gone is dropped.
  */
 export async function listProjectItems(): Promise<ProjectListItem[]> {
   const stored = await safeDb(async (db) => {
     const [items, ids] = await Promise.all([db.summaries.toArray(), db.projects.toCollection().primaryKeys()]);
     const present = new Set(ids);
-    const have = new Set(items.map((item) => item.id));
     const kept = items.filter((item) => present.has(item.id));
+    const sized = kept.filter(hasSize);
+    const have = new Set(sized.map((item) => item.id));
     const missing = ids.filter((id) => !have.has(id));
     if (kept.length === items.length && missing.length === 0) return kept;
     const rows: ProjectListItem[] = [];
     for (const id of missing) {
       const project = await db.projects.get(id);
       reads.projects += 1;
-      if (project) rows.push(listItemOf(withTags(project)));
+      // The size is that of the row as stored, as the Storage panel measures it.
+      if (project) rows.push({ ...listItemOf(withTags(project)), bytes: projectBytes(project) });
     }
     await db.transaction("rw", db.summaries, async () => {
       await db.summaries.bulkPut(rows);
       await db.summaries.bulkDelete(items.filter((item) => !present.has(item.id)).map((item) => item.id));
     });
-    return [...kept, ...rows];
+    return [...sized, ...rows];
   }, null);
   if (stored) return stored.map(itemWithTags);
   return [...memory.values()].map((project) => listItemOf(withTags(project)));

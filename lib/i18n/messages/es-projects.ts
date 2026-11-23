@@ -12,6 +12,7 @@ export const esProjects = {
   "projects.sort.edited": "Editados recientemente",
   "projects.sort.name": "Nombre (A a Z)",
   "projects.sort.newest": "Más recientes",
+  "projects.sort.size": "Tamaño (mayor primero)",
   "projects.import": "Importar",
   "projects.exportAll": "Exportar todo",
   "projects.exportZip": "Exportar como ZIP",
@@ -194,4 +195,5 @@ export const esProjects = {
   "projects.importPreview.versions.other": "{count} versiones",
   "projects.importPreview.submit.one": "Importar {count} proyecto",
   "projects.importPreview.submit.other": "Importar {count} proyectos",
+  "projects.card.size": "Tamaño {size}",
 } satisfies Catalog;

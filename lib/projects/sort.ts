@@ -1,18 +1,23 @@
-import { projectName, type BrandProject, type ProjectListItem } from "@/lib/projects/types";
+import { projectBytes, projectName, type BrandProject, type ProjectListItem } from "@/lib/projects/types";
 
 /** A project or a list item: what the order depends on. */
 type Sortable = BrandProject | ProjectListItem;
 
-export type ProjectSort = "opened" | "edited" | "name" | "newest";
+export type ProjectSort = "opened" | "edited" | "name" | "newest" | "size";
 
 /** In menu order. Labels are the `projects.sort.<value>` messages. */
-export const projectSorts: readonly ProjectSort[] = ["opened", "edited", "name", "newest"];
+export const projectSorts: readonly ProjectSort[] = ["opened", "edited", "name", "newest", "size"];
+
+/** A list item carries its size; a whole project is measured. */
+const sizeOf = (item: Sortable): number => ("snapshot" in item ? projectBytes(item) : item.bytes);
 
 const compare: Record<ProjectSort, (a: Sortable, b: Sortable) => number> = {
   opened: (a, b) => b.lastOpenedAt - a.lastOpenedAt || b.updatedAt - a.updatedAt,
   edited: (a, b) => b.updatedAt - a.updatedAt,
   name: (a, b) => projectName(a).localeCompare(projectName(b), undefined, { sensitivity: "base", numeric: true }),
   newest: (a, b) => b.createdAt - a.createdAt,
+  /** Largest first. */
+  size: (a, b) => sizeOf(b) - sizeOf(a) || b.updatedAt - a.updatedAt,
 };
 
 /** Favorites always come first; the chosen order applies within each group. */

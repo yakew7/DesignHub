@@ -12,6 +12,7 @@ export const hiProjects = {
   "projects.sort.edited": "हाल ही में संपादित",
   "projects.sort.name": "नाम (A से Z)",
   "projects.sort.newest": "सबसे नए",
+  "projects.sort.size": "आकार (सबसे बड़ा पहले)",
   "projects.import": "इंपोर्ट करें",
   "projects.exportAll": "सब एक्सपोर्ट करें",
   "projects.exportZip": "ZIP के रूप में एक्सपोर्ट करें",
@@ -191,4 +192,5 @@ export const hiProjects = {
   "projects.importPreview.versions.other": "{count} वर्शन",
   "projects.importPreview.submit.one": "{count} प्रोजेक्ट इंपोर्ट करें",
   "projects.importPreview.submit.other": "{count} प्रोजेक्ट इंपोर्ट करें",
+  "projects.card.size": "आकार {size}",
 } satisfies Catalog;

@@ -56,6 +56,7 @@ describe("filterSorted on 5,000 projects (#546)", () => {
     createdAt: next(1_000_000),
     updatedAt: next(1_000_000),
     lastOpenedAt: next(1_000_000),
+    bytes: 1000 + index,
   }));
   const texts = new Map(items.map((item) => [item.id, searchText(item)]));
 

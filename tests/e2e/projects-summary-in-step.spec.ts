@@ -12,7 +12,7 @@ type Project = {
   lastOpenedAt: number;
   snapshot: { brand: { profile: { name: string } } };
 };
-type Summary = Omit<Project, "snapshot"> & { name: string };
+type Summary = Omit<Project, "snapshot"> & { name: string; bytes: number };
 
 /** The one project and its summary row, as they are in IndexedDB now. */
 async function rows(page: Page): Promise<{ project: Project; summary: Summary }> {
@@ -88,6 +88,8 @@ test("the summary row stays in step with the project through a rename, a tag, a 
     createdAt: project.createdAt,
     updatedAt: project.updatedAt,
     lastOpenedAt: project.lastOpenedAt,
+    // The size is that of the project row as JSON, so it moves with every save like the other fields.
+    bytes: new TextEncoder().encode(JSON.stringify(project)).length,
   });
 
   // After a reload the list still shows what the row says.

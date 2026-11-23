@@ -3,7 +3,7 @@ import { join } from "node:path";
 
 import { describe, expect, test } from "vitest";
 
-import { listItemOf, projectName, type BrandProject } from "@/lib/projects/types";
+import { listItemOf, projectBytes, projectName, type BrandProject } from "@/lib/projects/types";
 
 const fixture = JSON.parse(readFileSync(join(__dirname, "__fixtures__/v1/projects.json"), "utf8")) as {
   projects: BrandProject[];
@@ -40,5 +40,22 @@ describe("a project's list item", () => {
   test("names the project the same as the project is named", () => {
     expect(projectName(listItemOf(project))).toBe(projectName(project));
     expect(projectName({ name: "   " })).toBe("Untitled brand");
+  });
+
+  test("keeps the size of the stored project in bytes, the same JSON the Storage panel measures", () => {
+    const item = listItemOf(project);
+    expect(item.bytes).toBe(new TextEncoder().encode(JSON.stringify(project)).length);
+    expect(item.bytes).toBe(projectBytes(project));
+    expect(item.bytes).toBeGreaterThan(1000);
+  });
+
+  test("grows with the project and counts what is not ASCII as the bytes it takes", () => {
+    const longer = structuredClone(project);
+    longer.snapshot.brand.profile.name = "Caf\u00e9 ".repeat(10);
+    const plain = structuredClone(project);
+    plain.snapshot.brand.profile.name = "Cafe ".repeat(10);
+    // Ten accented letters are ten more bytes in UTF-8.
+    expect(projectBytes(longer) - projectBytes(plain)).toBe(10);
+    expect(listItemOf(longer).bytes).toBe(projectBytes(longer));
   });
 });
