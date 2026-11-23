@@ -76,6 +76,28 @@ The three biggest costs, by script time and bytes, in the report of one run (the
 
 All three are in every route's first load. The home page moved from 259.6 kB to 245 kB gzipped first load in November by loading the toaster on first use and the English studio messages with their studios (see `docs/bundle-budget.md`); what is left is mostly the framework, so a further cut has to come from loading less of the app shell (the stores read on the home page, the locale provider) before the first paint, not from any single module. If the score drops, compare these three numbers first.
 
+### What every route loads
+
+`pnpm build && pnpm bundle:shared` lists the chunks that every route's first load contains (`.next/diagnostics/route-bundle-stats.json`, written by the build), with what each is made of as far as its minified text shows. Measured on 2026-11-23, on the build of that day:
+
+| Chunk                                                      |       gzip kB | Contains                                          |
+| ---------------------------------------------------------- | ------------: | ------------------------------------------------- |
+| `1gpl1we-zxnof.js`                                         |          70.2 | React DOM, the Next.js app router and flight data |
+| `3oa6ke7zdzr44.js`                                         |          43.1 | the Next.js app router                            |
+| `16ar-_efqcoxl.js`                                         |          27.8 | the router and Radix UI                           |
+| `30o535m_qzo_r.js`                                         |          18.7 | app code                                          |
+| `0umv3dtpsr_ho.js`                                         |          15.7 | Radix UI                                          |
+| `1bvkygqgxbibh.js`                                         |          14.5 | Radix UI, lucide icons, zustand, the translator   |
+| `2q9h4p8w7nrfj.js`                                         |          10.1 | Radix UI                                          |
+| `258eurhssg8wx.js`, `0oh7hi_in65s4.js`, `20qs9296xzq-1.js` | 8.5, 8.3, 7.0 | app code and the router                           |
+| `04vaedeoqerh0.js`                                         |           6.7 | Radix UI                                          |
+| the rest (4 chunks)                                        |           7.7 | app code, the router, the loader                  |
+| **14 chunks**                                              |     **238.4** |                                                   |
+
+The home page loads 240 kB gzipped, so 238 kB of it is shared with every route: the framework (React DOM, the router) is about 140 kB, Radix UI's primitives about 75 kB, and the app's own code (the root layout, the providers, the header, the translator, the stores) about 25 kB.
+
+Tried and dropped: moving the tooltip's provider from the root providers into the studio layout, and giving the theme toggle a native `title` instead of a tooltip, so the home page and the 404 page would not load the tooltip. The home page's first load stayed at 240.9 kB, because the tooltip's primitives (`Slot`, `Primitive`, `Presence`, `Popper`) are shared with the button, the select and the dialogs that the root layout also uses. The mobile menu's sheet and the command palette were already behind their first use. What would move the number is a smaller set of Radix primitives in the root layout (the header has few controls, and Radix pulls in its shared layers for each), which is a change to many components rather than one item; see the issue that tracks it.
+
 ### Tried: reading the stores after the first paint
 
 The home chooser and `PwaRegister` read the nav and command-recents stores (the last studios used) while the page renders. Moving both reads into one hook that imports the two stores after the page has painted (`useRecentStudios`, a dynamic import in an effect) was measured against the build without it, seven Lighthouse runs each on the same machine in the same hour:

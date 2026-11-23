@@ -18,6 +18,7 @@
     "fonts:catalog": "node scripts/generate-font-catalog.mjs",
     "check:dashes": "node scripts/check-em-dash.mjs",
     "bundle:size": "node scripts/bundle-size.mjs",
+    "bundle:shared": "node scripts/shared-chunks.mjs",
     "check:unused": "knip",
     "check:messages": "node scripts/check-messages.mjs",
     "check:areas": "node scripts/check-areas.mjs",
