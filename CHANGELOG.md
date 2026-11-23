@@ -9,6 +9,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- Import preview for a project file with several projects (names, tags, versions, size; import only the checked ones), and the size of each project on its card with a Size sort (stored in the summary row).
+- Focus rings, switches, selected tabs and borders stay visible in Windows forced colors and with more contrast, with a test in both modes (`tests/e2e/forced-colors.spec.ts`).
+- `pnpm check:hardcoded` (English written in components instead of messages), `pnpm bundle:shared` (the chunks every route loads), and `DESIGNHUB_CSP_CONNECT` to narrow the policy's `connect-src` at build time.
+- CI: the build is made once and the end-to-end and Lighthouse jobs use it; the end-to-end suite runs in three shards with one `E2E` check that joins their reports.
 - German translations for the core messages (studio names, the home page, navigation and the common words); German stays in progress, so the other messages still show in English.
 - A Content-Security-Policy on every production page (own origin plus Google Fonts and the Iconify hosts, `blob:` workers, `connect-src` for the chosen AI provider), with a test that opens every page, tab and worker and fails on a violation; described in `SECURITY.md` and `docs/self-hosting.md`.
 - Archive in the Brand Projects select bar (and from the near-full note): saves the chosen projects with their history as one file, deletes them from the browser, and can be undone.
@@ -35,6 +39,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+- The nightly run's flaky tests: the axe scan and the pane tests wait for hydration before they scan or click (a slow engine scanned the server's markup half taken over).
 - `next` is 16.4.6: 16.3.0 to 16.4.4 are affected by GHSA-mfr8-8qww-v76h, and `next build` stops on a version with an advisory.
 - The last studio is remembered only after the saved navigation state has loaded, so the Continue link and the recent studios no longer name the wrong studio.
 - The nightly repeated run's flaky tests (the sidebar tooltip and the Storage sections) press their buttons again until the page has hydrated.
