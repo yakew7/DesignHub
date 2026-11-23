@@ -195,6 +195,23 @@ docs: explain DTCG token output
 - Text must meet WCAG AA contrast (4.5:1, or 3:1 for large text) in both themes.
 - Respect `prefers-reduced-motion`.
 
+#### Forced colors and more contrast
+
+Windows high contrast (`forced-colors: active`) replaces every color with a system color and removes box shadows, and `prefers-contrast: more` asks for stronger borders and focus. A new control must still work in both:
+
+- Never show state or focus with a shadow ring or a background fill alone. A `focus-visible:ring-*` is fine for the normal look, because the global rules in `app/globals.css` add a real `outline` in both modes, but a control that sets its own outline must keep one.
+- A switch, tab or segmented option needs a state that survives forced colors: use a `data-slot` and `data-state` the `forced-colors` and `prefers-contrast` blocks at the end of `app/globals.css` can style with system colors (`Canvas`, `CanvasText`, `ButtonText`, `Highlight`, `HighlightText`), and keep a border on controls and panels (a color-only border can vanish).
+- Put every change for these modes inside those two media queries, so the normal look and the visual tests are untouched.
+
+`tests/e2e/forced-colors.spec.ts` emulates both modes on the Typography, Projects and Brand studios in light and dark and measures, from computed styles, that a focus ring, a switch, a section header, a bordered panel and a selected option stay visible, then runs axe. Run it against a production build:
+
+```bash
+pnpm build
+pnpm exec playwright test tests/e2e/forced-colors.spec.ts
+```
+
+To check a control by eye, use DevTools > Rendering > "Emulate CSS media feature forced-colors" (and `prefers-contrast`).
+
 ### Writing style
 
 - **Never use em dashes**, in code, comments, UI copy, docs or data. Use normal punctuation instead: a comma or parentheses for an aside, a colon before an explanation, a period between two sentences, or a spaced hyphen for a label ("Acme - brand guidelines"). Ranges use a plain hyphen ("150-200ms").

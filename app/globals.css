@@ -213,3 +213,88 @@
 :lang(hi) :is([class*="tracking-"], h1, h2, h3, h4) {
   letter-spacing: normal;
 }
+
+/*
+ * Forced colors (Windows high contrast). The browser swaps every color for a system color and drops box shadows,
+ * so anything drawn only by a shadow ring or a background fill disappears. These rules draw the same things with
+ * outlines and system colors. They sit outside the layers on purpose: they must win over the utility classes.
+ */
+@media (forced-colors: active) {
+  /* Most controls draw their focus ring as a box shadow and set outline-none, so the ring is an outline here. */
+  :focus-visible:not([role="dialog"], [role="alertdialog"]) {
+    outline: 2px solid Highlight;
+    outline-offset: 2px;
+  }
+
+  /* The highlighted row of a list or menu is shown by a background, which forced colors removes. */
+  [data-highlighted] {
+    outline: 2px solid Highlight;
+    outline-offset: -2px;
+  }
+
+  /* A switch: an outlined track, filled with Highlight when on, and a thumb that stays visible on both. */
+  [data-slot="switch"] {
+    background-color: Canvas;
+    border-color: ButtonText;
+  }
+  [data-slot="switch"][data-state="checked"] {
+    background-color: Highlight;
+  }
+  [data-slot="switch-thumb"] {
+    background-color: ButtonText;
+  }
+  [data-slot="switch"][data-state="checked"] > [data-slot="switch-thumb"] {
+    background-color: HighlightText;
+  }
+
+  /* The selected tab and the selected option of a segmented control are shown by a background and a shadow. */
+  [data-slot="tabs-trigger"][data-state="active"],
+  [data-slot="toggle-group-item"][data-state="on"] {
+    background-color: Highlight;
+    color: HighlightText;
+  }
+}
+
+/*
+ * More contrast (prefers-contrast: more). Hairline borders, faint switch tracks, the soft focus ring and muted text
+ * become strong enough to see against the background in both themes. The normal look is untouched.
+ */
+@media (prefers-contrast: more) {
+  :root {
+    --border: oklch(0.45 0.01 286);
+    --border-strong: oklch(0.35 0.01 286);
+    --input: oklch(0.45 0.01 286);
+    --ring: oklch(0.42 0.2 275);
+    --muted-foreground: oklch(0.35 0.012 286);
+    --subtle-foreground: oklch(0.4 0.01 286);
+  }
+  .dark {
+    --border: oklch(0.72 0.01 286);
+    --border-strong: oklch(0.82 0.01 286);
+    --input: oklch(0.72 0.01 286);
+    --ring: oklch(0.82 0.12 275);
+    --muted-foreground: oklch(0.86 0.01 286);
+    --subtle-foreground: oklch(0.8 0.01 286);
+  }
+
+  :focus-visible:not([role="dialog"], [role="alertdialog"]) {
+    outline: 3px solid var(--ring);
+    outline-offset: 2px;
+  }
+
+  [data-slot="switch"] {
+    border-color: var(--foreground);
+  }
+  [data-slot="switch"][data-state="unchecked"] {
+    background-color: var(--background);
+  }
+  [data-slot="switch"][data-state="unchecked"] > [data-slot="switch-thumb"] {
+    background-color: var(--foreground);
+  }
+
+  [data-slot="tabs-trigger"][data-state="active"],
+  [data-slot="toggle-group-item"][data-state="on"] {
+    background-color: var(--foreground);
+    color: var(--background);
+  }
+}
