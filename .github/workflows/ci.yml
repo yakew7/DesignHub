@@ -75,7 +75,7 @@ jobs:
           node-version: 22
           cache: pnpm
       - run: pnpm install --frozen-lockfile
-      - uses: actions/download-artifact@v7
+      - uses: actions/download-artifact@v8
         with:
           name: production-build
       # The runner image lists packages.microsoft.com, which sometimes answers 403 and fails apt-get update.
@@ -108,7 +108,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v7
-      - uses: actions/download-artifact@v7
+      - uses: actions/download-artifact@v8
         with:
           pattern: e2e-report-*
           path: reports
@@ -134,7 +134,7 @@ jobs:
           node-version: 22
           cache: pnpm
       - run: pnpm install --frozen-lockfile
-      - uses: actions/download-artifact@v7
+      - uses: actions/download-artifact@v8
         with:
           name: production-build
       # Starts `pnpm start` (see lighthouserc.json), audits the home page, the Color Studio, Brand Projects and three
