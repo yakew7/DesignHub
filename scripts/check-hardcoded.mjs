@@ -1,8 +1,9 @@
 #!/usr/bin/env node
 /**
  * Lists the English written in components instead of messages (docs/translating.md): the literal text of JSX
- * children, and the literal value of `aria-label`, `title`, `placeholder` and `alt`. A `t(...)` call or a variable is
- * not literal text, so it is not listed.
+ * children (including template literals), the literal or template value of `aria-label`, `title`, `placeholder`,
+ * `alt`, `label` and `description` props, and `label` / `description` properties in data arrays and option objects.
+ * A `t(...)` call or a variable is not literal text, so it is not listed.
  *
  *   node scripts/check-hardcoded.mjs            lists them per studio (exit 0)
  *   node scripts/check-hardcoded.mjs --strict   exits 1 when there are any
@@ -86,7 +87,8 @@ const NAMES = new Set([
   "Snapchat",
 ]);
 
-const ATTRIBUTES = new Set(["aria-label", "title", "placeholder", "alt"]);
+const ATTRIBUTES = new Set(["aria-label", "title", "placeholder", "alt", "label", "description"]);
+const PROPERTIES = new Set(["label", "description"]);
 
 /** True for text a person reads and a translator would translate. */
 export function isEnglishText(text) {
@@ -103,12 +105,22 @@ export function isEnglishText(text) {
   return true;
 }
 
+/** Extract literal or template text from a string-like or template expression, or null for dynamic values. */
+function expressionText(expression) {
+  if (!expression) return null;
+  if (ts.isStringLiteralLike(expression)) return expression.text;
+  if (ts.isTemplateExpression(expression)) {
+    return [expression.head.text, ...expression.templateSpans.map((span) => `{}${span.literal.text}`)].join("");
+  }
+  return null;
+}
+
 /** The literal English in a component's source: `{ line, text, kind }` for each. */
 export function hardcodedIn(file, source) {
   const found = [];
   const tree = ts.createSourceFile(file, source, ts.ScriptTarget.Latest, true, ts.ScriptKind.TSX);
   const add = (node, text, kind) => {
-    if (isEnglishText(text)) {
+    if (text !== null && isEnglishText(text)) {
       found.push({
         line: tree.getLineAndCharacterOfPosition(node.getStart(tree)).line + 1,
         text: text.replace(/\s+/g, " ").trim(),
@@ -120,14 +132,16 @@ export function hardcodedIn(file, source) {
     if (ts.isJsxText(node)) add(node, node.text, "text");
     if (ts.isJsxAttribute(node) && ATTRIBUTES.has(node.name.getText(tree))) {
       const init = node.initializer;
-      if (init && ts.isStringLiteral(init)) add(init, init.text, node.name.getText(tree));
-      else if (init && ts.isJsxExpression(init) && init.expression && ts.isStringLiteralLike(init.expression)) {
-        add(init, init.expression.text, node.name.getText(tree));
-      }
+      const kind = node.name.getText(tree);
+      if (init && ts.isStringLiteral(init)) add(init, init.text, kind);
+      else if (init && ts.isJsxExpression(init)) add(init, expressionText(init.expression), kind);
     }
-    // A string literal child: {"text"} or {`text`}.
+    if (ts.isPropertyAssignment(node) && ts.isIdentifier(node.name) && PROPERTIES.has(node.name.text)) {
+      add(node.initializer, expressionText(node.initializer), node.name.text);
+    }
+    // A string or template literal child: {"text"}, {`text`} or {`Remove ${item}`}.
     if (ts.isJsxExpression(node) && node.parent && (ts.isJsxElement(node.parent) || ts.isJsxFragment(node.parent))) {
-      if (node.expression && ts.isStringLiteralLike(node.expression)) add(node, node.expression.text, "text");
+      add(node, expressionText(node.expression), "text");
     }
     ts.forEachChild(node, visit);
   };
