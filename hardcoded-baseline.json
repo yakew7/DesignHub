@@ -1,11 +1,16 @@
 {
-  "backgrounds": 15,
-  "brand-dna": 43,
-  "canvas": 8,
-  "export": 42,
-  "guidelines": 22,
-  "icons": 1,
-  "layout": 2,
+  "accessibility": 22,
+  "backgrounds": 32,
+  "brand": 1,
+  "brand-dna": 65,
+  "canvas": 9,
+  "effects": 97,
+  "export": 53,
+  "guidelines": 35,
+  "icons": 10,
+  "layout": 3,
+  "logo": 1,
   "svg": 1,
+  "typography": 43,
   "ui": 2
 }
