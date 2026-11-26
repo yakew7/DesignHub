@@ -128,7 +128,7 @@ export function BackgroundControls() {
           onChange={(density) => update({ density })}
         />
         <SliderField
-          label="Scale"
+          label={t("typography.scale.title")}
           value={settings.scale}
           min={0.25}
           max={4}
