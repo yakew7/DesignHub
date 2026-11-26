@@ -9,6 +9,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- The Typography Studio, Effects Lab and Accessibility Lab labels are messages now (about 240 hard-coded texts moved), in Spanish, French and Hindi too.
+- `pnpm check:hardcoded:ratchet` (in CI): `hardcoded-baseline.json` holds the count of literal English per folder, and the check fails when it grows or when a lower count is not written down.
+- Importing a project file marks the projects that are already here and lets you skip them or replace them (the replaced project keeps its history).
+- The header's More menu loads on first use, which takes about 14 kB gzipped out of every route's first load.
+- Every page's Content-Security-Policy also carries the hashes of its own inline scripts, so an injected script is blocked.
 - Import preview for a project file with several projects (names, tags, versions, size; import only the checked ones), and the size of each project on its card with a Size sort (stored in the summary row).
 - Focus rings, switches, selected tabs and borders stay visible in Windows forced colors and with more contrast, with a test in both modes (`tests/e2e/forced-colors.spec.ts`).
 - `pnpm check:hardcoded` (English written in components instead of messages), `pnpm bundle:shared` (the chunks every route loads), and `DESIGNHUB_CSP_CONNECT` to narrow the policy's `connect-src` at build time.

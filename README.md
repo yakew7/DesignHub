@@ -308,20 +308,21 @@ cp .env.example .env.local
 
 ### Scripts
 
-| Command              | Description                                            |
-| -------------------- | ------------------------------------------------------ |
-| `pnpm dev`           | Start the development server                           |
-| `pnpm build`         | Create a production build                              |
-| `pnpm start`         | Serve the production build                             |
-| `pnpm lint`          | Run ESLint                                             |
-| `pnpm typecheck`     | Run the TypeScript compiler in strict mode             |
-| `pnpm test`          | Run the unit tests (Vitest)                            |
-| `pnpm format`        | Format with Prettier                                   |
-| `pnpm format:check`  | Check formatting (used in CI)                          |
-| `pnpm fonts:catalog` | Regenerate the bundled Google Fonts catalog            |
-| `pnpm check:dashes`  | Fail if any file contains an em dash                   |
-| `pnpm check:unused`  | Fail on unused files, exports or dependencies          |
-| `pnpm bundle:size`   | Report each route's first-load JS and check its budget |
+| Command                        | Description                                             |
+| ------------------------------ | ------------------------------------------------------- |
+| `pnpm dev`                     | Start the development server                            |
+| `pnpm build`                   | Create a production build                               |
+| `pnpm start`                   | Serve the production build                              |
+| `pnpm lint`                    | Run ESLint                                              |
+| `pnpm typecheck`               | Run the TypeScript compiler in strict mode              |
+| `pnpm test`                    | Run the unit tests (Vitest)                             |
+| `pnpm format`                  | Format with Prettier                                    |
+| `pnpm format:check`            | Check formatting (used in CI)                           |
+| `pnpm fonts:catalog`           | Regenerate the bundled Google Fonts catalog             |
+| `pnpm check:dashes`            | Fail if any file contains an em dash                    |
+| `pnpm check:unused`            | Fail on unused files, exports or dependencies           |
+| `pnpm bundle:size`             | Report each route's first-load JS and check its budget  |
+| `pnpm check:hardcoded:ratchet` | Fail when components gain English that is not a message |
 
 The [decision log](docs/decisions/README.md) says why the architecture is the way it is (the message parts, the summary rows, the lazy toaster, the pinned framework). The [performance guide](docs/performance.md) explains how to measure bundle size, unused code, Lighthouse scores, long tasks and autosave work, and how to read each result.
 

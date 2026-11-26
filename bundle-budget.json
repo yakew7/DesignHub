@@ -2,7 +2,7 @@
   "unit": "kB, gzipped first-load JS",
   "reason": "Limits sit a little above the sizes on main. Raise one only in a reviewed change, with the reason in the pull request.",
   "routes": {
-    "/": 243,
+    "/": 233,
     "/accessibility": 397,
     "/backgrounds": 313,
     "/brand-dna": 295,
@@ -18,6 +18,6 @@
     "/social": 327,
     "/svg": 309,
     "/typography": 276,
-    "/_not-found": 240
+    "/_not-found": 231
   }
 }

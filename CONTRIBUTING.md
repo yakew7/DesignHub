@@ -29,21 +29,22 @@ The app runs at [http://localhost:3000](http://localhost:3000). There is no back
 
 ### pnpm commands
 
-| Command              | What it does                                                                                   |
-| -------------------- | ---------------------------------------------------------------------------------------------- |
-| `pnpm dev`           | Start the dev server with hot reload                                                           |
-| `pnpm build`         | Production build (must pass before merging)                                                    |
-| `pnpm start`         | Serve the production build locally                                                             |
-| `pnpm lint`          | ESLint (Next.js + TypeScript rules); any warning fails it, like an error                       |
-| `pnpm typecheck`     | `tsc --noEmit` in strict mode                                                                  |
-| `pnpm test`          | Unit tests with Vitest (`lib/**` and `packages/*/src/**`)                                      |
-| `pnpm test:e2e`      | Playwright tests against the production build: routes, flows, axe (see below)                  |
-| `pnpm format`        | Format all files with Prettier                                                                 |
-| `pnpm format:check`  | Verify formatting without writing                                                              |
-| `pnpm fonts:catalog` | Regenerate the font catalog (`catalog-index.json` and `catalog/`) from Google Fonts            |
-| `pnpm check:unused`  | Fail on unused files, exports and dependencies (knip, also in CI)                              |
-| `pnpm check:dashes`  | Fail if any file contains an em dash (also runs in CI)                                         |
-| `pnpm bundle:size`   | Report each route's first-load JS after a build ([bundle budget guide](docs/bundle-budget.md)) |
+| Command                        | What it does                                                                                   |
+| ------------------------------ | ---------------------------------------------------------------------------------------------- |
+| `pnpm dev`                     | Start the dev server with hot reload                                                           |
+| `pnpm build`                   | Production build (must pass before merging)                                                    |
+| `pnpm start`                   | Serve the production build locally                                                             |
+| `pnpm lint`                    | ESLint (Next.js + TypeScript rules); any warning fails it, like an error                       |
+| `pnpm typecheck`               | `tsc --noEmit` in strict mode                                                                  |
+| `pnpm test`                    | Unit tests with Vitest (`lib/**` and `packages/*/src/**`)                                      |
+| `pnpm test:e2e`                | Playwright tests against the production build: routes, flows, axe (see below)                  |
+| `pnpm format`                  | Format all files with Prettier                                                                 |
+| `pnpm format:check`            | Verify formatting without writing                                                              |
+| `pnpm fonts:catalog`           | Regenerate the font catalog (`catalog-index.json` and `catalog/`) from Google Fonts            |
+| `pnpm check:unused`            | Fail on unused files, exports and dependencies (knip, also in CI)                              |
+| `pnpm check:dashes`            | Fail if any file contains an em dash (also runs in CI)                                         |
+| `pnpm bundle:size`             | Report each route's first-load JS after a build ([bundle budget guide](docs/bundle-budget.md)) |
+| `pnpm check:hardcoded:ratchet` | Fail when a folder has more literal English than `hardcoded-baseline.json` (also in CI)        |
 
 Before pushing, run the same checks as CI:
 
