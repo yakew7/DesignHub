@@ -29,7 +29,24 @@ jobs:
       - run: pnpm install --frozen-lockfile
       - name: Drop the Microsoft apt source
         run: sudo rm -f /etc/apt/sources.list.d/microsoft-prod.list /etc/apt/sources.list.d/microsoft-prod.sources
+      # The browsers Playwright downloads, kept by Playwright's version (a new version is a new key).
+      - name: Playwright version
+        id: playwright
+        run: echo "version=$(pnpm exec playwright --version | awk '{print $2}')" >> "$GITHUB_OUTPUT"
+      - uses: actions/cache@v5
+        with:
+          path: ~/.cache/ms-playwright
+          key: playwright-${{ runner.os }}-${{ steps.playwright.outputs.version }}-chromium
       - run: pnpm exec playwright install --with-deps chromium
+      # The build's own cache (.next/cache), restored from the closest earlier run so a small change rebuilds little.
+      # Never .next itself: the artifact does that.
+      - uses: actions/cache@v5
+        with:
+          path: .next/cache
+          key: next-${{ runner.os }}-${{ hashFiles('pnpm-lock.yaml') }}-${{ hashFiles('app/**', 'components/**', 'lib/**', 'hooks/**', 'store/**', 'public/**', 'next.config.ts') }}
+          restore-keys: |
+            next-${{ runner.os }}-${{ hashFiles('pnpm-lock.yaml') }}-
+            next-${{ runner.os }}-
       - run: pnpm build
       - name: Run every test several times
         run: pnpm exec playwright test --repeat-each="${{ inputs.repeat || '5' }}" --retries=0
@@ -66,7 +83,24 @@ jobs:
       - run: pnpm install --frozen-lockfile
       - name: Drop the Microsoft apt source
         run: sudo rm -f /etc/apt/sources.list.d/microsoft-prod.list /etc/apt/sources.list.d/microsoft-prod.sources
+      # The browsers Playwright downloads, kept by Playwright's version (a new version is a new key).
+      - name: Playwright version
+        id: playwright
+        run: echo "version=$(pnpm exec playwright --version | awk '{print $2}')" >> "$GITHUB_OUTPUT"
+      - uses: actions/cache@v5
+        with:
+          path: ~/.cache/ms-playwright
+          key: playwright-${{ runner.os }}-${{ steps.playwright.outputs.version }}-firefox-webkit
       - run: pnpm exec playwright install --with-deps firefox webkit
+      # The build's own cache (.next/cache), restored from the closest earlier run so a small change rebuilds little.
+      # Never .next itself: the artifact does that.
+      - uses: actions/cache@v5
+        with:
+          path: .next/cache
+          key: next-${{ runner.os }}-${{ hashFiles('pnpm-lock.yaml') }}-${{ hashFiles('app/**', 'components/**', 'lib/**', 'hooks/**', 'store/**', 'public/**', 'next.config.ts') }}
+          restore-keys: |
+            next-${{ runner.os }}-${{ hashFiles('pnpm-lock.yaml') }}-
+            next-${{ runner.os }}-
       - run: pnpm build
       # The routes test and the axe scan, in the other two engines (CROSS_BROWSER in playwright.config.ts). A test
       # that cannot pass in one browser is skipped there with `test.skip(browserName === "...", "reason, #issue")`.

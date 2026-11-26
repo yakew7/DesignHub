@@ -41,6 +41,15 @@ jobs:
       - name: Unused English messages
         run: pnpm check:messages
         continue-on-error: true
+      # The build's own cache (.next/cache), restored from the closest earlier run so a small change rebuilds little.
+      # Never .next itself: the artifact does that.
+      - uses: actions/cache@v5
+        with:
+          path: .next/cache
+          key: next-${{ runner.os }}-${{ hashFiles('pnpm-lock.yaml') }}-${{ hashFiles('app/**', 'components/**', 'lib/**', 'hooks/**', 'store/**', 'public/**', 'next.config.ts') }}
+          restore-keys: |
+            next-${{ runner.os }}-${{ hashFiles('pnpm-lock.yaml') }}-
+            next-${{ runner.os }}-
       - run: pnpm build
       - run: pnpm --filter designhub build
       - name: Smoke test the built CLI
@@ -82,6 +91,14 @@ jobs:
       # Chromium's dependencies come from the Ubuntu mirrors, so that source isn't needed.
       - name: Drop the Microsoft apt source
         run: sudo rm -f /etc/apt/sources.list.d/microsoft-prod.list /etc/apt/sources.list.d/microsoft-prod.sources
+      # The browsers Playwright downloads, kept by Playwright's version (a new version is a new key).
+      - name: Playwright version
+        id: playwright
+        run: echo "version=$(pnpm exec playwright --version | awk '{print $2}')" >> "$GITHUB_OUTPUT"
+      - uses: actions/cache@v5
+        with:
+          path: ~/.cache/ms-playwright
+          key: playwright-${{ runner.os }}-${{ steps.playwright.outputs.version }}-chromium
       - run: pnpm exec playwright install --with-deps chromium
       - name: Tests of this shard
         run: E2E_REPORT=test-results/report-${{ matrix.shard }}.json pnpm exec playwright test --shard=${{ matrix.shard }}/3
