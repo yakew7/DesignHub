@@ -78,25 +78,25 @@ All three are in every route's first load. The home page moved from 259.6 kB to 
 
 ### What every route loads
 
-`pnpm build && pnpm bundle:shared` lists the chunks that every route's first load contains (`.next/diagnostics/route-bundle-stats.json`, written by the build), with what each is made of as far as its minified text shows. Measured on 2026-11-23, on the build of that day:
+`pnpm build && pnpm bundle:shared` lists the chunks that every route's first load contains (`.next/diagnostics/route-bundle-stats.json`, written by the build), with what each is made of as far as its minified text shows. Measured on 2026-11-26:
 
-| Chunk                                                      |       gzip kB | Contains                                          |
-| ---------------------------------------------------------- | ------------: | ------------------------------------------------- |
-| `1gpl1we-zxnof.js`                                         |          70.2 | React DOM, the Next.js app router and flight data |
-| `3oa6ke7zdzr44.js`                                         |          43.1 | the Next.js app router                            |
-| `16ar-_efqcoxl.js`                                         |          27.8 | the router and Radix UI                           |
-| `30o535m_qzo_r.js`                                         |          18.7 | app code                                          |
-| `0umv3dtpsr_ho.js`                                         |          15.7 | Radix UI                                          |
-| `1bvkygqgxbibh.js`                                         |          14.5 | Radix UI, lucide icons, zustand, the translator   |
-| `2q9h4p8w7nrfj.js`                                         |          10.1 | Radix UI                                          |
-| `258eurhssg8wx.js`, `0oh7hi_in65s4.js`, `20qs9296xzq-1.js` | 8.5, 8.3, 7.0 | app code and the router                           |
-| `04vaedeoqerh0.js`                                         |           6.7 | Radix UI                                          |
-| the rest (4 chunks)                                        |           7.7 | app code, the router, the loader                  |
-| **14 chunks**                                              |     **238.4** |                                                   |
+| Chunk              |   gzip kB | Contains                                          |
+| ------------------ | --------: | ------------------------------------------------- |
+| `1gpl1we-zxnof.js` |      70.2 | React DOM, the Next.js app router and flight data |
+| `3oa6ke7zdzr44.js` |      43.1 | the Next.js app router                            |
+| `1ayumj3dla5lb.js` |      21.1 | the router                                        |
+| `30o535m_qzo_r.js` |      18.7 | app code                                          |
+| `0umv3dtpsr_ho.js` |      15.7 | Radix UI                                          |
+| `1bvkygqgxbibh.js` |      14.5 | Radix UI, lucide icons, zustand, the translator   |
+| `2q9h4p8w7nrfj.js` |      10.1 | Radix UI                                          |
+| the other 6 chunks |      31.8 | app code, the router, the loader                  |
+| **13 chunks**      | **225.0** |                                                   |
 
-The home page loads 240 kB gzipped, so 238 kB of it is shared with every route: the framework (React DOM, the router) is about 140 kB, Radix UI's primitives about 75 kB, and the app's own code (the root layout, the providers, the header, the translator, the stores) about 25 kB.
+The home page loads 226.8 kB gzipped, so almost all of it is shared with every route: the framework (React DOM, the router) is about 135 kB, Radix UI's primitives about 40 kB, and the app's own code (the root layout, providers, header, translator, stores) about 50 kB.
 
-Tried and dropped: moving the tooltip's provider from the root providers into the studio layout, and giving the theme toggle a native `title` instead of a tooltip, so the home page and the 404 page would not load the tooltip. The home page's first load stayed at 240.9 kB, because the tooltip's primitives (`Slot`, `Primitive`, `Presence`, `Popper`) are shared with the button, the select and the dialogs that the root layout also uses. The mobile menu's sheet and the command palette were already behind their first use. What would move the number is a smaller set of Radix primitives in the root layout (the header has few controls, and Radix pulls in its shared layers for each), which is a change to many components rather than one item; see the issue that tracks it.
+**Done (issue #606):** the header's More menu was the largest Radix piece the home page did not need to read it: `DropdownMenu` and the layers it pulls in (menu, roving focus, popper, presence, dismissable layer) were in every page that has the header. The menu now loads on first use (`components/layout/main-nav-more.tsx`; a plain button is shown first and fetches it on hover or focus, as the mobile menu does, and a key press opens it with focus on the first item). The home page went from 240.9 kB to 226.8 kB gzipped (the 404 page the same, 14 kB), and every studio got about 5 kB smaller, because the studios share the header's shared layers. Radix went from about 75 kB to about 40 kB of the shared chunks.
+
+Tried and dropped: moving the tooltip's provider from the root providers into the studio layout, and giving the theme toggle a native `title`, so the home page would not load the tooltip. It left the first load at 240.9 kB while the menu was still eager: the menu and the tooltip share the same layers, so only removing both can show. After the menu was moved, the tooltip's own share was not measured on its own. What is left in the shared chunks is the framework (about 60%), Radix for the controls every page has (the button's slot, the tooltip's provider) and the app's own code. The next candidates are the tooltip provider (needed by the sidebar and the theme toggle) and the stores, one at a time with `pnpm bundle:shared` and seven Lighthouse runs.
 
 ### Tried: reading the stores after the first paint
 
