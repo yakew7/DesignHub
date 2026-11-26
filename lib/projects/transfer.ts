@@ -20,8 +20,17 @@ const PROJECTS_FORMAT = "designhub.projects";
 /** A version as it travels in a file: ids are local to a browser, so they are left out and made fresh on import. */
 export type VersionEntry = Pick<ProjectVersion, "createdAt" | "reason" | "snapshot">;
 
-/** `history` is newest first and empty when the file has none. */
-export type ProjectEntry = { favorite: boolean; tags: string[]; snapshot: BrandSnapshot; history: VersionEntry[] };
+/**
+ * `id` is the id the project had where the file was made, so a file read back in the same browser can tell which
+ * projects are already there; files from before it have none. `history` is newest first and empty when the file has none.
+ */
+export type ProjectEntry = {
+  id?: string;
+  favorite: boolean;
+  tags: string[];
+  snapshot: BrandSnapshot;
+  history: VersionEntry[];
+};
 
 /** Project id to its versions, for exports that include history. */
 export type ProjectHistories = Map<string, ProjectVersion[]>;
@@ -40,6 +49,7 @@ export function projectToJson(project: BrandProject, history?: ProjectVersion[])
       format: PROJECT_FORMAT,
       version: SCHEMA_VERSION,
       exportedAt: new Date().toISOString(),
+      id: project.id,
       name: projectName(project),
       favorite: project.favorite,
       tags: project.tags,
@@ -58,6 +68,7 @@ export function projectsToJson(projects: BrandProject[], histories?: ProjectHist
       version: SCHEMA_VERSION,
       exportedAt: new Date().toISOString(),
       projects: projects.map((project) => ({
+        id: project.id,
         favorite: project.favorite,
         tags: project.tags,
         snapshot: project.snapshot,
@@ -192,6 +203,7 @@ function normalizeHistory(value: unknown): VersionEntry[] {
 function toEntry(value: Record<string, unknown>): ProjectEntry {
   // Files from before tags have none; tags are untrusted, so they are trimmed and capped.
   return {
+    id: typeof value.id === "string" && value.id.length > 0 && value.id.length <= 100 ? value.id : undefined,
     favorite: value.favorite === true,
     tags: normalizeTags(value.tags),
     snapshot: normalizeSnapshot(value.snapshot),
@@ -232,7 +244,7 @@ export function previewEntries(entries: readonly ProjectEntry[]): EntryPreview[]
     name: entry.snapshot.brand.profile.name.trim() || "Imported brand",
     tags: entry.tags,
     versions: entry.history.length,
-    bytes: byteLength(JSON.stringify(entry)),
+    bytes: byteLength(JSON.stringify({ ...entry, id: undefined })),
   }));
 }
 

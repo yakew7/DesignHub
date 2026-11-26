@@ -196,4 +196,12 @@ export const esProjects = {
   "projects.importPreview.submit.one": "Importar {count} proyecto",
   "projects.importPreview.submit.other": "Importar {count} proyectos",
   "projects.card.size": "Tamaño {size}",
+  "projects.importPreview.alreadyHere": "Ya está aquí",
+  "projects.importPreview.skip": "Omitir",
+  "projects.importPreview.replace": "Reemplazar",
+  "projects.importPreview.choice": "Qué hacer con {name}",
+  "projects.importPreview.replaceHint":
+    "Reemplazar escribe la copia del archivo y guarda la actual en el historial del proyecto.",
+  "projects.toast.replaced.one": "Se reemplazó {count} proyecto",
+  "projects.toast.replaced.other": "Se reemplazaron {count} proyectos",
 } satisfies Catalog;

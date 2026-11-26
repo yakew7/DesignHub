@@ -199,4 +199,12 @@ export const frProjects = {
   "projects.importPreview.submit.one": "Importer {count} projet",
   "projects.importPreview.submit.other": "Importer {count} projets",
   "projects.card.size": "Taille {size}",
+  "projects.importPreview.alreadyHere": "Déjà présent",
+  "projects.importPreview.skip": "Ignorer",
+  "projects.importPreview.replace": "Remplacer",
+  "projects.importPreview.choice": "Que faire de {name}",
+  "projects.importPreview.replaceHint":
+    "Remplacer écrit la copie du fichier et garde l'actuelle dans l'historique du projet.",
+  "projects.toast.replaced.one": "{count} projet remplacé",
+  "projects.toast.replaced.other": "{count} projets remplacés",
 } satisfies Catalog;

@@ -189,4 +189,12 @@ export const enProjects = {
   "projects.importPreview.submit.one": "Import {count} project",
   "projects.importPreview.submit.other": "Import {count} projects",
   "projects.card.size": "Size {size}",
+  "projects.importPreview.alreadyHere": "Already here",
+  "projects.importPreview.skip": "Skip",
+  "projects.importPreview.replace": "Replace",
+  "projects.importPreview.choice": "What to do with {name}",
+  "projects.importPreview.replaceHint":
+    "Replace writes the file's copy and keeps the current one in the project's history.",
+  "projects.toast.replaced.one": "Replaced {count} project",
+  "projects.toast.replaced.other": "Replaced {count} projects",
 } as const;

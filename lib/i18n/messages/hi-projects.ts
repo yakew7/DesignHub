@@ -193,4 +193,12 @@ export const hiProjects = {
   "projects.importPreview.submit.one": "{count} प्रोजेक्ट इंपोर्ट करें",
   "projects.importPreview.submit.other": "{count} प्रोजेक्ट इंपोर्ट करें",
   "projects.card.size": "आकार {size}",
+  "projects.importPreview.alreadyHere": "पहले से यहाँ है",
+  "projects.importPreview.skip": "छोड़ें",
+  "projects.importPreview.replace": "बदलें",
+  "projects.importPreview.choice": "{name} के साथ क्या करना है",
+  "projects.importPreview.replaceHint":
+    "बदलने पर फ़ाइल की कॉपी लिखी जाती है और मौजूदा प्रोजेक्ट के इतिहास में सुरक्षित रहती है।",
+  "projects.toast.replaced.one": "{count} प्रोजेक्ट बदला गया",
+  "projects.toast.replaced.other": "{count} प्रोजेक्ट बदले गए",
 } satisfies Catalog;

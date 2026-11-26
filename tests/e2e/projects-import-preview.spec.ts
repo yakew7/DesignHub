@@ -9,7 +9,7 @@ import { hydrated } from "./storage";
 type Entry = {
   favorite: boolean;
   tags: string[];
-  snapshot: { brand: { profile: { name: string } } };
+  snapshot: { brand: { profile: { name: string; description: string } } };
   history: { createdAt: number; reason: string; snapshot: unknown }[];
 };
 
@@ -17,7 +17,7 @@ const names = ["Preview Alpha", "Preview Beta", "Preview Gamma"];
 const tags = [["client"], ["internal", "draft"], []];
 
 /** A project file of three projects, each with two saved versions, written to disk. */
-function writeProjectFile(): string {
+function writeProjectFile(change?: (entry: Entry) => void): string {
   const fixture = JSON.parse(readFileSync(join(__dirname, "../../lib/projects/__fixtures__/v1/projects.json"), "utf8"));
   const template = fixture.projects[0] as Entry;
   expect(template.history.length).toBeGreaterThanOrEqual(2);
@@ -27,6 +27,7 @@ function writeProjectFile(): string {
     copy.favorite = false;
     copy.snapshot.brand.profile.name = name;
     copy.history = copy.history.slice(0, 2);
+    change?.(copy);
     return copy;
   });
   const file = test.info().outputPath("preview-source.json");
@@ -109,11 +110,29 @@ test("a file of three projects asks which to import, shows what each holds, and 
   await expect.poll(() => storedNames(page)).toEqual(expect.arrayContaining(names.slice(0, 2)));
   expect(await storedNames(page)).not.toContain(names[2]);
 
-  // Names stay unique: importing the first again, on its own, adds it as "(2)".
+  // The same file again: the two already here are marked and skipped at first, and only the third is a new row.
   await page.locator('input[type="file"]').first().setInputFiles(writeProjectFile());
   await expect(dialog).toBeVisible();
-  await dialog.getByRole("button", { name: "Select none" }).click();
+  await expect(dialog.getByText("Already here")).toHaveCount(2);
+  await expect(boxes).toHaveCount(1);
+  await expect(dialog.getByRole("button", { name: "Import 1 project", exact: true })).toBeVisible();
+  await boxes.nth(0).uncheck();
   await expect(dialog.getByRole("button", { name: "Import 0 projects" })).toBeDisabled();
+  await page.keyboard.press("Escape");
+  await expect(dialog).toBeHidden();
+  expect((await storedNames(page)).filter((name) => name.startsWith("Preview Alpha"))).toEqual(["Preview Alpha"]);
+
+  // Names stay unique: a project with the name of one already here but other contents is a new project, added as "(2)".
+  await page
+    .locator('input[type="file"]')
+    .first()
+    .setInputFiles(
+      writeProjectFile((entry) => {
+        if (entry.snapshot.brand.profile.name === names[0]) entry.snapshot.brand.profile.description = "Another brand";
+      }),
+    );
+  await expect(dialog).toBeVisible();
+  await dialog.getByRole("button", { name: "Select none" }).click();
   await boxes.nth(0).check();
   await dialog.getByRole("button", { name: "Import 1 project", exact: true }).click();
   await expect(page.getByRole("heading", { name: "Preview Alpha (2)", level: 2 })).toBeVisible();

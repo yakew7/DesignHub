@@ -398,6 +398,7 @@ export const enCore = {
   "history.reason.share-import": "Before share link import",
   "history.reason.palette": "Before loading a palette",
   "history.reason.restore": "Before restoring a version",
+  "history.reason.import": "Before replacing from a file",
 
   // Share links
   "share.button": "Copy share link",

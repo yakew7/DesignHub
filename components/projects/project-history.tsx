@@ -36,6 +36,7 @@ const reasonKeys: Record<VersionReason, PlainMessageKey> = {
   "share-import": "history.reason.share-import",
   palette: "history.reason.palette",
   restore: "history.reason.restore",
+  import: "history.reason.import",
 };
 
 /** A project's saved versions: pick one to preview what it changes, then restore it (with undo). */

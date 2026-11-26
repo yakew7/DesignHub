@@ -50,7 +50,8 @@ import {
   createBlankProject,
   duplicateProject,
   freshProject,
-  importEntries,
+  findExisting,
+  importChoices,
   openProject,
   projectHistories,
   removeProject,
@@ -60,6 +61,7 @@ import {
   saveActiveProject,
   toggleFavorite,
 } from "@/lib/projects/actions";
+import type { EntryMatch, ImportChoice } from "@/lib/projects/import-match";
 import { listProjects } from "@/lib/projects/repository";
 import { listVersions } from "@/lib/projects/versions";
 import { projectSorts, sortProjects, type ProjectSort } from "@/lib/projects/sort";
@@ -96,7 +98,7 @@ export function ProjectManager() {
   const [deleting, setDeleting] = useState<ProjectListItem | null>(null);
   const [comparing, setComparing] = useState(false);
   // The projects of a file that holds several, while the person chooses which to import.
-  const [importing, setImporting] = useState<ProjectEntry[] | null>(null);
+  const [importing, setImporting] = useState<{ entries: ProjectEntry[]; matches: (EntryMatch | null)[] } | null>(null);
   const [history, setHistory] = useState<ProjectListItem | null>(null);
   const [selecting, setSelecting] = useState(false);
   const [chosen, setChosen] = useState<Set<string>>(new Set());
@@ -168,13 +170,14 @@ export function ProjectManager() {
     toast.success(plural("projects.toast.exportedZip", all.length));
   }
 
-  async function importNow(entries: ProjectEntry[]) {
+  async function importNow(choices: ImportChoice[]) {
     try {
-      let count = 0;
+      let result = { added: 0, replaced: 0 };
       await run(async () => {
-        count = await importEntries(entries);
+        result = await importChoices(choices);
       });
-      toast.success(plural("projects.toast.imported", count));
+      if (result.added > 0 || result.replaced === 0) toast.success(plural("projects.toast.imported", result.added));
+      if (result.replaced > 0) toast.success(plural("projects.toast.replaced", result.replaced));
     } catch (error) {
       toast.error(errorMessage(error, t, "projects.toast.importFailed"));
     }
@@ -194,9 +197,10 @@ export function ProjectManager() {
       toast.error(errorMessage(error, t, "projects.toast.importFailed"));
       return;
     }
-    // One project imports in one step; a file of several asks which to add first.
-    if (entries.length > 1) setImporting(entries);
-    else await importNow(entries);
+    // One new project imports in one step; a file of several, or a project that is already here, asks first.
+    const matches = await findExisting(entries);
+    if (entries.length > 1 || matches.some(Boolean)) setImporting({ entries, matches });
+    else await importNow(entries.map((entry) => ({ entry, replaceId: null })));
   }
 
   const tags = useMemo(() => projectTags(projects ?? []), [projects]);
@@ -737,7 +741,8 @@ export function ProjectManager() {
         triggerRef={moreRef}
       />
       <ProjectImportDialog
-        entries={importing}
+        entries={importing?.entries ?? null}
+        matches={importing?.matches ?? []}
         onCancel={() => setImporting(null)}
         onImport={(chosen) => {
           setImporting(null);

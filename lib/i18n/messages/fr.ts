@@ -398,6 +398,7 @@ export const fr = {
   "history.reason.share-import": "Avant l'import d'un lien de partage",
   "history.reason.palette": "Avant le chargement d'une palette",
   "history.reason.restore": "Avant la restauration d'une version",
+  "history.reason.import": "Avant le remplacement depuis un fichier",
 
   "share.button": "Copier le lien de partage",
   "share.buttonHint": "Copie un lien qui importe cette marque comme un nouveau projet",

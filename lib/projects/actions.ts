@@ -18,6 +18,7 @@ import {
 import { snapshotKey, type ProjectVersion } from "@/lib/projects/history";
 import { countSave, planSave } from "@/lib/projects/save-plan";
 import { versionProjectName } from "@/lib/projects/names";
+import { matchEntries, type EntryMatch, type ImportChoice } from "@/lib/projects/import-match";
 import { addTag, removeTag } from "@/lib/projects/tags";
 import { importedVersions, parseProjectsFile, type ProjectEntry, type ProjectHistories } from "@/lib/projects/transfer";
 import { projectName, type BrandProject } from "@/lib/projects/types";
@@ -297,6 +298,47 @@ export async function importEntries(entries: readonly ProjectEntry[]): Promise<n
     if (entry.history.length) await putVersions(project.id, importedVersions(project.id, entry.history, newProjectId));
   }
   return entries.length;
+}
+
+/** Which projects of a file are already in this browser (see `matchEntries`), one answer per entry. */
+export async function findExisting(entries: readonly ProjectEntry[]): Promise<(EntryMatch | null)[]> {
+  await ready();
+  // The open project is compared as it is on screen, not as it was last saved.
+  await saveActiveProject();
+  return matchEntries(entries, await listProjectItems(), async (id) => {
+    const project = await getProject(id);
+    return project && snapshotKey(project.snapshot);
+  });
+}
+
+/**
+ * Writes a file's copy over a stored project: the same id, the file's brand and tags (the favorite mark stays as it
+ * is here, and so does the history, which is not replaced). The state it replaces is kept as a version first, and the
+ * open project is saved before that, so nothing typed since is lost. Returns false when the project is gone.
+ */
+async function replaceFromFile(id: string, entry: ProjectEntry): Promise<boolean> {
+  const current = await freshProject(id);
+  if (!current) return false;
+  await recordVersion(id, current.snapshot, "import");
+  // The tags go in first: the snapshot write that follows (a save of the live stores when it is open) keeps them.
+  await updateProject(id, { tags: entry.tags });
+  await replaceSnapshot(id, entry.snapshot);
+  return true;
+}
+
+/**
+ * Imports what the preview chose: each project is added as a new one, or written over the stored project it is
+ * (see `replaceFromFile`). A stored project that has gone meanwhile is added as a new one. Returns how many of each.
+ */
+export async function importChoices(choices: readonly ImportChoice[]): Promise<{ added: number; replaced: number }> {
+  let replaced = 0;
+  const fresh: ProjectEntry[] = [];
+  for (const { entry, replaceId } of choices) {
+    if (replaceId && (await replaceFromFile(replaceId, entry))) replaced += 1;
+    else fresh.push(entry);
+  }
+  // Names are made unique after the replacing, so a new project never takes a name a replaced one now holds.
+  return { added: await importEntries(fresh), replaced };
 }
 
 /** The saved versions of each project, for an export that includes history. */

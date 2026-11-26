@@ -395,6 +395,7 @@ export const es = {
   "history.reason.share-import": "Antes de importar un enlace compartido",
   "history.reason.palette": "Antes de cargar una paleta",
   "history.reason.restore": "Antes de restaurar una versión",
+  "history.reason.import": "Antes de reemplazar desde un archivo",
 
   "share.button": "Copiar enlace para compartir",
   "share.buttonHint": "Copia un enlace que importa esta marca como un proyecto nuevo",

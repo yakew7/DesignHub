@@ -393,6 +393,7 @@ export const hi = {
   "history.reason.share-import": "शेयर लिंक इंपोर्ट से पहले",
   "history.reason.palette": "पैलेट लोड करने से पहले",
   "history.reason.restore": "कोई वर्ज़न वापस लाने से पहले",
+  "history.reason.import": "फ़ाइल से बदलने से पहले",
 
   "share.button": "शेयर लिंक कॉपी करें",
   "share.buttonHint": "एक ऐसा लिंक कॉपी करें जो इस ब्रांड को नए प्रोजेक्ट के रूप में इंपोर्ट करता है",

@@ -9,6 +9,7 @@ export const versionReasons = [
   "share-import",
   "palette",
   "restore",
+  "import",
 ] as const;
 export type VersionReason = (typeof versionReasons)[number];
 

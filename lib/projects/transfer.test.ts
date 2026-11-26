@@ -38,6 +38,18 @@ describe("project files", () => {
     expect(entry?.snapshot.colors.swatches).toEqual(original.snapshot.colors.swatches);
   });
 
+  test("a file carries the id of each project, and an older file or a bad id gives none", () => {
+    expect(parseProjectsFile(projectToJson(project("Acme")))[0]?.id).toBe("id-Acme");
+    expect(parseProjectsFile(projectsToJson([project("One"), project("Two")])).map((entry) => entry.id)).toEqual([
+      "id-One",
+      "id-Two",
+    ]);
+    const old = { format: "designhub.project", version: 1, snapshot: defaultSnapshot("Old") };
+    expect(parseProjectsFile(JSON.stringify(old))[0]?.id).toBeUndefined();
+    expect(parseProjectsFile(JSON.stringify({ ...old, id: 7 }))[0]?.id).toBeUndefined();
+    expect(parseProjectsFile(JSON.stringify({ ...old, id: "x".repeat(101) }))[0]?.id).toBeUndefined();
+  });
+
   test("a multi-project file returns every entry", () => {
     const entries = parseProjectsFile(projectsToJson([project("One"), project("Two"), project("Three")]));
     expect(entries.map((entry) => entry.snapshot.brand.profile.name)).toEqual(["One", "Two", "Three"]);
@@ -207,7 +219,9 @@ describe("version history", () => {
       [100, "palette", "Acme v1"],
     ]);
     expect(entry?.history[0]?.snapshot.colors.swatches).toEqual(versions[1]?.snapshot.colors.swatches);
-    expect(JSON.stringify(entry)).not.toContain("id-Acme");
+    // The versions keep no ids of their own; only the project carries the id it had where the file was made.
+    expect(JSON.stringify(entry?.history)).not.toContain("id-Acme");
+    expect(entry?.id).toBe("id-Acme");
 
     let n = 0;
     const imported = importedVersions("new-project", entry?.history ?? [], () => `fresh-${++n}`);
