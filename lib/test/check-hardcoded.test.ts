@@ -1,6 +1,6 @@
 import { describe, expect, test } from "vitest";
 
-import { hardcodedIn, isEnglishText } from "../../scripts/check-hardcoded.mjs";
+import { hardcodedIn, isEnglishText, ratchet } from "../../scripts/check-hardcoded.mjs";
 
 describe("isEnglishText", () => {
   test("reads words a translator would translate", () => {
@@ -58,5 +58,25 @@ describe("hardcodedIn", () => {
   );
 }`;
     expect(hardcodedIn("b.tsx", source)).toEqual([]);
+  });
+});
+
+describe("ratchet", () => {
+  test("no change is no error", () => {
+    expect(ratchet({ a: 3, b: 0 }, { a: 3 })).toEqual([]);
+  });
+
+  test("an increase is an error, and so is a folder that was not in the baseline", () => {
+    expect(ratchet({ a: 4, c: 1 }, { a: 3 })).toEqual([
+      { folder: "a", now: 4, was: 3, kind: "up" },
+      { folder: "c", now: 1, was: 0, kind: "up" },
+    ]);
+  });
+
+  test("a decrease is an error until the baseline is lowered, and a folder that reached zero shows too", () => {
+    expect(ratchet({ a: 1 }, { a: 3, b: 2 })).toEqual([
+      { folder: "a", now: 1, was: 3, kind: "down" },
+      { folder: "b", now: 0, was: 2, kind: "down" },
+    ]);
   });
 });

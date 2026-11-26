@@ -7,11 +7,16 @@
  *   node scripts/check-hardcoded.mjs            lists them per studio (exit 0)
  *   node scripts/check-hardcoded.mjs --strict   exits 1 when there are any
  *   node scripts/check-hardcoded.mjs components/colors     only that folder
+ *   node scripts/check-hardcoded.mjs --ratchet             compares the count of each folder with hardcoded-baseline.json
+ *   node scripts/check-hardcoded.mjs --write-baseline      writes the current counts to hardcoded-baseline.json
+ *
+ * The ratchet fails when a folder has more literal English than the baseline (a new hard-coded label), and when it has
+ * less (the number must be lowered, so the progress stays), and says which file and line to look at.
  *
  * Numbers, symbols, single letters, names that are the same in every language (formats, brands) and text with no
  * word of three letters are skipped. Add to `NAMES` a name that should be skipped, with the reason.
  */
-import { readdir, readFile } from "node:fs/promises";
+import { readdir, readFile, writeFile } from "node:fs/promises";
 import path from "node:path";
 import ts from "typescript";
 
@@ -130,6 +135,22 @@ export function hardcodedIn(file, source) {
   return found;
 }
 
+/**
+ * The ratchet: the folders whose count is not the baseline's. `counts` and `baseline` map a folder to its count; a
+ * folder missing from the baseline counts as 0. An increase is a new hard-coded text, a decrease is progress that has
+ * to be written down.
+ */
+export function ratchet(counts, baseline) {
+  const errors = [];
+  for (const folder of [...new Set([...Object.keys(counts), ...Object.keys(baseline)])].sort()) {
+    const now = counts[folder] ?? 0;
+    const was = baseline[folder] ?? 0;
+    if (now > was) errors.push({ folder, now, was, kind: "up" });
+    else if (now < was) errors.push({ folder, now, was, kind: "down" });
+  }
+  return errors;
+}
+
 async function* walk(dir) {
   for (const entry of await readdir(dir, { withFileTypes: true }).catch(() => [])) {
     const file = path.posix.join(dir, entry.name);
@@ -153,6 +174,36 @@ if (import.meta.url === `file://${process.argv[1]}`) {
       byStudio.set(studio, list);
       total += found.length;
     }
+  }
+  const counts = Object.fromEntries([...byStudio].map(([studio, list]) => [studio, list.length]));
+  if (args.includes("--write-baseline")) {
+    const sorted = Object.fromEntries(Object.entries(counts).sort(([a], [b]) => a.localeCompare(b)));
+    await writeFile("hardcoded-baseline.json", `${JSON.stringify(sorted, null, 2)}\n`);
+    console.log(`Wrote hardcoded-baseline.json: ${total} literal English text(s) in ${byStudio.size} folder(s).`);
+    process.exit(0);
+  }
+  if (args.includes("--ratchet")) {
+    const baseline = JSON.parse(await readFile("hardcoded-baseline.json", "utf8"));
+    const errors = ratchet(counts, baseline);
+    for (const { folder, now, was, kind } of errors) {
+      if (kind === "up") {
+        console.error(
+          `::error::components/${folder} has ${now} hard-coded English text(s), the baseline allows ${was}. Use a message (t(...)) for the new text; the list below shows where.`,
+        );
+        for (const item of byStudio.get(folder) ?? [])
+          console.error(`  ${item.file}:${item.line}  [${item.kind}] ${item.text}`);
+      } else {
+        console.error(
+          `::error::components/${folder} is down to ${now} hard-coded English text(s) from ${was}. Good: run "pnpm check:hardcoded --write-baseline" and commit hardcoded-baseline.json so it stays down.`,
+        );
+      }
+    }
+    console.log(
+      errors.length
+        ? `${errors.length} folder(s) differ from the baseline.`
+        : `The baseline holds: ${total} literal English text(s) in ${byStudio.size} folder(s).`,
+    );
+    process.exit(errors.length ? 1 : 0);
   }
   for (const [studio, list] of [...byStudio].sort((a, b) => b[1].length - a[1].length)) {
     console.log(`\n## ${studio} (${list.length})`);

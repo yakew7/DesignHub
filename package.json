@@ -23,6 +23,7 @@
     "check:messages": "node scripts/check-messages.mjs",
     "check:areas": "node scripts/check-areas.mjs",
     "check:hardcoded": "node scripts/check-hardcoded.mjs",
+    "check:hardcoded:ratchet": "node scripts/check-hardcoded.mjs --ratchet",
     "new:area": "node scripts/new-area.mjs",
     "new:language": "node scripts/new-language.mjs",
     "audit:summary": "node scripts/audit-summary.mjs",

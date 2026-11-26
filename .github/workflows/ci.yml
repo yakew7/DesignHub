@@ -37,6 +37,8 @@ jobs:
           node scripts/audit-summary.mjs audit.json >> "$GITHUB_STEP_SUMMARY"
       # Every file that uses a studio area's messages imports the area (docs/i18n-architecture.md); fails the job.
       - run: pnpm check:areas
+      # Literal English in the components may not grow, and a smaller count has to be written down (hardcoded-baseline.json).
+      - run: pnpm check:hardcoded:ratchet
       # English messages nothing refers to (each costs bytes in every route). Lists them and does not fail the job.
       - name: Unused English messages
         run: pnpm check:messages
