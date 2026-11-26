@@ -87,6 +87,8 @@ Adding a studio to Simple and Advanced mode, or moving a control between the mod
 
 `tests/e2e/visual.spec.ts` takes screenshots of the home page, the Color Studio, the Effects Lab, the Background Studio, the Logo Studio and the Brand Studio at 375, 768 and 1280 px in light and dark, and of the phone pane bar with each pane of the Effects Lab open, and of each studio in the Simple and Advanced mode guide's table in each mode at 1280 px (the pages are read from that table, so a studio added there is covered with no other change), and fails when one no longer matches, so a layout that looks wrong is caught even when every behaviour test passes. They run only in `visual.yml`, on its Linux image, because other machines draw text a little differently (the images are stored in `tests/e2e/__screenshots__`, not named by platform). After a layout change you meant to make, open **Actions, Visual, Run workflow** with "update" ticked: it makes the screenshots again and commits them, and you read the new images in that commit. Locally, `VISUAL=1 pnpm exec playwright test tests/e2e/visual.spec.ts` compares them, which only passes on the same image.
 
+The comparison is the `Screenshots` job of `ci.yml`, run on the same build as the end-to-end and Lighthouse jobs; `visual.yml` only makes the screenshots again (started by hand from the Actions tab, after an intended layout change) and commits them to `main`.
+
 ### Lighthouse
 
 The [performance guide](docs/performance.md) explains how to run and read each performance tool on your own machine (Lighthouse, bundle size, unused code, long tasks in the end-to-end tests and the autosave counters). This section and the next two cover what CI checks.

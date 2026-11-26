@@ -170,3 +170,50 @@ jobs:
           path: .lighthouseci/
           retention-days: 14
           if-no-files-found: ignore
+
+  # The screenshot comparison, on the shared build. It does nothing until tests/e2e/__screenshots__ exists; the Visual
+  # workflow makes them (started by hand), because their pixels depend on this runner image.
+  visual:
+    name: Screenshots
+    needs: build
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v7
+      - uses: pnpm/action-setup@v6
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 22
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - uses: actions/download-artifact@v7
+        with:
+          name: production-build
+      - name: Drop the Microsoft apt source
+        run: sudo rm -f /etc/apt/sources.list.d/microsoft-prod.list /etc/apt/sources.list.d/microsoft-prod.sources
+      # The browsers Playwright downloads, kept by Playwright's version (a new version is a new key).
+      - name: Playwright version
+        id: playwright
+        run: echo "version=$(pnpm exec playwright --version | awk '{print $2}')" >> "$GITHUB_OUTPUT"
+      - uses: actions/cache@v5
+        with:
+          path: ~/.cache/ms-playwright
+          key: playwright-${{ runner.os }}-${{ steps.playwright.outputs.version }}-chromium
+      - run: pnpm exec playwright install --with-deps chromium
+      - name: Are there screenshots to compare with?
+        id: have
+        run: |
+          if [ -d tests/e2e/__screenshots__ ]; then echo "yes=true" >> "$GITHUB_OUTPUT"; else echo "yes=false" >> "$GITHUB_OUTPUT"; fi
+      - name: Compare with the screenshots
+        if: steps.have.outputs.yes == 'true'
+        run: VISUAL=1 pnpm exec playwright test tests/e2e/visual.spec.ts
+      - name: No screenshots yet
+        if: steps.have.outputs.yes != 'true'
+        run: echo "::notice::tests/e2e/__screenshots__ does not exist yet. Run the Visual workflow by hand with update ticked to make it."
+      - uses: actions/upload-artifact@v7
+        if: failure()
+        with:
+          name: visual-results
+          path: test-results/
+          retention-days: 7
+          if-no-files-found: ignore

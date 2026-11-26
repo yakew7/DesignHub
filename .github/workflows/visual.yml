@@ -1,15 +1,15 @@
 name: Visual
 
+# Makes the screenshots again and commits them to main. Started by hand, after an intended layout change: their pixels
+# depend on this runner image, so they are made here and not on a laptop. The comparison runs on every push and pull
+# request as the Screenshots job of the CI workflow, on that workflow's build.
 on:
-  push:
-    branches: [main]
-  pull_request:
   workflow_dispatch:
     inputs:
       update:
-        description: "Make the screenshots again and commit them to main (after an intended layout change)"
+        description: "Make the screenshots again and commit them to main"
         type: boolean
-        default: false
+        default: true
 
 permissions:
   contents: write
@@ -19,10 +19,11 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  visual:
-    name: Screenshots
+  update:
+    name: Make the screenshots
     runs-on: ubuntu-latest
     timeout-minutes: 25
+    if: ${{ inputs.update }}
     steps:
       - uses: actions/checkout@v7
       - uses: pnpm/action-setup@v6
@@ -43,7 +44,6 @@ jobs:
           key: playwright-${{ runner.os }}-${{ steps.playwright.outputs.version }}-chromium
       - run: pnpm exec playwright install --with-deps chromium
       # The build's own cache (.next/cache), restored from the closest earlier run so a small change rebuilds little.
-      # Never .next itself: the artifact does that.
       - uses: actions/cache@v5
         with:
           path: .next/cache
@@ -52,31 +52,12 @@ jobs:
             next-${{ runner.os }}-${{ hashFiles('pnpm-lock.yaml') }}-
             next-${{ runner.os }}-
       - run: pnpm build
-      - name: Are there screenshots to compare with?
-        id: have
-        run: |
-          if [ -d tests/e2e/__screenshots__ ]; then echo "yes=true" >> "$GITHUB_OUTPUT"; else echo "yes=false" >> "$GITHUB_OUTPUT"; fi
       - name: Make the screenshots
-        if: ${{ inputs.update }}
         run: VISUAL=1 pnpm exec playwright test tests/e2e/visual.spec.ts --update-snapshots
       - name: Commit the screenshots
-        if: ${{ inputs.update }}
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add tests/e2e/__screenshots__
           git commit -m "test: update the screenshots" || echo "Nothing changed"
           git push
-      - name: Compare with the screenshots
-        if: ${{ !inputs.update && steps.have.outputs.yes == 'true' }}
-        run: VISUAL=1 pnpm exec playwright test tests/e2e/visual.spec.ts
-      - name: No screenshots yet
-        if: ${{ !inputs.update && steps.have.outputs.yes != 'true' }}
-        run: echo "::notice::tests/e2e/__screenshots__ does not exist yet. Run this workflow by hand with update ticked to make it."
-      - uses: actions/upload-artifact@v7
-        if: failure()
-        with:
-          name: visual-results
-          path: test-results/
-          retention-days: 7
-          if-no-files-found: ignore
