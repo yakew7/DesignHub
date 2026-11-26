@@ -7,7 +7,7 @@
   "scripts": {
     "dev": "next dev",
     "build": "next build",
-    "postbuild": "node scripts/generate-service-worker.mjs",
+    "postbuild": "node scripts/csp-hashes.mjs && node scripts/generate-service-worker.mjs",
     "start": "next start",
     "lint": "eslint . --max-warnings 0",
     "typecheck": "tsc --noEmit",

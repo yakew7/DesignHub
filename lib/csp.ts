@@ -2,7 +2,8 @@
  * The Content-Security-Policy of a production build (next.config.ts). The app has no server and loads little from
  * elsewhere:
  * - scripts and styles are its own, with inline ones that Next.js and React style props need (a static page cannot
- *   carry a per-request nonce, so 'unsafe-inline' stays for these two and everything else is closed);
+ *   carry a per-request nonce, so 'unsafe-inline' stays in this header for these two and everything else is closed;
+ *   scripts are closed again by the page's own policy with hashes, scripts/csp-hashes.mjs);
  * - Google Fonts (the stylesheet and the font files) and the Iconify hosts for icon search;
  * - the AI provider the person chooses in Brand DNA, which may be any https host or a server on this machine, so
  *   `connect-src` allows https and localhost by default;

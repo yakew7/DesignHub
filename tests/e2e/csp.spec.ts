@@ -78,3 +78,23 @@ test("the service worker, the module worker and a file made in the page run unde
   await download;
   expect(await violations(page)).toEqual([]);
 });
+
+test("a script put into the page afterwards is blocked, while the page's own inline scripts ran", async ({ page }) => {
+  await page.goto("/colors");
+  await hydrated(page);
+  // The page's own inline scripts (the flight data, the theme script) ran: the app is interactive and has a theme.
+  await expect(page.locator("html")).toHaveClass(/dark|light/);
+  // Each page carries its own policy, with the hashes of the inline scripts it was built with.
+  const policy = await page.locator('meta[http-equiv="Content-Security-Policy"]').getAttribute("content");
+  expect(policy).toMatch(/^script-src 'self' 'sha256-/);
+  expect(policy).not.toContain("unsafe-inline");
+  // Injected markup is not among them.
+  const ran = await page.evaluate(() => {
+    const script = document.createElement("script");
+    script.textContent = "window.__injected = true";
+    document.body.appendChild(script);
+    return Boolean((window as unknown as { __injected?: boolean }).__injected);
+  });
+  expect(ran).toBe(false);
+  await expect.poll(() => violations(page)).toEqual([expect.stringContaining("script-src")]);
+});
