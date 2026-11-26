@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 
+import { useI18n } from "@/components/layout/locale-provider";
 import { CopyButton } from "@/components/ui/copy-button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -19,6 +20,7 @@ const fields: { key: keyof ClampInputs; label: string }[] = [
 
 /** Standalone clamp() calculator for any fluid value - font sizes, spacing, gaps. */
 export function ClampGenerator() {
+  const { t } = useI18n();
   const [inputs, setInputs] = useState<ClampInputs>({ minSize: 32, maxSize: 64, minViewport: 360, maxViewport: 1280 });
   const value = fluidClamp(inputs.minSize, inputs.maxSize, inputs.minViewport, inputs.maxViewport);
 
@@ -28,7 +30,7 @@ export function ClampGenerator() {
       collapsible
       id="typography-clamp"
       defaultOpen={false}
-      title="clamp() generator"
+      title={t("typography.clamp.title")}
       description="Fluid values for anything: type, spacing, radii."
     >
       <div className="grid grid-cols-2 gap-3">

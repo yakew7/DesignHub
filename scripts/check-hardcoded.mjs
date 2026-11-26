@@ -49,6 +49,8 @@ const NAMES = new Set([
   "Material",
   "GitHub",
   "Google",
+  // The product name of the font service the Typography Studio browses, spelled the same in every language.
+  "Google Fonts",
   "Iconify",
   "OpenAI",
   "Anthropic",

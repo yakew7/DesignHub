@@ -3,6 +3,7 @@
 import { Pause, Play, RotateCcw } from "lucide-react";
 import { useEffect } from "react";
 
+import { useI18n } from "@/components/layout/locale-provider";
 import { Button } from "@/components/ui/button";
 import { SliderField } from "@/components/ui/field";
 import { Panel } from "@/components/ui/panel";
@@ -13,6 +14,7 @@ import { useTypographyStore } from "@/store/typography-store";
 import type { FontAxis } from "@/types/typography";
 
 export function VariablePlayground() {
+  const { t } = useI18n();
   const activeFont = useTypographyStore((state) => state.activeFont);
   const specimen = useTypographyStore((state) => state.specimen);
   const updateSpecimen = useTypographyStore((state) => state.updateSpecimen);
@@ -51,10 +53,10 @@ export function VariablePlayground() {
       advanced
       collapsible
       id="typography-variable"
-      title="Variable axes"
+      title={t("typography.variable.title")}
       description={`${meta?.family} ships ${axes.length} ${axes.length === 1 ? "axis" : "axes"}. Drag or play to explore the design space.`}
       actions={
-        <Button variant="ghost" size="icon" onClick={reset} aria-label="Reset axes">
+        <Button variant="ghost" size="icon" onClick={reset} aria-label={t("typography.variable.reset")}>
           <RotateCcw />
         </Button>
       }

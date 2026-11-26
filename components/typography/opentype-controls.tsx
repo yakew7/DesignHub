@@ -1,5 +1,6 @@
 "use client";
 
+import { useI18n } from "@/components/layout/locale-provider";
 import { Panel } from "@/components/ui/panel";
 import { Switch } from "@/components/ui/switch";
 import { useFontMeta } from "@/hooks/use-font-catalog";
@@ -8,6 +9,7 @@ import { featureGroups } from "@/lib/typography/opentype-features";
 import { useTypographyStore } from "@/store/typography-store";
 
 export function OpenTypeControls() {
+  const { t } = useI18n();
   const activeFont = useTypographyStore((state) => state.activeFont);
   const openType = useTypographyStore((state) => state.openType);
   const toggleFeature = useTypographyStore((state) => state.toggleFeature);
@@ -19,7 +21,7 @@ export function OpenTypeControls() {
       collapsible
       id="typography-opentype"
       defaultOpen={false}
-      title="OpenType features"
+      title={t("typography.opentype.title")}
       description="Support varies per font. Samples render in the active font so you can see what it ships."
     >
       <div className="grid grid-cols-1 gap-6 sm:grid-cols-2">

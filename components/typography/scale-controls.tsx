@@ -2,6 +2,7 @@
 
 import { RotateCcw } from "lucide-react";
 
+import { useI18n } from "@/components/layout/locale-provider";
 import { Button } from "@/components/ui/button";
 import { SliderField } from "@/components/ui/field";
 import { Label } from "@/components/ui/label";
@@ -31,16 +32,22 @@ function RatioSelect({ label, value, onChange }: { label: string; value: number;
 }
 
 export function ScaleControls() {
+  const { t } = useI18n();
   const scale = useTypographyStore((state) => state.scale);
   const updateScale = useTypographyStore((state) => state.updateScale);
   const px = (value: number) => `${value}px`;
 
   return (
     <Panel
-      title="Scale"
+      title={t("typography.scale.title")}
       description="Fluid between two viewports. Mobile values on the left, desktop on the right."
       actions={
-        <Button variant="ghost" size="icon" aria-label="Reset scale" onClick={() => updateScale(defaultScale)}>
+        <Button
+          variant="ghost"
+          size="icon"
+          aria-label={t("typography.scale.reset")}
+          onClick={() => updateScale(defaultScale)}
+        >
           <RotateCcw />
         </Button>
       }

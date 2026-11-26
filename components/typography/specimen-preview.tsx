@@ -31,6 +31,7 @@ type PaneProps = {
 
 /** One font shown with the shared specimen text and settings. */
 function SpecimenPane({ family, label, textId, useAxes, actions }: PaneProps) {
+  const { t } = useI18n();
   const specimen = useTypographyStore((state) => state.specimen);
   const openType = useTypographyStore((state) => state.openType);
   const updateSpecimen = useTypographyStore((state) => state.updateSpecimen);
@@ -65,11 +66,12 @@ function SpecimenPane({ family, label, textId, useAxes, actions }: PaneProps) {
       </div>
       {weight !== specimen.weight && (
         <p role="status" className="-mt-2 text-xs text-muted-foreground">
-          {family} has no {specimen.weight} weight, so this side shows {weight}.
+          {t("typography.specimen.missing", { family, weight: specimen.weight, shown: weight })}
         </p>
       )}
       <label htmlFor={textId} className="sr-only">
-        Preview text{label ? `, ${label}` : ""}
+        {t("typography.specimen.text")}
+        {label ? `, ${label}` : ""}
       </label>
       <textarea
         id={textId}
@@ -98,8 +100,12 @@ function WeightComparisonStrip({ family }: { family: string }) {
   const stack = fontStack(family, meta?.category);
 
   return (
-    <div role="group" aria-label={`${family} weight comparison`} className="flex flex-col gap-1 border-t pt-4">
-      <p className="text-xs font-medium text-muted-foreground">Weight comparison</p>
+    <div
+      role="group"
+      aria-label={t("typography.specimen.weights.group", { family })}
+      className="flex flex-col gap-1 border-t pt-4"
+    >
+      <p className="text-xs font-medium text-muted-foreground">{t("typography.specimen.weights")}</p>
       <div className="-mx-1 flex flex-col">
         {rows.map(({ weight, name }) => {
           const selected = weight === specimen.weight;
@@ -148,6 +154,7 @@ const CUSTOM = "custom";
 
 /** Swaps the specimen text for a sample in another language or script. */
 function SampleMenu() {
+  const { t } = useI18n();
   const text = useTypographyStore((state) => state.specimen.text);
   const applySample = useTypographyStore((state) => state.applySample);
   const current = matchSample(text);
@@ -157,7 +164,7 @@ function SampleMenu() {
       <SelectTrigger
         size="sm"
         className="w-auto min-w-40 max-w-full [&>span]:flex-1 [&>span]:truncate [&>span]:text-left"
-        aria-label="Sample text"
+        aria-label={t("typography.specimen.sample")}
       >
         <Languages />
         <SelectValue />
@@ -169,7 +176,7 @@ function SampleMenu() {
           </SelectItem>
         ))}
         <SelectItem value={CUSTOM} disabled>
-          Your own text
+          {t("typography.specimen.custom")}
         </SelectItem>
       </SelectContent>
     </Select>
@@ -194,7 +201,7 @@ export function SpecimenPreview({ className }: { className?: string }) {
         <span className="flex-1" />
         {comparing && (
           <Button variant="ghost" size="sm" onClick={swapCompare}>
-            <ArrowLeftRight /> Swap
+            <ArrowLeftRight /> {t("typography.pair.swap")}
           </Button>
         )}
         <Button
@@ -218,8 +225,8 @@ export function SpecimenPreview({ className }: { className?: string }) {
                 variant="ghost"
                 size="icon"
                 className="size-7"
-                aria-label={`Pin ${activeFont} to the second column`}
-                title="Pin to the second column"
+                aria-label={t("typography.specimen.pin.label", { font: activeFont })}
+                title={t("typography.specimen.pin")}
                 onClick={() => setCompareFont(activeFont)}
               >
                 <Pin />
@@ -231,11 +238,7 @@ export function SpecimenPreview({ className }: { className?: string }) {
           <SpecimenPane family={compareFont} label="Pinned" textId="specimen-text-compare" useAxes={false} />
         )}
       </div>
-      {extended && (
-        <p className="text-xs text-muted-foreground">
-          Characters a font doesn&apos;t include fall back to another font, so check the shapes before you choose it.
-        </p>
-      )}
+      {extended && <p className="text-xs text-muted-foreground">{t("typography.specimen.extended")}</p>}
       <WeightComparisonStrip family={activeFont} />
     </div>
   );

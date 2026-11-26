@@ -54,9 +54,12 @@ export function ResponsivePreview({ steps }: { steps: TypeScaleStep[] }) {
   const active = devices.find((device) => device.width === viewport)?.id ?? "";
 
   return (
-    <section aria-label="Responsive preview" className="flex flex-col gap-4 rounded-lg border bg-card p-4">
+    <section
+      aria-label={t("typography.responsive.title")}
+      className="flex flex-col gap-4 rounded-lg border bg-card p-4"
+    >
       <div className="flex flex-wrap items-center justify-between gap-4">
-        <h2 className="text-sm font-medium">Responsive preview</h2>
+        <h2 className="text-sm font-medium">{t("typography.responsive.title")}</h2>
         <ToggleGroup
           type="single"
           value={active}
@@ -64,7 +67,7 @@ export function ResponsivePreview({ steps }: { steps: TypeScaleStep[] }) {
             const device = devices.find((item) => item.id === id);
             if (device) setViewport(device.width);
           }}
-          aria-label="Viewport"
+          aria-label={t("typography.responsive.viewport")}
         >
           {devices.map(({ id, label: english, icon: Icon, width: deviceWidth }) => {
             const label = id === "tablet" ? t("mockups.template.tablet") : english;
@@ -94,29 +97,28 @@ export function ResponsivePreview({ steps }: { steps: TypeScaleStep[] }) {
       <div ref={ref} className="overflow-hidden rounded-md border bg-background">
         <div style={{ width: viewport, zoom }} className="px-6 py-8">
           <p style={body("sm")} className="font-semibold tracking-widest text-brand uppercase">
-            Case study
+            {t("typography.responsive.kicker")}
           </p>
           <h1 style={heading("4xl")} className="mt-3 text-foreground">
-            Building a calmer interface
+            {t("typography.responsive.title.sample")}
           </h1>
           <p style={body("lg")} className="mt-4 text-muted-foreground">
-            How a fluid type scale keeps hierarchy intact from the smallest phone to the widest monitor.
+            {t("typography.responsive.lead")}
           </p>
           <h2 style={heading("2xl")} className="mt-8">
-            Start with the reader
+            {t("typography.responsive.heading1")}
           </h2>
           <p style={body("base")} className="mt-3 max-w-[65ch]">
-            Body text should be comfortable first and clever second. Aim for 45–75 characters per line, generous leading
-            and enough contrast. Headings then step up with a consistent ratio so the page reads as one voice.
+            {t("typography.responsive.body1")}
           </p>
           <h3 style={heading("xl")} className="mt-6">
-            Let the scale do the work
+            {t("typography.responsive.heading2")}
           </h3>
           <p style={body("base")} className="mt-3 max-w-[65ch]">
-            Each step is a clamp() that grows with the viewport. No breakpoints, no jumps.
+            {t("typography.responsive.body2")}
           </p>
           <p style={body("xs")} className="mt-6 text-subtle-foreground">
-            Rendered at {viewport}px · base {size("base")}
+            {t("typography.responsive.rendered", { viewport, size: size("base") })}
           </p>
         </div>
       </div>

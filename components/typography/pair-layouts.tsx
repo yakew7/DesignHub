@@ -2,6 +2,7 @@
 
 import type { CSSProperties } from "react";
 
+import { useI18n } from "@/components/layout/locale-provider";
 import { useBrandTokens } from "@/hooks/use-brand";
 import { brandSurface } from "@/lib/brand/theme";
 import { fontStack } from "@/lib/typography/css";
@@ -62,6 +63,7 @@ type Parts = {
 };
 
 function Article({ surface, heading, body, size }: Parts) {
+  const { t } = useI18n();
   return (
     <article className="flex max-w-3xl flex-col gap-5">
       <p
@@ -74,36 +76,37 @@ function Article({ surface, heading, body, size }: Parts) {
           fontWeight: 600,
         }}
       >
-        Field notes · Issue 04
+        {t("typography.sample.article.kicker")}
       </p>
       <h2 style={{ ...heading, fontSize: size("5xl", "3rem"), letterSpacing: "-0.02em" }}>
-        Good typography is invisible until it isn’t.
+        {t("typography.sample.article.title")}
       </h2>
-      <p style={{ ...body, fontSize: size("lg", "1.125rem"), color: surface.muted }}>By Jordan Lee · 6 min read</p>
-      <p style={{ ...body, fontSize: size("base", "1rem") }}>
-        Type sets the tone before a single word is read. A confident headline paired with a patient, readable text face
-        gives every page a clear voice and a comfortable rhythm.
+      <p style={{ ...body, fontSize: size("lg", "1.125rem"), color: surface.muted }}>
+        {t("typography.sample.article.byline")}
       </p>
-      <h3 style={{ ...heading, fontSize: size("2xl", "1.5rem") }}>Contrast is the secret</h3>
-      <p style={{ ...body, fontSize: size("base", "1rem") }}>
-        Pair a serif with a sans, a wide face with a narrow one, or a display font with a quiet workhorse. Keep the
-        x-heights close and the moods complementary.
-      </p>
+      <p style={{ ...body, fontSize: size("base", "1rem") }}>{t("typography.sample.article.intro")}</p>
+      <h3 style={{ ...heading, fontSize: size("2xl", "1.5rem") }}>{t("typography.sample.article.heading")}</h3>
+      <p style={{ ...body, fontSize: size("base", "1rem") }}>{t("typography.sample.article.body")}</p>
     </article>
   );
 }
 
 function Pricing({ surface, heading, body, size }: Parts) {
-  const features = ["Unlimited projects", "Brand kit and exports", "Priority support"];
+  const { t } = useI18n();
+  const features = [
+    t("typography.sample.pricing.feature.projects"),
+    t("typography.sample.pricing.feature.kit"),
+    t("typography.sample.pricing.feature.support"),
+  ];
   return (
     <div
       className="mx-auto flex max-w-sm min-w-0 flex-col gap-4 rounded-xl border p-6"
       style={{ background: surface.surface, borderColor: surface.border }}
     >
       <p style={{ ...body, fontSize: size("sm", "0.875rem"), color: surface.primaryText, fontWeight: 600 }}>
-        Most popular
+        {t("typography.sample.pricing.badge")}
       </p>
-      <h2 style={{ ...heading, fontSize: size("2xl", "1.5rem") }}>Studio plan</h2>
+      <h2 style={{ ...heading, fontSize: size("2xl", "1.5rem") }}>{t("typography.sample.pricing.plan")}</h2>
       <p
         style={{
           ...heading,
@@ -115,10 +118,12 @@ function Pricing({ surface, heading, body, size }: Parts) {
         }}
       >
         $24
-        <span style={{ ...body, fontSize: size("sm", "0.875rem"), color: surface.muted }}>per month</span>
+        <span style={{ ...body, fontSize: size("sm", "0.875rem"), color: surface.muted }}>
+          {t("typography.sample.pricing.period")}
+        </span>
       </p>
       <p style={{ ...body, fontSize: size("base", "1rem"), color: surface.muted }}>
-        Everything a small team needs to ship a consistent brand.
+        {t("typography.sample.pricing.blurb")}
       </p>
       <ul className="m-0 flex list-none flex-col gap-2 p-0">
         {features.map((feature) => (
@@ -142,13 +147,14 @@ function Pricing({ surface, heading, body, size }: Parts) {
           textAlign: "center",
         }}
       >
-        Start free trial
+        {t("typography.sample.pricing.cta")}
       </span>
     </div>
   );
 }
 
 function Hero({ surface, heading, body, size }: Parts) {
+  const { t } = useI18n();
   return (
     <section className="flex min-w-0 flex-col items-start gap-5 py-4 md:py-10">
       <p
@@ -161,13 +167,13 @@ function Hero({ surface, heading, body, size }: Parts) {
           color: surface.muted,
         }}
       >
-        New · Version 2.0 is here
+        {t("typography.sample.hero.badge")}
       </p>
       <h2 style={{ ...heading, fontSize: size("5xl", "3rem"), letterSpacing: "-0.03em", maxWidth: "18ch" }}>
-        Make something people remember.
+        {t("typography.sample.hero.title")}
       </h2>
       <p style={{ ...body, fontSize: size("lg", "1.125rem"), color: surface.muted, maxWidth: "46ch" }}>
-        One calm place to design, review and ship your brand, from the first sketch to the final export.
+        {t("typography.sample.hero.body")}
       </p>
       <div className="flex flex-wrap gap-3">
         <span
@@ -181,7 +187,7 @@ function Hero({ surface, heading, body, size }: Parts) {
             padding: "0.65rem 1.1rem",
           }}
         >
-          Get started
+          {t("typography.sample.hero.primary")}
         </span>
         <span
           style={{
@@ -193,7 +199,7 @@ function Hero({ surface, heading, body, size }: Parts) {
             padding: "0.65rem 1.1rem",
           }}
         >
-          See how it works
+          {t("typography.sample.hero.secondary")}
         </span>
       </div>
     </section>

@@ -19,7 +19,7 @@ export function SpecimenControls() {
     <Panel
       title={t("studio.pane.preview")}
       actions={
-        <Button variant="ghost" size="icon" onClick={resetSpecimen} aria-label="Reset preview settings">
+        <Button variant="ghost" size="icon" onClick={resetSpecimen} aria-label={t("typography.specimen.reset")}>
           <RotateCcw />
         </Button>
       }

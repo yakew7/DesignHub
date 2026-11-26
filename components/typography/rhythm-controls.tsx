@@ -2,12 +2,14 @@
 
 import { RotateCcw } from "lucide-react";
 
+import { useI18n } from "@/components/layout/locale-provider";
 import { Button } from "@/components/ui/button";
 import { SliderField } from "@/components/ui/field";
 import { Panel } from "@/components/ui/panel";
 import { defaultRhythm, useTypographyStore } from "@/store/typography-store";
 
 export function RhythmControls() {
+  const { t } = useI18n();
   const rhythm = useTypographyStore((state) => state.rhythm);
   const updateRhythm = useTypographyStore((state) => state.updateRhythm);
   const em = (value: number) => `${value.toFixed(3)}em`;
@@ -16,10 +18,15 @@ export function RhythmControls() {
     <Panel
       collapsible
       id="typography-rhythm"
-      title="Rhythm"
+      title={t("typography.rhythm.title")}
       description="Line height, letter spacing and weight for headings and body."
       actions={
-        <Button variant="ghost" size="icon" aria-label="Reset rhythm" onClick={() => updateRhythm(defaultRhythm)}>
+        <Button
+          variant="ghost"
+          size="icon"
+          aria-label={t("typography.rhythm.reset")}
+          onClick={() => updateRhythm(defaultRhythm)}
+        >
           <RotateCcw />
         </Button>
       }

@@ -1,5 +1,7 @@
 "use client";
 
+import "@/lib/i18n/areas/colors";
+
 import { ArrowLeftRight, Bookmark, Lock, Shuffle, Unlock } from "lucide-react";
 import { useMemo, useState } from "react";
 import { toast } from "@/lib/toast";
@@ -108,7 +110,9 @@ export function PairingStudio({ fonts }: { fonts: FontFamily[] }) {
           </div>
           <Button onClick={shuffle} disabled={fonts.length === 0}>
             <Shuffle /> {t("typography.pair.random")}{" "}
-            <Kbd className="ml-auto border-transparent bg-primary-foreground/15 text-primary-foreground">Space</Kbd>
+            <Kbd className="ml-auto border-transparent bg-primary-foreground/15 text-primary-foreground">
+              {t("colors.toolbar.space")}
+            </Kbd>
           </Button>
           {suggestions.length ? (
             <div className="flex flex-col gap-2 border-t pt-4">

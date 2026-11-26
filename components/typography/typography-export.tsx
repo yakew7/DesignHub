@@ -25,16 +25,24 @@ export function TypographyExport({ fonts }: { fonts: FontFamily[] }) {
   }, [fonts, headingFont, bodyFont, scale, rhythm, openType, t]);
 
   if (formats.length === 0) {
-    return <p className="text-sm text-muted-foreground">Loading font metadata…</p>;
+    return <p className="text-sm text-muted-foreground">{t("typography.export.loading")}</p>;
   }
 
   return (
     <div className="flex flex-col gap-4">
       <p className="max-w-2xl text-sm text-muted-foreground">
-        Exports use your pairing (<strong className="font-medium text-foreground">{headingFont}</strong> +{" "}
-        <strong className="font-medium text-foreground">{bodyFont}</strong>), fluid type scale, rhythm and enabled
-        OpenType features. Fallback CSS emits a size-adjusted local face (Arial, Times New Roman or Courier New) so
-        layout stays stable while the webfont loads.
+        {/* The message keeps the two font names in its own word order, so the names are swapped in after it is translated. */}
+        {t("typography.export.note", { heading: "{heading}", body: "{body}" })
+          .split(/(\{heading\}|\{body\})/)
+          .map((part, index) =>
+            part === "{heading}" || part === "{body}" ? (
+              <strong key={index} className="font-medium text-foreground">
+                {part === "{heading}" ? headingFont : bodyFont}
+              </strong>
+            ) : (
+              part
+            ),
+          )}
       </p>
       <ExportPanel formats={formats} label="Typography export format" />
     </div>

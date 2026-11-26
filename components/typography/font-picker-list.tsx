@@ -3,6 +3,7 @@
 import { Check } from "lucide-react";
 import { useMemo } from "react";
 
+import { useI18n } from "@/components/layout/locale-provider";
 import { Command, CommandEmpty, CommandInput, CommandItem, CommandList } from "@/components/ui/command";
 import { defaultFontFilters, filterFonts } from "@/lib/typography/filter";
 import { fontCategoryLabels, type FontSummary } from "@/lib/typography/catalog";
@@ -22,6 +23,7 @@ const focusOnMount = (input: HTMLInputElement | null) => input?.focus();
 
 /** The searchable list inside the font picker's popover, loaded the first time it opens. */
 export function FontPickerList({ label, value, fonts, query, onQueryChange, onSelect }: FontPickerListProps) {
+  const { t } = useI18n();
   const results = useMemo(() => filterFonts(fonts, { ...defaultFontFilters, query }, []).slice(0, 60), [fonts, query]);
 
   return (
@@ -33,7 +35,7 @@ export function FontPickerList({ label, value, fonts, query, onQueryChange, onSe
         placeholder={`Search ${label.toLowerCase()}…`}
       />
       <CommandList className="max-h-72">
-        <CommandEmpty>No fonts found.</CommandEmpty>
+        <CommandEmpty>{t("typography.picker.empty")}</CommandEmpty>
         {results.map((font) => (
           <CommandItem key={font.family} value={font.family} onSelect={() => onSelect(font.family)}>
             <Check className={cn("size-4", font.family === value ? "opacity-100" : "opacity-0")} />

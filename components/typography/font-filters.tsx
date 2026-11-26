@@ -66,15 +66,15 @@ export function FontFilters({ resultCount }: { resultCount: number }) {
                 event.currentTarget.blur();
               }
             }}
-            placeholder="Search fonts"
-            aria-label="Search fonts"
+            placeholder={t("typography.filters.search")}
+            aria-label={t("typography.filters.search")}
             className="pr-16 pl-9 [&::-webkit-search-cancel-button]:hidden"
           />
           {filters.query ? (
             <button
               type="button"
               onClick={() => setFilters({ query: "" })}
-              aria-label="Clear search"
+              aria-label={t("typography.filters.clear")}
               className="absolute top-1/2 right-2 flex size-6 -translate-y-1/2 items-center justify-center rounded-sm text-subtle-foreground hover:text-foreground"
             >
               <X className="size-3.5" />
@@ -84,7 +84,7 @@ export function FontFilters({ resultCount }: { resultCount: number }) {
           )}
         </div>
         <Select value={filters.sort} onValueChange={(value) => setFilters({ sort: value as FontSort })}>
-          <SelectTrigger className="w-32 shrink-0" aria-label="Sort fonts">
+          <SelectTrigger className="w-32 shrink-0" aria-label={t("typography.filters.sort")}>
             <SelectValue />
           </SelectTrigger>
           <SelectContent>
@@ -101,7 +101,7 @@ export function FontFilters({ resultCount }: { resultCount: number }) {
           type="single"
           value={filters.category}
           onValueChange={(value) => value && setFilters({ category: value as FontCategory | "all" })}
-          aria-label="Category"
+          aria-label={t("typography.filters.category")}
           className="w-full"
         >
           <ToggleGroupItem value="all">{t("colors.library.all")}</ToggleGroupItem>
@@ -117,7 +117,7 @@ export function FontFilters({ resultCount }: { resultCount: number }) {
             checked={filters.variableOnly}
             onCheckedChange={(variableOnly) => setFilters({ variableOnly })}
           />
-          <Label htmlFor="variable-only">Variable only</Label>
+          <Label htmlFor="variable-only">{t("typography.filters.variable")}</Label>
         </div>
         <div className="flex items-center gap-2">
           <Switch

@@ -4,6 +4,7 @@ import { FileType2, Upload } from "lucide-react";
 import { useRef, useState, type DragEvent } from "react";
 import { toast } from "@/lib/toast";
 
+import { useI18n } from "@/components/layout/locale-provider";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Panel } from "@/components/ui/panel";
@@ -14,6 +15,7 @@ import { useTypographyStore } from "@/store/typography-store";
 
 /** Drop a local font to read its real OpenType feature list and preview it. Nothing is uploaded. */
 export function FontInspector() {
+  const { t } = useI18n();
   const setActiveFont = useTypographyStore((state) => state.setActiveFont);
   const [result, setResult] = useState<FontInspection | null>(null);
   const [dragging, setDragging] = useState(false);
@@ -53,7 +55,7 @@ export function FontInspector() {
       collapsible
       id="typography-inspector"
       defaultOpen={false}
-      title="Font inspector"
+      title={t("typography.inspector.title")}
       description="Inspect a local font file with OpenType.js. It never leaves your device."
     >
       <div
@@ -69,7 +71,7 @@ export function FontInspector() {
         )}
       >
         <Upload className="size-5 text-subtle-foreground" aria-hidden />
-        <p className="text-sm text-muted-foreground">Drop an .otf, .ttf or .woff file</p>
+        <p className="text-sm text-muted-foreground">{t("typography.inspector.drop")}</p>
         <Button variant="outline" size="sm" onClick={() => inputRef.current?.click()} disabled={busy}>
           {busy ? "Reading…" : "Choose file"}
         </Button>
@@ -79,7 +81,7 @@ export function FontInspector() {
           accept=".otf,.ttf,.woff,font/otf,font/ttf,font/woff"
           className="sr-only"
           tabIndex={-1}
-          aria-label="Font file"
+          aria-label={t("typography.inspector.file")}
           onChange={(event) => void handle(event.target.files?.[0])}
         />
       </div>
@@ -103,7 +105,7 @@ export function FontInspector() {
               </div>
             ))}
           </dl>
-          <ul className="flex flex-wrap gap-1.5" aria-label="Supported features">
+          <ul className="flex flex-wrap gap-1.5" aria-label={t("typography.inspector.features")}>
             {result.features.length ? (
               result.features.map((tag) => (
                 <li key={tag}>
@@ -113,7 +115,7 @@ export function FontInspector() {
                 </li>
               ))
             ) : (
-              <li className="text-xs text-muted-foreground">No layout features found.</li>
+              <li className="text-xs text-muted-foreground">{t("typography.inspector.none")}</li>
             )}
           </ul>
         </div>

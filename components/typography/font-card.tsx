@@ -2,6 +2,7 @@
 
 import { memo, useEffect } from "react";
 
+import { useI18n } from "@/components/layout/locale-provider";
 import { Badge } from "@/components/ui/badge";
 import { useInView } from "@/hooks/use-in-view";
 import { fontCategoryLabels, isVariableFont } from "@/lib/typography/catalog";
@@ -22,6 +23,7 @@ type FontCardProps = {
  * option can't contain a button, so the browser draws the hearts in a layer over the list.
  */
 export const FontCard = memo(function FontCard({ font, active, onSelect }: FontCardProps) {
+  const { plural, t } = useI18n();
   const { ref, inView } = useInView<HTMLDivElement>();
 
   useEffect(() => {
@@ -44,8 +46,8 @@ export const FontCard = memo(function FontCard({ font, active, onSelect }: FontC
           {font.family}
         </span>
         <span className="flex flex-wrap items-center gap-1.5 text-xs text-muted-foreground">
-          {fontCategoryLabels[font.category]} · {font.weights.length} {font.weights.length === 1 ? "style" : "weights"}
-          {isVariableFont(font) ? <Badge variant="brand">Variable</Badge> : null}
+          {fontCategoryLabels[font.category]} · {plural("typography.font.weights", font.weights.length)}
+          {isVariableFont(font) ? <Badge variant="brand">{t("typography.font.variable")}</Badge> : null}
         </span>
       </div>
     </div>

@@ -33,7 +33,7 @@ export function WeightWaterfall() {
     <Panel
       collapsible
       id="typography-waterfall"
-      title="Weight waterfall"
+      title={t("typography.waterfall.title")}
       description={`Every weight ${activeFont} ships. Click one to preview it.`}
     >
       <div ref={ref} role="group" aria-label={`${activeFont} weights`} className="-mx-2 flex flex-col">

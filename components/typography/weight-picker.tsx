@@ -54,13 +54,13 @@ export function WeightPicker() {
   return (
     <div className="flex flex-col gap-3">
       <div className="flex flex-col gap-2">
-        <Label>Weight</Label>
+        <Label>{t("typography.weightpicker.label")}</Label>
         <ToggleGroup
           type="single"
           value={String(specimen.weight)}
           onValueChange={(value) => value && updateSpecimen({ weight: Number(value) })}
           className="grid w-full grid-cols-5 gap-0.5"
-          aria-label="Font weight"
+          aria-label={t("typography.weightpicker.group")}
         >
           {weights.map((weight) => (
             <ToggleGroupItem
@@ -77,7 +77,7 @@ export function WeightPicker() {
       </div>
       {meta?.italic ? (
         <div className="flex items-center justify-between">
-          <Label htmlFor="specimen-italic">Italic</Label>
+          <Label htmlFor="specimen-italic">{t("typography.weightpicker.italic")}</Label>
           <Switch
             id="specimen-italic"
             checked={specimen.italic}

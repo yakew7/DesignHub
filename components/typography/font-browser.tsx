@@ -29,7 +29,7 @@ type FontBrowserProps = {
 
 /** Search and filters on top, a virtualized scrolling list below that loads more as you reach the end. */
 export function FontBrowser({ fonts, loading, className }: FontBrowserProps) {
-  const { t } = useI18n();
+  const { t, plural } = useI18n();
   const activeFont = useTypographyStore((state) => state.activeFont);
   const filters = useTypographyStore((state) => state.filters);
   const resetFilters = useTypographyStore((state) => state.resetFilters);
@@ -195,7 +195,7 @@ export function FontBrowser({ fonts, loading, className }: FontBrowserProps) {
       </div>
       <div ref={listRef} onScroll={handleScroll} className="min-h-0 flex-1 overflow-y-auto p-2 scrollbar-thin">
         {loading ? (
-          <ul className="flex flex-col gap-1" aria-busy="true" aria-label="Loading fonts">
+          <ul className="flex flex-col gap-1" aria-busy="true" aria-label={t("typography.browser.loading")}>
             {Array.from({ length: 10 }, (_, index) => (
               <li key={index} className="h-[54px] animate-pulse rounded-md bg-muted/40" />
             ))}
@@ -204,14 +204,14 @@ export function FontBrowser({ fonts, loading, className }: FontBrowserProps) {
         {!loading && results.length === 0 ? (
           <div className="flex flex-col items-center gap-3 py-16 text-center">
             <SearchX className="size-6 text-subtle-foreground" aria-hidden />
-            <p className="text-sm text-muted-foreground">No fonts match these filters.</p>
+            <p className="text-sm text-muted-foreground">{t("typography.browser.empty")}</p>
             <Button variant="outline" size="sm" onClick={resetFilters}>
-              Reset filters
+              {t("typography.browser.reset")}
             </Button>
           </div>
         ) : null}
         <p id={hintId} className="sr-only">
-          Arrow keys, Page Up, Page Down, Home and End move through the fonts. Enter opens one. S adds it to favorites.
+          {t("typography.browser.hint")}
         </p>
         <div className="relative">
           <ul
@@ -283,7 +283,7 @@ export function FontBrowser({ fonts, loading, className }: FontBrowserProps) {
         {hasMore ? (
           <div ref={sentinelRef} className="flex justify-center py-3">
             <Button variant="ghost" size="sm" onClick={() => setVisible((count) => count + PAGE_SIZE)}>
-              Show more · {results.length - visible} remaining
+              {plural("typography.browser.more", results.length - visible)}
             </Button>
           </div>
         ) : null}

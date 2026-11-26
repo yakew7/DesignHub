@@ -54,7 +54,7 @@ export function TypographyWorkspace() {
 
   return (
     <Tabs value={tab} onValueChange={(value) => isTab(value) && setTab(value)} className="gap-6">
-      <TabsList aria-label="Typography tools" className="w-full overflow-x-auto sm:w-fit">
+      <TabsList aria-label={t("typography.workspace.tabs")} className="w-full overflow-x-auto sm:w-fit">
         {tabs.map((item) => (
           <TabsTrigger key={item.value} value={item.value}>
             {item.icon}
