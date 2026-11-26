@@ -50,7 +50,7 @@ export function ReadabilityPanel() {
         <CheckList items={checks} label={t("a11y.readability.checks")} />
       </Panel>
       <Panel
-        title="Dyslexia preview"
+        title={t("a11y.readability.dyslexiaTitle")}
         description="Spacing helps many readers; the simulation hints at what reading can feel like."
       >
         <SliderField
@@ -84,7 +84,7 @@ export function ReadabilityPanel() {
             })
           }
         >
-          Apply dyslexia-friendly preset
+          {t("a11y.readability.dyslexiaPreset")}
         </Button>
         <SwitchField label="Reading simulation (scrambled letters)" checked={simulation} onChange={setSimulation} />
       </Panel>

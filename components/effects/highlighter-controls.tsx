@@ -3,12 +3,14 @@
 import { Check, X } from "lucide-react";
 
 import { ColorField } from "@/components/effects/fields";
+import { useI18n } from "@/components/layout/locale-provider";
 import { Badge } from "@/components/ui/badge";
 import { SliderField } from "@/components/ui/field";
 import { contrastRatio, parseColor } from "@/lib/color/color";
 import { useEffectSettings, useEffectsStore } from "@/store/effects-store";
 
 export function HighlighterControls() {
+  const { t } = useI18n();
   const s = useEffectSettings("highlighter");
   const update = useEffectsStore((state) => state.update);
   const set = (patch: Partial<typeof s>) => update("highlighter", patch);
@@ -16,7 +18,7 @@ export function HighlighterControls() {
   const highlight = parseColor(s.color);
   const ratio = text && highlight ? contrastRatio(text, highlight) : 0;
   const pass = ratio >= 4.5;
-  const ratioLabel = `${(Math.floor(ratio * 100) / 100).toFixed(2)}:1`;
+  const ratioLabel = (Math.floor(ratio * 100) / 100).toFixed(2);
   const pxFormat = (value: number) => `${value}px`;
 
   return (
@@ -43,14 +45,14 @@ export function HighlighterControls() {
       <ColorField label="Text color" value={s.textColor} onChange={(textColor) => set({ textColor })} />
       <div className="flex flex-col gap-2 rounded-lg border p-3" role="status" aria-live="polite">
         <div className="flex items-center justify-between gap-2">
-          <span className="text-sm font-medium">Text contrast (WCAG AA)</span>
+          <span className="text-sm font-medium">{t("effects.contrast.text")}</span>
           <Badge variant={pass ? "success" : "destructive"}>
             {pass ? <Check aria-hidden /> : <X aria-hidden />}
-            {pass ? "Pass" : "Fail"}
+            {pass ? t("effects.badge.pass") : t("effects.badge.fail")}
           </Badge>
         </div>
         <p className="text-xs text-muted-foreground">
-          Text against the highlight: {ratioLabel}. At least 4.5:1 is required.
+          {t("effects.highlighter.summary", { ratio: ratioLabel, required: 4.5 })}
         </p>
       </div>
     </>

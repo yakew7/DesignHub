@@ -2,12 +2,14 @@
 
 import { useMemo } from "react";
 
+import { useI18n } from "@/components/layout/locale-provider";
 import { evaluateTargets } from "@/lib/a11y/targets";
 import { cn } from "@/lib/utils";
 import { useA11yStore } from "@/store/a11y-store";
 
 /** Targets drawn to scale with the 24px AA circle and the 44px AAA box as guides. */
 export function TargetsPreview() {
+  const { t } = useI18n();
   const targets = useA11yStore((state) => state.targets);
   const gap = useA11yStore((state) => state.targetGap);
   const colors = useA11yStore((state) => state.colors);
@@ -49,7 +51,7 @@ export function TargetsPreview() {
         ))}
       </div>
       <figcaption className="text-xs" style={{ color: colors.text }}>
-        Solid circle: 24px AA area (green = passes). Dashed square: 44px AAA target.
+        {t("a11y.targets.legend")}
       </figcaption>
     </figure>
   );

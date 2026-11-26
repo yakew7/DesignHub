@@ -4,6 +4,7 @@ import { Check, TriangleAlert } from "lucide-react";
 import { useEffect, useState } from "react";
 
 import { SwitchField } from "@/components/effects/fields";
+import { useI18n } from "@/components/layout/locale-provider";
 import { Panel } from "@/components/ui/panel";
 import { TEXT_SPACING, textSpacingStatus, type BoxMetrics, type TextSpacingStatus } from "@/lib/a11y/text-spacing";
 import { useA11yStore } from "@/store/a11y-store";
@@ -28,6 +29,7 @@ function measurePreview(): BoxMetrics[] {
 
 /** WCAG 1.4.12: applies the minimum text spacing to the preview and reports whether anything is cut off. */
 export function TextSpacingPanel() {
+  const { t, plural } = useI18n();
   const enabled = useA11yStore((state) => state.textSpacingTest);
   const setEnabled = useA11yStore((state) => state.setTextSpacingTest);
   const typography = useA11yStore((state) => state.typography);
@@ -54,7 +56,7 @@ export function TextSpacingPanel() {
       collapsible
       id="a11y-text-spacing"
       defaultOpen={false}
-      title="Text spacing (1.4.12)"
+      title={t("a11y.textSpacing.title")}
       description={`Applies line height ${TEXT_SPACING.lineHeight}, paragraph spacing ${TEXT_SPACING.paragraphSpacing}x, letter spacing ${TEXT_SPACING.letterSpacing}em and word spacing ${TEXT_SPACING.wordSpacing}em to the preview, never lower than your own values.`}
     >
       <SwitchField label="Test with WCAG text spacing" checked={enabled} onChange={setEnabled} />
@@ -62,13 +64,12 @@ export function TextSpacingPanel() {
         {status.kind === "fits" ? (
           <>
             <Check className="mt-px size-3.5 shrink-0 text-success" aria-hidden />
-            Nothing is clipped at these values ({status.checked} elements checked).
+            {plural("a11y.textSpacing.fits", status.checked)}
           </>
         ) : status.kind === "clipped" ? (
           <>
             <TriangleAlert className="mt-px size-3.5 shrink-0 text-destructive" aria-hidden />
-            Text is cut off in {status.ids.length} {status.ids.length === 1 ? "element" : "elements"}. Let the box grow
-            instead of fixing its size.
+            {plural("a11y.textSpacing.clipped", status.ids.length)}
           </>
         ) : status.kind === "unknown" ? (
           "Open the preview to measure it."

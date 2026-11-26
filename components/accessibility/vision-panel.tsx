@@ -3,6 +3,7 @@
 import { useMemo } from "react";
 
 import { SwitchField } from "@/components/effects/fields";
+import { useI18n } from "@/components/layout/locale-provider";
 import { Panel } from "@/components/ui/panel";
 import { useRovingRadio } from "@/hooks/use-roving-radio";
 import { visionModes, visionSection } from "@/lib/a11y/vision";
@@ -16,6 +17,7 @@ export function VisionPanel({
   compare: boolean;
   onCompareChange: (value: boolean) => void;
 }) {
+  const { t } = useI18n();
   const radiosRef = useRovingRadio<HTMLDivElement>();
   const vision = useA11yStore((state) => state.vision);
   const setVision = useA11yStore((state) => state.setVision);
@@ -24,8 +26,8 @@ export function VisionPanel({
 
   return (
     <>
-      <Panel title="Color vision" description="Simulated with the Machado 2009 model.">
-        <div ref={radiosRef} role="radiogroup" aria-label="Vision simulation" className="flex flex-col gap-1">
+      <Panel title={t("home.hl.colorVision")} description="Simulated with the Machado 2009 model.">
+        <div ref={radiosRef} role="radiogroup" aria-label={t("a11y.vision.simulation")} className="flex flex-col gap-1">
           {visionModes.map((mode) => (
             <button
               key={mode.value}
@@ -46,13 +48,13 @@ export function VisionPanel({
         <SwitchField label="Compare all side by side" checked={compare} onChange={onCompareChange} />
       </Panel>
       <Panel
-        title="Perceived contrast"
+        title={t("a11y.vision.perceived")}
         description="Contrast after simulation. A pair that only differs in hue collapses here."
       >
         <table className="w-full text-xs">
           <thead>
             <tr className="text-left text-subtle-foreground">
-              <th className="pb-1 font-medium">Mode</th>
+              <th className="pb-1 font-medium">{t("a11y.vision.mode")}</th>
               {results[0]?.pairs.map((pair) => (
                 <th key={pair.check} className="pr-2 pb-1 font-medium">
                   {pair.check}

@@ -62,7 +62,7 @@ export function EffectPreview({ effect, kind }: { effect: EffectCss | null; kind
           type="single"
           value={backdrop}
           onValueChange={(value) => value && setBackdrop(value as Backdrop)}
-          aria-label="Preview backdrop"
+          aria-label={t("studio.pane.previewBackdrop")}
           disabled={Boolean(surface)}
         >
           {backdrops.map((item) => (
@@ -79,47 +79,45 @@ export function EffectPreview({ effect, kind }: { effect: EffectCss | null; kind
           style={cardFill ? { backgroundColor: cardFill } : undefined}
           className={`dh-effect-preview flex w-full max-w-sm flex-col gap-3 p-8 ${cardDark ? "text-white" : "text-slate-800"}`}
         >
-          <p className="text-xs font-semibold tracking-[0.16em] uppercase opacity-80">Effects Lab</p>
+          <p className="text-xs font-semibold tracking-[0.16em] uppercase opacity-80">{t("studio.effects.title")}</p>
           {kind === "highlighter" ? (
             <p className="text-lg leading-relaxed">
-              <span className="dh-effect-highlight">
-                A marker-style highlight that follows text across multiple lines, with readable contrast.
-              </span>
+              <span className="dh-effect-highlight">{t("effects.preview.highlighter")}</span>
             </p>
           ) : kind === "scrollbar" || kind === "scroll-shadow" ? (
             <div
               className="dh-effect-scroll h-48 overflow-auto px-3 py-1 text-sm"
               role="region"
-              aria-label="Scrollable sample"
+              aria-label={t("effects.preview.scrollSample")}
               tabIndex={0}
             >
               {Array.from({ length: 12 }, (_, index) => (
                 <p key={index} className="mb-3 opacity-80">
-                  Scroll this box to see the thumb and track. Line {index + 1} of 12.
+                  {t("effects.preview.scrollLine", { line: index + 1, total: 12 })}
                 </p>
               ))}
             </div>
           ) : kind === "selection" ? (
             <>
-              <h3 className="font-display text-2xl font-semibold">Select any of this text.</h3>
-              <p className="text-sm">Drag across a few words, or double click one, to see the selection color.</p>
+              <h3 className="font-display text-2xl font-semibold">{t("effects.preview.selectTitle")}</h3>
+              <p className="text-sm">{t("effects.preview.selectBody")}</p>
             </>
           ) : kind === "button-press" ? (
             <>
-              <h3 className="font-display text-2xl font-semibold">Hover it. Press it.</h3>
-              <p className="text-sm opacity-80">The button lifts on hover and sinks while pressed.</p>
+              <h3 className="font-display text-2xl font-semibold">{t("effects.preview.pressTitle")}</h3>
+              <p className="text-sm opacity-80">{t("effects.preview.pressBody")}</p>
               <button type="button" className="dh-effect-button mt-2 w-fit cursor-pointer px-6 py-3 font-semibold">
-                Press me
+                {t("effects.preview.pressButton")}
               </button>
             </>
           ) : kind === "link-underline" ? (
             <>
-              <h3 className="font-display text-2xl font-semibold">A link you can hover.</h3>
+              <h3 className="font-display text-2xl font-semibold">{t("effects.preview.linkTitle")}</h3>
               <p className="text-sm">
                 <a className="dh-effect-link" href="#link-underline">
-                  Hover this link
+                  {t("effects.preview.linkText")}
                 </a>{" "}
-                and the underline grows.
+                {t("effects.preview.linkAfter")}
               </p>
             </>
           ) : kind === "duotone" ? (
@@ -129,10 +127,10 @@ export function EffectPreview({ effect, kind }: { effect: EffectCss | null; kind
                   className="aspect-[4/3] w-full rounded-md bg-cover bg-center"
                   style={{ backgroundImage: `url("${EFFECT_PHOTO_DATA_URL}")` }}
                   role="img"
-                  aria-label="Original photo"
+                  aria-label={t("effects.preview.originalPhoto")}
                 />
                 <figcaption className="text-center text-xs font-medium uppercase tracking-wide opacity-80">
-                  Before
+                  {t("effects.preview.before")}
                 </figcaption>
               </figure>
               <figure className="flex flex-col gap-2">
@@ -140,19 +138,19 @@ export function EffectPreview({ effect, kind }: { effect: EffectCss | null; kind
                   className="dh-effect-duotone aspect-[4/3] w-full rounded-md bg-cover bg-center"
                   style={{ backgroundImage: `url("${EFFECT_PHOTO_DATA_URL}")` }}
                   role="img"
-                  aria-label="Duotone photo"
+                  aria-label={t("effects.preview.duotonePhoto")}
                 />
                 <figcaption className="text-center text-xs font-medium uppercase tracking-wide opacity-80">
-                  After
+                  {t("effects.preview.after")}
                 </figcaption>
               </figure>
             </div>
           ) : kind === "card-tilt" ? (
             <>
-              <h3 className="font-display text-2xl font-semibold">Hover the card.</h3>
+              <h3 className="font-display text-2xl font-semibold">{t("effects.preview.tiltTitle")}</h3>
               <div className="dh-effect-tilt mt-2 flex aspect-[3/2] w-full flex-col justify-end p-4 text-white">
-                <p className="font-display text-lg font-semibold">Tilts toward you</p>
-                <p className="text-sm opacity-90">The glare follows the light.</p>
+                <p className="font-display text-lg font-semibold">{t("effects.preview.tiltCard")}</p>
+                <p className="text-sm opacity-90">{t("effects.preview.tiltGlare")}</p>
               </div>
             </>
           ) : kind === "scrim" ? (
@@ -160,13 +158,13 @@ export function EffectPreview({ effect, kind }: { effect: EffectCss | null; kind
               className="dh-effect-scrim flex aspect-[4/3] w-full flex-col justify-end rounded-md bg-cover bg-center p-4"
               style={{ backgroundImage: `url("${EFFECT_PHOTO_DATA_URL}")`, color: scrimText }}
             >
-              <h3 className="font-display text-xl font-semibold">Text that stays readable.</h3>
-              <p className="text-sm">A scrim darkens the photo behind it.</p>
+              <h3 className="font-display text-xl font-semibold">{t("effects.preview.scrimTitle")}</h3>
+              <p className="text-sm">{t("effects.preview.scrimBody")}</p>
             </div>
           ) : (
             <>
-              <h3 className="font-display text-2xl font-semibold">Depth without the fuss.</h3>
-              <p className="text-sm opacity-80">Tweak the controls; copy production-ready CSS or Tailwind utilities.</p>
+              <h3 className="font-display text-2xl font-semibold">{t("effects.preview.defaultTitle")}</h3>
+              <p className="text-sm opacity-80">{t("effects.preview.defaultBody")}</p>
             </>
           )}
         </article>

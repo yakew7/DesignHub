@@ -29,7 +29,7 @@ export function ShadowControls() {
   return (
     <>
       <div className="flex flex-col gap-2">
-        <Label>Presets</Label>
+        <Label>{t("effects.presets")}</Label>
         <div className="flex flex-wrap gap-1.5">
           {shadowPresets.map((preset) => (
             <Button
@@ -48,7 +48,7 @@ export function ShadowControls() {
       </div>
       <div className="flex flex-col gap-2">
         <div className="flex items-center justify-between">
-          <Label>Layers</Label>
+          <Label>{t("effects.shadow.layers")}</Label>
           <Button
             variant="ghost"
             size="sm"
@@ -59,10 +59,10 @@ export function ShadowControls() {
               setSelected(s.layers.length);
             }}
           >
-            <Plus /> Add layer
+            <Plus /> {t("effects.shadow.addLayer")}
           </Button>
         </div>
-        <ol className="flex flex-col gap-1" aria-label="Shadow layers">
+        <ol className="flex flex-col gap-1" aria-label={t("effects.shadow.layersLabel")}>
           {s.layers.map((layer, index) => (
             <li key={layer.id} className="flex items-center gap-1">
               <button

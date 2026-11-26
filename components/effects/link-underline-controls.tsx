@@ -3,12 +3,14 @@
 import { Check, X } from "lucide-react";
 
 import { ColorField } from "@/components/effects/fields";
+import { useI18n } from "@/components/layout/locale-provider";
 import { Badge } from "@/components/ui/badge";
 import { SliderField } from "@/components/ui/field";
 import { LINK_UNDERLINE_MIN_CONTRAST, linkUnderlineContrast } from "@/lib/effects/link-underline";
 import { useEffectSettings, useEffectsStore } from "@/store/effects-store";
 
 export function LinkUnderlineControls() {
+  const { t } = useI18n();
   const s = useEffectSettings("link-underline");
   const update = useEffectsStore((state) => state.update);
   const set = (patch: Partial<typeof s>) => update("link-underline", patch);
@@ -40,20 +42,20 @@ export function LinkUnderlineControls() {
       <ColorField label="Page background" value={s.page} onChange={(page) => set({ page })} />
       <div className="flex flex-col gap-2 rounded-lg border p-3" role="status" aria-live="polite">
         <div className="flex items-center justify-between gap-2">
-          <span className="text-sm font-medium">Link contrast (WCAG AA)</span>
+          <span className="text-sm font-medium">{t("effects.linkUnderline.contrast")}</span>
           <Badge variant={pass ? "success" : "destructive"}>
             {pass ? <Check aria-hidden /> : <X aria-hidden />}
-            {pass ? "Pass" : "Fail"}
+            {pass ? t("effects.badge.pass") : t("effects.badge.fail")}
           </Badge>
         </div>
         <p className="text-xs text-muted-foreground">
-          Color against the page: {(Math.floor(ratio * 100) / 100).toFixed(2)}:1. At least {LINK_UNDERLINE_MIN_CONTRAST}
-          :1 is required.
+          {t("effects.linkUnderline.summary", {
+            ratio: (Math.floor(ratio * 100) / 100).toFixed(2),
+            required: LINK_UNDERLINE_MIN_CONTRAST,
+          })}
         </p>
       </div>
-      <p className="text-xs text-muted-foreground">
-        With reduced motion turned on, the underline still grows, but it does so without a transition.
-      </p>
+      <p className="text-xs text-muted-foreground">{t("effects.linkUnderline.reducedMotion")}</p>
     </>
   );
 }

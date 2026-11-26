@@ -3,6 +3,7 @@
 import { Check, X } from "lucide-react";
 import Link from "next/link";
 
+import { useI18n } from "@/components/layout/locale-provider";
 import { Badge } from "@/components/ui/badge";
 import { Panel } from "@/components/ui/panel";
 import { useGradientContrast } from "@/hooks/use-gradient-contrast";
@@ -12,6 +13,7 @@ import { gradientCss } from "@/lib/color/gradient";
 import { cn } from "@/lib/utils";
 
 export function GradientContrastResults() {
+  const { t } = useI18n();
   const { gradient, results } = useGradientContrast();
   // Laid out flat from left to right, so the markers line up with the sampled positions.
   const strip = gradientCss({ ...gradient, type: "linear", angle: 90 });
@@ -21,7 +23,7 @@ export function GradientContrastResults() {
       collapsible
       id="a11y-gradient"
       defaultOpen={false}
-      title="Text on the brand gradient"
+      title={t("a11y.gradient.title")}
       description={`WCAG 1.4.3. The lowest contrast of each text color across ${GRADIENT_SAMPLES} points of the gradient, sampled in ${gradient.interpolation}.`}
     >
       <div className="flex flex-col gap-1">
@@ -35,10 +37,10 @@ export function GradientContrastResults() {
           ))}
         </div>
         <Link href="/colors" className="self-end text-xs text-muted-foreground underline-offset-4 hover:underline">
-          Edit the gradient in Color Studio
+          {t("a11y.gradient.edit")}
         </Link>
       </div>
-      <ul className="flex flex-col gap-2" aria-label="Gradient text checks">
+      <ul className="flex flex-col gap-2" aria-label={t("a11y.gradient.checks")}>
         {results.map((item) => (
           <li
             key={item.id}
@@ -60,18 +62,22 @@ export function GradientContrastResults() {
                 <span className="font-mono text-xs text-muted-foreground">{item.color}</span>
               </div>
               {item.pass ? (
-                <Check className="size-4 shrink-0 text-success" aria-label="Pass" />
+                <Check className="size-4 shrink-0 text-success" aria-label={t("a11y.verdict.pass")} />
               ) : (
-                <X className="size-4 shrink-0 text-destructive" aria-label="Fail" />
+                <X className="size-4 shrink-0 text-destructive" aria-label={t("a11y.verdict.fail")} />
               )}
             </div>
             <span className="font-mono text-xs text-muted-foreground">
-              Worst {formatRatio(item.worstRatio)} at {item.worstPosition}% on {item.worstBackground} · needs{" "}
-              {item.required}:1
+              {t("a11y.gradient.worst", {
+                ratio: formatRatio(item.worstRatio),
+                position: item.worstPosition,
+                background: item.worstBackground,
+                required: item.required,
+              })}
             </span>
             <div className="flex flex-wrap gap-1">
               <Badge variant={item.pass ? "success" : "destructive"}>AA</Badge>
-              <Badge variant={item.passLarge ? "success" : "destructive"}>AA large</Badge>
+              <Badge variant={item.passLarge ? "success" : "destructive"}>{t("a11y.contrast.aaLarge")}</Badge>
             </div>
           </li>
         ))}

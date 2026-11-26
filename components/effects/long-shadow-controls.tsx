@@ -1,6 +1,7 @@
 "use client";
 
 import { ColorField } from "@/components/effects/fields";
+import { useI18n } from "@/components/layout/locale-provider";
 import { SliderField } from "@/components/ui/field";
 import { Label } from "@/components/ui/label";
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
@@ -13,6 +14,7 @@ const targets: { value: LongShadowTarget; label: string }[] = [
 ];
 
 export function LongShadowControls() {
+  const { t } = useI18n();
   const s = useEffectSettings("long-shadow");
   const update = useEffectsStore((state) => state.update);
   const set = (patch: Partial<typeof s>) => update("long-shadow", patch);
@@ -21,12 +23,12 @@ export function LongShadowControls() {
   return (
     <>
       <div className="flex flex-col gap-2">
-        <Label>Target</Label>
+        <Label>{t("effects.longShadow.target")}</Label>
         <ToggleGroup
           type="single"
           value={s.target}
           onValueChange={(value) => value && set({ target: value as LongShadowTarget })}
-          aria-label="Target"
+          aria-label={t("effects.longShadow.target")}
           className="w-full"
         >
           {targets.map((target) => (

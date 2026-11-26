@@ -3,6 +3,7 @@
 import { Check, X } from "lucide-react";
 
 import { ColorField } from "@/components/effects/fields";
+import { useI18n } from "@/components/layout/locale-provider";
 import { Badge } from "@/components/ui/badge";
 import { SliderField } from "@/components/ui/field";
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
@@ -13,6 +14,7 @@ import type { ScrimDirection } from "@/types/effects";
 const ratioText = (value: number) => (Math.floor(value * 100) / 100).toFixed(2);
 
 export function ScrimControls() {
+  const { t } = useI18n();
   const s = useEffectSettings("scrim");
   const update = useEffectsStore((state) => state.update);
   const set = (patch: Partial<typeof s>) => update("scrim", patch);
@@ -22,15 +24,15 @@ export function ScrimControls() {
   return (
     <>
       <div className="flex flex-col gap-1.5">
-        <span className="text-sm font-medium">Direction</span>
+        <span className="text-sm font-medium">{t("effects.scrim.direction")}</span>
         <ToggleGroup
           type="single"
           value={s.direction}
           onValueChange={(value) => value && set({ direction: value as ScrimDirection })}
-          aria-label="Scrim direction"
+          aria-label={t("effects.scrim.directionLabel")}
         >
-          <ToggleGroupItem value="bottom">Bottom</ToggleGroupItem>
-          <ToggleGroupItem value="top">Top</ToggleGroupItem>
+          <ToggleGroupItem value="bottom">{t("effects.scrim.bottom")}</ToggleGroupItem>
+          <ToggleGroupItem value="top">{t("effects.scrim.top")}</ToggleGroupItem>
         </ToggleGroup>
       </div>
       <SliderField
@@ -55,20 +57,23 @@ export function ScrimControls() {
       <ColorField label="Text color" value={s.text} onChange={(text) => set({ text })} />
       <div className="flex flex-col gap-2 rounded-lg border p-3" role="status" aria-live="polite">
         <div className="flex items-center justify-between gap-2">
-          <span className="text-sm font-medium">Text contrast (WCAG AA)</span>
+          <span className="text-sm font-medium">{t("effects.contrast.text")}</span>
           <Badge variant={pass ? "success" : "destructive"}>
             {pass ? <Check aria-hidden /> : <X aria-hidden />}
-            {pass ? "Pass" : "Fail"}
+            {pass ? t("effects.badge.pass") : t("effects.badge.fail")}
           </Badge>
         </div>
         <p className="text-xs text-muted-foreground">
-          Over a white image, the text is {ratioText(contrast.darkest)}:1 where the scrim is strongest and{" "}
-          {ratioText(contrast.lightest)}:1 where it fades out. At least {SCRIM_MIN_CONTRAST}:1 is required.
+          {t("effects.scrim.summary", {
+            strongest: ratioText(contrast.darkest),
+            faintest: ratioText(contrast.lightest),
+            required: SCRIM_MIN_CONTRAST,
+          })}
         </p>
         <p className="text-xs text-muted-foreground">
           {pass
-            ? `Text stays readable for the first ${Math.round(contrast.readableDepth * 100)}% of the scrim's height.`
-            : "Raise the strength or pick a text color that contrasts with the scrim."}
+            ? t("effects.scrim.readable", { percent: Math.round(contrast.readableDepth * 100) })
+            : t("effects.scrim.raise")}
         </p>
       </div>
     </>

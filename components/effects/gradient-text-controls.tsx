@@ -3,6 +3,7 @@
 import Link from "next/link";
 
 import { ColorField, GradientColorsField, SwitchField } from "@/components/effects/fields";
+import { useI18n } from "@/components/layout/locale-provider";
 import { Button } from "@/components/ui/button";
 import { SliderField } from "@/components/ui/field";
 import { Label } from "@/components/ui/label";
@@ -18,6 +19,7 @@ const sources: { value: GradientTextSource; label: string }[] = [
 ];
 
 export function GradientTextControls() {
+  const { t } = useI18n();
   const s = useEffectSettings("gradient-text");
   const update = useEffectsStore((state) => state.update);
   const set = (patch: Partial<typeof s>) => update("gradient-text", patch);
@@ -26,12 +28,12 @@ export function GradientTextControls() {
   return (
     <>
       <div className="flex flex-col gap-2">
-        <Label>Colors from</Label>
+        <Label>{t("effects.gradientText.colorsFrom")}</Label>
         <ToggleGroup
           type="single"
           value={s.source}
           onValueChange={(value) => value && set({ source: value as GradientTextSource })}
-          aria-label="Gradient source"
+          aria-label={t("effects.gradientText.source")}
           className="w-full"
         >
           {sources.map((source) => (
@@ -48,7 +50,7 @@ export function GradientTextControls() {
             href="/colors"
             className="self-end text-xs text-muted-foreground underline-offset-4 hover:text-foreground hover:underline"
           >
-            Edit in Color Studio
+            {t("effects.editInColorStudio")}
           </Link>
         </div>
       ) : (
@@ -71,7 +73,7 @@ export function GradientTextControls() {
       />
       {s.fallback ? (
         <Button variant="ghost" size="sm" className="self-end" onClick={() => set({ fallback: null })}>
-          Use the first gradient color
+          {t("effects.gradientText.useFirst")}
         </Button>
       ) : null}
       <SwitchField label="Animated shift" checked={s.animated} onChange={(animated) => set({ animated })} />

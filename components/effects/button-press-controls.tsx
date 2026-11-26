@@ -53,12 +53,12 @@ export function ButtonPressControls() {
         format={(value) => `${value}ms`}
       />
       <div className="flex flex-col gap-2">
-        <Label>Easing</Label>
+        <Label>{t("effects.easing")}</Label>
         <ToggleGroup
           type="single"
           value={s.easing}
           onValueChange={(value) => value && set({ easing: value as ButtonPressEasing })}
-          aria-label="Easing"
+          aria-label={t("effects.easing")}
           className="w-full flex-wrap"
         >
           {easings.map((easing) => (
@@ -76,9 +76,7 @@ export function ButtonPressControls() {
         onChange={(radius) => set({ radius })}
         format={pxFormat}
       />
-      <p className="text-xs text-muted-foreground">
-        With reduced motion turned on, the button keeps its shadow change but doesn&apos;t move.
-      </p>
+      <p className="text-xs text-muted-foreground">{t("effects.buttonPress.reducedMotion")}</p>
     </>
   );
 }

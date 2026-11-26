@@ -20,12 +20,12 @@ export function NeumorphismControls() {
     <>
       <ColorField label="Surface" value={s.color} onChange={(color) => set({ color })} />
       <div className="flex flex-col gap-2">
-        <Label>Shape</Label>
+        <Label>{t("effects.neumorphism.shape")}</Label>
         <ToggleGroup
           type="single"
           value={s.shape}
           onValueChange={(value) => value && set({ shape: value as NeumorphismShape })}
-          aria-label="Shape"
+          aria-label={t("effects.neumorphism.shape")}
           className="w-full"
         >
           {shapes.map((shape) => (

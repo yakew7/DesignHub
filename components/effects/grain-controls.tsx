@@ -1,5 +1,6 @@
 "use client";
 
+import { useI18n } from "@/components/layout/locale-provider";
 import { SliderField } from "@/components/ui/field";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
@@ -9,6 +10,7 @@ import type { BlendMode } from "@/types/effects";
 const blends: BlendMode[] = ["overlay", "soft-light", "multiply", "screen", "normal"];
 
 export function GrainControls() {
+  const { t } = useI18n();
   const s = useEffectSettings("grain");
   const update = useEffectsStore((state) => state.update);
   const set = (patch: Partial<typeof s>) => update("grain", patch);
@@ -43,9 +45,9 @@ export function GrainControls() {
         format={(v) => `${Math.round(v * 100)}%`}
       />
       <div className="flex flex-col gap-2">
-        <Label>Blend mode</Label>
+        <Label>{t("effects.grain.blend")}</Label>
         <Select value={s.blend} onValueChange={(value) => set({ blend: value as BlendMode })}>
-          <SelectTrigger aria-label="Blend mode">
+          <SelectTrigger aria-label={t("effects.grain.blend")}>
             <SelectValue />
           </SelectTrigger>
           <SelectContent>

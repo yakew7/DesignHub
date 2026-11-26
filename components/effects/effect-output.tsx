@@ -2,6 +2,7 @@
 
 import { useMemo } from "react";
 
+import { useI18n } from "@/components/layout/locale-provider";
 import { useIsAdvanced } from "@/components/ui/advanced";
 import { ExportPanel } from "@/components/export/export-panel";
 import { reactStyle, scssMixin, effectStylesheet, tailwindClasses, tailwindUtility } from "@/lib/effects/css";
@@ -9,6 +10,7 @@ import type { EffectCss, EffectKind } from "@/types/effects";
 import type { ExportFormat } from "@/types/export";
 
 export function EffectOutput({ kind, effect }: { kind: EffectKind; effect: EffectCss | null }) {
+  const { t } = useI18n();
   const advanced = useIsAdvanced();
   const formats = useMemo<ExportFormat[]>(() => {
     if (!effect) return [];
@@ -39,6 +41,6 @@ export function EffectOutput({ kind, effect }: { kind: EffectKind; effect: Effec
     return advanced ? all : all.filter((format) => format.id === "css" || format.id === "tailwind");
   }, [effect, kind, advanced]);
 
-  if (!effect) return <p className="text-sm text-muted-foreground">Pick an effect to generate code.</p>;
+  if (!effect) return <p className="text-sm text-muted-foreground">{t("effects.output.empty")}</p>;
   return <ExportPanel key={kind} formats={formats} label="Effect code format" />;
 }

@@ -59,10 +59,7 @@ export function CardTiltControls() {
         format={(v) => `${v}px`}
       />
       <ColorField label="Card color" value={s.fill} onChange={(fill) => set({ fill })} />
-      <p className="text-xs text-muted-foreground">
-        The card tilts on hover with no script. The CSS tab includes a short snippet that sets the custom properties
-        from the pointer. With reduced motion turned on, no tilt is applied.
-      </p>
+      <p className="text-xs text-muted-foreground">{t("effects.cardTilt.note")}</p>
     </>
   );
 }

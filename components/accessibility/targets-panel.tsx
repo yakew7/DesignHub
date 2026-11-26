@@ -4,6 +4,7 @@ import { Plus, Trash2 } from "lucide-react";
 import { useMemo } from "react";
 
 import { CheckList } from "@/components/accessibility/check-list";
+import { useI18n } from "@/components/layout/locale-provider";
 import { Button } from "@/components/ui/button";
 import { SliderField } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
@@ -14,6 +15,7 @@ import { useA11yStore } from "@/store/a11y-store";
 import type { TouchTarget } from "@/types/a11y";
 
 export function TargetsPanel() {
+  const { t } = useI18n();
   const targets = useA11yStore((state) => state.targets);
   const setTargets = useA11yStore((state) => state.setTargets);
   const gap = useA11yStore((state) => state.targetGap);
@@ -23,13 +25,13 @@ export function TargetsPanel() {
     setTargets(targets.map((target) => (target.id === id ? { ...target, ...change } : target)));
 
   return (
-    <Panel title="Touch targets" description="WCAG 2.5.8 (AA, 24px + spacing) and 2.5.5 (AAA, 44px).">
-      <ul className="flex flex-col gap-2" aria-label="Targets">
+    <Panel title={t("home.hl.touchTargets")} description="WCAG 2.5.8 (AA, 24px + spacing) and 2.5.5 (AAA, 44px).">
+      <ul className="flex flex-col gap-2" aria-label={t("a11y.tab.targets")}>
         {targets.map((target) => (
           <li key={target.id} className="grid grid-cols-[1fr_56px_56px_32px] items-center gap-1.5">
             <Input
               value={target.label}
-              aria-label="Target label"
+              aria-label={t("a11y.targets.label")}
               onChange={(event) => patch(target.id, { label: event.target.value })}
               className="h-8 text-xs"
             />
@@ -64,7 +66,7 @@ export function TargetsPanel() {
         disabled={targets.length >= 6}
         onClick={() => setTargets([...targets, { id: createId("target"), label: "Icon", width: 24, height: 24 }])}
       >
-        <Plus /> Add target
+        <Plus /> {t("a11y.targets.add")}
       </Button>
       <SliderField
         label="Spacing between targets"

@@ -3,6 +3,7 @@
 import { Check, X } from "lucide-react";
 import Link from "next/link";
 
+import { useI18n } from "@/components/layout/locale-provider";
 import { Section } from "@/components/ui/section";
 import { Panel } from "@/components/ui/panel";
 import { visionModes, type PaletteColor, type PaletteVisionSection } from "@/lib/a11y/vision";
@@ -31,15 +32,34 @@ function Seen({ color, type }: { color: PaletteColor; type: VisionType | undefin
   );
 }
 
+/** The lightness fix for a pair, with a swatch of the new color. */
+function Suggestion({ color, to, distance }: { color: string; to: string; distance: number }) {
+  const { t } = useI18n();
+  const [before, after] = t("a11y.paletteVision.change", { color, to: "{to}", distance: distance.toFixed(3) }).split(
+    "{to}",
+  );
+  return (
+    <>
+      {before}
+      <span className="inline-flex items-center gap-1 font-mono">
+        <span className="inline-block size-3 rounded-sm border align-middle" style={{ background: to }} aria-hidden />
+        {to}
+      </span>
+      {after}
+    </>
+  );
+}
+
 /** Palette pairs that become too similar under each color vision deficiency, with a lightness fix. */
 export function PaletteVisionResults({ section }: { section: PaletteVisionSection }) {
+  const { t, plural } = useI18n();
   return (
     <Panel
-      title="Palette under color vision"
+      title={t("a11y.paletteVision.title")}
       description={`Each pair of brand colors after simulation. Below ${section.threshold} ΔE OK, chart series and status colors are hard to tell apart.`}
     >
-      <Section id="a11y-vision-pairs" title="Pairs by vision type" defaultOpen>
-        <ul className="flex flex-col gap-2" aria-label="Palette pairs by vision type">
+      <Section id="a11y-vision-pairs" title={t("a11y.paletteVision.pairsTitle")} defaultOpen>
+        <ul className="flex flex-col gap-2" aria-label={t("a11y.paletteVision.pairsLabel")}>
           {section.modes.map((mode) => (
             <li
               key={mode.mode}
@@ -52,12 +72,11 @@ export function PaletteVisionResults({ section }: { section: PaletteVisionSectio
                 <span className="text-sm font-medium">{labelOf(mode.mode)}</span>
                 {mode.pass ? (
                   <span className="flex items-center gap-1 text-xs text-success">
-                    <Check className="size-4" aria-hidden /> All distinct
+                    <Check className="size-4" aria-hidden /> {t("a11y.paletteVision.allDistinct")}
                   </span>
                 ) : (
                   <span className="flex items-center gap-1 text-xs text-destructive">
-                    <X className="size-4" aria-hidden /> {mode.pairs.length}{" "}
-                    {mode.pairs.length === 1 ? "pair" : "pairs"} too close
+                    <X className="size-4" aria-hidden /> {plural("a11y.paletteVision.tooClose", mode.pairs.length)}
                   </span>
                 )}
               </div>
@@ -65,7 +84,7 @@ export function PaletteVisionResults({ section }: { section: PaletteVisionSectio
                 <div key={`${pair.a.hex}-${pair.b.hex}`} className="flex flex-col gap-1 border-t pt-2">
                   <div className="flex flex-wrap items-center gap-x-2 gap-y-1">
                     <Seen color={pair.a} type={simulated[mode.mode]} />
-                    <span className="text-xs text-subtle-foreground">and</span>
+                    <span className="text-xs text-subtle-foreground">{t("a11y.paletteVision.and")}</span>
                     <Seen color={pair.b} type={simulated[mode.mode]} />
                     <span className="ml-auto shrink-0 font-mono text-xs tabular-nums text-destructive">
                       {pair.distance.toFixed(3)}
@@ -73,20 +92,13 @@ export function PaletteVisionResults({ section }: { section: PaletteVisionSectio
                   </div>
                   <p className="text-xs text-muted-foreground">
                     {pair.suggestion ? (
-                      <>
-                        Change the lightness of {pair.suggestion.color} to{" "}
-                        <span className="inline-flex items-center gap-1 font-mono">
-                          <span
-                            className="inline-block size-3 rounded-sm border align-middle"
-                            style={{ background: pair.suggestion.to }}
-                            aria-hidden
-                          />
-                          {pair.suggestion.to}
-                        </span>{" "}
-                        ({pair.suggestion.distance.toFixed(3)}).
-                      </>
+                      <Suggestion
+                        color={pair.suggestion.color}
+                        to={pair.suggestion.to}
+                        distance={pair.suggestion.distance}
+                      />
                     ) : (
-                      "No lightness change separates these; pick a different hue."
+                      t("a11y.paletteVision.noChange")
                     )}
                   </p>
                 </div>
@@ -96,7 +108,7 @@ export function PaletteVisionResults({ section }: { section: PaletteVisionSectio
         </ul>
       </Section>
       <Link href="/colors" className="self-end text-xs text-muted-foreground underline-offset-4 hover:underline">
-        Edit the palette in Color Studio
+        {t("a11y.paletteVision.edit")}
       </Link>
     </Panel>
   );

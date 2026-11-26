@@ -1,6 +1,7 @@
 "use client";
 
 import { ColorField } from "@/components/effects/fields";
+import { useI18n } from "@/components/layout/locale-provider";
 import { Button } from "@/components/ui/button";
 import { SliderField } from "@/components/ui/field";
 import { Label } from "@/components/ui/label";
@@ -8,6 +9,7 @@ import { insetPresets } from "@/lib/effects/inset";
 import { useEffectSettings, useEffectsStore } from "@/store/effects-store";
 
 export function InsetControls() {
+  const { t } = useI18n();
   const s = useEffectSettings("inset");
   const update = useEffectsStore((state) => state.update);
   const set = (patch: Partial<typeof s>) => update("inset", patch);
@@ -16,7 +18,7 @@ export function InsetControls() {
   return (
     <>
       <div className="flex flex-col gap-2">
-        <Label>Presets</Label>
+        <Label>{t("effects.presets")}</Label>
         <div className="flex flex-wrap gap-1.5">
           {insetPresets.map((preset) => (
             <Button key={preset.id} variant="outline" size="sm" onClick={() => set(preset.shadow)}>

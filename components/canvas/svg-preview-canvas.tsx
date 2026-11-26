@@ -4,6 +4,7 @@ import { Maximize, Minus, Plus } from "lucide-react";
 import { memo, useMemo, useState, type KeyboardEvent } from "react";
 
 import { SvgComparison } from "@/components/canvas/svg-comparison";
+import { useI18n } from "@/components/layout/locale-provider";
 import { Button } from "@/components/ui/button";
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
 import { useElementWidth } from "@/hooks/use-element-width";
@@ -43,6 +44,7 @@ export const SvgPreviewCanvas = memo(function SvgPreviewCanvas({
   defaultBackdrop = "checker",
   className,
 }: SvgPreviewCanvasProps) {
+  const { t } = useI18n();
   const { ref, width: viewportWidth } = useElementWidth<HTMLDivElement>();
   const { zoom, setZoom, step, fit } = useZoom();
   const [backdrop, setBackdrop] = useState<Backdrop>(defaultBackdrop);
@@ -97,7 +99,7 @@ export const SvgPreviewCanvas = memo(function SvgPreviewCanvas({
           type="single"
           value={backdrop}
           onValueChange={(value) => value && setBackdrop(value as Backdrop)}
-          aria-label="Preview backdrop"
+          aria-label={t("studio.pane.previewBackdrop")}
         >
           <ToggleGroupItem value="checker" aria-label="Transparent checkerboard">
             <span className="bg-checker size-3 rounded-[3px] border" />

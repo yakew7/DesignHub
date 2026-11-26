@@ -17,11 +17,11 @@ export function A11yTypePanel() {
   const setSample = useA11yStore((state) => state.setSample);
 
   return (
-    <Panel title="Sample">
+    <Panel title={t("a11y.type.sample")}>
       <div className="flex flex-col gap-2">
-        <Label>Typeface</Label>
+        <Label>{t("a11y.type.typeface")}</Label>
         <Select value={typography.family} onValueChange={(family) => setTypography({ family })}>
-          <SelectTrigger aria-label="Typeface">
+          <SelectTrigger aria-label={t("a11y.type.typeface")}>
             <SelectValue />
           </SelectTrigger>
           <SelectContent>

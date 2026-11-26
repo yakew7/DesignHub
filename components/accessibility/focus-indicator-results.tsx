@@ -3,6 +3,7 @@
 import { Check, RotateCcw, Wand2, X } from "lucide-react";
 import { useMemo } from "react";
 
+import { useI18n } from "@/components/layout/locale-provider";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Panel } from "@/components/ui/panel";
@@ -13,6 +14,7 @@ import { cn } from "@/lib/utils";
 import { useA11yStore } from "@/store/a11y-store";
 
 export function FocusIndicatorResults() {
+  const { t } = useI18n();
   const colors = useA11yStore((state) => state.colors);
   const setFocusRing = useA11yStore((state) => state.setFocusRing);
   const { ring, brandRing, fromBrand } = useFocusRing();
@@ -27,7 +29,7 @@ export function FocusIndicatorResults() {
       collapsible
       id="a11y-focus"
       defaultOpen={false}
-      title="Focus indicator"
+      title={t("a11y.focus.title")}
       description="WCAG 2.2 · 2.4.13 (focus appearance) and 1.4.11. The ring needs 3:1 against the page and the focused button."
     >
       <div
@@ -51,23 +53,23 @@ export function FocusIndicatorResults() {
                 outlineOffset: 2,
               }}
             >
-              Focused
+              {t("a11y.focus.focused")}
             </span>
           </span>
           <div className="flex min-w-0 flex-1 flex-col">
-            <span className="text-sm font-medium">Focus ring</span>
+            <span className="text-sm font-medium">{t("effects.kind.focus-ring.label")}</span>
             <span className="font-mono text-xs">{ring}</span>
             <span className="text-xs text-muted-foreground">
               {fromBrand ? "Brand primary" : `Fix (brand is ${brandRing})`}
             </span>
           </div>
           {check.pass ? (
-            <Check className="size-4 text-success" aria-label="Pass" />
+            <Check className="size-4 text-success" aria-label={t("a11y.verdict.pass")} />
           ) : (
-            <X className="size-4 text-destructive" aria-label="Fail" />
+            <X className="size-4 text-destructive" aria-label={t("a11y.verdict.fail")} />
           )}
         </div>
-        <ul className="flex flex-col gap-1" aria-label="Focus ring ratios">
+        <ul className="flex flex-col gap-1" aria-label={t("a11y.focus.ratios")}>
           {ratios.map(([label, value]) => (
             <li key={label} className="flex items-center justify-between gap-2 text-xs">
               <span className="text-muted-foreground">{label}</span>
@@ -83,12 +85,12 @@ export function FocusIndicatorResults() {
         <div className="flex flex-wrap gap-2">
           {!check.pass && check.suggestion ? (
             <Button variant="outline" size="sm" onClick={() => setFocusRing(check.suggestion)}>
-              <Wand2 /> Use {check.suggestion}
+              <Wand2 /> {t("a11y.contrast.use", { color: check.suggestion })}
             </Button>
           ) : null}
           {fromBrand ? null : (
             <Button variant="ghost" size="sm" onClick={() => setFocusRing(null)}>
-              <RotateCcw /> Back to brand ring
+              <RotateCcw /> {t("a11y.focus.backToBrand")}
             </Button>
           )}
         </div>

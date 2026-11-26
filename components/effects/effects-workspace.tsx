@@ -36,7 +36,7 @@ export function EffectsWorkspace() {
             <Panel
               title={t("studio.pane.controls")}
               actions={
-                <Button variant="ghost" size="icon" aria-label="Reset effect" onClick={() => reset(kind)}>
+                <Button variant="ghost" size="icon" aria-label={t("effects.reset")} onClick={() => reset(kind)}>
                   <RotateCcw />
                 </Button>
               }

@@ -75,7 +75,7 @@ export function SkeletonControls() {
               href="/colors"
               className="self-end text-xs text-muted-foreground underline-offset-4 hover:text-foreground hover:underline"
             >
-              Edit neutrals in Color Studio
+              {t("effects.skeleton.editNeutrals")}
             </Link>
           </div>
         </>
