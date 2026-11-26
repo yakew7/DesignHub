@@ -1,8 +1,9 @@
 import { expect, test } from "@playwright/test";
-import { saved } from "./storage";
+import { hydrated, saved } from "./storage";
 
 test("a panel folds with the keyboard, hides its controls, and stays folded after a reload", async ({ page }) => {
   await page.goto("/typography");
+  await hydrated(page);
   await expect(page.locator("h1").first()).toBeVisible();
 
   // The OpenType panel is an Advanced one: switch to Advanced, where it starts folded and renders nothing.
